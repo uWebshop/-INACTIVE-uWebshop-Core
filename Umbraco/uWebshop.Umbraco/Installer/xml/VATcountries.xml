@@ -1,0 +1,30 @@
+﻿<?xml version="1.0"?>
+
+<countries>
+	<country code="AT" iso="40">Austria</country>
+	<country code="BE" iso="56">Belgium</country>
+	<country code="BG" iso="100">Bulgaria</country>
+	<country code="CY" iso="196">Cyprus</country>
+	<country code="CZ" iso="203">Czech Republic</country>
+	<country code="DK" iso="208">Denmark</country>
+	<country code="EE" iso="233">Estonia</country>
+	<country code="FI" iso="246">Finland</country>
+	<country code="FR" iso="250">France</country>
+	<country code="DE" iso="276">Germany</country>
+	<country code="GR" iso="300">Greece</country>
+	<country code="IE" iso="372">Ireland</country>
+	<country code="IT" iso="380">Italy</country>
+	<country code="LV" iso="428">Latvia</country>
+	<country code="LT" iso="440">Lithuania</country>
+	<country code="LU" iso="442">Luxembourg</country>
+	<country code="MT" iso="470">Malta</country>
+	<country code="NL" iso="528">Netherlands</country>
+	<country code="PL" iso="616">Poland</country>
+	<country code="PT" iso="620">Portugal</country>
+	<country code="RO" iso="642">Romania</country>
+	<country code="SK" iso="703">Slovakia (Slovak Republic)</country>
+	<country code="SI" iso="705">Slovenia</country>
+	<country code="ES" iso="724">Spain</country>
+	<country code="SE" iso="752">Sweden</country>
+	<country code="GB" iso="826">United Kingdom</country>
+</countries>

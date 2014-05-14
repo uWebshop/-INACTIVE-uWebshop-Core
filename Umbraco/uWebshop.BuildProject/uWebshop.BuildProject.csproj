@@ -1,0 +1,137 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B926738C-23ED-4F98-8515-669EAC0D7ED8}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>uWebshop.BuildProject</RootNamespace>
+    <AssemblyName>uWebshop.BuildProject</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\uWebshop.Common\uWebshop.Common.csproj">
+      <Project>{61eef91b-22ed-48f0-83eb-cdc7431c5bde}</Project>
+      <Name>uWebshop.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Core\uWebshop.DataAccess\uWebshop.DataAccess.csproj">
+      <Project>{3cf8ee6f-506f-4d47-8368-d6c6b9fa42e3}</Project>
+      <Name>uWebshop.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Core\uWebshop.Domain\uWebshop.Domain.csproj">
+      <Project>{30ac1fb6-eb29-4e4e-92c4-0481c503215c}</Project>
+      <Name>uWebshop.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Core\uWebshop.Services\uWebshop.Services.csproj">
+      <Project>{d08e0834-b25a-40a5-9c8e-31d4fb050df4}</Project>
+      <Name>uWebshop.Services</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\uWebshop.Umbraco6\uWebshop.Umbraco6.csproj">
+      <Project>{9edfd59c-eaa5-4cb4-9642-8b6eda6b4469}</Project>
+      <Name>uWebshop.Umbraco6</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\uWebshop.Umbraco7\uWebshop.Umbraco7.csproj">
+      <Project>{b63c9a57-9b26-4e51-8d24-e799fef3555c}</Project>
+      <Name>uWebshop.Umbraco7</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\uWebshop.Umbraco\uWebshop.Umbraco.csproj">
+      <Project>{2c03a3a4-3380-4f6d-8c68-24e60a77e989}</Project>
+      <Name>uWebshop.Umbraco</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>IF EXIST "$(SolutionDir)builds\package\" DEL /s /f /q "$(SolutionDir)builds\package\*.*"
+IF EXIST "$(SolutionDir)builds\package.v6\" DEL /s /f /q "$(SolutionDir)builds\package.v6\*.*"
+IF EXIST "$(SolutionDir)builds\package.v7\" DEL /s /f /q "$(SolutionDir)builds\package.v7\*.*"
+</PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>SET UWBSVER=2.5.0.0
+echo Rendering packages as version %25UWBSVER%25
+
+IF EXIST "$(SolutionDir)builds\package\" DEL /s /f /q "$(SolutionDir)builds\package\*.*"
+IF EXIST "$(SolutionDir)builds\package.v6\" DEL /s /f /q "$(SolutionDir)builds\package.v6\*.*"
+IF EXIST "$(SolutionDir)builds\package.v7\" DEL /s /f /q "$(SolutionDir)builds\package.v7\*.*"
+
+SET umbracoDir=$(SolutionDir)Umbraco\uWebshop.Umbraco\
+
+XCOPY "$(SolutionDir)Umbraco\uWebshop.Umbraco\Modules\Configurable aliasses\ContentMapping.config" "$(SolutionDir)builds\package\" /Y /R
+XCOPY "$(SolutionDir)Binary Dependencies\Umbraco.Licensing.dll" "$(SolutionDir)builds\package\" /Y /R
+XCOPY "$(SolutionDir)Binary Dependencies\PackageGarden.Licensing.dll" "$(SolutionDir)builds\package\" /Y /R
+DEL "$(TargetDir)uWebshop.BuildProject.dll"
+DEL "$(TargetDir)uWebshop.Starterkits*.dll"
+XCOPY "$(TargetDir)uWebshop*.dll" "$(SolutionDir)builds\package\" /Y /R
+XCOPY "%25umbracoDir%25Installer\icons\*.*" "$(SolutionDir)builds\package\" /Y /R
+XCOPY "%25umbracoDir%25Installer\iconfont\*.*" "$(SolutionDir)builds\package\" /Y /R
+XCOPY "%25umbracoDir%25Installer\xml\*.*" "$(SolutionDir)builds\package\" /Y /R
+XCOPY "%25umbracoDir%25Installer\xslt\*.*" "$(SolutionDir)builds\package\" /Y /R
+XCOPY "%25umbracoDir%25Installer\js\*.*" "$(SolutionDir)builds\package\" /Y /R
+XCOPY "%25umbracoDir%25Installer\razor\*.*" "$(SolutionDir)builds\package\" /Y /R
+XCOPY "%25umbracoDir%25Installer\uWebshopInstaller.ascx" "$(SolutionDir)builds\package\" /Y /R
+XCOPY "%25umbracoDir%25Installer\uWebshopDashBoard.ascx" "$(SolutionDir)builds\package\" /Y /R
+XCOPY "%25umbracoDir%25Usercontrols\uwbsBasketHandler.ascx" "$(SolutionDir)builds\package\" /Y /R
+
+for /R "%25umbracoDir%25DataTypesv7\" %25%25f in (*.*) do copy %25%25f  "$(SolutionDir)builds\package.v7\"
+
+XCOPY "$(SolutionDir)builds\package\*.*" "$(SolutionDir)builds\package.v6\" /Y /R
+XCOPY "$(SolutionDir)builds\package\*.*" "$(SolutionDir)builds\package.v7\" /Y /R
+
+DEL "$(SolutionDir)builds\package.v7\uWebshop.Umbraco6*.dll"
+DEL "$(SolutionDir)builds\package.v6\uWebshop.Umbraco7*.dll"
+
+XCOPY "%25umbracoDir%25Installer\package6.xml" "$(SolutionDir)builds\package.v6\" /Y /R
+REN "$(SolutionDir)builds\package.v6\package6.xml" package.xml
+XCOPY "%25umbracoDir%25Installer\package7.xml" "$(SolutionDir)builds\package.v7\" /Y /R
+REN "$(SolutionDir)builds\package.v7\package7.xml" package.xml
+
+SET package6dir=$(SolutionDir)builds\Umbraco Packages\uWebshop%25UWBSVER%25.Foundation.Umbraco61.Package.Installer\
+SET package7dir=$(SolutionDir)builds\Umbraco Packages\uWebshop%25UWBSVER%25.Foundation.Umbraco7.Package.Installer\
+
+XCOPY "$(SolutionDir)builds\package.v6\*.*" "%25package6dir%25" /Y /R
+XCOPY "$(SolutionDir)builds\package.v7\*.*" "%25package7dir%25" /Y /R
+</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

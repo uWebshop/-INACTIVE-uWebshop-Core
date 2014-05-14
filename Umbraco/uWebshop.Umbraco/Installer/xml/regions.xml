@@ -1,0 +1,6 @@
+﻿<?xml version="1.0"?>
+
+<regions>
+	<region code="AA" taxrate="0">None</region>
+	<region code="RN" taxrate="8">RegionName</region>
+</regions>

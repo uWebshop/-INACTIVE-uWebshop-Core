@@ -1,0 +1,32 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="$(SolutionDir)Umbraco\uWebshop.Umbraco\bin\$(ConfigurationName)\uWebshop.Domain.dll" #>
+<#@ assembly name="$(SolutionDir)Umbraco\uWebshop.Umbraco\bin\$(ConfigurationName)\uWebshop.Umbraco.dll" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.Reflection" #>
+<#@ import namespace="uWebshop.Umbraco6" #>
+<#@ output extension=".cs" #>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Umbraco.Core;
+using Umbraco.Core.Models;
+using uWebshop.Umbraco.Interfaces;
+using Umbraco.Core.Configuration;
+
+namespace uWebshop.Umbraco6
+{
+	internal partial class CMSInstaller
+	{
+		partial void InstallGenerated(IUmbracoVersion umbracoVersion)
+		{
+<#
+	Write(new uWebshop.Umbraco6.DocumentTypeInstaller().RunT4Code());
+#>
+			ContentInstaller.InstallContent();
+		}
+	}
+}

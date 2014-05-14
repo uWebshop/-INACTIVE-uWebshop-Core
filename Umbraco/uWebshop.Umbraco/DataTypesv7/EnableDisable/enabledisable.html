@@ -1,0 +1,6 @@
+<div ng-controller="uWebshop.EnableDisable" ng-switch="model.config.multiple">
+  
+    <select data-ng-options="item as item.name for item in ItemArray" data-ng-model="selectedOption" ng-change="update()"></select>
+
+
+</div>

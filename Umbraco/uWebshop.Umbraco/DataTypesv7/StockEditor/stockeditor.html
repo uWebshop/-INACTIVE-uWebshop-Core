@@ -1,0 +1,4 @@
+<div ng-controller="uWebshop.Stock">            
+    <input type="text" name="stock.value" ng-model="stock.value">
+    <select data-ng-options="item as item for item in ItemArray" data-ng-model="selectedOption" ng-change="update()"></select>
+</div>

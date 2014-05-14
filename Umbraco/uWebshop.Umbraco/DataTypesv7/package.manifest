@@ -1,0 +1,249 @@
+{      css: [
+       '~/App_Plugins/uWebshop/iconfont/uWebshop.css'
+	]
+    ,  
+    propertyEditors: [
+    {          
+            alias: "uWebshop.Countries",           
+            name: "uWebshop Countries",         
+            editor: {
+                view: "~/App_Plugins/uWebshop/DataTypes/Countries/countries.html"
+            }         
+        },
+		{          
+            alias: "uWebshop.OrderedCount",           
+            name: "uWebshop OrderedCount Viewer",         
+            editor: {
+                view: "~/App_Plugins/uWebshop/DataTypes/OrderedCount/orderedcount.html"
+            }         
+        },
+		{          
+            alias: "uWebshop.CouponCodes",           
+            name: "uWebshop CouponCodes Editor",         
+            editor: {
+                view: "~/App_Plugins/uWebshop/DataTypes/CouponCodes/couponcodes.html"
+            }         
+        },
+        {          
+            alias: "uWebshop.Stock",           
+            name: "uWebshop Stock Editor",         
+            editor: {
+                view: "~/App_Plugins/uWebshop/DataTypes/StockEditor/stockeditor.html"
+            }         
+        },
+        {
+            alias: "uWebshop.Zones",           
+            name: "uWebshop Zone Selector",         
+            editor: {
+                view: "~/App_Plugins/uWebshop/DataTypes/ZoneSelector/zoneselector.html"
+            },          
+        },
+        {          
+            alias: "uWebshop.Ranges",           
+            name: "uWebshop Price Ranges",         
+            editor: {
+                view: "~/App_Plugins/uWebshop/DataTypes/Ranges/ranges.html"
+            }         
+        },
+		{          
+            alias: "uWebshop.StoreTemplatePicker",           
+            name: "uWebshop Store Template Picker",         
+            editor: {
+                view: "~/App_Plugins/uWebshop/DataTypes/StoreTemplatePicker/storetemplatepicker.html"
+            }         
+        },
+		{          
+            alias: "uWebshop.TemplatePicker",           
+            name: "uWebshop Email Template Picker",         
+            editor: {
+                view: "~/App_Plugins/uWebshop/DataTypes/EmailTemplatePicker/emailtemplatepicker.html"
+            }         
+        },		
+		{          
+            alias: "uWebshop.Cultures",           
+            name: "uWebshop Culture Picker",         
+            editor: {
+                view: "~/App_Plugins/uWebshop/DataTypes/Cultures/cultures.html"
+            }         
+        },		
+		{          
+            alias: "uWebshop.Currencies",           
+            name: "uWebshop Currencies",         
+            editor: {
+                view: "~/App_Plugins/uWebshop/DataTypes/Currencies/currencies.html"
+            }         
+        },	
+		{          
+            alias: "uWebshop.ShippingProviderType",           
+            name: "uWebshop ShippingProvider Types",         
+            editor: {
+                view: "~/App_Plugins/uWebshop/DataTypes/ShippingProviderType/shippingprovidertype.html"
+            }         
+        },		
+		{          
+            alias: "uWebshop.ShippingProviderRangeType",           
+            name: "uWebshop ShippingProvider Range Types",         
+            editor: {
+                view: "~/App_Plugins/uWebshop/DataTypes/ShippingProviderRangeType/shippingproviderrangetype.html"
+            }         
+        },		
+		{          
+            alias: "uWebshop.PaymentProviderAmountType",           
+            name: "uWebshop PaymentProvider Amount Types",         
+            editor: {
+                view: "~/App_Plugins/uWebshop/DataTypes/PaymentProviderAmountType/paymentprovideramounttype.html"
+            }         
+        },			
+		{          
+            alias: "uWebshop.PaymentProviderType",           
+            name: "uWebshop  PaymentProvider Types",         
+            editor: {
+                view: "~/App_Plugins/uWebshop/DataTypes/PaymentProviderType/paymentprovidertype.html"
+            }         
+        },
+        {          
+            alias: "uWebshop.StorePicker",           
+            name: "uWebshop Store Picker",         
+            editor: {
+                view: "~/App_Plugins/uWebshop/DataTypes/StorePicker/storepicker.html"
+            }         
+        },
+        {          
+            alias: "uWebshop.ProductOverview",           
+            name: "uWebshop Product Overview",         
+            editor: {
+                view: "~/App_Plugins/uWebshop/DataTypes/ProductOverview/productoverview.html"
+            }         
+        },			
+        {          
+            alias: "uWebshop.OrderSection",           
+            name: "uWebshop OrderSection",         
+            editor: {
+                view: "~/App_Plugins/uWebshop/DataTypes/OrderSection/ordersection.html"
+            }         
+        },			
+        {          
+            alias: "uWebshop.OrderStatusPicker",           
+            name: "uWebshop OrderStatus Picker",         
+            editor: {
+                view: "~/App_Plugins/uWebshop/DataTypes/OrderStatusPicker/orderstatuspicker.html"
+            }         
+        },	
+		{          
+            alias: "uWebshop.OrderInfoViewer",           
+            name: "uWebshop OrderDetails",         
+            editor: {
+                view: "~/App_Plugins/uWebshop/DataTypes/OrderDetails/orderdetails.html"
+            }         
+        },	
+        {
+            alias: "uWebshop.Price",           
+            name: "uWebshop Price Editor",         
+            editor: {
+                view: "~/App_Plugins/uWebshop/DataTypes/Price/price.html"
+            },
+            prevalues: {
+                fields: [
+                    {
+                        label: "Currency Symbol",
+                        description: "Enter the currency symbol to display",
+                        key: "symbol",
+                        view: "requiredfield",
+                        validation: [
+                            {
+                                type: "Required" 
+                            }                        
+                        ]
+                    },
+                    {
+                        label: "Decimal Separator",
+                        description: "The decimal separator for the currency",
+                        key: "separator",
+                        view: "requiredfield",
+                        validation: [
+                            {
+                                type: "Required" 
+                            }                        
+                        ]
+                    }
+                ]
+            }
+             
+        },
+        {
+                alias: "uWebshop.VatPicker",           
+                name: "uWebshop Vat Picker",         
+                editor: {
+                    view: "~/App_Plugins/uWebshop/DataTypes/VatPicker/vatpicker.html"
+                },
+                prevalues: {
+                    fields: [
+                        {
+                            label: "VAT",
+                            description: "Enter the available VAT percentages",
+                            key: "items",
+                            view: "~/App_Plugins/uWebshop/DataTypes/VatPicker/vatpickerprevalues.html",
+                            validation: [
+                                {
+                                    type: "Required" 
+                                }                        
+                            ]
+                        }
+                    ]
+                }     
+        },
+        {
+                alias: "uWebshop.EnableDisable",           
+                name: "uWebshop Enable/Disable",         
+                editor: {
+                    view: "~/App_Plugins/uWebshop/DataTypes/EnableDisable/enabledisable.html"
+                }   
+        }   
+		, 
+		{
+                alias: "uWebshop.DiscountType",           
+                name: "uWebshop Discount Type",         
+                editor: {
+                    view: "~/App_Plugins/uWebshop/DataTypes/DiscountType/discounttype.html"
+                }   
+        }   
+		, 
+		{
+                alias: "uWebshop.DiscountOrderCondition",           
+                name: "uWebshop Order Condition",         
+                editor: {
+                    view: "~/App_Plugins/uWebshop/DataTypes/DiscountOrderCondition/discountordercondition.html"
+                }   
+        }   
+		
+    ]
+    ,        
+    javascript: [
+        '~/App_Plugins/uWebshop/DataTypes/Price/accounting.min.js',
+        '~/App_Plugins/uWebshop/DataTypes/ZoneSelector/zoneselector.controller.js',
+        '~/App_Plugins/uWebshop/DataTypes/StockEditor/stockeditor.controller.js',
+        '~/App_Plugins/uWebshop/DataTypes/OrderedCount/orderedcount.controller.js',
+        '~/App_Plugins/uWebshop/DataTypes/Ranges/ranges.controller.js',
+        '~/App_Plugins/uWebshop/DataTypes/Price/price.controller.js',
+        '~/App_Plugins/uWebshop/DataTypes/VatPicker/vatpicker.controller.js',
+        '~/App_Plugins/uWebshop/DataTypes/EnableDisable/enabledisable.controller.js',
+		'~/App_Plugins/uWebshop/DataTypes/StoreTemplatePicker/storetemplatepicker.controller.js',
+		'~/App_Plugins/uWebshop/DataTypes/EmailTemplatePicker/emailtemplatepicker.controller.js',
+		'~/App_Plugins/uWebshop/DataTypes/Cultures/cultures.controller.js',
+		'~/App_Plugins/uWebshop/DataTypes/Currencies/currencies.controller.js',
+		'~/App_Plugins/uWebshop/DataTypes/ShippingProviderType/shippingprovidertype.controller.js',
+		'~/App_Plugins/uWebshop/DataTypes/ShippingProviderRangeType/shippingproviderrangetype.controller.js',
+		'~/App_Plugins/uWebshop/DataTypes/PaymentProviderType/paymentprovidertype.controller.js',
+		'~/App_Plugins/uWebshop/DataTypes/PaymentProviderAmountType/paymentprovideramounttype.controller.js',
+        '~/App_Plugins/uWebshop/DataTypes/Countries/countries.controller.js',
+        '~/App_Plugins/uWebshop/DataTypes/StorePicker/storepicker.controller.js',
+        '~/App_Plugins/uWebshop/DataTypes/ProductOverview/productoverview.controller.js',
+		'~/App_Plugins/uWebshop/DataTypes/OrderSection/ordersection.controller.js',
+		'~/App_Plugins/uWebshop/DataTypes/OrderDetails/orderdetails.controller.js',
+		'~/App_Plugins/uWebshop/DataTypes/OrderStatusPicker/orderstatuspicker.controller.js',
+		'~/App_Plugins/uWebshop/DataTypes/CouponCodes/couponcodes.controller.js',
+		'~/App_Plugins/uWebshop/DataTypes/DiscountType/discounttype.controller.js',
+		'~/App_Plugins/uWebshop/DataTypes/DiscountOrderCondition/discountordercondition.controller.js',
+
+    ]
+}

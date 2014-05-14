@@ -1,0 +1,28 @@
+﻿@*
+uWebshop Razor Example: Random Products
+=================================
+This snippet takes random 5 products from the catalog
+*@
+
+@using uWebshop.API
+@inherits umbraco.MacroEngines.DynamicNodeContext
+
+@{
+	var random = new Random();
+
+	var randomProducts = from item in Catalog.GetAllProducts() orderby random.Next() select item;
+}
+
+@if (randomProducts.Any())
+{
+	<h3>Random Products</h3>
+	<p>This example lists 5 random products in the uWebshop catalog.</p>
+	<ul>
+		@foreach (var product in randomProducts.Take(5))
+		{
+			<li><a href="@product.NiceUrl()" title="@product.Title">@product.Title</a></li>
+		}
+	</ul>
+}
+
+

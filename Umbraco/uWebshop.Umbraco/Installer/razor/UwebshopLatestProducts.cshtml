@@ -1,0 +1,22 @@
+﻿@*
+uWebshop Razor Example: Latest Products
+=================================
+This snippet lists the last 5 added products from the catalog
+*@
+
+@using uWebshop.API
+
+@{
+	var latestProducts = Catalog.GetAllProducts().OrderByDescending(x => x.CreateDate).Take(5);
+
+	if (latestProducts.Any())
+	{
+		<h3>Latest Products</h3>
+		<ul>
+			@foreach (var product in latestProducts)
+			{
+				<li><a href="@product.Url" title="@product.Title">@product.Title</a></li>
+			}
+		</ul>
+	}
+}

@@ -1,0 +1,168 @@
+﻿@*uWebshop Basket
+=================================
+This snippet gives you a deafult basket example
+uWebshop uses a default html <form> to update the basket. Keep in mind that if you add this code within a <form runat="server"> block that .net will remove the <form> tags from this code and basketupdates won't work!
+*@
+
+@using System.Linq
+@using System.Web.Security
+@using uWebshop.RazorExtensions
+@inherits umbraco.MacroEngines.DynamicNodeContext
+
+@{
+	var currentOrder = Orders.GetOrderForCurrentCustomer();
+	if (currentOrder != null)
+	{
+		foreach(var coupon in currentOrder.CouponCodes) {
+			@coupon
+		}
+		var storeCurrencyCultureInfo = Catalog.GetCurrentStore().CurrencyCultureInfo;
+		
+			@uWebshop.Domain.Helpers.StoreHelper.CurrentLocalization.CurrencyCode
+			@currentOrder.Localization.CurrencyCode
+				@uWebshop.Domain.Helpers.StoreHelper.GetCurrencyCulture(currentOrder.Localization)
+
+		<table>
+			<thead>
+				<tr>
+					<th>Product</th>
+					<th align="right">Product Price With Vat</th>
+					<th align="right">Product Price Without Vat</th>
+					<th align="right">Product Price Vat</th>
+					<th align="center">Itemcount</th>
+					<th align="right">Orderline Subtotal</th>
+					<th align="right">Orderline Vat</th>
+					<th align="right">Orderline Total</th>
+				</tr>
+			</thead>
+			<tfoot>              
+				<tr>
+					<th colspan="6" align="right">Shipping costs With Vat</th>
+					<td colspan="2" align="right">@currentOrder.ShippingProviderCostsWithVat.ToString("C", storeCurrencyCultureInfo)</td>
+				</tr>
+				<tr>
+					<th colspan="6" align="right">Payment costs With Vat</th>
+					<td colspan="2" align="right">@currentOrder.PaymentProviderCostsWithVat.ToString("C", storeCurrencyCultureInfo)</td>
+				</tr>			 	
+				<tr>
+					<th colspan="6" align="right">Order discount With Vat</th>
+					<td colspan="2" align="right">- @currentOrder.DiscountAmountWithVat.ToString("C", storeCurrencyCultureInfo)</td>
+				</tr>			  	
+				<tr>
+					<th colspan="6" align="right">Orderlines Total With Vat</th>
+					<td colspan="2" align="right">@currentOrder.OrderLineWithVatTotal.ToString("C", storeCurrencyCultureInfo)</td>
+				</tr>					
+				<tr>
+					<th colspan="6" align="right">Subtotal</th>
+					<td colspan="2" align="right">@currentOrder.Subtotal.ToString("C", storeCurrencyCultureInfo)</td>
+				</tr>
+				<tr>
+					<th colspan="6" align="right">TotalVat</th>
+					<td colspan="2" align="right">@currentOrder.TotalVat.ToString("C", storeCurrencyCultureInfo)</td>
+				</tr>              
+				<tr>
+					<th colspan="6" align="right">Grandtotal</th>
+					<td colspan="2" align="right"><strong>@currentOrder.Grandtotal.ToString("C", storeCurrencyCultureInfo)</strong></td>
+				</tr>
+			</tfoot>
+			<tbody>
+				@foreach (var orderline in currentOrder.OrderLines)
+				{
+					var index = 0;
+					<tr>
+						<td>@orderline.ProductInfo.Title</td>
+						<td align="right">@orderline.ProductInfo.PriceWithVat.ToString("C", storeCurrencyCultureInfo)</td>
+						<td align="right">@orderline.ProductInfo.PriceWithoutVat.ToString("C", storeCurrencyCultureInfo)</td>
+						<td align="right">@orderline.ProductInfo.VatAmount.ToString("C", storeCurrencyCultureInfo)</td>
+						<td align="center">
+							<form name="orderform" method="post">
+								<input type="hidden" name="orderLineId" value="@orderline.OrderLineId"/>
+								<input type="hidden" name="action" value="update"/>
+								<input type="text" name="quantity" value="@orderline.ProductInfo.ItemCount"/>
+                                
+								@foreach (var productVarGroup in orderline.ProductInfo.Product.VariantGroups)
+								{
+									<strong>@productVarGroup.Title</strong>
+									<br/>
+									<select name="@("variant" + index++)">
+										@foreach (var productVar in productVarGroup.Variants)
+										{
+											var itemChecked = orderline.HasVariantWithId(productVar.Id) ? "selected=\"selected\"" : "";
+											<option @Html.Raw(itemChecked) value="@productVar.Id">@productVar.Title @productVar.Price.Ranged.WithVat.ToCurrencyString()</option>
+										}
+									</select>
+									<br/>
+								}
+
+								<input type="submit" value="update!" />
+							</form>     
+						</td>
+						<td align="right">@orderline.OrderLineSubTotal.ToString("C", storeCurrencyCultureInfo)</td>
+						<td align="right">@orderline.OrderLineVatAmount.ToString("C", storeCurrencyCultureInfo)</td>
+						<td align="right">@orderline.OrderLineGrandTotal.ToString("C", storeCurrencyCultureInfo)</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+
+
+				if(Model.Children.Any()) {
+		<h2><a href="@Model.Children[0].Url">Continue to @Model.Children[0].Name</a></h2>
+				}
+
+		<hr/>
+		<h3>Enter a coupon code</h3>
+		<p>Entering a coupon code can activate the discount.</p>
+		<form name="couponform" method="POST">
+			<input type="text" name="couponCode" id="couponCode"/>
+			<input type="submit" value="add coupon"/>
+		</form>
+		<hr/>
+			
+		var currentMember = Membership.GetUser();
+		
+		if(currentMember == null) {
+		<h3>Create an acccount</h3>
+		<p>When a users is logged in the order will be related to the customer.</p>
+		<form name="createAccount" method="POST">
+			<input type="hidden" name="createAccount" id="createAccount" value="createAccount"/>
+			<table>
+				<tr>
+					<th><label for="customerEmail">Email</label>
+					<td><input type="text" name="customerEmail" id="customerEmail"/></td>
+				</tr>
+				<tr>
+					<th><label for="password">Password</label>
+					<td><input type="text" name="password" id="password"/></td>
+				</tr>
+				<tr>
+					<th><label for="validatePassword">Validate Password</label>
+					<td><input type="text" name="validatePassword" id="validatePassword"/></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td><input type="submit" value="create account"/></td>
+				</tr>
+			</table>  	 	
+		</form>
+	
+		<form method="post"name="accountLogin">
+			<label for="name">E-mail adres:</label>
+				<input type="text" id="customerEmail" name="customerEmail" />
+		
+				<label for="password">Wachtwoord:</label>
+				<input type="password" id="password" name="password" />
+		
+		  <input type="hidden" id="accountSignIn" name="accountSignIn" value="true"/>
+		  <input type="submit" id="submit" name="submit" value="login"/>
+	  </form>
+		}
+		else {
+			<h2>@currentMember.UserName</h2>
+		}
+	}
+	if (currentOrder == null || !currentOrder.OrderLines.Any())
+	{
+		<h3>There are no items in your basket</h3>
+	}
+}

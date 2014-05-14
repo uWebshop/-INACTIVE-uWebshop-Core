@@ -1,0 +1,6 @@
+<div ng-controller="uWebshop.VatPicker" ng-switch="model.config.multiple">
+  
+    <select data-ng-options="vat as vat.name for vat in VatArray" data-ng-model="selectedOption" ng-change="update()"></select>
+
+
+</div>

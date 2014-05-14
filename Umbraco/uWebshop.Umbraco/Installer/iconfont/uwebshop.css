@@ -1,0 +1,176 @@
+﻿@font-face {
+	font-family: 'uWebshop';
+	src:url('uWebshop.eot?-6nbf45');
+	src:url('uWebshop.eot?#iefix-6nbf45') format('embedded-opentype'),
+		url('uWebshop.woff?-6nbf45') format('woff'),
+		url('uWebshop.ttf?-6nbf45') format('truetype'),
+		url('uWebshop.svg?-6nbf45#uWebshop') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+[class^="icon-uwebshop-"], [class*=" icon-uwebshop-"] {
+	font-family: 'uWebshop';
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+
+	/* Better Font Rendering =========== */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.icon-uwebshop-uwebshoplogo {
+    color: #187ac6 !important;
+}
+
+.icon-uwebshop-uwebshoplogo:before {
+	content: "\e600";
+}
+.icon-uwebshop-store:before {
+	content: "\e601";
+}
+.icon-uwebshop-piggybank:before {
+	content: "\e604";
+}
+.icon-uwebshop-stacklist:before {
+	content: "\f00b";
+}
+.icon-uwebshop-barcode:before {
+	content: "\f02a";
+}
+.icon-uwebshop-tag:before {
+	content: "\f02b";
+}
+.icon-uwebshop-tags:before {
+	content: "\f02c";
+}
+.icon-uwebshop-mapmarker:before {
+	content: "\f041";
+}
+.icon-uwebshop-gift:before {
+	content: "\f06b";
+}
+.icon-uwebshop-plane:before {
+	content: "\f072";
+}
+.icon-uwebshop-calendar:before {
+	content: "\f073";
+}
+.icon-uwebshop-shoppingcart:before {
+	content: "\f07a";
+}
+.icon-uwebshop-barcharto:before {
+	content: "\f080";
+}
+.icon-uwebshop-creditcard:before {
+	content: "\f09d";
+}
+.icon-uwebshop-bullhorn:before {
+	content: "\f0a1";
+}
+.icon-uwebshop-globe:before {
+	content: "\f0ac";
+}
+.icon-uwebshop-briefcase:before {
+	content: "\f0b1";
+}
+.icon-uwebshop-chain:before {
+	content: "\f0c1";
+}
+.icon-uwebshop-cut:before {
+	content: "\f0c4";
+}
+.icon-uwebshop-truck:before {
+	content: "\f0d1";
+}
+.icon-uwebshop-money:before {
+	content: "\f0d6";
+}
+.icon-uwebshop-envelope:before {
+	content: "\f0e0";
+}
+.icon-uwebshop-building:before {
+	content: "\f0f7";
+}
+.icon-uwebshop-euro:before {
+	content: "\f153";
+}
+.icon-uwebshop-gbp:before {
+	content: "\f154";
+}
+.icon-uwebshop-dollar:before {
+	content: "\f155";
+}
+.icon-uwebshop-rupee:before {
+	content: "\f156";
+}
+.icon-uwebshop-cny:before {
+	content: "\f157";
+}
+.icon-uwebshop-ruble:before {
+	content: "\f158";
+}
+.icon-uwebshop-won:before {
+	content: "\f159";
+}
+.icon-uwebshop-bitcoin:before {
+	content: "\f15a";
+}
+.icon-uwebshop-stack:before {
+	content: "\f16c";
+}
+.icon-uwebshop-archivebox:before {
+	content: "\f187";
+}
+.icon-uwebshop-mail:before {
+	content: "\e607";
+}
+.icon-uwebshop-location:before {
+	content: "\e608";
+}
+.icon-uwebshop-link:before {
+	content: "\e609";
+}
+.icon-uwebshop-briefcase:before {
+	content: "\e60a";
+}
+.icon-uwebshop-clipboard:before {
+	content: "\e60d";
+}
+.icon-uwebshop-cart:before {
+	content: "\e60e";
+}
+.icon-uwebshop-box:before {
+	content: "\e60f";
+}
+.icon-uwebshop-statistics:before {
+	content: "\e610";
+}
+.icon-uwebshop-pie:before {
+	content: "\e611";
+}
+.icon-uwebshop-bars:before {
+	content: "\e612";
+}
+.icon-uwebshop-graph:before {
+	content: "\e613";
+}
+.icon-uwebshop-list:before {
+	content: "\e614";
+}
+.icon-uwebshop-layout:before {
+	content: "\e615";
+}
+.icon-uwebshop-folder:before {
+	content: "\e616";
+}
+.icon-uwebshop-archive:before {
+	content: "\e617";
+}
+.icon-uwebshop-inbox:before {
+	content: "\e618";
+}

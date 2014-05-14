@@ -1,0 +1,177 @@
+﻿@using uWebshop.API
+@inherits umbraco.MacroEngines.DynamicNodeContext
+
+@{
+	var currentOrder = CMS.GetOrderFromCurrentDocument();
+
+	if (currentOrder != null)
+	{
+		<style>
+	
+			.order table { border-collapse: collapse }
+
+			.order .text-right { text-align: right !important; }
+
+			.order tr.orderline { border-bottom: 1px solid #eee; }
+
+			.order tr.orderlineheader { border-bottom: 4px solid #eee; }
+
+			.order tr.orderlinefooter { border-top: 4px solid #eee; }
+
+			.order td,
+			.order th { padding: 5px; }
+
+			.order tr.success { vertical-align: middle; }
+
+			.order .success h3 { margin-bottom: 10px; }
+		
+		</style>
+
+		<div class="order" style="margin: 20px; line-height: 1.5em;">
+			<h1>@currentOrder.OrderReference</h1>
+			<address style="font-style: normal;">
+				<strong>Billing</strong><br/>
+				@currentOrder.Customer.FirstName @Html.Raw(" ")	@currentOrder.Customer.LastName 
+				<br/>
+				@currentOrder.Customer.Address1
+				@currentOrder.Customer.Address2
+				@currentOrder.Customer.ZipCode
+				@currentOrder.Customer.City
+			
+				@{
+					var countryCode = currentOrder.Customer.CountryCode;
+
+					if (string.IsNullOrEmpty(countryCode))
+					{
+						@Store.GetCountryNameFromCountryCode(countryCode)
+					}
+				}
+				@{
+					var value = currentOrder.Customer.GetValue<string>("customerVatNumber");
+
+					@value
+				}
+				<a href="mailto:@currentOrder.Customer.Email">@currentOrder.Customer.Email</a>
+			</address>
+			<hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee; border-bottom: 1px solid #fff;"/>
+			<address style="font-style: normal;">
+				<strong>Shipping</strong><br/>
+				@currentOrder.Customer.Shipping.FirstName @Html.Raw(" ") @currentOrder.Customer.Shipping.LastName 
+				<br/>
+				@currentOrder.Customer.Shipping.Address1
+				@currentOrder.Customer.Shipping.Address2
+				@currentOrder.Customer.Shipping.ZipCode
+				@currentOrder.Customer.Shipping.City
+			
+				@{
+					var shippingCountryCode = currentOrder.Customer.Shipping.CountryCode;
+
+					if (string.IsNullOrEmpty(shippingCountryCode))
+					{
+						@Store.GetCountryNameFromCountryCode(shippingCountryCode)
+					}
+				}
+			</address>
+			<hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee; border-bottom: 1px solid #fff;"/>
+			<p>
+				<strong>Date/Time Placed:</strong> @currentOrder.ConfirmDate
+			</p>
+			<hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee; border-bottom: 1px solid #fff;"/>
+			<table class="table table-striped table-hover">
+				<thead>
+					<tr class="orderlineheader">
+						<th scope="col">
+							<p>Product</p>
+						</th>
+						<th scope="col">
+							<p class="text-right">Itemcount</p>
+						</th>
+						<th scope="col">
+							<p class="text-right">Price (ex vat)</p>
+						</th>
+						<th scope="col">
+							<p class="text-right">Total (ex vat)</p>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var orderline in currentOrder.OrderLines)
+					{
+						<tr class="orderline">
+							<th scope="row">
+								<p>
+									<nobr>@orderline.Product.Title</nobr>
+									@foreach (var variant in orderline.Product.Variants)
+									{
+										<br />
+										<span style="font-weight: 100">
+											@variant.Title
+											<br/>
+										</span>
+									}
+								</p>
+							</th>
+							<td>
+								<p class="text-right">
+									@orderline.Quantity
+								</p>
+							</td>
+							<td>
+								<p class="text-right">
+									@orderline.Product.Price.WithoutVat.ToCurrencyString()
+								</p>
+							</td>
+							<td>
+								<p class="text-right">
+									@orderline.Amount.WithoutVat.ToCurrencyString()
+								</p>
+							</td>
+						</tr>
+					}
+				</tbody>
+				<tfoot>
+					@if (currentOrder.IsVatCharged)
+					{
+						<tr class="orderlinefooter">
+
+							<th scope="row" colspan="3">
+								<p class="text-right">Subtotal</p>
+							</th>
+							<td scope="col">
+								<p class="text-right">
+									@currentOrder.SubTotal.ToCurrencyString()
+								</p>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row" colspan="3">
+								<p class="text-right">Vat</p>
+							</th>
+							<td scope="col">
+								<p class="text-right">
+									@currentOrder.OrderAmount.Vat.ToCurrencyString()
+								</p>
+							</td>
+						</tr>
+					}
+					<tr  class="success">
+						<th scope="col" colspan="4">
+							<h3 style="font-size: 24.5px;" class="text-right">
+								@currentOrder.ChargedOrderAmount.ToCurrencyString()
+							</h3>
+						</th>
+					</tr>
+					@if (!currentOrder.IsVatCharged)
+					{
+						<tr>
+							<td colspan="4">
+								<p class="text-right">reverse charge</p>
+							</td>
+						</tr>
+					}
+				</tfoot>
+			</table>
+
+		</div>
+	}
+}

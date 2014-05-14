@@ -1,0 +1,186 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{2BC4F96F-4987-4935-A2F7-2A8D249BC4E1}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>uWebshop.Test</RootNamespace>
+    <AssemblyName>uWebshop.Test</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Moq, Version=4.2.1402.2112, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Binary Dependencies\Moq.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Assembly.cs" />
+    <Compile Include="Domain\Businesslogic\DiscountCalculator\AffectedTagsTests.cs" />
+    <Compile Include="Domain\Businesslogic\DiscountCalculator\CombinationsOfConditionsAndEffectsTest.cs" />
+    <Compile Include="Domain\Businesslogic\DiscountCalculator\CouponsTests.cs" />
+    <Compile Include="Domain\Businesslogic\DiscountCalculator\HasDiscountForOrderExtension.cs" />
+    <Compile Include="Domain\Businesslogic\DiscountCalculator\PercentageCalculationOverflowRegressionTest.cs" />
+    <Compile Include="Domain\Businesslogic\DiscountCalculator\RangedDiscountValueForOrderTest.cs" />
+    <Compile Include="Domain\Businesslogic\DiscountService\GetApplicableDiscountsForOrderTest.cs" />
+    <Compile Include="Domain\Businesslogic\PriceTests\DiscountCoupling.cs" />
+    <Compile Include="Domain\Businesslogic\PriceTests\RangedCalculation.cs" />
+    <Compile Include="Domain\Businesslogic\PriceTests\VatCalculation.cs" />
+    <Compile Include="Domain\Businesslogic\UwebshopRequestTests.cs" />
+    <Compile Include="Domain\Businesslogic\UwebshopUrlRewritingServiceTests\RedirectPermanentOldCatalogUrlsTests.cs" />
+    <Compile Include="Domain\Businesslogic\ViesVatCheckServiceTests\VatNumberCorrectionLogicTests.cs" />
+    <Compile Include="Domain\Domain classes\CategoryTests\MultipleRoutesToLeafCategoryTests.cs" />
+    <Compile Include="Domain\Domain classes\OrderDiscounts\CouponCodeTests.cs" />
+    <Compile Include="Domain\Domain classes\OrderInfoTests\BasicOrderInfoTests.cs" />
+    <Compile Include="Domain\Domain classes\OrderInfoTests\GetAmountTests.cs" />
+    <Compile Include="Domain\Domain classes\ProductDiscount\ProductDiscountCalculations.cs" />
+    <Compile Include="Domain\Domain classes\ProductTests\NiceUrlTests.cs" />
+    <Compile Include="Domain\Domain classes\ProductTests\OrderablePropertyTests.cs" />
+    <Compile Include="Domain\Domain classes\ProductTests\ProductIncludingVariantPricesTests.cs" />
+    <Compile Include="Domain\Model\ProductVariantInfoTests\RangedPriceInCentsTests.cs" />
+    <Compile Include="Domain\Services\CatalogUrlResolvingServiceTests.cs" />
+    <Compile Include="Domain\Services\StorepickerUrlDeterminationTests.cs" />
+    <Compile Include="Public API\BasketTests\OrderAmountTests.cs" />
+    <Compile Include="Repositories\TestPropertyProvider.cs" />
+    <Compile Include="Domain\Domain classes\ProductInfoTests\EffectsOfVariantOnProductPrices.cs" />
+    <Compile Include="Domain\IoCContainerTests\ResolveTests.cs" />
+    <Compile Include="Domain\Services\MultiStoreEntityServiceTests\TestCachingOfMultiStoreEntityService.cs" />
+    <Compile Include="Domain\Services\OrderServiceTests\CreateOrderTest.cs" />
+    <Compile Include="Mocks\FakeDiscountService.cs" />
+    <Compile Include="Public API\DomainHelperTests.cs" />
+    <Compile Include="Repositories\FakeOrderDiscountRepository.cs" />
+    <Compile Include="Repositories\TestStoreRepository.cs" />
+    <Compile Include="Services\CatalogUrlTests\CategoryCatalogUrlServiceTests.cs" />
+    <Compile Include="Services\CatalogUrlTests\ProductUrlServiceTests.cs" />
+    <Compile Include="Services\CatalogUrlTests\UrlServiceTests.cs" />
+    <Compile Include="Services\OrderNumberService\ThreadSafetyTests.cs" />
+    <Compile Include="Services\OrderUpdatingsServiceTests\AddOrUpdateOrderlineTests.cs" />
+    <Compile Include="Services\PaymentProviderServiceTests.cs" />
+    <Compile Include="Stubs\StubContentTypeAliassesXmlService.cs" />
+    <Compile Include="Stubs\StubCategory.cs" />
+    <Compile Include="Stubs\StubCMSDocumentTypeService.cs" />
+    <Compile Include="Stubs\StubDocumentTypeInfo.cs" />
+    <Compile Include="Stubs\StubLocalization.cs" />
+    <Compile Include="Domain\Businesslogic\UwebshopUrlRewritingServiceTests\UwebshopUrlRewritingServiceIntegrationTests.cs" />
+    <Compile Include="Domain\Domain classes\OrderData\PreservationOfDataFromOrderInfoToOrderDataTest.cs" />
+    <Compile Include="Domain\Domain classes\OrderDiscounts\DiscountApplicationTest.cs" />
+    <Compile Include="Domain\Domain classes\OrderDiscounts\NewPriceDiscountTypeTest.cs" />
+    <Compile Include="Domain\Domain classes\OrderDiscounts\ShippingsCosts.cs" />
+    <Compile Include="Domain\Domain classes\OrderInfoTests\AppliedDiscountsInformationTest.cs" />
+    <Compile Include="Domain\Domain classes\OrderInfoTests\VATCheckerOrderInfoCouplingTest.cs" />
+    <Compile Include="Domain\Domain classes\ProductDiscount\ProductDiscountOnProductWithVariantTest.cs" />
+    <Compile Include="Domain\Domain classes\ShippingProviderMethodTests\PriceCalculationServiceTests.cs" />
+    <Compile Include="Domain\Updating\OrderUpdaterParseOrderNumberTest.cs" />
+    <Compile Include="IOC.cs" />
+    <Compile Include="Stubs\StubCMSApplicationNotInBackend.cs" />
+    <Compile Include="Domain\Domain classes\OrderDiscounts\MembershipTest.cs" />
+    <Compile Include="Domain\Domain classes\OrderDiscounts\NoConditionsTest.cs" />
+    <Compile Include="Domain\Domain classes\OrderDiscounts\PerSetOfXItemsTest.cs" />
+    <Compile Include="Domain\Domain classes\OrderDiscounts\ShouldOnlyBeAppliedWhenOrderIncompleteTest.cs" />
+    <Compile Include="Domain\Domain classes\OrderInfoTests\AverageVatPercentageTest.cs" />
+    <Compile Include="Domain\Domain classes\OrderInfoTests\ConversionWithDTOsTest.cs" />
+    <Compile Include="Domain\Domain classes\OrderInfoTests\CustomValidationTest.cs" />
+    <Compile Include="Domain\Domain classes\OrderInfoTests\Events\StatusChangedTest.cs" />
+    <Compile Include="Domain\Domain classes\OrderInfoTests\GrandTotalTest.cs" />
+    <Compile Include="Domain\Domain classes\OrderInfoTests\ShippingProviderVatTest.cs" />
+    <Compile Include="Domain\Domain classes\OrderInfoTests\VatTotalTest.cs" />
+    <Compile Include="Domain\Domain classes\ProductVariant\VariantAddedValueTest.cs" />
+    <Compile Include="Domain\Domain classes\ProductTests\ProductRangePriceTest.cs" />
+    <Compile Include="Domain\Domain classes\ProductTests\RoundingAndVatTest.cs" />
+    <Compile Include="Domain\Domain classes\ShippingProvider\RangesApplicabilityTest.cs" />
+    <Compile Include="Domain\Helper classes\BasketRequestHandler\AddProductTest.cs" />
+    <Compile Include="Domain\Helper classes\VatCalculator\VatCalculatorTest.cs" />
+    <Compile Include="Mocks\MockConstructors.cs" />
+    <Compile Include="Repositories\TestCMSEntitiyRepository.cs" />
+    <Compile Include="Repositories\TestCountriesRepository.cs" />
+    <Compile Include="Mocks\MockHttpContextWrapper.cs" />
+    <Compile Include="Repositories\TestOrderService.cs" />
+    <Compile Include="Stubs\StubSettingsService.cs" />
+    <Compile Include="DefaultFactoriesAndSharedFunctionality.cs" />
+    <Compile Include="Repositories\TestStoreService.cs" />
+    <Compile Include="Repositories\TestProductService.cs" />
+    <Compile Include="Stubs\StubStore.cs" />
+    <Compile Include="Stubs\StubUwebshopRequestService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Domain\Helper classes\DomainHelper\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\uWebshop.Common\uWebshop.Common.csproj">
+      <Project>{61EEF91B-22ED-48F0-83EB-CDC7431C5BDE}</Project>
+      <Name>uWebshop.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Core\uWebshop.Domain\uWebshop.Domain.csproj">
+      <Project>{30AC1FB6-EB29-4E4E-92C4-0481C503215C}</Project>
+      <Name>uWebshop.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Core\uWebshop.Services\uWebshop.Services.csproj">
+      <Project>{D08E0834-B25A-40A5-9C8E-31D4FB050DF4}</Project>
+      <Name>uWebshop.Services</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Umbraco\uWebshop.Umbraco\uWebshop.Umbraco.csproj">
+      <Project>{2C03A3A4-3380-4F6D-8C68-24E60A77E989}</Project>
+      <Name>uWebshop.Umbraco</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent>if /I "$(ConfigurationName)" == "Release" Eazfuscator.NET.exe "$(TargetPath)" --msbuild-project-path "$(ProjectPath)" --msbuild-project-configuration "$(ConfigurationName)" --msbuild-project-platform "$(PlatformName)" --msbuild-solution-path "$(SolutionPath)" -n --newline-flush -v 3.5.113</PostBuildEvent>
+  </PropertyGroup>
+</Project>

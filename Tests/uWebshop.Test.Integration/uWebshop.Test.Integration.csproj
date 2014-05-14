@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{6701E29A-B4EB-42F2-B724-6969014FE2F5}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>uWebshop.Test.Integration</RootNamespace>
+    <AssemblyName>uWebshop.Test.Integration</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Moq">
+      <HintPath>..\..\Binary Dependencies\Moq.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Domain\Businesslogic\DiscountCalculatorTest\RangedDiscountValueForOrderTest.cs" />
+    <Compile Include="Domain\OrderDTO\DiscountsTest.cs" />
+    <Compile Include="Domain\OrderDTO\PreservationOfDataFromOrderInfoToOrderDataTest.cs" />
+    <Compile Include="Domain\Order\OrderWithFreeShippingDiscount.cs" />
+    <Compile Include="Domain\ProductNiceUrlTests.cs" />
+    <Compile Include="Domain\XML\OrderInfoXMLTest.cs" />
+    <Compile Include="Domain\XML\SerializeDeserializeTest.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RegressionTests\20130508 paymentprovider missing in cache after app pool reset.cs" />
+    <Compile Include="RegressionTests\20130620 orderdiscount with coupon and hundred percent had eror in DiscountamountForOrder.cs" />
+    <Compile Include="RegressionTests\20131205 price VAT rounding.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\uWebshop.Common\uWebshop.Common.csproj">
+      <Project>{61EEF91B-22ED-48F0-83EB-CDC7431C5BDE}</Project>
+      <Name>uWebshop.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Core\uWebshop.DataAccess\uWebshop.DataAccess.csproj">
+      <Project>{3cf8ee6f-506f-4d47-8368-d6c6b9fa42e3}</Project>
+      <Name>uWebshop.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Core\uWebshop.Domain\uWebshop.Domain.csproj">
+      <Project>{30AC1FB6-EB29-4E4E-92C4-0481C503215C}</Project>
+      <Name>uWebshop.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\uWebshop.Test\uWebshop.Test.csproj">
+      <Project>{2bc4f96f-4987-4935-a2f7-2a8d249bc4e1}</Project>
+      <Name>uWebshop.Test</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,29 @@
+<div ng-controller="uWebshop.CouponCodes">            
+    <table>
+         <tr>
+            <td valign="top">
+                <label for="CouponCode">Coupon code:</label><br/>
+                <input type="text" name="CouponCode" ng-model="CouponCode" />
+                <br/>
+                <label for="NumberAvailable">Number available:</label><br/>
+                <input type="number" name="NumberAvailable" ng-model="NumberAvailable" />
+            </td>
+              <td class="text-center" valign="top">
+                <label class="text-center">Options</label><br/>
+                <div class="btn-group">
+                    <button class="btn btn-success" ng-click="saveItem()">Add</button>
+                    <button class="btn btn-default" ng-click="editItem(selected)">Edit</button>
+                    <button class="btn btn-default" ng-click="deleteItem(selected)">Remove</button>
+                </div>
+             </td>
+             <td>
+                 <label class="text-right" for="txtRanges">Current Coupons:</label><br/>
+                <select size="7" name="txtCoupons" multiple="multiple" ng-model="selected">
+                    <option ng-repeat="coupon in Coupons | orderBy:'code'" value="{{coupon}}">{{coupon.CouponCode }} ({{coupon.NumberAvailable}})</option>
+                </select>  
+            </td>
+         </tr>
+         
+    </table>
+
+</div>

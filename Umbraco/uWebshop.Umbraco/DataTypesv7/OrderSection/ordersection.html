@@ -1,0 +1,23 @@
+<div ng-controller="uWebshop.OrderSection" ng-switch="model.config.multiple">
+
+    <select data-ng-options="item as item for item in StatusArray" data-ng-model="SelectedOption"></select>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">OrderNumber</th>
+                <th scope="col">OrderStatus</th>
+                <th scope="col">Customer Email</th>
+                <th scope="col">Edit</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="item in ItemArray">
+                <td>{{ item.OrderReference }}</td>
+                <td>{{ item.Status }}</td>
+                <td>{{ item.Customer.Email }}</td>
+                <td><a href="#" ng-click="getTreeNodeUrl(item);">Open</a></td>
+            </tr>
+        </tbody>
+    </table>
+</div>

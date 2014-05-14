@@ -1,0 +1,100 @@
+﻿@*
+uWebshop Razor Example: Product Details
+=================================
+You can use this example to display product information based on the product url.
+uWebshop uses a default html <form> to update the basket. Keep in mind that if you add this code within a <form runat="server"> block that .net will remove the <form> tags from this code and basketupdates won't work!
+*@
+
+@using System.Linq
+@using uWebshop.RazorExtensions
+@{
+	
+	var currentStoreCurrencyCulture = Catalog.GetCurrentStore().CurrencyCultureInfo;
+	
+	//@uWebshop.Domain.UwebshopRequest.Current.Localization.CurrencyCode
+	@uWebshop.Domain.Helpers.StoreHelper.CurrentLocalization.CurrencyCode
+	
+	// get current product based on category and product  (used for url rewriting, so from the current url)
+	var currentProduct = Catalog.GetProduct();
+
+	if (currentProduct != null)
+	{
+		<h2>This is a product page for the <em>@currentProduct.Title</em> product</h2>
+		<p>This is an example of a product page in uWebshop 2.0. It contains various code examples to list the product details</p>
+		<h3><em>@currentProduct.Title</em> Description</h3>
+		@Html.Raw(currentProduct.Description)
+
+
+		if (currentProduct.Images.Any())
+		{
+			// Display the images of the product (if any)
+			<h3><em>@currentProduct.Title</em> Images</h3>
+			foreach (var image in currentProduct.Images)
+			{
+				var imageNode = Model.MediaById(image.Id);
+				<img src="@imageNode.umbracoFile" alt="@imageNode.altText" />
+			}
+		}
+		if (currentProduct.Files.Any())
+		{
+			// Display the files of the product (if any)
+			<h3><em>@currentProduct.Title</em> Files</h3>
+			foreach (var file in currentProduct.Files)
+			{
+				var fileNode = Model.MediaById(file.Id);
+				<a href="@fileNode.umbracoFile" alt="@fileNode.altText">@fileNode.nodeName</a>
+			}
+		}
+
+
+		if (currentProduct.ProductVariantGroups.Any())
+		{
+			// Display the variantgroups with the variants in them
+			<h3><em>@currentProduct.Title</em> Product Variants</h3>
+			<p>The product variants of <em>@currentProduct.Title</em> in groups</p>
+			<ul>
+				@foreach (var variantGroup in currentProduct.ProductVariantGroups)
+				{
+					<li>
+						<ul>
+							@foreach (var variant in variantGroup.ProductVariants)
+							{
+								<li>@variant.Title +@variant.PriceWithVat.ToString("C", currentStoreCurrencyCulture) (@variant.PriceIncludingProductPriceWithVat.ToString("C", currentStoreCurrencyCulture))</li>
+							}
+						</ul>
+					</li>
+				}
+			</ul>
+		}
+
+
+		// a form to place the product in the basket
+		// the baskethandler should be on the same page for this example to work 
+		// An explaination of how the basket handler works can be found in our documentation
+		// The variants are ordered in groups, where each group gets an unique number to differentiate.
+		<form name="orderform" method="post" action="/basket/">
+			
+			<input type="hidden" name="productId" value="@currentProduct.Id"/>
+			<input type="hidden" name="action" value="add" />
+			<input type="hidden" name="quantity" value="1" />
+			@{
+				<h3><em>@currentProduct.Title</em> Base Price with Vat: @currentProduct.PriceWithVat.ToString("C", currentStoreCurrencyCulture)</h3>
+				int index = 0;
+				foreach (var productVarGroup in @currentProduct.ProductVariantGroups)
+				{
+					<strong>@productVarGroup.Title</strong>
+					<br/>
+					<select name="@("variant" + index)">
+						@foreach (var productVar in productVarGroup.ProductVariants)
+						{
+							<option value="@productVar.Id">@productVar.Title (+@productVar.PriceWithVat.ToString("C", currentStoreCurrencyCulture))</option>
+						}
+					</select>
+					<br/>
+					index++;
+				}
+			}
+			<p><input type="submit" value="Order @currentProduct.Title" /></p>
+		</form>
+	}
+}

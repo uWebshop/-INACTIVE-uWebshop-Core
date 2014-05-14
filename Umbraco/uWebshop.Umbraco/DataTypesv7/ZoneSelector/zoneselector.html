@@ -1,0 +1,12 @@
+<div ng-controller="uWebshop.ZoneSelector">            
+    <select size="10" multiple="multiple" ng-model="available">
+         <option ng-repeat="country in availableItems | orderBy:'Name' track by country.Code" value="{{country.Code}}">{{country.Name}}</option>
+    </select>
+
+    <button ng-click="moveItem(available, availableItems, selectedItems)">Add</button>
+    <button ng-click="moveItem(selected, selectedItems, availableItems)">Remove</button>
+   
+    <select size="10" multiple="multiple" ng-model="selected">
+        <option ng-repeat="country in selectedItems | orderBy:'Name' track by country.Code" value="{{country.Code}}">{{country.Name}}</option>
+    </select>      
+</div>

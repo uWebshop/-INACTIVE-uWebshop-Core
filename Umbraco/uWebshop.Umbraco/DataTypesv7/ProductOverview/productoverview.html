@@ -1,0 +1,20 @@
+<div ng-controller="uWebshop.ProductOverview" ng-switch="model.config.multiple">      
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Title</th>
+                <th scope="col">SKU</th>
+                <th scope="col">Stock</th>
+                <th scope="col">Edit</th>
+            </tr>
+        </thead>
+        <tbody>        
+            <tr ng-repeat="item in ItemArray">
+                <td>{{ item.Title }}</td>
+                <td>{{ item.SKU }}</td>
+                <td>{{ item.Stock }}</td>            
+                <td><a href="#" ng-click="getTreeNodeUrl(item);">Open</a></td>
+            </tr>       
+        </tbody>
+    </table>
+</div>

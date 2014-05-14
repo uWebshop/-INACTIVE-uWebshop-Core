@@ -1,0 +1,223 @@
+﻿@*
+uWebshop One Page Checkout
+=================================
+This snippet gives you a deafult one-page-checkout example
+uWebshop uses a default html <form> to update the basket. Keep in mind that if you add this code within a <form runat="server"> block that .net will remove the <form> tags from this code and basketupdates won't work!
+*@
+
+@using uWebshop.API
+@inherits umbraco.MacroEngines.DynamicNodeContext
+
+@{
+	var currentOrder = Basket.GetBasket();
+
+	if (currentOrder != null)
+	{
+		<form name="customerform" method="post">
+                  
+			<fieldset class="uWebshop-CustomerFields">
+				<h2>Customer Data</h2>      
+				<p>The customer enters his information here to be added to the order.</p>				
+				<p>Keep in mind that any field here should also be created on the "uWebshop Order" Document Type. Otherwise they won't work.<br/>
+					The alias of the property should match the name/id of the field. All aliasses should start with "customer". customerEmail is mandatory to be able to confirm an order. customerCountry is not mandatory, but can be used to display the payment providers available in that country.
+				</p>
+				<label for="customerEmail">Email</label><br/>
+				<input name="customerEmail" id="customerEmail" type="text" value="@currentOrder.Customer.Email"/>
+				<br/>
+				<label for="customerFirstName">First Name: </label><br/>
+				<input name="customerFirstName" id="customerFirstName" type="text"  value="@currentOrder.Customer.FirstName"/>
+				<br/>
+				<label for="customerLastName">Last Name: </label><br/>
+				<input name="customerLastName" id="customerLastName" type="text"  value="@currentOrder.Customer.LastName"/>
+				<br/>
+				<label for="customerStreet">Street: </label><br/>
+				<input name="customerStreet" id="customerStreet" type="text"  value="@currentOrder.Customer.Street"/>
+				<br/>
+				<label for="customerStreetNumber">Streetnumber: </label><br/>
+				<input name="customerStreetNumber" id="customerStreetNumber" type="text"  value="@currentOrder.Customer.StreetNumber"/>
+				<br/>
+				<label for="customerZipCode">ZipCode: </label><br/>
+				<input name="customerZipCode" id="customerZipCode" type="text"  value="@currentOrder.Customer.ZipCode"/>
+				<br/>
+				<label for="customerCity">City: </label><br/>
+				<input name="customerCity" id="customerCity" type="text"  value="@currentOrder.Customer.Country"/>
+				<br/>
+				<label for="customerCountry">Country: </label><br/>
+				<select name="customerCountry" id="customerCountry" >
+					<option disabled="disabled">(please select a country)</option>
+					@foreach (var country in Store.GetAllCountries())
+					{
+						var itemSelected = "";
+						if (currentOrder.Customer.CountryCode == country.Code)
+						{
+							itemSelected = "selected=\"selected\"";
+						}
+						<option @Html.Raw(itemSelected) value="@country.Code">@country.Name</option>
+					}
+				</select>
+			</fieldset>
+			<hr/>
+			<fieldset class="uWebshop-ShippingFields">
+				<h2>Shipping Data</h2>      
+				<p>The customer enters his shipping information here to be added to the order.</p>
+				<p>Keep in mind that any field here should also be created on the "uWebshop Order" Document Type. Otherwise they won't work.<br/>
+					The alias of the property should match the name/id of the field. All aliasses should start with "shipping". shippingCountry is not mandatory, but can be used to display the shipping providers that will ship to that country.
+				</p>
+           
+				<label for="shippingFirstName">First Name: </label><br/>
+				<input name="shippingFirstName" id="shippingFirstName" type="text"  value="@currentOrder.Customer.Shipping.FirstName"/>
+				<br/>
+				<label for="shippingLastName">Last Name: </label><br/>
+				<input name="shippingLastName" id="shippingLastName" type="text"  value="@currentOrder.Customer.Shipping.LastName"/>
+				<br/>
+				<label for="shippingStreet">Street: </label><br/>
+				<input name="shippingStreet" id="shippingStreet" type="text"  value="@currentOrder.Customer.Shipping.Street"/>
+				<br/>
+				<label for="shippingStreetNumber">Streetnumber: </label><br/>
+				<input name="shippingStreetNumber" id="shippingStreetNumber" type="text"  value="@currentOrder.Customer.Shipping.StreetNumber"/>
+				<br/>
+				<label for="shippingZipCode">Postalcode: </label><br/>
+				<input name="shippingZipCode" id="shippingZipCode" type="text"  value="@currentOrder.Customer.Shipping.ZipCode"/>
+				<br/>
+				<label for="shippingCity">City: </label><br/>
+				<input name="shippingCity" id="shippingCity" type="text"  value="@currentOrder.Customer.Shipping.City"/>
+				<br/>
+				<label for="shippingCountry">Country:</label><br/>
+				<select name="shippingCountry" id="shippingCountry" >
+					<option disabled="disabled">(please select a country)</option>
+					@foreach (var country in Store.GetAllCountries())
+					{
+						var itemSelected = "";
+						if (currentOrder.Customer.Shipping.CountryCode == country.Code)
+						{
+							itemSelected = "selected=\"selected\"";
+						}
+						<option @Html.Raw(itemSelected) value="@country.Code">@country.Name</option>
+					}
+				</select>
+			</fieldset>
+			<hr/>
+			<fieldset class="uWebshop-ShippingProviderFields">
+				<h2>Shipping Provider</h2>          
+				<p>The customer can choose a Shipping Provider of his choice. They should be created in your shop to show here.</p>
+				<p>Shipping Providers are connected to "Shipping Zones". Only the Shipping Providers available tot the customers shipping country are shown.<br/>
+					If you don't know the shipping country of the customer yet, the country of the store itself or the country of the customer will be used.</p>
+				<table>
+					@foreach (var shippingProvider in Basket.GetFulfillmentProviders())
+					{
+						foreach (var shippingProviderMethod in shippingProvider.Methods)
+						{
+							var itemChecked = "";
+							if (currentOrder.Fulfillment.Providers.First().Id == shippingProvider.Id && currentOrder.Fulfillment.Providers.First().MethodId == shippingProviderMethod.Id)
+							{
+								itemChecked = "checked=\"checked\"";
+							}
+							<tr>
+								<td>
+									<input @Html.Raw(itemChecked) type="radio" name="shippingProvider" id="@shippingProvider.Id-@shippingProviderMethod.Id" value="@shippingProvider.Id-@shippingProviderMethod.Id" />
+									<label for="@shippingProvider.Id-@shippingProviderMethod.Id">
+										@if (shippingProvider.Title == shippingProviderMethod.Title)
+										{
+											@shippingProviderMethod.Title
+										}
+										else
+										{
+											<strong>@shippingProvider.Title</strong>
+											@shippingProviderMethod.Title
+										}										
+									</label>
+								</td>
+							</tr>
+						}
+					}
+				</table>
+			</fieldset>
+			<hr/>
+			<fieldset class="uWebshop-PaymentProviderFields">
+				<h2>Payment Provider</h2>          
+				<p>The customer can choose a Payment Provider of his choice. They should be created in your shop to show here.</p>
+				<p>Payment Providers are connected to "Payment Zones". Only the Payment Providers available tot the customers country are shown.<br/>
+					If you don't know the country of the customer yet, the country of the store itself will be used</p>
+              	
+				@foreach (var paymentProvider in Basket.GetPaymentProviders())
+				{
+					foreach (var paymentProviderMethod in paymentProvider.Methods)
+					{
+						var itemChecked = "";
+						if (currentOrder.Payment.Providers.First().Id == paymentProvider.Id && currentOrder.Payment.Providers.First().MethodId == paymentProviderMethod.Id)
+						{
+							itemChecked = "checked=\"checked\"";
+						}
+						<tr>
+							<td>
+								<input @Html.Raw(itemChecked) type="radio" name="paymentProvider" id="@paymentProvider.Id-@paymentProviderMethod.Id" value="@paymentProvider.Id-@paymentProviderMethod.Id" />
+								<label for="@paymentProvider.Id-@paymentProviderMethod.Id">
+									@if (paymentProvider.Title == paymentProviderMethod.Title)
+									{
+										@paymentProviderMethod.Title
+									}
+									else
+									{
+										<strong>@paymentProvider.Title</strong>
+										@paymentProviderMethod.Title
+									}
+								</label>
+							</td>
+						</tr>
+					}
+				}
+					
+              
+			</fieldset>
+			<hr/>
+			<fieldset class="uWebshop-ExtraFields">
+				<h2>Extra Data</h2>      
+				<p>The customer can enter extra information here to be added to the order.</p>
+				<p>Keep in mind that any field here should also be created on the "uWebshop Order" Document Type. Otherwise they won't work.<br/>
+					The alias of the property should match the name/id of the field. All aliasses should start with "extra".
+				</p>         
+				<label for="extraMessage">Comments on your order?</label><br/>
+				<textarea name="extraMessage" id="extraMessage" type="text" rows="5" cols="60">@{ var value = currentOrder.Customer.GetValue<string>("extraMessage"); @value }</textarea>
+			</fieldset>
+			<hr/>	
+			@if (currentOrder.ValidationResults.All.Any())
+			{
+				<h3>Order Validation Errors</h3>
+				<p>A list of validation problems that need to be fixed before the order can be confirmed.</p>
+				<ul>
+					@foreach (var error in currentOrder.ValidationResults.All)
+					{
+						var dictionaryError = umbraco.library.GetDictionaryItem(error.Key);
+
+						<li>
+							@if (!string.IsNullOrEmpty(dictionaryError))
+							{
+								@dictionaryError
+								;
+							}
+							else
+							{
+								@error.Value
+							}
+						</li>
+					}
+				</ul>
+				<hr/>
+			}
+		
+
+			<fieldset class="uWebshop-ConfirmOrder">
+				<h2>Confirm the order</h2> 
+				<p>To be able to confirm the order terms should be accepted.</p>
+				<p>If the order is succesfull you will be redirected to the payment provider payment page, the page to enter your payment details or the success page.</p>
+				<input id="acceptterms" type="checkbox" name="acceptterms" value="true"> <label for="acceptterms">Yes, I accept the terms &amp; conditions</label>
+				<!-- sent the confirm command to confirm the order, if not present the order won't be confirmed! -->
+				<input type="hidden" id="confirm" name="confirm" value="confirm"/>
+				<!-- enter the node Id of the node you want to redirect to after confirmation -->
+				<!-- if a payment provider is chosen, then the customer will be redirected to the control node fot that payment provider or the external payment provdider url -->                
+				
+				<input type="submit" value="Confirm Order"/>
+			</fieldset>
+		</form>
+	}
+}

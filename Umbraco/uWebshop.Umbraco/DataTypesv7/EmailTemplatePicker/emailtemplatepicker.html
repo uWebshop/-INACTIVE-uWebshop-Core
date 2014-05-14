@@ -1,0 +1,5 @@
+<div ng-controller="uWebshop.EmailTemplatePicker" ng-switch="model.config.multiple">
+
+    <select data-ng-options="item as item for item in ItemArray" data-ng-model="SelectedOption" ng-change="update()"></select>
+
+</div>

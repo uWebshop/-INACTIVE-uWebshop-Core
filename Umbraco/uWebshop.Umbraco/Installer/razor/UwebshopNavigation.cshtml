@@ -1,0 +1,76 @@
+﻿@*
+uWebshop Navigation
+=================================
+This snippet lists all the categories and products in the uWebshop Catalog
+*@
+
+@using uWebshop.API
+@inherits umbraco.MacroEngines.DynamicNodeContext
+
+@{
+	var currentStoreUrl = Store.GetStore().StoreURL;
+
+	<ul id="topNavigation">
+		<li><a href="@currentStoreUrl" title="Home">Home</a></li>
+		@RenderCatalogNav()		
+		@RenderContentNav(Model.AncestorOrSelf())		
+	</ul>
+}
+
+@helper RenderCatalogNav()
+{
+	var currentCategory = Catalog.GetCategory();
+	foreach (var category in Catalog.GetAllRootCategories().OrderBy(x => x.SortOrder))
+	{
+		var cssClass = string.Empty;
+		if (currentCategory != null && category.Id == currentCategory.Id)
+		{
+			cssClass = "class=\"active\"";
+		}
+
+		<li @Html.Raw(cssClass)><a class="navigation"  href="@category.Url" title="@category.Title">@category.Title</a></li>
+	}
+}
+
+@helper RenderContentNav(dynamic node)
+{
+	var currentPageId = Model.Id;
+	var items = node.Children.Where("umbracoNaviHide!=true");
+
+	foreach (var item in items)
+	{
+		var cssClass = string.Empty;
+		if (currentPageId == item.Id)
+		{
+			cssClass = "class=\"active\"";
+		}
+
+		<li @Html.Raw(cssClass)>
+			<a href="@item.Url">@item.Name</a>
+		</li>
+	}
+}
+
+@helper RenderCategories(uWebshop.API.ICategory category)
+{
+	var currentCategory = Catalog.GetCategory();
+	foreach (var subcategory in category.SubCategories)
+	{
+		var cssClass = string.Empty;
+		if (currentCategory != null && subcategory.Id == currentCategory.Id)
+		{
+			cssClass = "class=\"active\"";
+		}
+
+		<li @Html.Raw(cssClass)>
+			<a href="@subcategory.Url" class="navigation"  title="@subcategory.Title">@subcategory.Title</a>
+		
+			@if (subcategory.SubCategories.Any())
+			{
+				<ul>
+					@RenderCategories(subcategory)
+				</ul>
+			}
+		</li>
+	}
+}

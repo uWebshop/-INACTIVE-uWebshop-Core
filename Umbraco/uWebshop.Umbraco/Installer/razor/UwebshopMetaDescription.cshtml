@@ -1,0 +1,51 @@
+﻿@*
+uWebshop Meta Description Example
+=================================
+This snippet helps you to create a meta description & title listing for your pages
+*@
+
+@using uWebshop.API;
+@{
+
+
+	var currentProduct = Catalog.GetProduct();
+
+	if (currentProduct != null)
+	{
+		<title>@currentProduct.Title</title>
+		<meta name="description" content="@currentProduct.MetaDescription" />
+		<meta name="keywords" content="@foreach (var tag in currentProduct.Tags)
+		                               {
+			                               @tag
+
+			                               if (tag != currentProduct.Tags.Last())
+			                               {
+				                               @Html.Raw(",")
+			                               }
+		                               }"/>
+	}
+
+
+	var currentCategory = Catalog.GetCategory();
+
+	if (currentProduct == null && currentCategory != null)
+	{
+		<title>@currentCategory.Title</title>
+		<meta name="description" content="@currentCategory.MetaDescription" />
+		<meta name="keywords" content="@foreach (var tag in currentCategory.Tags)
+		                               {
+			                               @tag
+
+			                               if (tag != currentCategory.Tags.Last())
+			                               {
+				                               @Html.Raw(",")
+			                               }
+		                               }"/>
+	}
+
+	if (currentProduct == null && currentCategory == null)
+	{
+		<title>@Model.Name</title>
+		<meta name="description" content="" />
+	}
+}

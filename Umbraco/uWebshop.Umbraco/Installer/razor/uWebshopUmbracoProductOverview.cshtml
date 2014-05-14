@@ -1,0 +1,59 @@
+﻿
+@using uWebshop.API
+@inherits umbraco.MacroEngines.DynamicNodeContext
+			  
+@{
+
+	var products = Catalog.GetAllProducts().OrderBy(x => x.SortOrder);
+
+	if (IsPost)
+	{
+		CMS.EditNodeProperties();
+		CMS.OpenNode();
+	}
+
+
+	<table cellpadding="5" width="100%">
+		<thead>			
+			<th scope="col">Title</th>
+			<th scope="col">SKU</th>
+			<th scope="col">Category</th>
+			<th scope="col">OrderCount</th>
+			<th scope="col">Stock</th>
+			<th scope="col">Update</th>
+			<th scope="col">View/Edit</th>
+		</thead>
+		<tbody>
+		
+			@foreach (var product in products)
+			{
+				<tr>
+					<form method="POST" action="">
+						<th scope="row">						
+							<input type="hidden" name="editNodeId" value="@product.Id"/>
+							<input type="textbox" name="title" value="@product.Title"/>											
+						</th>
+						<td>@product.SKU</td>
+						<td>@product.Categories.First().Title</td>
+						<td>@product.OrderCount</td>
+						<td>												
+							<input type="number" name="stock" value="@product.Stock"/>
+							
+						</td>
+						<td>
+							<input type="submit" value="update"/>
+						</td>
+				
+					</form>		
+										
+					<td>
+						<form method="POST" action="">
+							<input type="hidden" name="openNodeId" value="@product.Id"/>
+							<input type="submit" value="view"/>
+						</form>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}

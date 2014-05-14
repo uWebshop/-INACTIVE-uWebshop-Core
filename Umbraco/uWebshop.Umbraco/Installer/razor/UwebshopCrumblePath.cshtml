@@ -1,0 +1,59 @@
+﻿@*
+uWebshop Razor Example: Crumble Path
+=================================
+This snippet creates a crumble path for normal content as well as categories and products
+*@
+
+
+
+@using uWebshop.API
+@using umbraco.MacroEngines
+@using uWebshop.Umbraco
+@inherits umbraco.MacroEngines.DynamicNodeContext
+@{
+
+	<ul>
+		@{
+			var currentProduct = Catalog.GetProduct();
+			var currentCategory = Catalog.GetCategory();
+
+			if (currentCategory != null)
+			{
+				<li><a href="/" title="Home">Home</a> :</li>
+
+				foreach (var item in currentCategory.GetUmbracoPath().Split(','))
+				{
+					var node = new DynamicNode(item);
+
+					if (uWebshop.Domain.Category.IsAlias(node.NodeTypeAlias))
+					{
+						var category = Catalog.GetCategory(node.Id);
+
+						if (category.Id != currentCategory.Id || currentProduct != null)
+						{
+							<li><a href="@category.Url" title="@category.Title">@category.Title</a> :</li>
+						}
+						else
+						{
+							<li>@category.Title</li>
+						}
+					}
+				}
+			}
+
+			if (currentProduct != null)
+			{
+				<li>@currentProduct.Title</li>
+			}
+
+			if (currentCategory == null && currentProduct == null)
+			{
+				foreach (var node in @Model.Ancestors().Where("Visible"))
+				{
+					<li><a href="@node.Url">@node.bodyTitle</a> @Html.Raw(" : ")</li>
+				}
+				<li>@Model.bodyTitle</li>
+			}
+		}
+	</ul>
+}

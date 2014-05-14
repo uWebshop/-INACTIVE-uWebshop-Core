@@ -1,0 +1,460 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{2C03A3A4-3380-4F6D-8C68-24E60A77E989}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>uWebshop.Umbraco</RootNamespace>
+    <AssemblyName>uWebshop.Umbraco</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="businesslogic">
+      <HintPath>..\..\Binary Dependencies umbraco6.1\businesslogic.dll</HintPath>
+    </Reference>
+    <Reference Include="cms">
+      <HintPath>..\..\Binary Dependencies umbraco6.1\cms.dll</HintPath>
+    </Reference>
+    <Reference Include="controls">
+      <HintPath>..\..\Binary Dependencies umbraco6.1\controls.dll</HintPath>
+    </Reference>
+    <Reference Include="Examine">
+      <HintPath>..\..\Binary Dependencies umbraco6.1\Examine.dll</HintPath>
+    </Reference>
+    <Reference Include="interfaces">
+      <HintPath>..\..\Binary Dependencies umbraco6.1\interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Lucene.Net">
+      <HintPath>..\..\Binary Dependencies\Lucene.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="PackageGarden.Licensing">
+      <HintPath>..\..\Binary Dependencies\PackageGarden.Licensing.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Xml" />
+    <Reference Include="umbraco">
+      <HintPath>..\..\Binary Dependencies umbraco6.1\umbraco.dll</HintPath>
+    </Reference>
+    <Reference Include="Umbraco.Core">
+      <HintPath>..\..\Binary Dependencies umbraco6.1\Umbraco.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="umbraco.DataLayer">
+      <HintPath>..\..\Binary Dependencies umbraco6.1\umbraco.DataLayer.dll</HintPath>
+    </Reference>
+    <Reference Include="umbraco.editorControls">
+      <HintPath>..\..\Binary Dependencies umbraco6.1\umbraco.editorControls.dll</HintPath>
+    </Reference>
+    <Reference Include="Umbraco.Licensing">
+      <HintPath>..\..\Binary Dependencies\Umbraco.Licensing.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="API\ExtensionMethods.cs" />
+    <Compile Include="ApplicationEventHandler.cs" />
+    <Compile Include="Assembly.cs" />
+    <Compile Include="Base\JSON\uWebshopBase.cs" />
+    <Compile Include="Base\XML\Basket.cs" />
+    <Compile Include="Base\XML\Catalog.cs" />
+    <Compile Include="Base\XML\Customers.cs" />
+    <Compile Include="Base\XML\Discounts.cs" />
+    <Compile Include="Base\XML\Orders.cs" />
+    <Compile Include="Base\XML\Providers.cs" />
+    <Compile Include="Base\XML\Store.cs" />
+    <Compile Include="Mvc\BasketHandlerController.cs" />
+    <Compile Include="Businesslogic\uWebshopStarterkitDemoStoreInstaller.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Businesslogic\DictionaryPropertyProvider.cs" />
+    <Compile Include="Businesslogic\Licensing.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Businesslogic\MediaValues.cs" />
+    <Compile Include="Businesslogic\OrderEvents.cs" />
+    <Compile Include="Businesslogic\UwbsImage.cs" />
+    <Compile Include="Businesslogic\uWebshopDictionaryInstaller.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Businesslogic\uWebshopMacro.cs" />
+    <Compile Include="Businesslogic\uWebshopStarterkitInstaller.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Mvc\CatalogContentFinder.cs" />
+    <Compile Include="DataTypes\CountySelector\CountrySelectorDataEditor.cs" />
+    <Compile Include="DataTypes\CountySelector\CountrySelectorDataType.cs" />
+    <Compile Include="DataTypes\CountySelector\CountrySelectorPrevalueEditor.cs" />
+    <Compile Include="DataTypes\CouponCodeEditor\CouponCodeDataEditor.cs" />
+    <Compile Include="DataTypes\CouponCodeEditor\CouponCodeDataType.cs" />
+    <Compile Include="DataTypes\Currencies\CurrenciesDataEditor.cs" />
+    <Compile Include="DataTypes\Currencies\CurrenciesDataType.cs" />
+    <Compile Include="DataTypes\DataTypes.cs" />
+    <Compile Include="DataTypes\DiscountOrderCondition\DiscountOrderConditionDataEditor.cs" />
+    <Compile Include="DataTypes\DiscountOrderCondition\DiscountOrderConditionDataType.cs" />
+    <Compile Include="DataTypes\DiscountType\DiscountTypeDataEditor.cs" />
+    <Compile Include="DataTypes\DiscountType\DiscountTypeDataType.cs" />
+    <Compile Include="DataTypes\EmailPreview\EmailPreviewDataEditor.cs" />
+    <Compile Include="DataTypes\EmailPreview\EmailPreviewDataType.cs" />
+    <Compile Include="DataTypes\EmailTemplateSelector\EmailTemplateSelectorDataEditor.cs" />
+    <Compile Include="DataTypes\EmailTemplateSelector\EmailTemplateSelectorDataType.cs" />
+    <Compile Include="DataTypes\EnableDisable\EnableDisableDataEditor.cs" />
+    <Compile Include="DataTypes\EnableDisable\EnableDisableDataType.cs" />
+    <Compile Include="DataTypes\LanguagePicker\LanguagePickerDataEditor.cs" />
+    <Compile Include="DataTypes\LanguagePicker\LanguagePickerDataType.cs" />
+    <Compile Include="DataTypes\MemberGroupPicker\MemberGroupPickerDataEditor.cs" />
+    <Compile Include="DataTypes\MemberGroupPicker\MemberGroupPickerDataType.cs" />
+    <Compile Include="DataTypes\OrderCountViewer\OrderCountDataEditor.cs" />
+    <Compile Include="DataTypes\OrderCountViewer\OrderCountDataType.cs" />
+    <Compile Include="DataTypes\OrderInfoViewer\OrderInfoViewerDataEditor.cs" />
+    <Compile Include="DataTypes\OrderInfoViewer\OrderInfoViewerDataType.cs" />
+    <Compile Include="DataTypes\OrderStatusDropdown\OrderStatusDropDownDataEditor.cs" />
+    <Compile Include="DataTypes\OrderStatusDropdown\OrderStatusDropDownDataType.cs" />
+    <Compile Include="DataTypes\OrderStatusPicker\OrderStatusPickerDataEditor.cs" />
+    <Compile Include="DataTypes\OrderStatusPicker\OrderStatusPickerDataType.cs" />
+    <Compile Include="DataTypes\OrderStatusSection\OrderOverview.cs" />
+    <Compile Include="DataTypes\OrderStatusSection\OrderStatusSectionDataEditor.cs" />
+    <Compile Include="DataTypes\OrderStatusSection\OrderStatusSectionDataType.cs" />
+    <Compile Include="DataTypes\PaymentProviderAmountType\PaymentProviderTypeDataEditor.cs" />
+    <Compile Include="DataTypes\PaymentProviderAmountType\PaymentProviderTypeDataType.cs" />
+    <Compile Include="DataTypes\PaymentProviderType\PaymentProviderTypeDataEditor.cs" />
+    <Compile Include="DataTypes\PaymentProviderType\PaymentProviderTypeDataType.cs" />
+    <Compile Include="DataTypes\Price\PriceDataEditor.cs" />
+    <Compile Include="DataTypes\Price\PriceDataType.cs" />
+    <Compile Include="DataTypes\Ranges\RangesDataEditor.cs" />
+    <Compile Include="DataTypes\Ranges\RangesDataType.cs" />
+    <Compile Include="DataTypes\RazorWrapper\RazorRenderDataEditor.cs" />
+    <Compile Include="DataTypes\RazorWrapper\RazorRenderDataEditorSetting.cs" />
+    <Compile Include="DataTypes\RazorWrapper\RazorRenderDataType.cs" />
+    <Compile Include="DataTypes\ShippingProviderType\ShippingProviderTypeDataEditor.cs" />
+    <Compile Include="DataTypes\ShippingProviderType\ShippingProviderTypeDataType.cs" />
+    <Compile Include="DataTypes\ShippingRangeType\ShippingRangeTypeDataEditor.cs" />
+    <Compile Include="DataTypes\ShippingRangeType\ShippingRangeTypeDataType.cs" />
+    <Compile Include="DataTypes\StockUpdate\StockUpdateDataEditor.cs" />
+    <Compile Include="DataTypes\StockUpdate\StockUpdateDataType.cs" />
+    <Compile Include="DataTypes\StorePicker\StorePickerDataEditor.cs" />
+    <Compile Include="DataTypes\StorePicker\StorePickerDataType.cs" />
+    <Compile Include="DataTypes\StoreTemplatePicker\StoreTemplatePickerDataEditor.cs" />
+    <Compile Include="DataTypes\StoreTemplatePicker\StoreTemplatePickerDataType.cs" />
+    <Compile Include="DataTypes\ZoneSelector\ZoneSelectorDataEditor.cs" />
+    <Compile Include="DataTypes\ZoneSelector\ZoneSelectorDataType.cs" />
+    <Compile Include="DocumentTypeAliasList.cs" />
+    <Compile Include="Helpers.cs" />
+    <Compile Include="Installer\uWebshopDashBoard.ascx.cs">
+      <DependentUpon>uWebshopDashBoard.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Installer\uWebshopDashBoard.ascx.designer.cs">
+      <DependentUpon>uWebshopDashBoard.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Installer\uWebshopInstaller.ascx.cs">
+      <DependentUpon>uWebshopInstaller.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Installer\uWebshopInstaller.ascx.designer.cs">
+      <DependentUpon>uWebshopInstaller.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Configurable aliasses\ContentTypeAliassesXmlService.cs" />
+    <Compile Include="Interfaces\IUmbracoVersion.cs" />
+    <Compile Include="Modules\Configurable aliasses\Module.cs" />
+    <Compile Include="Modules\Configurable aliasses\XmlMappingGeneration.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>XmlMappingGeneration.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RazorExtensions\Catalog.cs" />
+    <Compile Include="Interfaces\ICMSChangeContentService.cs" />
+    <Compile Include="Interfaces\ICMSContent.cs" />
+    <Compile Include="RazorExtensions\Umbraco.cs" />
+    <Compile Include="RazorExtensions\ExtensionMethods.cs" />
+    <Compile Include="RazorExtensions\Navigation.cs" />
+    <Compile Include="RazorExtensions\Orders.cs" />
+    <Compile Include="RazorExtensions\CMS.cs" />
+    <Compile Include="Modules\Configurable aliasses\DocTypeAliassesCodeGeneration.cs" />
+    <Compile Include="Interfaces\IContentTypeAliassesXmlService.cs" />
+    <Compile Include="Interfaces\ICache.cs" />
+    <Compile Include="Repositories\PlainEntityRepository.cs" />
+    <Compile Include="Repositories\SafeCache.cs" />
+    <Compile Include="Repositories\UmbracoPaymentProviderMethodRepository.cs" />
+    <Compile Include="Repositories\UmbracoProductVariantGroupRepository .cs" />
+    <Compile Include="Repositories\UmbracoShippingProviderMethodRepository.cs" />
+    <Compile Include="Repositories\UmbracoProductDiscountRepository.cs" />
+    <Compile Include="Repositories\UmbracoShippingProviderRepository.cs" />
+    <Compile Include="Repositories\UmbracoMultiStoreEntityRepository.cs" />
+    <Compile Include="Repositories\UmbracoProductVariantRepository.cs" />
+    <Compile Include="Repositories\UmbracoStoreRepository.cs" />
+    <Compile Include="Services\CMSChangeContentService.cs" />
+    <Compile Include="Services\CMSContentService.cs" />
+    <Compile Include="Services\ContentInstaller.cs" />
+    <Compile Include="Services\DataTypeAndContentTypesInstaller.cs">
+      <DependentUpon>DataTypeAndContentTypesInstaller.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Services\DocumentTypeInstaller.cs" />
+    <Compile Include="Services\ExamineRebuildIndicesService.cs" />
+    <Compile Include="Businesslogic\ExtensionMethods.cs" />
+    <Compile Include="Businesslogic\InternalHelpers.cs" />
+    <Compile Include="RegisterTypes.cs" />
+    <Compile Include="Businesslogic\UmbracoApplication.cs" />
+    <Compile Include="Services\Settings.cs" />
+    <Compile Include="Services\UmbracoApplicationCacheManager.cs" />
+    <Compile Include="Repositories\UmbracoCategoryRepository.cs" />
+    <Compile Include="Repositories\UmbracoOrderDiscountRepository.cs" />
+    <Compile Include="Services\UmbracoDocumentTypeInstaller.cs" />
+    <Compile Include="Services\UmbracoDocumentTypeService.cs" />
+    <Compile Include="Services\UmbracoDotnetMembershipAuthenticationProvider.cs" />
+    <Compile Include="Repositories\UmbracoNodePropertyProvider.cs" />
+    <Compile Include="Repositories\UmbracoPaymentProviderRepository.cs" />
+    <Compile Include="Repositories\UmbracoProductRepository.cs" />
+    <Compile Include="Repositories\UmbracoStaticCachedEntityRepository.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\UmbracoLoggingService.cs" />
+    <Compile Include="Services\UmbracoStoreService.cs" />
+    <Compile Include="Services\UmbracoZoneService.cs" />
+    <Compile Include="WebApi\StoresApiController.cs" />
+    <Compile Include="UrlRewriting.cs" />
+    <Compile Include="Usercontrols\uwbsBasketHandler.ascx.cs">
+      <DependentUpon>uwbsBasketHandler.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Usercontrols\uwbsBasketHandler.ascx.designer.cs">
+      <DependentUpon>uwbsBasketHandler.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Usercontrols\uwbsPaymentHandler.ascx.cs">
+      <DependentUpon>uwbsPaymentHandler.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Usercontrols\uwbsPaymentHandler.ascx.designer.cs">
+      <DependentUpon>uwbsPaymentHandler.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="XSLTExtensions\Catalog.cs" />
+    <Compile Include="XSLTExtensions\Navigation.cs" />
+    <Compile Include="XSLTExtensions\Node.cs" />
+    <Compile Include="XSLTExtensions\Orders.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\uWebshop.Common\uWebshop.Common.csproj">
+      <Project>{61eef91b-22ed-48f0-83eb-cdc7431c5bde}</Project>
+      <Name>uWebshop.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Core\uWebshop.DataAccess\uWebshop.DataAccess.csproj">
+      <Project>{3cf8ee6f-506f-4d47-8368-d6c6b9fa42e3}</Project>
+      <Name>uWebshop.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Core\uWebshop.Domain\uWebshop.Domain.csproj">
+      <Project>{30ac1fb6-eb29-4e4e-92c4-0481c503215c}</Project>
+      <Name>uWebshop.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Core\uWebshop.Services\uWebshop.Services.csproj">
+      <Project>{d08e0834-b25a-40a5-9c8e-31d4fb050df4}</Project>
+      <Name>uWebshop.Services</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="DataTypesv7\Countries\countries.controller.js" />
+    <Content Include="DataTypesv7\Countries\countries.html" />
+    <Content Include="DataTypesv7\CouponCodeEditor\couponcodes.controller.js" />
+    <Content Include="DataTypesv7\CouponCodeEditor\couponcodes.html" />
+    <Content Include="DataTypesv7\CouponCodes\couponcodes.controller.js" />
+    <Content Include="DataTypesv7\CouponCodes\couponcodes.html" />
+    <Content Include="DataTypesv7\Cultures\cultures.controller.js" />
+    <Content Include="DataTypesv7\Cultures\cultures.html" />
+    <Content Include="DataTypesv7\Currencies\currencies.controller.js" />
+    <Content Include="DataTypesv7\Currencies\currencies.html" />
+    <Content Include="DataTypesv7\DiscountOrderCondition\discountordercondition.controller.js" />
+    <Content Include="DataTypesv7\DiscountOrderCondition\discountordercondition.html" />
+    <Content Include="DataTypesv7\EmailTemplatePicker\emailtemplatepicker.controller.js" />
+    <Content Include="DataTypesv7\EmailTemplatePicker\emailtemplatepicker.html" />
+    <Content Include="DataTypesv7\EnableDisable\enabledisable.controller.js" />
+    <Content Include="DataTypesv7\EnableDisable\enabledisable.html" />
+    <Content Include="DataTypesv7\OrderDetails\orderdetails.controller.js" />
+    <Content Include="DataTypesv7\OrderDetails\orderdetails.html" />
+    <Content Include="DataTypesv7\OrderedCount\orderedcount.controller.js" />
+    <Content Include="DataTypesv7\OrderedCount\orderedcount.html" />
+    <Content Include="DataTypesv7\OrderSection\ordersection.controller.js" />
+    <Content Include="DataTypesv7\OrderSection\ordersection.html" />
+    <Content Include="DataTypesv7\OrderStatusPicker\orderstatuspicker.controller.js" />
+    <Content Include="DataTypesv7\OrderStatusPicker\orderstatuspicker.html" />
+    <Content Include="DataTypesv7\DiscountType\discounttype.controller.js" />
+    <Content Include="DataTypesv7\DiscountType\discounttype.html" />
+    <Content Include="DataTypesv7\PaymentProviderAmountType\paymentprovideramounttype.controller.js" />
+    <Content Include="DataTypesv7\PaymentProviderAmountType\paymentprovideramounttype.html" />
+    <Content Include="DataTypesv7\PaymentProviderType\paymentprovidertype.controller.js" />
+    <Content Include="DataTypesv7\PaymentProviderType\paymentprovidertype.html" />
+    <Content Include="DataTypesv7\Price\accounting.min.js" />
+    <Content Include="DataTypesv7\Price\price.controller.js" />
+    <Content Include="DataTypesv7\Price\price.html" />
+    <Content Include="DataTypesv7\ProductOverview\productoverview.controller.js" />
+    <Content Include="DataTypesv7\ProductOverview\productoverview.html" />
+    <Content Include="DataTypesv7\Ranges\ranges.controller.js" />
+    <Content Include="DataTypesv7\Ranges\ranges.html" />
+    <Content Include="DataTypesv7\ShippingProviderRangeType\shippingproviderrangetype.controller.js" />
+    <Content Include="DataTypesv7\ShippingProviderRangeType\shippingproviderrangetype.html" />
+    <Content Include="DataTypesv7\ShippingProviderType\shippingprovidertype.controller.js" />
+    <Content Include="DataTypesv7\ShippingProviderType\shippingprovidertype.html" />
+    <Content Include="DataTypesv7\StockEditor\stockeditor.controller.js" />
+    <Content Include="DataTypesv7\StockEditor\stockeditor.html" />
+    <Content Include="DataTypesv7\StorePicker\storepicker.controller.js" />
+    <Content Include="DataTypesv7\StorePicker\storepicker.html" />
+    <Content Include="DataTypesv7\StoreTemplatePicker\storetemplatepicker.controller.js" />
+    <Content Include="DataTypesv7\StoreTemplatePicker\storetemplatepicker.html" />
+    <Content Include="DataTypesv7\VatPicker\vatpicker.controller.js" />
+    <Content Include="DataTypesv7\VatPicker\vatpicker.html" />
+    <Content Include="DataTypesv7\VatPicker\vatpickerprevalues.html" />
+    <Content Include="DataTypesv7\ZoneSelector\zoneselector.controller.js" />
+    <Content Include="DataTypesv7\ZoneSelector\zoneselector.html" />
+    <Content Include="Installer\iconfont\uwebshop.css" />
+    <Content Include="Installer\iconfont\uWebshop.svg" />
+    <Content Include="Installer\package6.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Installer\icons\baggage-cart-box-label.png" />
+    <Content Include="Installer\icons\baggage-cart.png" />
+    <Content Include="Installer\icons\bank.png" />
+    <Content Include="Installer\icons\box-label.png" />
+    <Content Include="Installer\icons\box-search-result.png" />
+    <Content Include="Installer\icons\calendar-month.png" />
+    <Content Include="Installer\icons\clipboard-invoice.png" />
+    <Content Include="Installer\icons\clipboard-list.png" />
+    <Content Include="Installer\icons\credit-card.png" />
+    <Content Include="Installer\icons\documentation32x32.png" />
+    <Content Include="Installer\icons\drawer.png" />
+    <Content Include="Installer\icons\folder-search-result.png" />
+    <Content Include="Installer\icons\folder.png" />
+    <Content Include="Installer\icons\globe-green.png" />
+    <Content Include="Installer\icons\inbox-document.png" />
+    <Content Include="Installer\icons\magnet-small.png" />
+    <Content Include="Installer\icons\mail-air.png" />
+    <Content Include="Installer\icons\mail-open-document-text.png" />
+    <Content Include="Installer\icons\mails-stack.png" />
+    <Content Include="Installer\icons\map-pin.png" />
+    <Content Include="Installer\icons\megaphone.png" />
+    <Content Include="Installer\icons\present-label.png" />
+    <Content Include="Installer\icons\price-tag--minus.png" />
+    <Content Include="Installer\icons\price-tag-label.png" />
+    <Content Include="Installer\icons\scissors.png" />
+    <Content Include="Installer\icons\store-network.png" />
+    <Content Include="Installer\icons\store.png" />
+    <Content Include="Installer\icons\store32x32.png" />
+    <Content Include="Installer\icons\storepicker32x32.png" />
+    <Content Include="Installer\icons\toolbox.png" />
+    <Content Include="Installer\icons\truck-box-label.png" />
+    <Content Include="Installer\icons\update32x32.png" />
+    <Content Include="Installer\icons\uwebshop16x16.png" />
+    <Content Include="Installer\icons\uwebshop32x32.png" />
+    <Content Include="Installer\icons\wallet.png" />
+    <Content Include="Installer\js\uWebshop.js" />
+    <Content Include="Installer\package7.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Installer\uWebshopDashBoard.ascx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Installer\uWebshopInstaller.ascx" />
+    <Content Include="Installer\xml\countries.xml" />
+    <Content Include="Installer\xml\regions.xml" />
+    <Content Include="Installer\xml\VATcountries.xml" />
+    <Content Include="Installer\xslt\uwbsAccountMailExample.xslt" />
+    <Content Include="Installer\xslt\uwbsMailExample.xslt" />
+    <Content Include="Installer\xslt\uwbsOrderInfo.xslt" />
+    <Content Include="Usercontrols\uwbsBasketHandler.ascx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Usercontrols\uwbsPaymentHandler.ascx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Installer\razor\UwebshopCategory.cshtml" />
+    <Content Include="Installer\razor\UwebshopCrumblePath.cshtml" />
+    <Content Include="Installer\razor\UwebshopLatestProducts.cshtml" />
+    <Content Include="Installer\razor\UwebshopMetaDescription.cshtml" />
+    <Content Include="Installer\razor\UwebshopMiniBasket.cshtml" />
+    <Content Include="Installer\razor\UwebshopNavigation.cshtml" />
+    <Content Include="Installer\razor\UwebshopOnePageCheckout.cshtml" />
+    <Content Include="Installer\razor\UwebshopPaging.cshtml" />
+    <Content Include="Installer\razor\UwebshopProduct.cshtml" />
+    <Content Include="Installer\razor\UwebshopRandomProducts.cshtml" />
+    <Content Include="Installer\razor\uWebshopUmbracoEmailDetails.cshtml" />
+    <Content Include="Installer\razor\uWebshopUmbracoOrderDetails.cshtml" />
+    <Content Include="Installer\razor\uWebshopUmbracoOrderOverview.cshtml" />
+    <Content Include="Installer\razor\uWebshopUmbracoProductOverview.cshtml" />
+    <None Include="DataTypesv7\package.manifest" />
+    <None Include="Installer\iconfont\uWebshop.eot" />
+    <None Include="Installer\iconfont\uWebshop.ttf" />
+    <None Include="Installer\iconfont\uWebshop.woff" />
+    <None Include="Installer\xml\CurrencyCultures.config" />
+    <Content Include="Installer\xml\PaymentProviders.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Installer\xml\ShippingProviders.config" />
+    <None Include="Modules\Configurable aliasses\ContentMapping.config">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContentMapping.tt</DependentUpon>
+    </None>
+    <None Include="Modules\Configurable aliasses\ContentMapping.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ContentMapping.config</LastGenOutput>
+    </None>
+    <None Include="Modules\Configurable aliasses\XmlMappingGeneration.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>XmlMappingGeneration.cs</LastGenOutput>
+    </None>
+    <None Include="Services\DataTypeAndContentTypesInstaller.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>DataTypeAndContentTypesInstaller.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent>if /I "$(ConfigurationName)" == "Release" Eazfuscator.NET.exe "$(TargetPath)" --msbuild-project-path "$(ProjectPath)" --msbuild-project-configuration "$(ConfigurationName)" --msbuild-project-platform "$(PlatformName)" --msbuild-solution-path "$(SolutionPath)" -n --newline-flush -v 4.0</PostBuildEvent>
+  </PropertyGroup>
+</Project>

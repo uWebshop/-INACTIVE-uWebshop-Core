@@ -1,0 +1,30 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="$(SolutionDir)Umbraco\uWebshop.Umbraco\bin\$(ConfigurationName)\uWebshop.Domain.dll" #>
+<#@ assembly name="$(SolutionDir)Umbraco\uWebshop.Umbraco\bin\$(ConfigurationName)\uWebshop.Umbraco.dll" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.Reflection" #>
+<#@ import namespace="uWebshop.Umbraco.Repositories" #>
+<#@ output extension=".cs" #>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Xml;
+using System.Xml.Serialization;
+using uWebshop.Common.Interfaces;
+using uWebshop.Domain.Interfaces;
+using uWebshop.Umbraco.Interfaces;
+using uWebshop.Domain;
+using uWebshop.Domain.ContentTypes;
+
+namespace uWebshop.Umbraco.Repositories
+{
+
+<#
+	Write(new uWebshop.Umbraco.Repositories.DocTypeAliassesCodeGeneration().RunT4Code());
+#>
+
+}

@@ -1,0 +1,27 @@
+<div ng-controller="uWebshop.Currencies">            
+    <table>
+         <tr>
+            <td valign="top">
+	            <label for="currency">Currency:</label><br/>
+				<select name="currency" data-ng-options="item as combined(item) for item in ItemArray" ng-model="currency"></select>
+                <br/>
+                <label for="index">Index:</label><br/>
+                <input type="text" name="index" ng-model="index"/>
+            </td>
+              <td class="text-center" valign="top">
+                <label class="text-center">Options</label><br/>
+                <div class="btn-group">
+                    <button class="btn btn-success" ng-click="saveItem()">Add</button>
+                    <button class="btn btn-default" ng-click="editItem(selected)">Edit</button>
+                    <button class="btn btn-default" ng-click="deleteItem(selected)">Remove</button>
+                </div>
+             </td>
+             <td>
+                 <label class="text-right" for="selectedCurrencies">Current Currencies:</label><br/>
+				 <select size="7" data-ng-options="item as simplecombined(item) for item in SelectedArray | orderBy:'currency'" ng-model="selected"></select>
+            </td>
+         </tr>
+         
+    </table>
+
+</div>

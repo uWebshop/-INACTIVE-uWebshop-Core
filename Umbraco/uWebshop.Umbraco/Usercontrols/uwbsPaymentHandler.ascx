@@ -1,0 +1,1 @@
+﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="uwbsPaymentHandler.ascx.cs" Inherits="uWebshop.Web.WebControls.UwbsPaymentHandler" %>

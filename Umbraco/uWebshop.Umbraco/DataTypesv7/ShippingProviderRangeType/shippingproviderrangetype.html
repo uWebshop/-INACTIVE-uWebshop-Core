@@ -1,0 +1,6 @@
+<div ng-controller="uWebshop.ShippingProviderRangeType" ng-switch="model.config.multiple">
+  
+    <select data-ng-options="item as item for item in ItemArray" data-ng-model="selectedOption" ng-change="update()"></select>
+
+
+</div>

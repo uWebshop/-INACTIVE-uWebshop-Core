@@ -1,0 +1,148 @@
+﻿@using uWebshop.Domain.Interfaces
+@using uWebshop.API
+@inherits umbraco.MacroEngines.DynamicNodeContext
+	
+@{
+
+
+    IOrder currentOrder = Parameter.uniqueOrderId != null ? Orders.GetOrder(Parameter.uniqueOrderId) : CMS.GetLatestOrder();
+
+    string storeAlias = Parameter.storeAlias != null ? Parameter.storeAlias : string.Empty;
+    var emailTitle = Parameter.Title != null ? Parameter.Title : string.Empty;
+    var emailDescription = Parameter.Description != null ? Parameter.Description : string.Empty;
+    var userName = Parameter.UserName != null ? Parameter.UserName : string.Empty;
+    var password = Parameter.Password != null ? Parameter.Password : string.Empty;
+
+	<html>
+		<body>
+			<style>
+	
+				.order table { border-collapse: collapse }
+
+				.order .text-right { text-align: right !important; }
+
+				.order tr.orderline { border-bottom: 1px solid #eee; }
+
+				.order tr.orderlineheader { border-bottom: 4px solid #eee; }
+
+				.order tr.orderlinefooter { border-top: 4px solid #eee; }
+
+				.order td,
+				.order th { padding: 5px; }
+
+				.order tr.success { vertical-align: middle; }
+
+				.order .success h3 { margin-bottom: 10px; }
+		
+	
+			</style>
+
+			<table width="650">
+				<tr>
+					<td>	
+						<h1>@CMS.ReplaceValueWithOrderValue(Model.Id, "title", currentOrder)</h1>
+						@Html.Raw(CMS.ReplaceValueWithOrderValue(Model.Id, "description", currentOrder))
+			
+						@if (currentOrder != null)
+						{
+							<table>
+								<thead>
+									<tr class="orderlineheader">
+										<th scope="col">
+											<p>Product</p>
+										</th>
+										<th scope="col" align="right">
+											<p>Itemcount</p>
+										</th>
+										<th scope="col" align="right">
+											<p>Price (ex vat)</p>
+										</th>
+										<th scope="col" align="right">
+											<p>Total (ex vat)</p>
+										</th>
+									</tr>
+								</thead>
+								<tbody>
+									@foreach (var orderline in currentOrder.OrderLines)
+									{
+										<tr class="orderline">
+											<th scope="row">
+												<p>
+													<nobr>@orderline.Product.Title</nobr>
+													@foreach (var variant in orderline.Product.Variants)
+													{
+														<br />
+														<span style="font-weight: 100">
+															@variant.Title
+															<br/>
+														</span>
+													}
+												</p>
+											</th>
+											<td align="right">
+												<p>
+													@orderline.Quantity
+												</p>
+											</td>
+											<td align="right">
+												<p>
+													@orderline.Product.Price.WithoutVat.ToCurrencyString()
+												</p>
+											</td>
+											<td align="right">
+												<p>
+													@orderline.Amount.WithoutVat.ToCurrencyString()
+												</p>
+											</td>
+										</tr>
+									}
+								</tbody>
+								<tfoot>
+									@if (currentOrder.IsVatCharged)
+									{
+										<tr class="orderlinefooter">
+
+											<th scope="row" colspan="3" align="right">
+												<p>Subtotal</p>
+											</th>
+											<td scope="col" align="right">
+												<p>
+													@currentOrder.SubTotal.ToCurrencyString()
+												</p>
+											</td>
+										</tr>
+										<tr>
+											<th scope="row" colspan="3"  align="right">
+												<p>Vat</p>
+											</th>
+											<td scope="col" align="right">
+												<p>
+													@currentOrder.OrderAmount.Vat.ToCurrencyString()
+												</p>
+											</td>
+										</tr>
+									}
+									<tr class="success">
+										<th scope="col" colspan="4" align="right">
+											<h3 style="font-size: 24.5px;" align="right">
+												@currentOrder.ChargedOrderAmount.ToCurrencyString()
+											</h3>
+										</th>
+									</tr>
+									@if (!currentOrder.IsVatCharged)
+									{
+										<tr>
+											<td colspan="4" align="right">
+												<p>reverse charge</p>
+											</td>
+										</tr>
+									}
+								</tfoot>
+							</table>
+						}
+					</td>
+				</tr>
+			</table>
+		</body>
+	</html>
+	}

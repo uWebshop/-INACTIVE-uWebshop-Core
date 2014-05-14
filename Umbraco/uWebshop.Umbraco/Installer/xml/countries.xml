@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+
+<countries>
+	<country code="AL" iso="8">Albania</country>
+	<country code="DZ" iso="12">Algeria</country>
+	<country code="AR" iso="32">Argentina</country>
+	<country code="AU" iso="36">Australia</country>
+	<country code="AT" iso="40">Austria</country>
+	<country code="BE" iso="56">Belgium</country>
+	<country code="BA" iso="70">Bosnia And Herzegovina</country>
+	<country code="BR" iso="76">Brazil</country>
+	<country code="BG" iso="100">Bulgaria</country>
+	<country code="CA" iso="124">Canada</country>
+	<country code="CL" iso="152">Chile</country>
+	<country code="CN" iso="156">China</country>
+	<country code="HR" iso="191">Croatia (Local Name: Hrvatska)</country>
+	<country code="CU" iso="192">Cuba</country>
+	<country code="CY" iso="196">Cyprus</country>
+	<country code="CZ" iso="203">Czech Republic</country>
+	<country code="DK" iso="208">Denmark</country>
+	<country code="EG" iso="818">Egypt</country>
+	<country code="EE" iso="233">Estonia</country>
+	<country code="FI" iso="246">Finland</country>
+	<country code="FR" iso="250">France</country>
+	<country code="GE" iso="268">Georgia</country>
+	<country code="DE" iso="276">Germany</country>
+	<country code="GR" iso="300">Greece</country>
+	<country code="GL" iso="304">Greenland</country>
+	<country code="HT" iso="332">Haiti</country>
+	<country code="HK" iso="344">Hong Kong</country>
+	<country code="HU" iso="348">Hungary</country>
+	<country code="IS" iso="352">Iceland</country>
+	<country code="IN" iso="356">India</country>
+	<country code="ID" iso="360">Indonesia</country>
+	<country code="IR" iso="364">Iran, Islamic Republic Of</country>
+	<country code="IQ" iso="368">Iraq</country>
+	<country code="IE" iso="372">Ireland</country>
+	<country code="IL" iso="376">Israel</country>
+	<country code="IT" iso="380">Italy</country>
+	<country code="JM" iso="388">Jamaica</country>
+	<country code="JP" iso="392">Japan</country>
+	<country code="JO" iso="400">Jordan</country>
+	<country code="LV" iso="428">Latvia</country>
+	<country code="LI" iso="438">Liechtenstein</country>
+	<country code="LT" iso="440">Lithuania</country>
+	<country code="LU" iso="442">Luxembourg</country>
+	<country code="MK" iso="807">Macedonia, The Former Yugoslav Republic Of</country>
+	<country code="MY" iso="458">Malaysia</country>
+	<country code="MT" iso="470">Malta</country>
+	<country code="MX" iso="484">Mexico</country>
+	<country code="MD" iso="498">Moldova, Republic Of</country>
+	<country code="MC" iso="492">Monaco</country>
+	<country code="MA" iso="504">Morocco</country>
+	<country code="NA" iso="516">Namibia</country>
+	<country code="NP" iso="524">Nepal</country>
+	<country code="NL" iso="528">Netherlands</country>
+	<country code="AN" iso="530">Netherlands Antilles</country>
+	<country code="NZ" iso="554">New Zealand</country>
+	<country code="NO" iso="578">Norway</country>
+	<country code="PY" iso="600">Paraguay</country>
+	<country code="PE" iso="604">Peru</country>
+	<country code="PH" iso="608">Philippines</country>
+	<country code="PL" iso="616">Poland</country>
+	<country code="PT" iso="620">Portugal</country>
+	<country code="QA" iso="634">Qatar</country>
+	<country code="RO" iso="642">Romania</country>
+	<country code="RU" iso="643">Russian Federation</country>
+	<country code="SM" iso="674">San Marino</country>
+	<country code="SA" iso="682">Saudi Arabia</country>
+	<country code="SG" iso="702">Singapore</country>
+	<country code="SK" iso="703">Slovakia (Slovak Republic)</country>
+	<country code="SI" iso="705">Slovenia</country>
+	<country code="ZA" iso="710">South Africa</country>
+	<country code="ES" iso="724">Spain</country>
+	<country code="SD" iso="736">Sudan</country>
+	<country code="SR" iso="740">Suriname</country>
+	<country code="SE" iso="752">Sweden</country>
+	<country code="CH" iso="756">Switzerland</country>
+	<country code="TW" iso="158">Taiwan, Province Of China</country>
+	<country code="TH" iso="764">Thailand</country>
+	<country code="TN" iso="788">Tunisia</country>
+	<country code="TR" iso="792">Turkey</country>
+	<country code="AE" iso="784">United Arab Emirates</country>
+	<country code="GB" iso="826">United Kingdom</country>
+	<country code="US" iso="840">United States</country>
+	<country code="VE" iso="862">Venezuela</country>
+	<country code="VN" iso="704">Viet Nam</country>
+</countries>

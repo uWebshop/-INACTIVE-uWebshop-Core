@@ -1,0 +1,119 @@
+﻿@using uWebshop.Common
+@using uWebshop.API
+@inherits umbraco.MacroEngines.DynamicNodeContext
+			  
+@{
+
+	var selectedOrderTime = string.Empty;
+	var selectedOrderStatus = OrderStatus.Confirmed;
+
+	try
+	{
+		var orderStatusValue = Model.orderSection.orderStatus;
+		selectedOrderTime = Model.orderSection.orderTimeInDays;
+
+		selectedOrderStatus = (OrderStatus) Enum.Parse(typeof (OrderStatus), orderStatusValue);
+	}
+	catch
+	{
+	}
+
+
+	if (IsPost)
+	{
+		CMS.CreateOrderDocument();
+
+		selectedOrderStatus = CMS.OrderStatusFromRequest();
+
+		selectedOrderTime = HttpContext.Current.Request["orderTimeInDays"];
+	}
+
+	var orders = Orders.GetAllOrders().Where(x => x.Status == selectedOrderStatus && x.Status != OrderStatus.Incomplete);
+
+	if (!string.IsNullOrEmpty(selectedOrderTime))
+	{
+		orders = orders.Where(x => x.ConfirmDate >= DateTime.Now.AddDays(-int.Parse(selectedOrderTime)));
+	}
+
+	orders.ToList().Sort((x, y) => y.ConfirmDate.CompareTo(x.ConfirmDate));
+
+	<form method="post">
+		<select name="orderStatus" id="orderStatus">
+			@foreach (OrderStatus status in Enum.GetValues(typeof (OrderStatus)))
+			{
+				var selected = "";
+
+				if (status == selectedOrderStatus)
+				{
+					selected = "selected=\"selected\"";
+				}
+				<option @Html.Raw(selected) value="@status">@status</option>
+			}
+		</select>
+		<select name="orderTimeInDays" id="orderTimeInDays">
+			@{
+				string[] dateArray = {"1", "7", "14", "30"};
+
+				foreach (var date in dateArray)
+				{
+					var selectedDate = "";
+
+					if (date == selectedOrderTime)
+					{
+						selectedDate = "selected=\"selected\"";
+					}
+
+					<option  @Html.Raw(selectedDate) value="@date">
+						@date
+						
+						@if (date == "1")
+						{
+							@Html.Raw(" Day")
+						}
+						else
+						{
+							@Html.Raw(" Days")
+						}
+
+					</option>
+				}
+			}
+		</select>
+		<input type="submit" value="View orders of status"/>
+	</form>
+
+	<table cellpadding="5" width="100%">
+		<thead>
+			<th scope="col">View/Edit</th>
+			<th scope="col">Order</th>
+			<th scope="col">Status</th>
+			<th scope="col">Store</th>
+			<th scope="col">Date</th>
+			<th scope="col"><nobr>E-Mail</nobr></th>
+			<th scope="col"><nobr>First Name</nobr></th>
+			<th scope="col"><nobr>Last Name</nobr></th>
+			<th scope="col"><nobr>Charged Amount</nobr></th>
+		</thead>
+		<tbody>
+			@foreach (var order in orders)
+			{
+				<tr>
+					<td>
+						<form method="post">
+							<input type="hidden" name="orderGuid" value="@order.UniqueId" id="@order.UniqueId"  />
+							<input type="submit" value="View/Edit"/>
+						</form>
+					</td>
+					<th scope="row">@order.OrderReference</th>
+					<td>@order.Status</td>
+					<td>@order.Store.Alias</td>
+					<td>@order.ConfirmDate</td>
+					<td>@order.Customer.Email</td>
+					<td>@order.Customer.FirstName</td>
+					<td>@order.Customer.LastName</td>
+					<td align="right">@order.ChargedOrderAmount.ToCurrencyString()</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}

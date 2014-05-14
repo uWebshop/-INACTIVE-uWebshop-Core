@@ -1,0 +1,112 @@
+﻿@*
+uWebshop Razor Example: Simple Paging
+=================================
+*@
+
+@using uWebshop.API
+
+@{
+
+	var categories = Catalog.GetAllCategories();
+
+	<h3>Paging Example</h3>
+	<p>This example shows how to display a category with paging for products.<br/>
+		The products are ordered by title and grouped by the set items a page (10).</p>
+
+	if (categories.Any())
+	{
+		foreach (var category in categories.Where(category => category.Products.Any()))
+		{
+			@RenderProducts(category)
+		}
+	}
+	else
+	{
+		<h4>No categories found</h4>
+	}
+}
+
+
+@helper RenderCategories(ICategory category)
+{
+	foreach (var subcategory in category.SubCategories)
+	{
+		<li>
+			<a href="@subcategory.Url" title="@subcategory.Title">@subcategory.Title</a>
+        
+			@if (subcategory.SubCategories.Any())
+			{
+				<ul>
+					@RenderCategories(subcategory)
+				</ul>
+			}
+		</li>
+	}
+}
+
+@helper RenderProducts(ICategory category)
+{
+	if (category.Any())
+	{
+		var allCategoryProducts = category.Products.OrderBy(x => x.Title);
+
+		const int itemsPerPage = 10;
+		var productPaging = Catalog.GetPages(allCategoryProducts.Count(), itemsPerPage);
+
+		var pagedProducts = allCategoryProducts.Skip(productPaging.Skip).Take(productPaging.Take);
+		<a name="pagingstart"></a>
+		@RenderPaging(productPaging, Current.Id)
+		<ul>
+			@foreach (var product in pagedProducts)
+			{
+				<li>
+					<a href="@product.Url" title="@product.Title">@product.Title</a>
+				</li>
+			}
+		</ul>
+		@RenderPaging(productPaging, Current.Id)
+	}
+}
+
+@helper RenderPaging(uWebshop.Domain.Paging paging, int currentId)
+{
+	if (paging.TotalPages <= 1)
+	{
+		<div class="pager">
+		</div>
+		return;
+	}
+
+	var currentUrl = Catalog.NiceUrl(currentId) + "?page=";
+	var maxIndex = paging.TotalPages;
+
+	<div class="pager">
+		@if (paging.CurrentPage > 1)
+		{
+			<span class="left">
+				<a href="@currentUrl@paging.PreviousPage#pagingstart">Previous</a>
+			</span>
+		}
+		@for (var i = 1; i <= maxIndex; i++)
+		{
+			if (paging.CurrentPage == i)
+			{
+				<span class="item active">
+					<a href="@currentUrl@i#pagingstart">@i</a>
+				</span>
+			}
+			else
+			{
+				<span class="item">
+					<a href="@currentUrl@i#pagingstart">@i</a>
+				</span>
+			}
+		}
+		@if (paging.CurrentPage < paging.TotalPages)
+		{
+			<span class="right">
+				<a href="@currentUrl@paging.NextPage#pagingstart">Next</a>
+			</span>
+		}
+	</div>
+}

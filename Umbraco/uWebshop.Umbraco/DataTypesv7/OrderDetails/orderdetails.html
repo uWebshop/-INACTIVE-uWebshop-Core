@@ -1,0 +1,167 @@
+<div ng-controller="uWebshop.OrderInfoViewer">
+
+    <select data-ng-options="item as item for item in StatusArray" data-ng-model="SelectedOption"></select>
+    <label for="sendEmail">
+        <input type="checkbox" name="sendEmail" data-ng-model="SendEmail" /> Send emails on status change
+    </label>
+    <hr />
+
+
+    <style>
+        .order table {
+            border-collapse: collapse;
+        }
+
+        .order .text-right {
+            text-align: right !important;
+        }
+
+        .order tr.orderline {
+            border-bottom: 1px solid #eee;
+        }
+
+        .order tr.orderlineheader {
+            border-bottom: 4px solid #eee;
+        }
+
+        .order tr.orderlinefooter {
+            border-top: 4px solid #eee;
+        }
+
+        .order td,
+        .order th {
+            padding: 5px;
+        }
+
+        .order tr.success {
+            vertical-align: middle;
+        }
+
+        .order .success h3 {
+            margin-bottom: 10px;
+        }
+    </style>
+
+    <div class="order" style="margin: 20px; line-height: 1.5em;">
+        <h1> {{ CurrentOrder.OrderReference }}</h1>
+        <hr />
+        <label for="orderpaid">
+            <input type="checkbox" name="orderpaid" data-ng-model="OrderPaid" /> Order is paid?
+        </label>
+        <hr />
+        <address style="font-style: normal;">
+            <strong>Billing</strong><br />
+            {{ CurrentOrder.Customer.FirstName }} {{ CurrentOrder.Customer.LastName }} (<a href="mailto:{{CurrentOrder.Customer.Email }}">{{ CurrentOrder.Customer.Email }}</a>)
+            <br />
+            {{ CurrentOrder.Customer.Street }} {{ CurrentOrder.Customer.StreetNumber }}
+            <br />
+            {{ CurrentOrder.Customer.ZipCode }} {{ CurrentOrder.Customer.City }}<br />
+            {{ CustomerCountryName }}
+            <br />
+            {{ CurrentOrder.Customer.CustomerVatNumber }}
+        </address>
+        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee; border-bottom: 1px solid #fff;" />
+        <address style="font-style: normal;" ng-if="CurrentOrder.Customer.CustomerIsShipping == false">
+            <strong>Shipping</strong><br />
+            {{ CurrentOrder.Customer.Shipping.FirstName }} {{CurrentOrder.Customer.Shipping.LastName }}
+            <br />
+            {{ CurrentOrder.Customer.Shipping.Street }} {{ CurrentOrder.Customer.Shipping.StreetNumber }}<br />
+            {{ CurrentOrder.Customer.Shipping.ZipCode }} {{ CurrentOrder.Customer.Shipping.City }}<br />
+            {{ ShippingCountryName }}<br />
+
+        </address>
+        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee; border-bottom: 1px solid #fff;" ng-if="CurrentOrder.Customer.CustomerIsShipping == false" />
+        <p>
+            <strong>Date/Time Placed:</strong> {{ CurrentOrder.ConfirmDate  | date:'dd-MM-yyyy HH:mm:ss' }}
+        </p>
+        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee; border-bottom: 1px solid #fff;" />
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr class="orderlineheader">
+                    <th scope="col">
+                        <p>Product</p>
+                    </th>
+                    <th scope="col">
+                        <p class="text-right">Itemcount</p>
+                    </th>
+                    <th scope="col">
+                        <p class="text-right">Price (ex vat)</p>
+                    </th>
+                    <th scope="col">
+                        <p class="text-right">Total (ex vat)</p>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="orderline" ng-repeat="orderline in CurrentOrder.OrderLines">
+                    <th scope="row">
+                        <p>
+                            <nobr>{{ orderline.Product.Title }}</nobr>
+
+                            <div ng-repeat="variant in orderline.Product.Variants">
+                                <span style="font-weight: 100">
+                                    {{ variant.Title }}
+                                    <br />
+                                </span>
+                            </div>
+                        </p>
+                    </th>
+                    <td>
+                        <p class="text-right">
+                            {{ orderline.Quantity }}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="text-right">
+                            {{ orderline.Product.Price.WithoutVat.ToCurrencyString }}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="text-right">
+                            {{ orderline.Amount.WithoutVat.ToCurrencyString }}
+                        </p>
+                    </td>
+                </tr>
+
+            </tbody>
+            <tfoot>
+                <tr class="orderlinefooter" ng-if="CurrentOrder.IsVatCharged == true">
+
+                    <th scope="row" colspan="3">
+                        <p class="text-right">Subtotal</p>
+                    </th>
+                    <td scope="col">
+                        <p class="text-right">
+                            {{ CurrentOrder.SubTotal.ToCurrencyString }}
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row" colspan="3">
+                        <p class="text-right">Vat</p>
+                    </th>
+                    <td scope="col">
+                        <p class="text-right">
+                            {{ CurrentOrder.OrderAmount.Vat.ToCurrencyString }}
+                        </p>
+                    </td>
+                </tr>
+                <tr class="success">
+                    <th scope="col" colspan="4">
+                        <h3 style="font-size: 24.5px;" class="text-right">
+                            {{ CurrentOrder.ChargedOrderAmount.ToCurrencyString}}
+                        </h3>
+                    </th>
+                </tr>
+
+                <tr ng-if="CurrentOrder.IsVatCharged != true">
+                    <td colspan="4">
+                        <p class="text-right">reverse charge</p>
+                    </td>
+                </tr>
+
+            </tfoot>
+        </table>
+
+    </div>
+</div>

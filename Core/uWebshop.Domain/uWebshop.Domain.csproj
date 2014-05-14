@@ -1,0 +1,532 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{30AC1FB6-EB29-4E4E-92C4-0481C503215C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>uWebshop.Domain</RootNamespace>
+    <AssemblyName>uWebshop.Domain</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\uWebshop.Domain.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="businesslogic">
+      <HintPath>..\..\Binary Dependencies\businesslogic.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.Services.Client" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="API\DataClasses\AppliedOrderDiscountAdaptor.cs" />
+    <Compile Include="API\Basket.cs" />
+    <Compile Include="API\DataClasses\BasketChosenPaymentProviderAdaptor.cs" />
+    <Compile Include="API\DataClasses\BasketCustomer.cs" />
+    <Compile Include="API\DataClasses\BasketFulfillment.cs" />
+    <Compile Include="API\DataClasses\BasketOrderInfoAdaptor.cs" />
+    <Compile Include="API\DataClasses\BasketPayment.cs" />
+    <Compile Include="API\DataClasses\BasketStore.cs" />
+    <Compile Include="API\DataClasses\BasketValidationResult.cs" />
+    <Compile Include="API\DataClasses\BasketValidationResults.cs" />
+    <Compile Include="API\DataClasses\BillingFulfillmentAdaptor.cs" />
+    <Compile Include="API\DataClasses\BillingMethodFulfillmentAdaptor.cs" />
+    <Compile Include="API\Catalog.cs" />
+    <Compile Include="API\DataClasses\CategoryAdaptor.cs" />
+    <Compile Include="API\Customers.cs" />
+    <Compile Include="API\Discounts.cs" />
+    <Compile Include="API\Interfaces\IOrderDiscount.cs" />
+    <Compile Include="API\DataClasses\Localization.cs" />
+    <Compile Include="API\DataClasses\OrderedProductInfoAdaptor.cs" />
+    <Compile Include="API\DataClasses\OrderedProductVariantInfoAdapter.cs" />
+    <Compile Include="API\DataClasses\OrderFields.cs" />
+    <Compile Include="API\DataClasses\OrderLineBasketAdaptor.cs" />
+    <Compile Include="API\Orders.cs" />
+    <Compile Include="API\DataClasses\ProductAdaptor.cs" />
+    <Compile Include="API\Providers.cs" />
+    <Compile Include="API\DataClasses\ShippingChosenFulfillmentAdaptor.cs" />
+    <Compile Include="API\DataClasses\ShippingFulfillmentAdaptor.cs" />
+    <Compile Include="API\DataClasses\ShippingMethodFulfillmentAdaptor.cs" />
+    <Compile Include="API\Store.cs" />
+    <Compile Include="API\DataClasses\VariantAdaptor.cs" />
+    <Compile Include="API\DataClasses\VariantGroupAdaptor.cs" />
+    <Compile Include="API\DataClasses\XElementAddress.cs" />
+    <Compile Include="API\DataClasses\XElementFields.cs" />
+    <Compile Include="Assembly.cs" />
+    <Compile Include="Base classes\DiscountBase.cs" />
+    <Compile Include="Base classes\MediaBase.cs" />
+    <Compile Include="Base classes\DocumentBase.cs" />
+    <Compile Include="Base classes\MemberBase.cs" />
+    <Compile Include="Base classes\MultiStoreUwebshopContent.cs" />
+    <Compile Include="Businesslogic\HttpRequestSender.cs" />
+    <Compile Include="Businesslogic\Price.cs" />
+    <Compile Include="Core\Initialize.cs" />
+    <Compile Include="Interfaces\External API\ICustomer.cs" />
+    <Compile Include="Interfaces\External API\IOrderFields.cs" />
+    <Compile Include="Interfaces\ICategoryRepository.cs" />
+    <Compile Include="Interfaces\ICategoryService.cs" />
+    <Compile Include="Interfaces\ICMSContentService.cs" />
+    <Compile Include="Interfaces\ICMSEntityRepository.cs" />
+    <Compile Include="Interfaces\IDataTypeDefinitions.cs" />
+    <Compile Include="Interfaces\IPaymentProviderMethodRepository.cs" />
+    <Compile Include="Interfaces\IProductVariantGroupRepository.cs" />
+    <Compile Include="Interfaces\IShippingProviderMethodRepository.cs" />
+    <Compile Include="Interfaces\External API\FulfillmentStatus.cs" />
+    <Compile Include="Interfaces\External API\IAddress.cs" />
+    <Compile Include="Interfaces\External API\IAppliedOrderDiscount.cs" />
+    <Compile Include="Interfaces\External API\IBasket.cs" />
+    <Compile Include="Interfaces\External API\IBillingProvider.cs" />
+    <Compile Include="Interfaces\External API\IBillingProviderMethod.cs" />
+    <Compile Include="Interfaces\External API\IChosenFulfillmentProvider.cs" />
+    <Compile Include="Interfaces\External API\IFulfillment.cs" />
+    <Compile Include="Interfaces\External API\IFulfillmentProvider.cs" />
+    <Compile Include="Interfaces\External API\IFulfillmentProviderMethod.cs" />
+    <Compile Include="Interfaces\External API\IOrder.cs" />
+    <Compile Include="Interfaces\External API\IOrderBasketShared.cs" />
+    <Compile Include="Interfaces\External API\IOrderBasketWishlistShared.cs" />
+    <Compile Include="Interfaces\External API\IOrderLine.cs" />
+    <Compile Include="Interfaces\External API\IWishlist.cs" />
+    <Compile Include="Interfaces\FlatPrice.cs" />
+    <Compile Include="Interfaces\IProductDiscount.cs" />
+    <Compile Include="Interfaces\External API\IValidationResult.cs" />
+    <Compile Include="Interfaces\External API\IValidationResults.cs" />
+    <Compile Include="Interfaces\External API\IChosenPaymentProvider.cs" />
+    <Compile Include="Interfaces\External API\IOrderInfo.cs" />
+    <Compile Include="Interfaces\External API\IPayment.cs" />
+    <Compile Include="Interfaces\IProductVariantGroup.cs" />
+    <Compile Include="Model\ContentTypes\DiscountContentType.cs" />
+    <Compile Include="Interfaces\IOrderedProduct.cs" />
+    <Compile Include="Model\OrderInfo\DiscountEffects.cs" />
+    <Compile Include="Interfaces\IDiscountEffect.cs" />
+    <Compile Include="Interfaces\IDiscountableUnit.cs" />
+    <Compile Include="Model\OrderInfo\SellableUnit.cs" />
+    <Compile Include="Businesslogic\SimplePrice.cs" />
+    <Compile Include="NewtonsoftJsonNet\Bson\BsonBinaryType.cs" />
+    <Compile Include="NewtonsoftJsonNet\Bson\BsonBinaryWriter.cs" />
+    <Compile Include="NewtonsoftJsonNet\Bson\BsonObjectId.cs" />
+    <Compile Include="NewtonsoftJsonNet\Bson\BsonReader.cs" />
+    <Compile Include="NewtonsoftJsonNet\Bson\BsonToken.cs" />
+    <Compile Include="NewtonsoftJsonNet\Bson\BsonType.cs" />
+    <Compile Include="NewtonsoftJsonNet\Bson\BsonWriter.cs" />
+    <Compile Include="NewtonsoftJsonNet\Converters\BinaryConverter.cs" />
+    <Compile Include="NewtonsoftJsonNet\Converters\BsonObjectIdConverter.cs" />
+    <Compile Include="NewtonsoftJsonNet\Converters\CustomCreationConverter.cs" />
+    <Compile Include="NewtonsoftJsonNet\Converters\DataSetConverter.cs" />
+    <Compile Include="NewtonsoftJsonNet\Converters\DataTableConverter.cs" />
+    <Compile Include="NewtonsoftJsonNet\Converters\DateTimeConverterBase.cs" />
+    <Compile Include="NewtonsoftJsonNet\Converters\EntityKeyMemberConverter.cs" />
+    <Compile Include="NewtonsoftJsonNet\Converters\ExpandoObjectConverter.cs" />
+    <Compile Include="NewtonsoftJsonNet\Converters\IsoDateTimeConverter.cs" />
+    <Compile Include="NewtonsoftJsonNet\Converters\JavaScriptDateTimeConverter.cs" />
+    <Compile Include="NewtonsoftJsonNet\Converters\JsonValueConverter.cs" />
+    <Compile Include="NewtonsoftJsonNet\Converters\KeyValuePairConverter.cs" />
+    <Compile Include="NewtonsoftJsonNet\Converters\RegexConverter.cs" />
+    <Compile Include="NewtonsoftJsonNet\Converters\StringEnumConverter.cs" />
+    <Compile Include="NewtonsoftJsonNet\Converters\VersionConverter.cs" />
+    <Compile Include="NewtonsoftJsonNet\Converters\XmlNodeConverter.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\ConstructorHandling.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\DateFormatHandling.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\DateParseHandling.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\DateTimeZoneHandling.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\DefaultValueHandling.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\FloatFormatHandling.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\FloatParseHandling.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\FormatterAssemblyStyle.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\Formatting.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\IJsonLineInfo.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\JsonArrayAttribute.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\JsonConstructorAttribute.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\JsonContainerAttribute.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\JsonConvert.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\JsonConverter.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\JsonConverterAttribute.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\JsonConverterCollection.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\JsonDictionaryAttribute.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\JsonException.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\JsonExtensionDataAttribute.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\JsonIgnoreAttribute.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\JsonObjectAttribute.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\JsonPosition.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\JsonPropertyAttribute.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\JsonReader.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\JsonReaderException.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\JsonSerializationException.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\JsonSerializer.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\JsonSerializerSettings.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\JsonTextReader.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\JsonTextWriter.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\JsonToken.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\JsonValidatingReader.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\JsonWriter.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\JsonWriterException.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\MemberSerialization.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\MissingMemberHandling.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\NullValueHandling.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\ObjectCreationHandling.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\PreserveReferencesHandling.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\ReferenceLoopHandling.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\Required.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\SerializationBinder.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\StringEscapeHandling.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\TraceLevel.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\TypeNameHandling.cs" />
+    <Compile Include="NewtonsoftJsonNet\JsonNet\WriteState.cs" />
+    <Compile Include="NewtonsoftJsonNet\Linq\Extensions.cs" />
+    <Compile Include="NewtonsoftJsonNet\Linq\IJEnumerable.cs" />
+    <Compile Include="NewtonsoftJsonNet\Linq\JArray.cs" />
+    <Compile Include="NewtonsoftJsonNet\Linq\JConstructor.cs" />
+    <Compile Include="NewtonsoftJsonNet\Linq\JContainer.cs" />
+    <Compile Include="NewtonsoftJsonNet\Linq\JEnumerable.cs" />
+    <Compile Include="NewtonsoftJsonNet\Linq\JObject.cs" />
+    <Compile Include="NewtonsoftJsonNet\Linq\JPath.cs" />
+    <Compile Include="NewtonsoftJsonNet\Linq\JProperty.cs" />
+    <Compile Include="NewtonsoftJsonNet\Linq\JPropertyDescriptor.cs" />
+    <Compile Include="NewtonsoftJsonNet\Linq\JPropertyKeyedCollection.cs" />
+    <Compile Include="NewtonsoftJsonNet\Linq\JRaw.cs" />
+    <Compile Include="NewtonsoftJsonNet\Linq\JToken.cs" />
+    <Compile Include="NewtonsoftJsonNet\Linq\JTokenEqualityComparer.cs" />
+    <Compile Include="NewtonsoftJsonNet\Linq\JTokenReader.cs" />
+    <Compile Include="NewtonsoftJsonNet\Linq\JTokenType.cs" />
+    <Compile Include="NewtonsoftJsonNet\Linq\JTokenWriter.cs" />
+    <Compile Include="NewtonsoftJsonNet\Linq\JValue.cs" />
+    <Compile Include="NewtonsoftJsonNet\Schema\Extensions.cs" />
+    <Compile Include="NewtonsoftJsonNet\Schema\JsonSchema.cs" />
+    <Compile Include="NewtonsoftJsonNet\Schema\JsonSchemaBuilder.cs" />
+    <Compile Include="NewtonsoftJsonNet\Schema\JsonSchemaConstants.cs" />
+    <Compile Include="NewtonsoftJsonNet\Schema\JsonSchemaException.cs" />
+    <Compile Include="NewtonsoftJsonNet\Schema\JsonSchemaGenerator.cs" />
+    <Compile Include="NewtonsoftJsonNet\Schema\JsonSchemaModel.cs" />
+    <Compile Include="NewtonsoftJsonNet\Schema\JsonSchemaModelBuilder.cs" />
+    <Compile Include="NewtonsoftJsonNet\Schema\JsonSchemaNode.cs" />
+    <Compile Include="NewtonsoftJsonNet\Schema\JsonSchemaNodeCollection.cs" />
+    <Compile Include="NewtonsoftJsonNet\Schema\JsonSchemaResolver.cs" />
+    <Compile Include="NewtonsoftJsonNet\Schema\JsonSchemaType.cs" />
+    <Compile Include="NewtonsoftJsonNet\Schema\JsonSchemaWriter.cs" />
+    <Compile Include="NewtonsoftJsonNet\Schema\UndefinedSchemaIdHandling.cs" />
+    <Compile Include="NewtonsoftJsonNet\Schema\ValidationEventArgs.cs" />
+    <Compile Include="NewtonsoftJsonNet\Schema\ValidationEventHandler.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\CachedAttributeGetter.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\CamelCasePropertyNamesContractResolver.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\DefaultContractResolver.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\DefaultReferenceResolver.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\DefaultSerializationBinder.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\DiagnosticsTraceWriter.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\DynamicValueProvider.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\ErrorContext.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\ErrorEventArgs.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\ExpressionValueProvider.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\IContractResolver.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\IReferenceResolver.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\ITraceWriter.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\IValueProvider.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\JsonArrayContract.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\JsonContainerContract.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\JsonContract.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\JsonDictionaryContract.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\JsonDynamicContract.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\JsonFormatterConverter.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\JsonISerializableContract.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\JsonLinqContract.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\JsonObjectContract.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\JsonPrimitiveContract.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\JsonProperty.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\JsonPropertyCollection.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\JsonSerializerInternalBase.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\JsonSerializerInternalReader.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\JsonSerializerInternalWriter.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\JsonSerializerProxy.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\JsonStringContract.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\JsonTypeReflector.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\LateBoundMetadataTypeAttribute.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\MemoryTraceWriter.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\ObjectConstructor.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\OnErrorAttribute.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\ReflectionValueProvider.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\TraceJsonReader.cs" />
+    <Compile Include="NewtonsoftJsonNet\Serialization\TraceJsonWriter.cs" />
+    <Compile Include="NewtonsoftJsonNet\Utilities\Base64Encoder.cs" />
+    <Compile Include="NewtonsoftJsonNet\Utilities\BidirectionalDictionary.cs" />
+    <Compile Include="NewtonsoftJsonNet\Utilities\CollectionUtils.cs" />
+    <Compile Include="NewtonsoftJsonNet\Utilities\CollectionWrapper.cs" />
+    <Compile Include="NewtonsoftJsonNet\Utilities\ConvertUtils.cs" />
+    <Compile Include="NewtonsoftJsonNet\Utilities\DateTimeParser.cs" />
+    <Compile Include="NewtonsoftJsonNet\Utilities\DateTimeUtils.cs" />
+    <Compile Include="NewtonsoftJsonNet\Utilities\DictionaryWrapper.cs" />
+    <Compile Include="NewtonsoftJsonNet\Utilities\DynamicProxy.cs" />
+    <Compile Include="NewtonsoftJsonNet\Utilities\DynamicProxyMetaObject.cs" />
+    <Compile Include="NewtonsoftJsonNet\Utilities\DynamicReflectionDelegateFactory.cs" />
+    <Compile Include="NewtonsoftJsonNet\Utilities\DynamicUtils.cs" />
+    <Compile Include="NewtonsoftJsonNet\Utilities\DynamicWrapper.cs" />
+    <Compile Include="NewtonsoftJsonNet\Utilities\EnumUtils.cs" />
+    <Compile Include="NewtonsoftJsonNet\Utilities\EnumValue.cs" />
+    <Compile Include="NewtonsoftJsonNet\Utilities\EnumValues.cs" />
+    <Compile Include="NewtonsoftJsonNet\Utilities\ExpressionReflectionDelegateFactory.cs" />
+    <Compile Include="NewtonsoftJsonNet\Utilities\ILGeneratorExtensions.cs" />
+    <Compile Include="NewtonsoftJsonNet\Utilities\ImmutableCollectionsUtils.cs" />
+    <Compile Include="NewtonsoftJsonNet\Utilities\JavaScriptUtils.cs" />
+    <Compile Include="NewtonsoftJsonNet\Utilities\LateBoundReflectionDelegateFactory.cs" />
+    <Compile Include="NewtonsoftJsonNet\Utilities\LinqBridge.cs" />
+    <Compile Include="NewtonsoftJsonNet\Utilities\MathUtils.cs" />
+    <Compile Include="NewtonsoftJsonNet\Utilities\MethodCall.cs" />
+    <Compile Include="NewtonsoftJsonNet\Utilities\MiscellaneousUtils.cs" />
+    <Compile Include="NewtonsoftJsonNet\Utilities\ReflectionDelegateFactory.cs" />
+    <Compile Include="NewtonsoftJsonNet\Utilities\ReflectionUtils.cs" />
+    <Compile Include="NewtonsoftJsonNet\Utilities\StringBuffer.cs" />
+    <Compile Include="NewtonsoftJsonNet\Utilities\StringReference.cs" />
+    <Compile Include="NewtonsoftJsonNet\Utilities\StringUtils.cs" />
+    <Compile Include="NewtonsoftJsonNet\Utilities\ThreadSafeStore.cs" />
+    <Compile Include="NewtonsoftJsonNet\Utilities\TypeExtensions.cs" />
+    <Compile Include="NewtonsoftJsonNet\Utilities\ValidationUtils.cs" />
+    <Compile Include="NewtonsoftJsonNet\uWebshopRender.cs" />
+    <Compile Include="Services\ConfigFileDefaultCurrencyCultureService.cs" />
+    <Compile Include="Services\CurrencyCultureInfoForLocalizationService.cs" />
+    <Compile Include="Interfaces\ICurrencyCultureInfoForLocalizationService.cs" />
+    <Compile Include="Interfaces\IUrlLocalizationService.cs" />
+    <Compile Include="Interfaces\IPrice.cs" />
+    <Compile Include="Interfaces\IProductVariant.cs" />
+    <Compile Include="Interfaces\IOrderDiscountService.cs" />
+    <Compile Include="Interfaces\IProductDiscountService.cs" />
+    <Compile Include="Interfaces\IDefaultCurrencyCultureService.cs" />
+    <Compile Include="Interfaces\IVatCalculationStrategy.cs" />
+    <Compile Include="Businesslogic\OverSmallestPartsVatCalculationStrategy.cs" />
+    <Compile Include="Businesslogic\OverTotalVatCalculationStrategy.cs" />
+    <Compile Include="Businesslogic\MultiCastRebuilder.cs" />
+    <Compile Include="Interfaces\IOrderNumberService.cs" />
+    <Compile Include="Interfaces\IOrderNumberTransaction.cs" />
+    <Compile Include="Services\EntityService.cs" />
+    <Compile Include="Services\LoadBalancedApplicationCacheService.cs" />
+    <Compile Include="Services\LocalApplicationCacheService.cs" />
+    <Compile Include="Services\OrderDiscountService.cs" />
+    <Compile Include="Services\OrderNumberService.cs" />
+    <Compile Include="Services\ProductDiscountService.cs" />
+    <Compile Include="Services\SellableUnitPriceService.cs" />
+    <Compile Include="Services\SqlAppCacheTokenService.cs" />
+    <Compile Include="Services\StoreUrlInFrontBasedOnCurrentNodeUrlLocalizationService.cs" />
+    <Compile Include="Model\Localization.cs" />
+    <Compile Include="Services\CategoryCatalogUrlService.cs" />
+    <Compile Include="Interfaces\IDiscount.cs" />
+    <Compile Include="Interfaces\IShippingProviderUpdateService.cs" />
+    <Compile Include="Interfaces\IUrlFormatService.cs" />
+    <Compile Include="Interfaces\IStoreFromUrlDeterminationService.cs" />
+    <Compile Include="Interfaces\IStoreUrl.cs" />
+    <Compile Include="Interfaces\IStoreUrlService.cs" />
+    <Compile Include="Services\StorepickerUrlDeterminationService.cs" />
+    <Compile Include="Services\UmbracoStorePickerStoreUrlService.cs" />
+    <Compile Include="Services\UrlFormatService.cs" />
+    <Compile Include="Interfaces\IShippingProviderRepository.cs" />
+    <Compile Include="Interfaces\IShippingProviderService.cs" />
+    <Compile Include="Interfaces\IUwebshopReadonlyContent.cs" />
+    <Compile Include="Services\CatalogUrlResolvingService.cs" />
+    <Compile Include="Interfaces\IDiscountCalculationService.cs" />
+    <Compile Include="Businesslogic\DiscountExtensions.cs" />
+    <Compile Include="API\Interfaces\ICategory.cs" />
+    <Compile Include="Interfaces\IProduct.cs" />
+    <Compile Include="Services\ShippingProviderService.cs" />
+    <Compile Include="Services\DiscountCalculationService.cs" />
+    <Compile Include="Services\DiscountService.cs" />
+    <Compile Include="Businesslogic\UwebshopRequest.cs" />
+    <Compile Include="Model\ContentTypes\ContentIcon.cs" />
+    <Compile Include="Model\ContentTypes\ContentPropertyTypeAttribute.cs" />
+    <Compile Include="Model\ContentTypes\ContentThumbnail.cs" />
+    <Compile Include="Model\ContentTypes\ContentTypeAttribute.cs" />
+    <Compile Include="Model\ContentTypes\ContentTypeTab.cs" />
+    <Compile Include="Model\ContentTypes\CategoryRepositoryContentType.cs" />
+    <Compile Include="Model\ContentTypes\ShippingProviderRepositoryContentType.cs" />
+    <Compile Include="Model\ContentTypes\DataType.cs" />
+    <Compile Include="Model\ContentTypes\DiscountRepositoryContentType.cs" />
+    <Compile Include="Model\ContentTypes\EmailRepositoryContentType.cs" />
+    <Compile Include="Model\ContentTypes\OrderRepositoryContentType.cs" />
+    <Compile Include="Model\ContentTypes\PaymentProviderRepositoryContentType.cs" />
+    <Compile Include="Model\ContentTypes\ProductRepositoryContentType.cs" />
+    <Compile Include="Model\ContentTypes\StoreRepositoryContentType.cs" />
+    <Compile Include="Model\ContentTypes\UwebshopRootContentType.cs" />
+    <Compile Include="Model\Settings.cs" />
+    <Compile Include="Interfaces\ICatalogCacheManager.cs" />
+    <Compile Include="Interfaces\IEntityRepository.cs" />
+    <Compile Include="Interfaces\IEntityService.cs" />
+    <Compile Include="Interfaces\IIocContainer.cs" />
+    <Compile Include="Interfaces\IOrderDiscountRepository.cs" />
+    <Compile Include="Interfaces\IProductDiscountRepository.cs" />
+    <Compile Include="Interfaces\IProductRepository.cs" />
+    <Compile Include="Interfaces\IProductService.cs" />
+    <Compile Include="Interfaces\IProductVariantRepository.cs" />
+    <Compile Include="Interfaces\IProductVariantService.cs" />
+    <Compile Include="Interfaces\IOrderService.cs" />
+    <Compile Include="Interfaces\IPropertyProvider.cs" />
+    <Compile Include="Interfaces\IStockService.cs" />
+    <Compile Include="Interfaces\IStoreRepository.cs" />
+    <Compile Include="Interfaces\IStoreService.cs" />
+    <Compile Include="Services\OrderService.cs" />
+    <Compile Include="Model\DocumentProperty.cs" />
+    <Compile Include="Businesslogic\HttpContextWrapper.cs" />
+    <Compile Include="Interfaces\IPaymentProviderRepository.cs" />
+    <Compile Include="Interfaces\IPaymentProviderService.cs" />
+    <Compile Include="Services\PaymentProviderService.cs" />
+    <Compile Include="Interfaces\IUmbracoDocumentTypeInstaller.cs" />
+    <Compile Include="Interfaces\IUrlRewritingService.cs" />
+    <Compile Include="Interfaces\IRebuildIndicesService.cs" />
+    <Compile Include="Services\UrlRewritingService.cs" />
+    <Compile Include="Businesslogic\VATChecking\FixedValueVatChecker.cs" />
+    <Compile Include="Model\OrderInfo\PriceInfo.cs" />
+    <Compile Include="Model\XMLRendering\OrderDiscount.cs" />
+    <Compile Include="Interfaces\ICountryRepository.cs" />
+    <Compile Include="Interfaces\IDiscountService.cs" />
+    <Compile Include="Services\OrderUpdatingService.cs" />
+    <Compile Include="Businesslogic\VATChecking\CheckVatService.cs" />
+    <Compile Include="Businesslogic\ClientErrorHandling.cs" />
+    <Compile Include="Configuration\LicenseSection.cs" />
+    <Compile Include="Model\Catalog.cs" />
+    <Compile Include="Model\Category.cs" />
+    <Compile Include="Model\OrderInfo\CustomerInfo.cs" />
+    <Compile Include="Model\OrderDTO\Order.cs" />
+    <Compile Include="Model\OrderDTO\OrderDiscount.cs" />
+    <Compile Include="Model\OrderDTO\OrderLine.cs" />
+    <Compile Include="Interfaces\IConvertibleToOrderInfo.cs" />
+    <Compile Include="Model\OrderInfo\PaymentInfo.cs" />
+    <Compile Include="Model\OrderInfo\ShippingInfo.cs" />
+    <Compile Include="Model\OrderInfo\StoreInfo.cs" />
+    <Compile Include="Model\ShippingRequest.cs" />
+    <Compile Include="Model\DiscountOrder.cs" />
+    <Compile Include="Model\DummyShippingProvider.cs" />
+    <Compile Include="Model\Email.cs" />
+    <Compile Include="Interfaces\IOrderDiscount.cs" />
+    <Compile Include="Interfaces\IOrderUpdatingService.cs" />
+    <Compile Include="Interfaces\IUwebshopConfiguration.cs" />
+    <Compile Include="Interfaces\IUwebshopRequestService.cs" />
+    <Compile Include="Interfaces\IVatChecker.cs" />
+    <Compile Include="Interfaces\ISettingsService.cs" />
+    <Compile Include="Model\OrderedProduct.cs" />
+    <Compile Include="Model\OrderedProductVariant.cs" />
+    <Compile Include="Model\ContentTypes\OrderSection.cs" />
+    <Compile Include="Model\OrderValidationError.cs" />
+    <Compile Include="Model\Paging.cs" />
+    <Compile Include="Model\PaymentProviderMethod.cs" />
+    <Compile Include="Model\DiscountProduct.cs" />
+    <Compile Include="Model\ProductVariantGroup.cs" />
+    <Compile Include="Model\Range.cs" />
+    <Compile Include="Model\Region.cs" />
+    <Compile Include="Model\ShippingProviderMethod.cs" />
+    <Compile Include="Model\Country.cs" />
+    <Compile Include="Model\Customer.cs" />
+    <Compile Include="Model\CustomerProfile.cs" />
+    <Compile Include="Model\CustomSale.cs" />
+    <Compile Include="Model\File.cs" />
+    <Compile Include="Model\Image.cs" />
+    <Compile Include="Model\Store.cs" />
+    <Compile Include="Model\Order.cs" />
+    <Compile Include="Model\OrderInfo\OrderInfo.cs" />
+    <Compile Include="Model\OrderInfo\OrderLine.cs" />
+    <Compile Include="Model\OrderInfo\ProductInfo.cs" />
+    <Compile Include="Model\OrderInfo\ProductVariantInfo.cs" />
+    <Compile Include="Model\PaymentProvider.cs" />
+    <Compile Include="Model\PaymentRequest.cs" />
+    <Compile Include="Model\ProductVariant.cs" />
+    <Compile Include="Model\Product.cs" />
+    <Compile Include="Model\ShippingProvider.cs" />
+    <Compile Include="Model\Zone.cs" />
+    <Compile Include="Interfaces\IPaymentProvider.cs" />
+    <Compile Include="Interfaces\IPaymentRequestHandler.cs" />
+    <Compile Include="Interfaces\IPaymentResponseHandler.cs" />
+    <Compile Include="Interfaces\IShippingProvider.cs" />
+    <Compile Include="Businesslogic\ExtensionMethods.cs" />
+    <Compile Include="Businesslogic\BasketRequestHandler.cs" />
+    <Compile Include="Helpers\CryptographyHelper.cs" />
+    <Compile Include="Helpers\DiscountHelper.cs" />
+    <Compile Include="Helpers\EmailHelper.cs" />
+    <Compile Include="Helpers\InterfaceHelper.cs" />
+    <Compile Include="Businesslogic\PaymentRequestHandler.cs" />
+    <Compile Include="Helpers\ShippingConfigHelper.cs" />
+    <Compile Include="Helpers\ShippingProviderHelper.cs" />
+    <Compile Include="Helpers\StoreHelper.cs" />
+    <Compile Include="Helpers\OrderHelper.cs" />
+    <Compile Include="Helpers\PaymentConfigHelper.cs" />
+    <Compile Include="Helpers\PaymentProviderHelper.cs" />
+    <Compile Include="Model\UwbsNode.cs" />
+    <Compile Include="Helpers\VatCalculator.cs" />
+    <Compile Include="Interfaces\IZoneService.cs" />
+    <Compile Include="Businesslogic\UwebshopDefaultInstaller.cs" />
+    <Compile Include="Services\StockService.cs" />
+    <Compile Include="Services\UrlService.cs" />
+    <Compile Include="Services\UwebshopRequestService.cs" />
+    <Compile Include="Configuration\UwebshopConfiguration.cs" />
+    <Compile Include="Core\IO.cs" />
+    <Compile Include="Interfaces\IServiceFactory.cs" />
+    <Compile Include="Businesslogic\Log.cs" />
+    <Compile Include="Interfaces\IOrderRepository.cs" />
+    <Compile Include="Core\RegisterTypes.cs" />
+    <Compile Include="Repositories\OrderRepository.cs" />
+    <Compile Include="Base classes\uWebshopEntity.cs" />
+    <Compile Include="Helpers\DomainHelper.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\CategoryService.cs" />
+    <Compile Include="Services\MultiStoreEntityService.cs" />
+    <Compile Include="Services\ProductService.cs" />
+    <Compile Include="Services\ProductVariantService.cs" />
+    <Compile Include="Upgrading\OrderTableUpdater.cs" />
+    <Compile Include="Repositories\UwebshopApplicationCachedCountriesRepository.cs" />
+    <Compile Include="Businesslogic\VATChecking\VATchecker.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\uWebshop.Common\uWebshop.Common.csproj">
+      <Project>{37759f1c-b801-4432-a9e9-2c545752bf9a}</Project>
+      <Name>uWebshop.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\uWebshop.DataAccess\uWebshop.DataAccess.csproj">
+      <Project>{3cf8ee6f-506f-4d47-8368-d6c6b9fa42e3}</Project>
+      <Name>uWebshop.DataAccess</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent>if /I "$(ConfigurationName)" == "Release" Eazfuscator.NET.exe "$(TargetPath)" --msbuild-project-path "$(ProjectPath)" --msbuild-project-configuration "$(ConfigurationName)" --msbuild-project-platform "$(PlatformName)" --msbuild-solution-path "$(SolutionPath)" -n --newline-flush -v 3.5.113</PostBuildEvent>
+  </PropertyGroup>
+</Project>

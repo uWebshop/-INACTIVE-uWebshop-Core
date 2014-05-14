@@ -1,0 +1,32 @@
+<div ng-controller="uWebshop.Ranges">            
+    <table>
+         <tr>
+            <td valign="top">
+                <label for="rangefrom">From:</label><br/>
+                <input type="text" name="rangefrom" ng-model="rangefrom"/>
+                <br/>
+                <label for="rangeto">To:</label><br/>
+                <input type="text" name="rangeto" ng-model="rangeto"/>
+                <br/>
+                <label for="rangeprice">Price:</label><br/>
+                <input type="text" name="rangeprice" ng-model="rangeprice"/>
+            </td>
+              <td class="text-center" valign="top">
+                <label class="text-center">Options</label><br/>
+                <div class="btn-group">
+                    <button class="btn btn-success" ng-click="saveItem()">Add</button>
+                    <button class="btn btn-default" ng-click="editItem(selected)">Edit</button>
+                    <button class="btn btn-default" ng-click="deleteItem(selected)">Remove</button>
+                </div>
+             </td>
+             <td>
+                 <label class="text-right" for="txtRanges">Current Ranges:</label><br/>
+                <select size="7" name="txtRanges" multiple="multiple" ng-model="selected">
+                    <option ng-repeat="jsonRange in RangeData | orderBy:'from'" value="{{jsonRange}}">{{jsonRange.from}}-{{jsonRange.to}} : {{jsonRange.price}}</option>
+                </select>  
+            </td>
+         </tr>
+         
+    </table>
+
+</div>

@@ -1,0 +1,1 @@
+﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="uwbsBasketHandler.ascx.cs" EnableViewState="true" Inherits="uWebshop.Web.Usercontrols.UwbsBasketHandler" %>

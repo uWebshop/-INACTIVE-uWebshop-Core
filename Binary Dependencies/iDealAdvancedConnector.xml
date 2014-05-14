@@ -1,0 +1,917 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>iDealAdvancedConnector</name>
+    </assembly>
+    <members>
+        <member name="T:ING.iDealAdvanced.Connector">
+            <summary>
+            This is the iDEAL Connector class that encapsulates the communication with the iDEAL service.
+            </summary>
+            <exception cref="T:System.Xml.Schema.XmlSchemaValidationException">Request Xml does not comply with schema.</exception>
+            <exception cref="T:ING.iDealAdvanced.Data.IDealException">Respons from iDEAL contains an error.</exception>
+            <exception cref="T:System.UriFormatException">Url is not in correct format.</exception>
+            <exception cref="T:System.InvalidCastException">Configuration setting has invalid format.</exception>
+            <exception cref="T:System.Configuration.ConfigurationErrorsException">One or more configuration settings are missing.</exception>
+            <exception cref="T:System.Net.WebException">Error getting reply from acquirer.</exception>
+            <exception cref="T:System.Security.Cryptography.CryptographicException">Error using client certificate.</exception>
+            <exception cref="T:System.Security.SecurityException">The iDEAL response signature is invalid.</exception>
+        </member>
+        <member name="F:ING.iDealAdvanced.Connector.merchantConfig">
+            <summary>
+            Merchant configuration.
+            </summary>
+        </member>
+        <member name="M:ING.iDealAdvanced.Connector.#ctor">
+            <summary>
+            Default constructor.
+            </summary>
+            <exception cref="T:System.UriFormatException">Url is not in correct format.</exception>
+            <exception cref="T:System.InvalidCastException">Configuration setting has invalid format.</exception>
+            <exception cref="T:System.Configuration.ConfigurationErrorsException">Configuration setting is missing.</exception>
+        </member>
+        <member name="M:ING.iDealAdvanced.Connector.GetIssuerList">
+            <summary>
+            Retrieves both the short list and the long list of issuers.
+            </summary>
+            <returns><see cref="T:ING.iDealAdvanced.Data.Issuers"/> containing the long list and short list of issuers, and the datetime stamp of the last change to the lists.</returns>
+            <exception cref="T:System.Xml.Schema.XmlSchemaValidationException">Request Xml does not comply with schema.</exception>
+            <exception cref="T:ING.iDealAdvanced.Data.IDealException">Respons from iDEAL contains an error.</exception>
+            <exception cref="T:System.Configuration.ConfigurationErrorsException">Errors in configuration file.</exception>
+            <exception cref="T:System.Net.WebException">Error getting reply from acquirer.</exception>
+            <exception cref="T:System.Security.Cryptography.CryptographicException">Error using client certificate.</exception>
+        </member>
+        <member name="M:ING.iDealAdvanced.Connector.RequestTransaction(ING.iDealAdvanced.Data.Transaction)">
+            <summary>
+            Requests a transaction.
+            </summary>
+            <param name="transaction"><see cref="T:ING.iDealAdvanced.Data.Transaction"/> to send.</param>
+            <returns><see cref="T:ING.iDealAdvanced.Data.Transaction"/> with added transaction ID and Issuer authentication URL.</returns>
+            <exception cref="T:System.Xml.Schema.XmlSchemaValidationException">Request Xml does not comply with schema.</exception>
+            <exception cref="T:ING.iDealAdvanced.Data.IDealException">Respons from iDEAL contains an error.</exception>
+            <exception cref="T:System.Configuration.ConfigurationErrorsException">Errors in configuration file.</exception>
+            <exception cref="T:System.UriFormatException">Returned issuer authentication Url is in invalid format.</exception>
+            <exception cref="T:System.Net.WebException">Error getting reply from acquirer.</exception>
+            <exception cref="T:System.Security.Cryptography.CryptographicException">Error using client certificate.</exception>
+        </member>
+        <member name="M:ING.iDealAdvanced.Connector.RequestTransactionStatus(System.String)">
+            <summary>
+            Requests the status of a transaction.
+            </summary>
+            <param name="transactionId">Id of the <see cref="T:ING.iDealAdvanced.Data.Transaction"/> to check status for.</param>
+            <returns><see cref="T:ING.iDealAdvanced.Data.Transaction"/> holding status for the transaction.</returns>
+            <exception cref="T:System.Xml.Schema.XmlSchemaValidationException">Request Xml does not comply with schema.</exception>
+            <exception cref="T:ING.iDealAdvanced.Data.IDealException">Respons from iDEAL contains an error.</exception>
+            <exception cref="T:System.Configuration.ConfigurationErrorsException">Errors in configuration file.</exception>
+            <exception cref="T:System.Net.WebException">Error getting reply from acquirer.</exception>
+            <exception cref="T:System.Security.Cryptography.CryptographicException">Error using client certificate.</exception>
+        </member>
+        <member name="M:ING.iDealAdvanced.Connector.GetReplyFromAcquirer(System.String)">
+            <summary>
+            Sends a request to the merchant acquirerUrl and returns the reply it receives.
+            </summary>
+            <param name="request">Request to send.</param>
+            <returns>Reply from merchant acquirerUrl.</returns>
+            <exception cref="T:System.Net.WebException">Error getting reply from acquirer.</exception>
+        </member>
+        <member name="M:ING.iDealAdvanced.Connector.CreateMerchant``1">
+            <summary>
+            Creates a Merchant object.
+            </summary>
+            <typeparam name="T">Type for the Merchant object to create</typeparam>
+            <returns>Merchant object created from this instance's <see cref="T:ING.iDealAdvanced.Connector.MerchantConfig"/>.</returns>
+        </member>
+        <member name="M:ING.iDealAdvanced.Connector.CreateRequest``1">
+            <summary>
+            Creates a service request.
+            </summary>
+            <typeparam name="T">Type of tyhe service request to create.</typeparam>
+            <returns>Service request with current timestamp and default version number.</returns>
+        </member>
+        <member name="M:ING.iDealAdvanced.Connector.GetCertificate(System.String)">
+            <summary>
+            Gets an X509 certificate.
+            </summary>
+            <param name="subject">Subject string for the certificate to get.</param>
+            <returns><see cref="T:System.Security.Cryptography.X509Certificates.X509Certificate2"/>.</returns>
+            <exception cref="T:System.Security.Cryptography.CryptographicException">Error getting certificate from the store.</exception>
+            <exception cref="T:System.Configuration.ConfigurationErrorsException">Number of certificates found is not exactly one.</exception>
+        </member>
+        <member name="M:ING.iDealAdvanced.Connector.SignMessage(System.String)">
+            <summary>
+            Signs a message using the client certificate private key.
+            </summary>
+            <param name="message">Message to sign.</param>
+            <returns>Signature for the message.</returns>
+            <exception cref="T:System.Security.Cryptography.CryptographicException">Error getting the private key from the certificate.</exception>
+        </member>
+        <member name="M:ING.iDealAdvanced.Connector.CreateSHA1RSASignature(System.String,System.Security.Cryptography.RSACryptoServiceProvider)">
+            <summary>
+            Creates a Base64 encoded digital signature from a message using SHA1 and RSA.
+            </summary>
+            <param name="message">The message to create the digital signature from.</param>
+            <param name="rsa">A preinitialized RSACryptoServiceProvider with an existing private key.</param>
+            <returns>string containing the digital signature of the message</returns>
+            <exception cref="T:System.Security.Cryptography.CryptographicException">Error computing signature.</exception>
+        </member>
+        <member name="M:ING.iDealAdvanced.Connector.GetPublicKeyByFingerprint(System.String)">
+            <summary>
+            Searches in the certificate database for a public key matching the fingerprint.
+            </summary>
+            <param name="fingerprint">The fingerprint of the public key to be found.</param>
+            <returns>An instance of RSACryptoServiceProvider.</returns>
+            <exception cref="T:System.Configuration.ConfigurationErrorsException">Number of certificates found is not exactly one.</exception>
+        </member>
+        <member name="M:ING.iDealAdvanced.Connector.VerifyMessage(System.String,System.String,System.Byte[])">
+            <summary>
+            Verify an iDEAL message using the supplied fingerprint and signature.
+            </summary>
+            <param name="fingerprint">The fingerprint to use for verification.</param>
+            <param name="message">The message to verify.</param>
+            <param name="signature">The signature to use for verification.</param>
+            <exception cref="T:System.Security.SecurityException">The signature is invalid.</exception>
+        </member>
+        <member name="M:ING.iDealAdvanced.Connector.ValidateXML(System.String)">
+            <summary>
+            Validates Xml against the schema.
+            </summary>
+            <param name="xml">Xml to validate.</param>
+            <exception cref="T:System.Xml.Schema.XmlSchemaValidationException">Schema validation error.</exception>
+        </member>
+        <member name="M:ING.iDealAdvanced.Connector.ValidationError(System.Object,System.Xml.Schema.ValidationEventArgs)">
+            <summary>
+            ValidationEventHandler call-back method.
+            </summary>
+            <param name="sender">Sender of the event.</param>
+            <param name="arguments"><see cref="T:System.Xml.Schema.ValidationEventArgs"/> containing detailed information about the validation error.</param>
+        </member>
+        <member name="M:ING.iDealAdvanced.Connector.CheckError(System.String,System.String)">
+            <summary>
+            Checks if Xml contains an ErrorRes element, if so deserialize the ErrorRes, wrap it in an iDealException and throw.
+            </summary>
+            <param name="xml">Xml to check.</param>
+            <param name="consumerMessage">Consumer message to use if errorRes.Error.consumerMessage is empty or null.</param>
+        </member>
+        <member name="M:ING.iDealAdvanced.Connector.SchemaError(System.Object,System.Xml.Schema.ValidationEventArgs)">
+            <summary>
+            ValidationEventHandler call-back method.
+            </summary>
+            <param name="sender">Sender of the event.</param>
+            <param name="arguments"><see cref="T:System.Xml.Schema.ValidationEventArgs"/> containing detailed information about the validation error.</param>
+            <exception cref="T:System.Xml.Schema.XmlSchemaValidationException">Schema validation error.</exception>
+        </member>
+        <member name="M:ING.iDealAdvanced.Connector.TraceLine(System.String)">
+            <summary>
+            Traces a line of text.
+            </summary>
+            <param name="line">Text to trace.</param>
+        </member>
+        <member name="M:ING.iDealAdvanced.Connector.GetAppSetting(System.String)">
+            <summary>
+            Gets a value from the AppSettings.
+            </summary>
+            <param name="key">Key for the value to get.</param>
+            <returns>Value as a string.</returns>
+            <exception cref="T:System.Configuration.ConfigurationErrorsException">Key does not exist.</exception>
+        </member>
+        <member name="M:ING.iDealAdvanced.Connector.GetOptionalAppSetting(System.String,System.String)">
+            <summary>
+            Gets an optional value from the AppSettings.
+            </summary>
+            <param name="key">Key for the value to get.</param>
+            <param name="defaultValue">Value to use if key is not available.</param>
+            <returns>Value as a string.</returns>
+        </member>
+        <member name="M:ING.iDealAdvanced.Connector.CheckMandatory(System.String,System.Object)">
+            <summary>
+            Checks if a mandatory object is not null.
+            </summary>
+            <param name="name">Name of the object to use in exception message/</param>
+            <param name="value">Object to check.</param>
+            <exception cref="T:System.InvalidOperationException">Object contains null.</exception>
+        </member>
+        <member name="M:ING.iDealAdvanced.Connector.RemoveWhiteSpace(System.String)">
+            <summary>
+            Removes all white space from a string.
+            </summary>
+            <param name="text">String to remove white space from.</param>
+            <returns>String with white space removed.</returns>
+        </member>
+        <member name="M:ING.iDealAdvanced.Connector.Format(System.String,System.Object[])">
+            <summary>
+            Formats a string using the current culture.
+            </summary>
+            <param name="stringToFormat">String to format.</param>
+            <param name="args">Replace parameters.</param>
+            <returns>Formatted string.</returns>
+            <exception cref="T:System.FormatException">Error while formatting string.</exception>
+        </member>
+        <member name="P:ING.iDealAdvanced.Connector.MerchantId">
+            <summary>
+            Gets or sets the merchant Id.
+            </summary>
+        </member>
+        <member name="P:ING.iDealAdvanced.Connector.SubId">
+            <summary>
+            Gets or sets the merchant SubId.
+            </summary>
+        </member>
+        <member name="P:ING.iDealAdvanced.Connector.MerchantReturnUrl">
+            <summary>
+            Gets or sets the merchant return url.
+            </summary>
+        </member>
+        <member name="P:ING.iDealAdvanced.Connector.ClientCertificate">
+            <summary>
+            Gets or sets the client certificate object.
+            </summary>
+        </member>
+        <member name="P:ING.iDealAdvanced.Connector.ExpirationPeriod">
+            <summary>
+            Gets or sets the transaction expiration period.
+            </summary>
+        </member>
+        <member name="P:ING.iDealAdvanced.Connector.XmlSchema">
+            <summary>
+            The Schema for Xml validation.
+            </summary>
+        </member>
+        <member name="P:ING.iDealAdvanced.Connector.DefaultMerchantConfig">
+            <summary>
+            Gets the default merchant config.
+            </summary>
+            <exception cref="T:System.InvalidCastException">Configuration setting has invalid format.</exception>
+            <exception cref="T:System.Configuration.ConfigurationErrorsException">Configuration setting is missing.</exception>
+            <exception cref="T:System.Security.Cryptography.CryptographicException">Error getting certificate from the store.</exception>
+            <exception cref="T:System.UriFormatException">Url is not in correct format.</exception>
+        </member>
+        <member name="T:ING.iDealAdvanced.Connector.MerchantConfig">
+            <summary>
+            This class holds the merchant configuration.
+            </summary>
+        </member>
+        <member name="T:ING.iDealAdvanced.Data.Issuer">
+            <summary>
+            This class represents an iDeal issuer.
+            </summary>
+        </member>
+        <member name="M:ING.iDealAdvanced.Data.Issuer.#ctor(System.String,System.String)">
+            <summary>
+            Default constructor.
+            </summary>
+            <param name="id">Issuer Id.</param>
+            <param name="name">Issuer Name.</param>
+        </member>
+        <member name="P:ING.iDealAdvanced.Data.Issuer.Id">
+            <summary>
+            The issuer Id.
+            </summary>
+        </member>
+        <member name="P:ING.iDealAdvanced.Data.Issuer.Name">
+            <summary>
+            The issuer name.
+            </summary>
+        </member>
+        <member name="T:ING.iDealAdvanced.Data.IDealException">
+            <summary>
+            This class represents an iDEAL exception.
+            </summary>
+        </member>
+        <member name="M:ING.iDealAdvanced.Data.IDealException.#ctor">
+            <summary>
+            Default constructor.
+            </summary>
+        </member>
+        <member name="M:ING.iDealAdvanced.Data.IDealException.#ctor(System.String)">
+            <summary>
+            Constructor using an error message.
+            </summary>
+            <param name="message">The error message to use.</param>
+        </member>
+        <member name="M:ING.iDealAdvanced.Data.IDealException.#ctor(System.String,System.Exception)">
+            <summary>
+            Constructor using an error message and inner exception.
+            </summary>
+            <param name="message">The error message to use.</param>
+            <param name="inner">The inner exception to use.</param>
+        </member>
+        <member name="M:ING.iDealAdvanced.Data.IDealException.#ctor(ING.iDealAdvanced.Messages.ErrorRes)">
+            <summary>
+            Constructor using an <see cref="P:ING.iDealAdvanced.Data.IDealException.ErrorRes"/> object.
+            </summary>
+            <param name="errorRes">The <see cref="P:ING.iDealAdvanced.Data.IDealException.ErrorRes"/> containing the exception data.</param>
+        </member>
+        <member name="M:ING.iDealAdvanced.Data.IDealException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Override the GetObjectData method to serialize custom values.
+            </summary>
+            <param name="info">Represents the SerializationInfo of the exception.</param>
+            <param name="context">Represents the context information of the exception.</param>
+            <exception cref="T:System.ArgumentNullException">The info parameter is a null reference (Nothing in Visual Basic).</exception>
+            <PermissionSet><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Read="*AllFiles*" PathDiscovery="*AllFiles*"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="SerializationFormatter"/></PermissionSet>
+        </member>
+        <member name="P:ING.iDealAdvanced.Data.IDealException.ErrorRes">
+            <summary>
+            The <see cref="P:ING.iDealAdvanced.Data.IDealException.ErrorRes"/> data received from iDEAL, containing the iDEAL error data..
+            </summary>
+        </member>
+        <member name="T:ING.iDealAdvanced.Data.Issuers">
+            <summary>
+            This class contains the result of the GetIssuerList function of the Directory Protocol.
+            </summary>
+        </member>
+        <member name="M:ING.iDealAdvanced.Data.Issuers.#ctor(ING.iDealAdvanced.Messages.DirectoryResDirectory)">
+            <summary>
+            Default constructor.
+            </summary>
+        </member>
+        <member name="P:ING.iDealAdvanced.Data.Issuers.LongList">
+            <summary>
+            The long list of issuers.
+            </summary>
+        </member>
+        <member name="P:ING.iDealAdvanced.Data.Issuers.ShortList">
+            <summary>
+            The short list of issuers.
+            </summary>
+        </member>
+        <member name="P:ING.iDealAdvanced.Data.Issuers.DateTimeStamp">
+            <summary>
+            Datetime stamp for the list.
+            </summary>
+        </member>
+        <member name="T:ING.iDealAdvanced.Data.Issuers.IssuerListType">
+            <summary>
+            Type of <see cref="T:ING.iDealAdvanced.Data.Issuer"/> list (short or long).
+            </summary>
+        </member>
+        <member name="F:ING.iDealAdvanced.Data.Issuers.IssuerListType.Short">
+            <summary>
+            The short issuer list.
+            </summary>
+        </member>
+        <member name="F:ING.iDealAdvanced.Data.Issuers.IssuerListType.Long">
+            <summary>
+            The long issuer list.
+            </summary>
+        </member>
+        <member name="M:ING.iDealAdvanced.Data.Issuers.IssuerComparer.Compare(ING.iDealAdvanced.Data.Issuer,ING.iDealAdvanced.Data.Issuer)">
+            <summary>
+            Compare two objects of type <see cref="T:ING.iDealAdvanced.Data.Issuer"/>.
+            </summary>
+            <param name="first">First Issuer.</param>
+            <param name="second">Second Issuer.</param>
+            <returns></returns>
+        </member>
+        <member name="T:ING.iDealAdvanced.Messages.DirectoryReq">
+            <remarks/>
+        </member>
+        <member name="T:ING.iDealAdvanced.Messages.IRequest">
+            <summary>
+            Request interface.
+            </summary>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.IRequest.createDateTimeStamp">
+            <summary>
+            Creation DateTime stamp.
+            </summary>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.IRequest.version">
+            <summary>
+            Version.
+            </summary>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.DirectoryReq.createDateTimeStamp">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.DirectoryReq.Merchant">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.DirectoryReq.version">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.DirectoryReq.createDateTimeStampIdealFormatted">
+            <summary>
+            Creation DateTimeStamp formatted to iDeal format.
+            </summary>
+        </member>
+        <member name="T:ING.iDealAdvanced.Messages.DirectoryReqMerchant">
+            <remarks/>
+        </member>
+        <member name="T:ING.iDealAdvanced.Messages.IMerchant">
+            <summary>
+            Merchant interface.
+            </summary>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.IMerchant.authentication">
+            <summary>
+            Authentication method.
+            </summary>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.IMerchant.merchantID">
+            <summary>
+            Merchant ID.
+            </summary>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.IMerchant.subID">
+            <summary>
+            Mercahnt SubID.
+            </summary>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.IMerchant.token">
+            <summary>
+            Merchant token;
+            </summary>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.IMerchant.tokenCode">
+            <summary>
+            Merchant token code (message signature).
+            </summary>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.DirectoryReqMerchant.merchantID">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.DirectoryReqMerchant.subID">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.DirectoryReqMerchant.authentication">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.DirectoryReqMerchant.token">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.DirectoryReqMerchant.tokenCode">
+            <remarks/>
+        </member>
+        <member name="T:ING.iDealAdvanced.Messages.iDEALsignature">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.iDEALsignature.signatureValue">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.iDEALsignature.fingerprint">
+            <remarks/>
+        </member>
+        <member name="T:ING.iDealAdvanced.Messages.DirectoryRes">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.DirectoryRes.createDateTimeStamp">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.DirectoryRes.Acquirer">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.DirectoryRes.Directory">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.DirectoryRes.version">
+            <remarks/>
+        </member>
+        <member name="T:ING.iDealAdvanced.Messages.DirectoryResAcquirer">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.DirectoryResAcquirer.acquirerID">
+            <remarks/>
+        </member>
+        <member name="T:ING.iDealAdvanced.Messages.DirectoryResDirectory">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.DirectoryResDirectory.directoryDateTimeStamp">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.DirectoryResDirectory.Issuer">
+            <remarks/>
+        </member>
+        <member name="T:ING.iDealAdvanced.Messages.DirectoryResDirectoryIssuer">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.DirectoryResDirectoryIssuer.issuerID">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.DirectoryResDirectoryIssuer.issuerName">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.DirectoryResDirectoryIssuer.issuerList">
+            <remarks/>
+        </member>
+        <member name="T:ING.iDealAdvanced.Messages.AcquirerTrxReq">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerTrxReq.createDateTimeStamp">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerTrxReq.Issuer">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerTrxReq.Merchant">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerTrxReq.Transaction">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerTrxReq.version">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerTrxReq.createDateTimeStampIdealFormatted">
+            <summary>
+            Creation DateTimeStamp formatted to iDeal format.
+            </summary>
+        </member>
+        <member name="T:ING.iDealAdvanced.Messages.AcquirerTrxReqIssuer">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerTrxReqIssuer.issuerID">
+            <remarks/>
+        </member>
+        <member name="T:ING.iDealAdvanced.Messages.AcquirerTrxReqMerchant">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerTrxReqMerchant.merchantID">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerTrxReqMerchant.subID">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerTrxReqMerchant.authentication">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerTrxReqMerchant.token">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerTrxReqMerchant.tokenCode">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerTrxReqMerchant.merchantReturnURL">
+            <remarks/>
+        </member>
+        <member name="T:ING.iDealAdvanced.Messages.AcquirerTrxReqTransaction">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerTrxReqTransaction.purchaseID">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerTrxReqTransaction.amount">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerTrxReqTransaction.currency">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerTrxReqTransaction.expirationPeriod">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerTrxReqTransaction.language">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerTrxReqTransaction.description">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerTrxReqTransaction.entranceCode">
+            <remarks/>
+        </member>
+        <member name="T:ING.iDealAdvanced.Messages.AcquirerTrxRes">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerTrxRes.createDateTimeStamp">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerTrxRes.Acquirer">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerTrxRes.Issuer">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerTrxRes.Transaction">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerTrxRes.version">
+            <remarks/>
+        </member>
+        <member name="T:ING.iDealAdvanced.Messages.AcquirerTrxResAcquirer">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerTrxResAcquirer.acquirerID">
+            <remarks/>
+        </member>
+        <member name="T:ING.iDealAdvanced.Messages.AcquirerTrxResIssuer">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerTrxResIssuer.issuerAuthenticationURL">
+            <remarks/>
+        </member>
+        <member name="T:ING.iDealAdvanced.Messages.AcquirerTrxResTransaction">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerTrxResTransaction.transactionID">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerTrxResTransaction.purchaseID">
+            <remarks/>
+        </member>
+        <member name="T:ING.iDealAdvanced.Messages.AcquirerStatusReq">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerStatusReq.createDateTimeStamp">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerStatusReq.Merchant">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerStatusReq.Transaction">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerStatusReq.version">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerStatusReq.createDateTimeStampIdealFormatted">
+            <summary>
+            Creation DateTimeStamp formatted to iDeal format.
+            </summary>
+        </member>
+        <member name="T:ING.iDealAdvanced.Messages.AcquirerStatusReqMerchant">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerStatusReqMerchant.merchantID">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerStatusReqMerchant.subID">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerStatusReqMerchant.authentication">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerStatusReqMerchant.token">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerStatusReqMerchant.tokenCode">
+            <remarks/>
+        </member>
+        <member name="T:ING.iDealAdvanced.Messages.AcquirerStatusReqTransaction">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerStatusReqTransaction.transactionID">
+            <remarks/>
+        </member>
+        <member name="T:ING.iDealAdvanced.Messages.AcquirerStatusRes">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerStatusRes.createDateTimeStamp">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerStatusRes.Acquirer">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerStatusRes.Transaction">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerStatusRes.Signature">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerStatusRes.version">
+            <remarks/>
+        </member>
+        <member name="T:ING.iDealAdvanced.Messages.AcquirerStatusResAcquirer">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerStatusResAcquirer.acquirerID">
+            <remarks/>
+        </member>
+        <member name="T:ING.iDealAdvanced.Messages.AcquirerStatusResTransaction">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerStatusResTransaction.transactionID">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerStatusResTransaction.status">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerStatusResTransaction.consumerName">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerStatusResTransaction.consumerAccountNumber">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.AcquirerStatusResTransaction.consumerCity">
+            <remarks/>
+        </member>
+        <member name="T:ING.iDealAdvanced.Messages.ErrorRes">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.ErrorRes.createDateTimeStamp">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.ErrorRes.Error">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.ErrorRes.version">
+            <remarks/>
+        </member>
+        <member name="T:ING.iDealAdvanced.Messages.ErrorResError">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.ErrorResError.errorCode">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.ErrorResError.errorMessage">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.ErrorResError.errorDetail">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.ErrorResError.suggestedAction">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.ErrorResError.suggestedExpirationPeriod">
+            <remarks/>
+        </member>
+        <member name="P:ING.iDealAdvanced.Messages.ErrorResError.consumerMessage">
+            <remarks/>
+        </member>
+        <member name="T:ING.iDealAdvanced.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:ING.iDealAdvanced.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:ING.iDealAdvanced.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:ING.iDealAdvanced.Resources.iDealStatusCheckFailed">
+            <summary>
+              Looks up a localized string similar to Het resultaat van uw betaling is nog niet bij ons bekend. U kunt desgewenst uw betaling controleren in uw Internetbankieren..
+            </summary>
+        </member>
+        <member name="P:ING.iDealAdvanced.Resources.iDealUnavailable">
+            <summary>
+              Looks up a localized string similar to Betalen met iDEAL is nu niet mogelijk. Probeer het later nogmaals of betaal op een andere manier..
+            </summary>
+        </member>
+        <member name="M:ING.iDealAdvanced.SerializationHelper.InitSerializers">
+            <summary>
+            Initialize the serializers table.
+            </summary>
+            <returns>Initializes serializers table.</returns>
+        </member>
+        <member name="M:ING.iDealAdvanced.SerializationHelper.SerializeObject``1(System.Object)">
+            <summary>
+            Serializes a custom Object to XML string.
+            </summary>
+            <typeparam name="T">Type of the object to serialize.</typeparam>
+            <param name="obj">Object instance to serialize.</param>
+            <returns>XML string.</returns>
+        </member>
+        <member name="M:ING.iDealAdvanced.SerializationHelper.GetSerializer``1">
+            <summary>
+            Get a <see cref="T:System.Xml.Serialization.XmlSerializer"/> that can serialize objects of the given type.
+            </summary>
+            <typeparam name="T">Type of the object to serialize.</typeparam>
+            <returns>Xml Serializer for the object type.</returns>
+        </member>
+        <member name="M:ING.iDealAdvanced.SerializationHelper.DeserializeObject``1(System.String)">
+            <summary>
+            Deserializes an XML string to an Object.
+            </summary>
+            <typeparam name="T">Type of the object to deserialize.</typeparam>
+            <param name="xmlString">XML string to deserialize.</param>
+            <returns>Object created from XML string.</returns>
+        </member>
+        <member name="T:ING.iDealAdvanced.Data.Transaction">
+            <summary>
+            This class represents an iDEAL transaction.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">Input is empty or null.</exception>
+            <exception cref="T:System.ArgumentException">Input contains characters that are not in the allowed character set.</exception>
+        </member>
+        <member name="M:ING.iDealAdvanced.Data.Transaction.#ctor">
+            <summary>
+            Default constructor.
+            </summary>
+        </member>
+        <member name="M:ING.iDealAdvanced.Data.Transaction.ToString">
+            <summary>
+            Formats the Transaction as a string.
+            </summary>
+            <returns>Transaction formatted as a string.</returns>
+        </member>
+        <member name="M:ING.iDealAdvanced.Data.Transaction.ValidateString(System.String,System.String)">
+            <summary>
+            Validate an input string against the set of allowed characters.
+            </summary>
+            <param name="name">Property name that will be used in error message.</param>
+            <param name="text">String value to check.</param>
+            <exception cref="T:System.ArgumentException">Input contains characters that are not in the allowed character set.</exception>
+        </member>
+        <member name="P:ING.iDealAdvanced.Data.Transaction.Status">
+            <summary>
+            Gets or sets the <see cref="T:ING.iDealAdvanced.Data.Transaction.TransactionStatus"/> for the transaction.
+            </summary>
+        </member>
+        <member name="P:ING.iDealAdvanced.Data.Transaction.Id">
+            <summary>
+            Gets the transaction ID.
+            </summary>
+        </member>
+        <member name="P:ING.iDealAdvanced.Data.Transaction.Amount">
+            <summary>
+            Gets or sets the transaction amount in cents.
+            </summary>
+        </member>
+        <member name="P:ING.iDealAdvanced.Data.Transaction.Description">
+            <summary>
+            Gets or sets the description for the transaction.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">Input is empty or null.</exception>
+            <exception cref="T:System.ArgumentException">Input contains characters that are not in the allowed character set.</exception>
+        </member>
+        <member name="P:ING.iDealAdvanced.Data.Transaction.EntranceCode">
+            <summary>
+            Gets or sets the entrance code for the transaction.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">Input is empty or null.</exception>
+            <exception cref="T:System.ArgumentException">Input contains characters that are not in the allowed character set.</exception>
+        </member>
+        <member name="P:ING.iDealAdvanced.Data.Transaction.PurchaseId">
+            <summary>
+            Gets or sets the purchase ID for the transaction.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">Input is empty or null.</exception>
+            <exception cref="T:System.ArgumentException">Input contains characters that are not in the allowed character set.</exception>
+        </member>
+        <member name="P:ING.iDealAdvanced.Data.Transaction.IssuerId">
+            <summary>
+            Gets or sets the issuer ID.
+            </summary>
+        </member>
+        <member name="P:ING.iDealAdvanced.Data.Transaction.IssuerAuthenticationUrl">
+            <summary>
+            Gets the Issuer authentication Url.
+            </summary>
+        </member>
+        <member name="P:ING.iDealAdvanced.Data.Transaction.ConsumerName">
+            <summary>
+            Gets the consumer name.
+            </summary>
+        </member>
+        <member name="P:ING.iDealAdvanced.Data.Transaction.ConsumerAccountNumber">
+            <summary>
+            Gets the consumer account number.
+            </summary>
+        </member>
+        <member name="P:ING.iDealAdvanced.Data.Transaction.ConsumerCity">
+            <summary>
+            Gets the consumer city.
+            </summary>
+        </member>
+        <member name="P:ING.iDealAdvanced.Data.Transaction.AcquirerId">
+            <summary>
+            Gets the acquirer Id.
+            </summary>
+        </member>
+        <member name="P:ING.iDealAdvanced.Data.Transaction.Fingerprint">
+            <summary>
+            Gets the transaction fingerprint.
+            </summary>
+        </member>
+        <member name="P:ING.iDealAdvanced.Data.Transaction.SignatureValue">
+            <summary>
+            Gets the transaction signature.
+            </summary>
+        </member>
+        <member name="T:ING.iDealAdvanced.Data.Transaction.TransactionStatus">
+            <summary>
+            Enum containing transaction statuses.
+            </summary>
+        </member>
+        <member name="F:ING.iDealAdvanced.Data.Transaction.TransactionStatus.Open">
+            <summary>
+            Open.
+            </summary>
+        </member>
+        <member name="F:ING.iDealAdvanced.Data.Transaction.TransactionStatus.Success">
+            <summary>
+            Completed sucessfully.
+            </summary>
+        </member>
+        <member name="F:ING.iDealAdvanced.Data.Transaction.TransactionStatus.Cancelled">
+            <summary>
+            Cancelled.
+            </summary>
+        </member>
+        <member name="F:ING.iDealAdvanced.Data.Transaction.TransactionStatus.Expired">
+            <summary>
+            Expired.
+            </summary>
+        </member>
+        <member name="F:ING.iDealAdvanced.Data.Transaction.TransactionStatus.Failure">
+            <summary>
+            Failed.
+            </summary>
+        </member>
+    </members>
+</doc>
