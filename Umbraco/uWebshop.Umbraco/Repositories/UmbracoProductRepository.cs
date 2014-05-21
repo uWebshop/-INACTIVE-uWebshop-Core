@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Xml.Serialization;
@@ -88,14 +89,19 @@ namespace uWebshop.Umbraco.Repositories
 			product.Length = StoreHelper.GetMultiStoreDoubleValue(_aliasses.length, localization, fields);
 			product.Height = StoreHelper.GetMultiStoreDoubleValue(_aliasses.height, localization, fields);
 
-			var vatProperty = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.vat, localization, fields);
-			decimal vat;
-			if (!string.IsNullOrEmpty(vatProperty) && decimal.TryParse(vatProperty, out vat))
-				product.Vat = vat;
-			else
-			{
-				product.Vat = store.GlobalVat;
-			}
+            var vatProperty = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.vat, localization, fields);
+		    if (!string.IsNullOrEmpty(vatProperty))
+		    {
+		        vatProperty = vatProperty.Replace(',', '.');
+                
+		        var vat = Convert.ToDecimal(vatProperty, CultureInfo.InvariantCulture);
+
+		        product.Vat = vat;
+		    }
+		    else
+            {
+                product.Vat = store.GlobalVat;
+            }
 
 			var stockStatus = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.stockStatus, localization, fields);
 			if (stockStatus == "default" || stockStatus == string.Empty)

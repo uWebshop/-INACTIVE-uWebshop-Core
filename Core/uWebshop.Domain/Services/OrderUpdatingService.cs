@@ -99,10 +99,8 @@ namespace uWebshop.Domain.Services
 			{
 				throw new ArgumentException("itemCount can't be smaller than 0");
 			}
-
-			// todo: make it possible to have multiple products with only difference the text or the image id
-
-			Log.Instance.LogDebug("AddOrUpdateOrderLine Before action");
+            
+            Log.Instance.LogDebug("AddOrUpdateOrderLine Before action");
 
 			var variants = variantsList.Where(v => v != 0).OrderBy(v => v);
 
@@ -232,6 +230,8 @@ namespace uWebshop.Domain.Services
 						orderLine.ProductInfo.ProductVariants = variants.Select(
 							variant => new ProductVariantInfo(DomainHelper.GetProductVariantById(variant), orderLine.ProductInfo, itemCount)).ToList();
 					}
+
+
 
 					orderLine.ProductInfo.ChangedOn = DateTime.Now;
 					orderLine.ProductInfo.ItemCount = itemCount;

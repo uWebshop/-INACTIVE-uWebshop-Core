@@ -117,8 +117,25 @@ namespace uWebshop.Domain
 			Id = productVariant.Id;
 			Title = productVariant.Title;
 			SKU = productVariant.SKU;
-			Group = productVariant.Group;
-			Weight = productVariant.Weight;
+
+		    var groupname = string.Empty;
+		    if (string.IsNullOrEmpty(productVariant.Group))
+		    {
+                var productVariantGroup = DomainHelper.GetProductVariantGroupById(productVariant.ParentId);
+
+		        if (productVariantGroup != null)
+		        {
+		            groupname = productVariantGroup.Title;
+		        }
+		    }
+		    else
+		    {
+		        groupname = productVariant.Group;
+		    }
+
+		    Group = groupname;
+
+		    Weight = productVariant.Weight;
 			Length = productVariant.Length;
 			Height = productVariant.Height;
 			Width = productVariant.Width;

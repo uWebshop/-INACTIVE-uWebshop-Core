@@ -50,7 +50,7 @@ namespace uWebshop.Umbraco
 				return null;
 			var filter = searcher.RawQuery("__NodeId:" + documentId);
 			var searchResults = ExamineManager.Instance.SearchProviderCollection[UwebshopConfiguration.Current.ExamineSearcher].Search(filter);
-
+            
 			return searchResults.FirstOrDefault();
 		}
 

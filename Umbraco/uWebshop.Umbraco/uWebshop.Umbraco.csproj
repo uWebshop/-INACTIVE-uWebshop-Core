@@ -282,6 +282,10 @@
       <Project>{d08e0834-b25a-40a5-9c8e-31d4fb050df4}</Project>
       <Name>uWebshop.Services</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Various\uWebshop.PackageGarden\uWebshop.PackageGarden.csproj">
+      <Project>{9b79d05e-64d0-4ea0-92f0-8262cf39eb00}</Project>
+      <Name>uWebshop.PackageGarden</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="DataTypesv7\Countries\countries.controller.js" />

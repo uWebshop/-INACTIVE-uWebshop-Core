@@ -93,5 +93,14 @@ namespace uWebshop.Test.Domain.Helper_classes.AddProductTest
 
 			_mock.Verify(a => a.AddOrUpdateOrderLine(It.IsAny<OrderInfo>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), 9, It.IsAny<IEnumerable<int>>(), It.IsAny<Dictionary<string, string>>()), Times.Exactly(1));
 		}
+
+		[Test]
+		public void CheckForRaceConditions()
+		{
+			_requestParameters.Add("orderLineId", "2");
+
+			_basketRequestHandler.AddProduct(_requestParameters, null);
+
+		}
 	}
 }

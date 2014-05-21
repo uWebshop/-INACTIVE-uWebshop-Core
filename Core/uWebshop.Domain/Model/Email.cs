@@ -108,7 +108,8 @@ namespace uWebshop.Domain
 					template = StoreHelper.GetMultiStoreItem(Id, "template");
 				}
 
-				if (string.IsNullOrEmpty(template) || template.All(char.IsDigit))
+				if (string.IsNullOrEmpty(template) || template.All(char.IsDigit) 
+					|| (template[0] == '-' && template.Skip(1).All(char.IsDigit)) || template == "-1")
 				{
 					template = StoreHelper.GetMultiStoreItem(Id, "xslttemplate");
 				}

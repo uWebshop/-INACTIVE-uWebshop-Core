@@ -118,9 +118,15 @@ namespace uWebshop.Umbraco.Repositories
 				}
 				if (fields.ContainsKey("globalVat"))
 				{
-					decimal globalVat;
-					if (decimal.TryParse(fields.GetStringValue("globalVat"), out globalVat))
-						store.GlobalVat = globalVat;
+				    var vatProperty = fields.GetStringValue("globalVat");
+                    if (!string.IsNullOrEmpty(vatProperty))
+                    {
+                        vatProperty = vatProperty.Replace(',', '.');
+
+                        var vat = Convert.ToDecimal(vatProperty, CultureInfo.InvariantCulture);
+
+                        store.GlobalVat = vat;
+                    }
 				}
 				if (fields.ContainsKey("storeCulture"))
 				{

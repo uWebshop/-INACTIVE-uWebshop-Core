@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Configuration;
@@ -1705,105 +1706,111 @@ namespace uWebshop.Domain.Businesslogic
 			return handleObject;
 		}
 
+		private ConcurrentDictionary<Guid, object> _orderLocks = new ConcurrentDictionary<Guid, object>();
+		private object GetLockForOrder(Guid order)
+		{
+			return _orderLocks.GetOrAdd(order, new object());
+		}
+
 		internal HandleObject AddProduct(NameValueCollection requestParameters, Uri requestUri)
 		{
-			var order = GetCreateOrderOrWishList(requestParameters);
-
-			var handleObject = new HandleObject {Action = "AddProduct", Url = requestUri};
-
-			var orderUpdater = IO.Container.Resolve<IOrderUpdatingService>();
-
-			string productIdKey = requestParameters.AllKeys.FirstOrDefault(x => x.ToLower() == "productid");
-			string orderLineIdKey = requestParameters.AllKeys.FirstOrDefault(x => x.ToLower() == "orderlineid");
-
-			string productIdValue = requestParameters[productIdKey];
-			string orderlineIdValue = requestParameters[orderLineIdKey];
-
-			int productId = 0;
-			int orderLineId = 0;
-
-			int.TryParse(productIdValue, out productId);
-			int.TryParse(orderlineIdValue, out orderLineId);
-
-			var result = new Dictionary<string, string>();
-
-			if (productId <= 0 && orderLineId <= 0)
+			// you want to lock the order here
+			lock (GetLockForOrder(IO.Container.Resolve<IOrderService>().GetOrderIdFromOrderIdCookie()))
 			{
-				Log.Instance.LogError("ADD TO BASKET ERROR: productId <= 0 && orderLineId <= 0");
-				if (HttpContext.Current != null)
+				var order = GetCreateOrderOrWishList(requestParameters);
+
+				var handleObject = new HandleObject {Action = "AddProduct", Url = requestUri};
+
+				var orderUpdater = IO.Container.Resolve<IOrderUpdatingService>();
+
+				string productIdKey = requestParameters.AllKeys.FirstOrDefault(x => x.ToLower() == "productid");
+				string orderLineIdKey = requestParameters.AllKeys.FirstOrDefault(x => x.ToLower() == "orderlineid");
+
+				string productIdValue = requestParameters[productIdKey];
+				string orderlineIdValue = requestParameters[orderLineIdKey];
+
+				int productId = 0;
+				int orderLineId = 0;
+
+				int.TryParse(productIdValue, out productId);
+				int.TryParse(orderlineIdValue, out orderLineId);
+
+				var result = new Dictionary<string, string>();
+
+				if (productId <= 0 && orderLineId <= 0)
 				{
-					Session.Add(Constants.BasketActionResult, BasketActionResult.NoProductOrOrderLineId);
+					Log.Instance.LogError("ADD TO BASKET ERROR: productId <= 0 && orderLineId <= 0");
+					if (HttpContext.Current != null)
+					{
+						Session.Add(Constants.BasketActionResult, BasketActionResult.NoProductOrOrderLineId);
+					}
+					result.Add(Constants.BasketActionResult, BasketActionResult.NoProductOrOrderLineId.ToString());
+					handleObject.Success = false;
+					SetBasket(handleObject, order);
+					return handleObject;
 				}
-				result.Add(Constants.BasketActionResult, BasketActionResult.NoProductOrOrderLineId.ToString());
-				handleObject.Success = false;
-				SetBasket(handleObject, order);
+
+				string actionKey = requestParameters.AllKeys.FirstOrDefault(x => x.ToLower() == "action");
+				string actionValue = requestParameters[actionKey];
+				string action = !string.IsNullOrEmpty(actionValue) ? actionValue : string.Empty;
+
+				string quantityKey = requestParameters.AllKeys.FirstOrDefault(x => x.ToLower() == "quantity");
+				string quantityValue = requestParameters[quantityKey];
+
+				int quantity;
+				int.TryParse(quantityValue, out quantity);
+
+				var variants = requestParameters.Keys.Cast<string>().Where(key => key.ToLower().StartsWith("variant")).Select(key => Common.Helpers.ParseInt(requestParameters[key])).ToList();
+
+				// todo: varianten als key/value pair met groepnaam zodat we dit op order kunnen checken dat er maar 1 per groep is?
+				//var variantGroupDictionary = new Dictionary<string, int>();
+				//foreach(var variantGroupKey in requestParameters.AllKeys.Where(x => x.StartsWith("variant")))
+				//{
+				//	var variantIdValue = requestParameters[variantGroupKey];
+				//	int variantId;
+				//	int.TryParse(variantIdValue, out variantId);
+
+				//	if (variantId != 0)
+				//	{
+				//		variantGroupDictionary.Add(variantGroupKey, variantId);
+				//	}
+				//}
+
+				List<string> orderlineDetailsQueryStringCollection = requestParameters.AllKeys.Where(x => x != null).ToList();
+
+				Dictionary<string, string> fields = orderlineDetailsQueryStringCollection.Where(s => !string.IsNullOrEmpty(requestParameters[s])).ToDictionary(s => s, s => requestParameters[s]);
+
+				if (order != null)
+				{
+					Log.Instance.LogDebug("ADD TO BASKET DEBUG order: " + order.UniqueOrderId + " orderLineId: " + orderLineId + " productId: " + productId + " action: " + action + " quantity: " + quantity + " variantsCount: " + variants.Count() + " fieldsCount: " + fields.Count());
+
+					orderUpdater.AddOrUpdateOrderLine(order, orderLineId, productId, action, quantity, variants, fields);
+					// unit test dat dit aangeroepen wordt
+					orderUpdater.Save(order);
+
+					if (HttpContext.Current != null)
+					{
+						Session.Add(order.Status == OrderStatus.Wishlist ? Constants.WishlistActionResult : Constants.BasketActionResult, BasketActionResult.Success);
+					}
+					result.Add(order.Status == OrderStatus.Wishlist ? Constants.WishlistActionResult : Constants.BasketActionResult, BasketActionResult.Success.ToString());
+					handleObject.Success = true;
+					SetBasket(handleObject, order);
+				}
+				else
+				{
+					if (HttpContext.Current != null)
+					{
+						Session.Add(Constants.WishlistActionResult, BasketActionResult.OrderNull);
+						Session.Add(Constants.BasketActionResult, BasketActionResult.OrderNull);
+					}
+					result.Add(Constants.WishlistActionResult, BasketActionResult.OrderNull.ToString());
+					result.Add(Constants.BasketActionResult, BasketActionResult.OrderNull.ToString());
+					handleObject.Success = false;
+
+				}
+				handleObject.Messages = result;
 				return handleObject;
 			}
-
-			string actionKey = requestParameters.AllKeys.FirstOrDefault(x => x.ToLower() == "action");
-			string actionValue = requestParameters[actionKey];
-			string action = !string.IsNullOrEmpty(actionValue) ? actionValue : string.Empty;
-
-			string quantityKey = requestParameters.AllKeys.FirstOrDefault(x => x.ToLower() == "quantity");
-			string quantityValue = requestParameters[quantityKey];
-
-			int quantity;
-			int.TryParse(quantityValue, out quantity);
-
-			var variants = requestParameters.Keys.Cast<string>().Where(key => key.ToLower().StartsWith("variant")).Select(key => Common.Helpers.ParseInt(requestParameters[key])).ToList();
-
-			// todo: varianten als key/value pair met groepnaam zodat we dit op order kunnen checken dat er maar 1 per groep is?
-			//var variantGroupDictionary = new Dictionary<string, int>();
-			//foreach(var variantGroupKey in requestParameters.AllKeys.Where(x => x.StartsWith("variant")))
-			//{
-			//	var variantIdValue = requestParameters[variantGroupKey];
-			//	int variantId;
-			//	int.TryParse(variantIdValue, out variantId);
-
-			//	if (variantId != 0)
-			//	{
-			//		variantGroupDictionary.Add(variantGroupKey, variantId);
-			//	}
-			//}
-
-			List<string> orderlineDetailsQueryStringCollection = requestParameters.AllKeys.Where(x => x != null).ToList();
-
-			Dictionary<string, string> fields = orderlineDetailsQueryStringCollection.Where(s => !string.IsNullOrEmpty(requestParameters[s])).ToDictionary(s => s, s => requestParameters[s]);
-
-			if (order != null)
-			{
-				Log.Instance.LogDebug("ADD TO BASKET DEBUG order: " + order.UniqueOrderId + " orderLineId: " + orderLineId +
-				                      " productId: " + productId + " action: " + action + " quantity: " + quantity +
-				                      " variantsCount: " + variants.Count() + " fieldsCount: " + fields.Count());
-
-				orderUpdater.AddOrUpdateOrderLine(order, orderLineId, productId, action, quantity, variants, fields);
-				// unit test dat dit aangeroepen wordt
-				orderUpdater.Save(order);
-
-				if (HttpContext.Current != null)
-				{
-					Session.Add(order.Status == OrderStatus.Wishlist ? Constants.WishlistActionResult : Constants.BasketActionResult, BasketActionResult.Success);
-				}
-				result.Add(
-					order.Status == OrderStatus.Wishlist ? Constants.WishlistActionResult : Constants.BasketActionResult,
-					BasketActionResult.Success.ToString());
-				handleObject.Success = true;
-                SetBasket(handleObject, order);
-			}
-			else
-			{
-				if (HttpContext.Current != null)
-				{
-					Session.Add(Constants.WishlistActionResult, BasketActionResult.OrderNull);
-					Session.Add(Constants.BasketActionResult, BasketActionResult.OrderNull);
-				}
-				result.Add(Constants.WishlistActionResult, BasketActionResult.OrderNull.ToString());		
-				result.Add(Constants.BasketActionResult, BasketActionResult.OrderNull.ToString());
-				handleObject.Success = false;
-						
-			}
-			handleObject.Messages = result;
-			return handleObject;
 		}
 	}
 }

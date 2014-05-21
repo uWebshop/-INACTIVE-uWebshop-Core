@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Umbraco.Core;
+using Umbraco.Core.Configuration;
 using Umbraco.Core.Models;
 using Umbraco.Core.Services;
 using uWebshop.Domain;
@@ -291,6 +292,69 @@ namespace uWebshop.Umbraco6
             
             var contentTypeList = new List<IContentType>();
 
+            #region icons
+            var uwbsDemoMasterIcon = string.Format("icon-uwebshop-{0}", IconClass.uwebshoplogo);
+            if (UmbracoVersion.Current.Major < 7)
+            {
+                uwbsDemoMasterIcon = "bank.png";
+            }
+
+            var uwbsDemoHomePageIcon = "icon-home";
+            if (UmbracoVersion.Current.Major < 7)
+            {
+                uwbsDemoHomePageIcon = "bank.png";
+            }
+         
+            var uwbsDemoTextPageIcon = "icon-document";
+            if (UmbracoVersion.Current.Major < 7)
+            {
+                uwbsDemoTextPageIcon = ".sprTreeDoc";
+            }
+
+            var uwbsDemoBasketPageIcon = string.Format("icon-uwebshop-{0}", IconClass.shoppingcart);
+            if (UmbracoVersion.Current.Major < 7)
+            {
+                uwbsDemoBasketPageIcon = "wallet.png";
+            }
+
+            var uwbsDemoCheckoutCustomerPageIcon = "icon-users";
+            if (UmbracoVersion.Current.Major < 7)
+            {
+                uwbsDemoCheckoutCustomerPageIcon = ".sprTreeUser";
+            }
+
+            var uwbsDemoCheckoutPageIcon = string.Format("icon-uwebshop-{0}", IconClass.shoppingcart);
+            if (UmbracoVersion.Current.Major < 7)
+            {
+                uwbsDemoCheckoutPageIcon = "credit-card.png";
+            }
+
+            var uwbsDemoProfilePageIcon = string.Format("icon-uwebshop-{0}", IconClass.shoppingcart);
+            if (UmbracoVersion.Current.Major < 7)
+            {
+                uwbsDemoProfilePageIcon = ".sprTreeUser";
+            }
+
+            var uwbsDemoProfileOrdersIcon = string.Format("icon-uwebshop-{0}", IconClass.dollar);
+            if (UmbracoVersion.Current.Major < 7)
+            {
+                uwbsDemoProfileOrdersIcon = "clipboard-invoice.png";
+            }
+
+            var uwbsDemoProfileForgottenIcon = "icon-bell";
+            if (UmbracoVersion.Current.Major < 7)
+            {
+                uwbsDemoProfileForgottenIcon = ".sprTreeUser";
+            }
+            var uwbsDemoProfileWishlistIcon = string.Format("icon-uwebshop-{0}", IconClass.clipboard);
+            if (UmbracoVersion.Current.Major < 7)
+            {
+                uwbsDemoProfileWishlistIcon = "clipboard-invoice.png";
+            }
+            
+            #endregion
+
+
             // create master
             var uwbsDemoMaster = contentTypeService.GetContentType("uwbsDemoMaster") ?? new ContentType(-1)
             {
@@ -298,7 +362,7 @@ namespace uWebshop.Umbraco6
                 Name = "uWebshop Demosite Master",
                 Description = "#DemositeMasterDescription",
                 Thumbnail = "Folder.png",
-                Icon = string.Format("icon-uWebshop-{0}", IconClass.uwebshoplogo),
+                Icon = uwbsDemoMasterIcon,
                 SortOrder = 1,
                 AllowedContentTypes = new List<ContentTypeSort>(),
                 AllowedTemplates = new List<ITemplate>(),
@@ -323,7 +387,7 @@ namespace uWebshop.Umbraco6
                 Name = "uWebshop Demosite Home",
                 Description = "#DemositeHomeDescription",
                 Thumbnail = "Folder.png",
-                Icon = "icon-home",
+                Icon = uwbsDemoHomePageIcon,
                 SortOrder = 1,
                 AllowedContentTypes = new List<ContentTypeSort>(),
                 AllowedTemplates = new List<ITemplate>() { homepageTemplate },
@@ -351,7 +415,7 @@ namespace uWebshop.Umbraco6
                 Name = "uWebshop Demosite Textpage",
                 Description = "#DemositeTextpageDescription",
                 Thumbnail = "Folder.png",
-                Icon = "icon-document",
+                Icon = uwbsDemoTextPageIcon,
                 SortOrder = 1,
                 AllowedContentTypes = new List<ContentTypeSort>(),
                 AllowedTemplates = new List<ITemplate>(){ textpageTemplate },
@@ -365,7 +429,7 @@ namespace uWebshop.Umbraco6
                 Name = "uWebshop Demosite Basket",
                 Description = "#DemositeBasketPageDescription",
                 Thumbnail = "Folder.png",
-                Icon = string.Format("icon-uWebshop-{0}", IconClass.shoppingcart),
+                Icon = uwbsDemoBasketPageIcon,
                 SortOrder = 1,
                 AllowedContentTypes = new List<ContentTypeSort>(),
                 AllowedTemplates = new List<ITemplate>() { basketTemplate },
@@ -379,7 +443,7 @@ namespace uWebshop.Umbraco6
                 Name = "uWebshop Demosite Checkout",
                 Description = "#DemositeCheckoutPageDescription",
                 Thumbnail = "Folder.png",
-                Icon = string.Format("icon-uWebshop-{0}", IconClass.clipboard),
+                Icon = uwbsDemoCheckoutPageIcon,
                 SortOrder = 1,
                 AllowedContentTypes = new List<ContentTypeSort>(),
                 AllowedTemplates = new List<ITemplate>() { chekoutOverviewTemplate },
@@ -393,7 +457,7 @@ namespace uWebshop.Umbraco6
                 Name = "uWebshop Demosite Customer Checkout",
                 Description = "#DemositeCustomerCheckoutPageDescription",
                 Thumbnail = "Folder.png",
-                Icon = "icon-users",
+                Icon = uwbsDemoCheckoutCustomerPageIcon,
                 SortOrder = 1,
                 AllowedContentTypes = new List<ContentTypeSort>(),
                 AllowedTemplates = new List<ITemplate>() { chekoutCustomerTemplate },
@@ -407,7 +471,7 @@ namespace uWebshop.Umbraco6
                 Name = "uWebshop Demosite Profile",
                 Description = "#DemositeProfilePageDescription",
                 Thumbnail = "Folder.png",
-                Icon = "icon-user",
+                Icon = uwbsDemoProfilePageIcon,
                 SortOrder = 1,
                 AllowedContentTypes = new List<ContentTypeSort>(),
                 AllowedTemplates = new List<ITemplate>() { profileLoginCreateTemplate },
@@ -421,7 +485,7 @@ namespace uWebshop.Umbraco6
                 Name = "uWebshop Demosite Profile Orders",
                 Description = "#DemositeProfileOrdersPageDescription",
                 Thumbnail = "Folder.png",
-                Icon = string.Format("icon-uWebshop-{0}", IconClass.dollar),
+                Icon = uwbsDemoProfileOrdersIcon,
                 SortOrder = 1,
                 AllowedContentTypes = new List<ContentTypeSort>(),
                 AllowedTemplates = new List<ITemplate>() { profileOrdersTemplate },
@@ -435,7 +499,7 @@ namespace uWebshop.Umbraco6
                 Name = "uWebshop Demosite Password Forgotten",
                 Description = "#DemositePasswordForgottenPageDescription",
                 Thumbnail = "Folder.png",
-                Icon = "icon-bell",
+                Icon = uwbsDemoProfileForgottenIcon,
                 SortOrder = 1,
                 AllowedContentTypes = new List<ContentTypeSort>(),
                 AllowedTemplates = new List<ITemplate>() { profilePasswordForgottenTemplate },
@@ -449,7 +513,7 @@ namespace uWebshop.Umbraco6
                 Name = "uWebshop Demosite Profile Wishlist",
                 Description = "#DemositeOrdersWishlistPageDescription",
                 Thumbnail = "Folder.png",
-                Icon = string.Format("icon-uWebshop-{0}", IconClass.clipboard),
+                Icon = uwbsDemoProfileWishlistIcon,
                 SortOrder = 1,
                 AllowedContentTypes = new List<ContentTypeSort>(),
                 AllowedTemplates = new List<ITemplate>() { profileProfileWishlistTemplate },
@@ -612,8 +676,7 @@ namespace uWebshop.Umbraco6
 
 	    public bool InstallStarterkit(string starterkit, out bool storePresent)
 	    {
-
-	        var installNormalContent = InstallDemoShopContent();
+            InstallDemoShopContent();
 
 	        storePresent = false;
 	        var contentService = ApplicationContext.Current.Services.ContentService;
@@ -892,6 +955,8 @@ namespace uWebshop.Umbraco6
 
 			contentService.Save(contentToSaveAndPublish);
 			contentToSaveAndPublish.ForEach(content => contentService.Publish(content));
+
+            
 
 			contentService.RePublishAll();
 

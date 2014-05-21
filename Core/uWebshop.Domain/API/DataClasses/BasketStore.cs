@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.Serialization;
 using uWebshop.Domain;
+using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
 
 namespace uWebshop.API
@@ -124,7 +125,12 @@ namespace uWebshop.API
 			get { return _store.StoreURL; }
 		}
 
-		[IgnoreDataMember]
+        public IEnumerable<int> GetConnectedNodes
+	    {
+            get { return _store.GetConnectedNodes; }
+	    }
+
+	    [IgnoreDataMember]
 		public bool Disabled
 		{
 			get { return _store.Disabled; }

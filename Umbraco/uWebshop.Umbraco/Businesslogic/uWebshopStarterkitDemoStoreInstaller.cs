@@ -35,8 +35,8 @@ namespace uWebshop.Starterkits.DemoStore
 		{
 			bool storePresent;
 			IO.Container.Resolve<ICMSInstaller>().InstallStarterkit("demo", out storePresent);
-			
-			var admin = new User(0);
+
+		    var admin = User.GetUser(0);
 			var configuration = WebConfigurationManager.OpenWebConfiguration("~");
 
 			//  change UmbracoMembershipProvider to this:
@@ -129,8 +129,22 @@ namespace uWebshop.Starterkits.DemoStore
 			// generate new membertype based on properties above
 			// add them to both customer profile and order
 
-			var customersType = MemberType.GetByAlias("Customers") ?? MemberType.MakeNew(admin, "Customers");
-			var uwbsOrdersType = DocumentType.GetByAlias(Order.NodeAlias);
+			var customersType = MemberType.GetByAlias("Customers");
+
+		    if (customersType == null)
+		    {
+		        try
+		        {
+		            customersType = MemberType.MakeNew(admin, "Customers");
+		        }
+		        catch
+		        {
+                    Log.Instance.LogError("Umbraco Failed to create 'Customers' MemberType");
+		            // Umbraco bug with SQLCE + MemberType.MakeNew requires this catch, membertype will not be created...
+		        }
+		    }
+
+		    var uwbsOrdersType = DocumentType.GetByAlias(Order.NodeAlias);
 
 			if (customersType != null && uwbsOrdersType != null)
 			{

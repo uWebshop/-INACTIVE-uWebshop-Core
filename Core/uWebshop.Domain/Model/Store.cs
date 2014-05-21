@@ -93,6 +93,17 @@ namespace uWebshop.Domain
 		[ContentPropertyType(Alias = "countryCode", DataType = DataType.Countries, Tab = ContentTypeTab.Global, Name = "#CountryCode", Description = "#CountryCodeDescription")]
 		public string CountryCode { get; set; }
 
+        /// <summary>
+        /// Get the Id's of the nodes that have this store set in the store picker
+        /// </summary>
+        public IEnumerable<int> GetConnectedNodes
+        {
+            get
+            {
+                return IO.Container.Resolve<ICMSEntityRepository>().GetNodesWithStorePicker(Id).Select(result => result != null ? result.Id : 0);
+            }
+        } 
+
 		/// <summary>
 		/// Gets or sets the default country code.
 		/// </summary>

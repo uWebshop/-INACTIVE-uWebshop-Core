@@ -560,16 +560,12 @@ namespace uWebshop.Domain.Helpers
 									Log.Instance.LogError("HandlePaymentRequest PaymentTransactionMethod.QueryString FAILED");
 									return "failed";
 								case PaymentTransactionMethod.ServerPost:
-									
-									var paymentRequestHandlers = PaymentProviderHelper.GetAllPaymentRequestHandlers().FirstOrDefault(x => x.GetName().ToLower() == paymentProvider.Name.ToLower());
 
-									Log.Instance.LogDebug("HandlePaymentRequest PaymentProviderHelper.GetAllPaymentRequestHandlers().Count(): " + PaymentProviderHelper.GetAllPaymentRequestHandlers().Count());
-									
-									if (paymentRequestHandlers != null)
+                                    if (handler != null)
 									{
-										Log.Instance.LogDebug("HandlePaymentRequest paymentRequestHandlers.GetName(): " + paymentRequestHandlers.GetName());
+                                        Log.Instance.LogDebug("HandlePaymentRequest paymentRequestHandlers.GetName(): " + handler.GetName());
 
-										string nextURL = paymentRequestHandlers.GetPaymentUrl(orderInfo);
+                                        string nextURL = handler.GetPaymentUrl(orderInfo);
 
 										Log.Instance.LogDebug("HandlePaymentRequest PaymentTransactionMethod.ServerPost nextURL: " + nextURL);
 
@@ -595,6 +591,11 @@ namespace uWebshop.Domain.Helpers
 								case PaymentTransactionMethod.WebClient:
 									return "webclient";
                                 case PaymentTransactionMethod.Inline:
+
+                                    if (handler != null)
+							        {
+                                        return handler.GetPaymentUrl(orderInfo);
+							        }
                                     return "inline";
 							}
 						}
