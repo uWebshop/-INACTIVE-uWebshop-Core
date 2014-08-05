@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
+using System.Web.Security;
 using System.Xml;
 using umbraco;
 using uWebshop.Domain.BaseClasses;
@@ -253,7 +254,8 @@ namespace uWebshop.Umbraco
 			return MemberType.GetAll.Select(mt => new UmbracoMemberAdaptor {Alias = mt.Alias}).ToList<ICustomerType>();
 		}
 
-		public string GetUrlForContentWithId(int id)
+	 
+	    public string GetUrlForContentWithId(int id)
 		{
 			return library.NiceUrl(id);
 		}

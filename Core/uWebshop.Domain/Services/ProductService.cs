@@ -21,7 +21,7 @@ namespace uWebshop.Domain.Services
 			return _stockService.GetStockForUwebshopEntityWithId(productId);
 		}
 
-		public ProductInfo CreateProductInfoByProductId(int productId, IOrderInfo order, ILocalization localization, int itemCount)
+		public ProductInfo CreateProductInfoByProductId(int productId, OrderInfo order, ILocalization localization, int itemCount)
 		{
 			return new ProductInfo(GetById(productId, localization), order, itemCount);
 		}

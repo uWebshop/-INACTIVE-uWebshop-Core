@@ -66,7 +66,22 @@ namespace uWebshop.API
 		public List<Range> Ranges { get { return _discount.Ranges; } set { } }
 
 		[DataMember]
-		public string CouponCode { get { return _discount.CouponCode; } set { } }
+		public string CouponCode
+		{
+			get
+			{
+
+				var coupons = IO.Container.Resolve<ICouponCodeService>().GetAllForDiscount(_discount.OriginalId);
+				if (coupons.Any()) //
+				{
+					var availableCoupons = coupons.Where(c => c.NumberAvailable > 0).Select(c => c.CouponCode);
+					return availableCoupons.Intersect(_order.CouponCodes).FirstOrDefault();
+				}
+				return null;
+			}
+			set { }
+		}
+
 		[DataMember]
 		public int OriginalId { get { return _discount.OriginalId; } set { } }
 

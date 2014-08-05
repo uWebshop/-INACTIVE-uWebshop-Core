@@ -15,13 +15,13 @@ namespace uWebshop.Umbraco7.DataTypes.MultiNodePickers
                     { "startNode",  
                         new MultiNodePickerPreValues {
                             type = "content",
-                            query = "//*"
+                            query = "$root"
                         }  
                     }
                 };
         }
 
-        protected override global::Umbraco.Core.PropertyEditors.PreValueEditor CreatePreValueEditor()
+        protected override PreValueEditor CreatePreValueEditor()
         {
             return new MultiNodePickerPreValueEditor();
         }

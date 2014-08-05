@@ -11,20 +11,87 @@ namespace uWebshop.Package.Installer {
     
     
     public partial class uWebshopDashBoard {
+               
+        /// <summary>
+        /// pane1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::umbraco.uicontrols.Pane pane1;
+        
+        /// <summary>
+        /// uwbsVersionInfo control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
         protected global::System.Web.UI.WebControls.Literal uwbsVersionInfo;
+        
+        /// <summary>
+        /// panel3 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::umbraco.uicontrols.Pane panel3;
+        
+        /// <summary>
+        /// lblStorePicker control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblStorePicker;
+        
+        /// <summary>
+        /// phInstallStorePicker control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.PlaceHolder phInstallStorePicker;
+        
+        /// <summary>
+        /// btnInstallStorePicker control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnInstallStorePicker;
+        
+        /// <summary>
+        /// panel5 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::umbraco.uicontrols.Pane panel5;
+        
+        /// <summary>
+        /// panel6 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::umbraco.uicontrols.Pane panel6;
 
-	    protected global::umbraco.uicontrols.Pane pane1;
-
-	    protected global::umbraco.uicontrols.Pane panel3;
-		protected global::umbraco.uicontrols.Pane panel5;
-	    protected global::umbraco.uicontrols.Pane panel6;
-
-		protected global::System.Web.UI.WebControls.Label lblStorePicker;
-		protected global::System.Web.UI.WebControls.PlaceHolder phInstallStorePicker;
-		protected global::System.Web.UI.WebControls.Button btnInstallStorePicker;
-
-	    protected global::System.Web.UI.UpdatePanel ordersUpdatePanel;
-		protected global::System.Web.UI.UpdateProgress ordersUpdateProgress;
-		protected global::System.Web.UI.WebControls.Button upgradeToCurrentVersionButton;
+        /// <summary>
+        /// upgradeToCurrentVersionButton control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button upgradeToCurrentVersionButton;
+        
     }
 }

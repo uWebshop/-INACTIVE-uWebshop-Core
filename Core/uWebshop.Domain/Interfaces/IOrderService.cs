@@ -51,13 +51,6 @@ namespace uWebshop.Domain.Interfaces
 		/// <returns></returns>
 		bool OrderContainsItem(OrderInfo orderinfo, IEnumerable<int> itemIdsToCheck);
 
-		/// <summary>
-		/// Validates the order.
-		/// </summary>
-		/// <param name="orderInfo">The order information.</param>
-		/// <param name="writeToOrderValidation">if set to <c>true</c> [write automatic order validation].</param>
-		/// <returns></returns>
-		bool ValidateOrderLegacy(OrderInfo orderInfo);
 		List<OrderValidationError> ValidateOrder(OrderInfo orderInfo, bool confirmValidation = false);
 		List<OrderValidationError> ValidateGlobalValidations(OrderInfo orderInfo);
 		/// <summary>

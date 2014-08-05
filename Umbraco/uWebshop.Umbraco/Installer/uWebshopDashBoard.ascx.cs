@@ -23,8 +23,6 @@ namespace uWebshop.Package.Installer
 
 		protected void Page_Load(object sender, EventArgs e)
 		{
-			phInstallStorePicker.Controls.Add(NodePickerStore);
-
 			var path = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetName().CodeBase);
 
 			if (path != null)
@@ -38,7 +36,7 @@ namespace uWebshop.Package.Installer
 
 					if (uwbsVersionInfo != null)
 					{
-						uwbsVersionInfo.Text = string.Format("The installed uWebshop version is: {0}", versionInfo);
+						uwbsVersionInfo.Text = string.Format("{0}", versionInfo);
 					}
 				}
 			}

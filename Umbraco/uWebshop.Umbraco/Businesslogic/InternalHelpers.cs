@@ -41,7 +41,7 @@ namespace uWebshop.Umbraco.Businesslogic
 				{
 					valueList.AddRange(property.Split(',').ToList());
 				}
-				else if (property.Contains(" "))
+                else if (property.Contains(" ") && !property.Contains(","))
 				{
 					valueList.AddRange(property.Split(' ').ToList());
 				}

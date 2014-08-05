@@ -28,11 +28,11 @@ namespace uWebshop.Test.Integration.Domain.XML
 		[Test]
 		public void OrderHavingDiscount_ShouldRenderDiscountInformation()
 		{
+			var discount = DefaultFactoriesAndSharedFunctionality.CreateDefaultOrderDiscountWithPercentage(10);
+			DefaultFactoriesAndSharedFunctionality.SetDiscountsOnOrderInfo(null, discount);
 			var product = DefaultFactoriesAndSharedFunctionality.CreateProductInfo(1000, 1);
 			var orderInfo = DefaultFactoriesAndSharedFunctionality.CreateIncompleteOrderInfo(product);
 			orderInfo.SetCouponCode("bla");
-			var discount = DefaultFactoriesAndSharedFunctionality.CreateDefaultOrderDiscountWithPercentage(10);
-			DefaultFactoriesAndSharedFunctionality.SetDiscountsOnOrderInfo(orderInfo, discount);
 			var xml = DomainHelper.SerializeObjectToXmlString(orderInfo);
 			Console.WriteLine(xml);
 

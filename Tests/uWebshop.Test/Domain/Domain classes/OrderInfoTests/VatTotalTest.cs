@@ -77,7 +77,7 @@ namespace uWebshop.Test.Domain.Domain_classes
 			var summedParts = orderInfo.OrderLines.Sum(l => l.GetAmount(false, true, true));
 			Assert.AreEqual((1000 + 3500), summedParts);
 
-			summedParts = orderInfo.OrderDiscountEffects.GetDiscountedPrice(summedParts); // todo: add inclVat
+			summedParts = orderInfo.OrderDiscountEffects.GetDiscountedPrice(summedParts, summedParts); // todo: add inclVat
 			Assert.AreEqual((1000 + 3500) / 2, summedParts);
 
 

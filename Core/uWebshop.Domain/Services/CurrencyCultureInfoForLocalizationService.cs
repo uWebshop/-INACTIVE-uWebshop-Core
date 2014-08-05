@@ -19,6 +19,7 @@ namespace uWebshop.Domain.Services
 
 		public CultureInfo GetCurrencyCulture(ILocalization localization)
 		{
+			if (localization == null) throw new ArgumentNullException("localization");
 			var request = _requestService.Current;
 			CultureInfo result;
 			if (request.CurrencyCultures.TryGetValue(localization, out result))

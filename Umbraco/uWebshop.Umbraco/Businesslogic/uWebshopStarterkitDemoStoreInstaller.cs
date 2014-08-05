@@ -13,6 +13,7 @@ using umbraco.cms.businesslogic.member;
 using umbraco.cms.businesslogic.web;
 using uWebshop.Domain;
 using uWebshop.Domain.Interfaces;
+using uWebshop.Umbraco.Interfaces;
 using Log = uWebshop.Domain.Log;
 
 namespace uWebshop.Starterkits.DemoStore
@@ -33,6 +34,8 @@ namespace uWebshop.Starterkits.DemoStore
 
 		protected void Page_Load(object sender, EventArgs e)
 		{
+            var umbracoVersion = IO.Container.Resolve<IUmbracoVersion>();
+
 			bool storePresent;
 			IO.Container.Resolve<ICMSInstaller>().InstallStarterkit("demo", out storePresent);
 
@@ -154,21 +157,23 @@ namespace uWebshop.Starterkits.DemoStore
 				var shippingTab = uwbsOrdersType.getVirtualTabs.FirstOrDefault(x => x.Caption.ToLowerInvariant() == "shipping");
 				var shippingTabId = shippingTab == null ? uwbsOrdersType.AddVirtualTab("Shipping") : shippingTab.Id;
 
-
-				var stringDataType = DataTypeDefinition.GetAll().FirstOrDefault(x => x.UniqueId == new Guid("0cc0eba1-9960-42c9-bf9b-60e150b429ae"));
-                var textboxMultipleDataType = DataTypeDefinition.GetAll().SingleOrDefault(x => x.Text == "Textbox multiple");
+                // todo V7 version!
+                var stringDataType = umbracoVersion.GetDataTypeDefinition("Umbraco.Textbox", new Guid("0cc0eba1-9960-42c9-bf9b-60e150b429ae"));
+                var stringDataTypeDef = new DataTypeDefinition(stringDataType.Id);
+                var textboxMultipleDataType = umbracoVersion.GetDataTypeDefinition("Umbraco.TextboxMultiple", new Guid("c6bac0dd-4ab9-45b1-8e30-e4b619ee5da3"));
+                var textboxMultipleDataTypeDef = new DataTypeDefinition(textboxMultipleDataType.Id);
 
 				foreach (var propertyKey in profileSection.PropertySettings.AllKeys)
 				{
-					customersType.AddPropertyType(stringDataType, propertyKey, "#" + UppercaseFirstCharacter(propertyKey));
+                    customersType.AddPropertyType(stringDataTypeDef, propertyKey, "#" + UppercaseFirstCharacter(propertyKey));
 
 					if (uwbsOrdersType.PropertyTypes.All(x => x.Alias.ToLowerInvariant() != propertyKey.ToLowerInvariant()))
 					{
-						var property = uwbsOrdersType.AddPropertyType(stringDataType, propertyKey, "#" + UppercaseFirstCharacter(propertyKey));
+                        var property = uwbsOrdersType.AddPropertyType(stringDataTypeDef, propertyKey, "#" + UppercaseFirstCharacter(propertyKey));
 
 						var propertyShippingKey = propertyKey.Replace("customer", "shipping");
 
-						var shippingProperty = uwbsOrdersType.AddPropertyType(stringDataType, propertyShippingKey, "#" + UppercaseFirstCharacter(propertyShippingKey));
+                        var shippingProperty = uwbsOrdersType.AddPropertyType(stringDataTypeDef, propertyShippingKey, "#" + UppercaseFirstCharacter(propertyShippingKey));
 
 						property.TabId = customerTabId;
 						shippingProperty.TabId = shippingTabId;
@@ -177,7 +182,8 @@ namespace uWebshop.Starterkits.DemoStore
 
 				customersType.Save();
 
-                var extraMessageProperty = uwbsOrdersType.AddPropertyType(textboxMultipleDataType, "extraMessage", "#ExtraMessage");
+                // todo V7 version!
+                var extraMessageProperty = uwbsOrdersType.AddPropertyType(textboxMultipleDataTypeDef, "extraMessage", "#ExtraMessage");
 				extraMessageProperty.TabId = customerTabId;
 
 				uwbsOrdersType.Save();

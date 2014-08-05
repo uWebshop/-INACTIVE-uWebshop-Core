@@ -446,17 +446,6 @@ namespace uWebshop.Domain.Services
 			return errors;
 		}
 
-
-		public bool ValidateOrderLegacy(OrderInfo orderInfo)
-		{
-			orderInfo.OrderValidationErrors.Clear();
-			var errors = ValidateOrder(orderInfo, false);
-			
-			orderInfo.OrderValidationErrors.AddRange(errors);
-
-			return !errors.Any();
-		}
-
 		public List<OrderValidationError> ValidateOrder(OrderInfo orderInfo, bool confirmValidation = false)
 		{
 			var errors = new List<OrderValidationError>();
@@ -525,6 +514,7 @@ namespace uWebshop.Domain.Services
 			}
 			return errors.Any();
 		}
+
 		public List<OrderValidationError> ValidateCustomValidations(OrderInfo orderInfo)
 		{
 			var errors = new List<OrderValidationError>();
@@ -538,46 +528,39 @@ namespace uWebshop.Domain.Services
 
 		public List<OrderValidationError> ValidatePayment(OrderInfo orderInfo)
 		{
-		    try
-		    {
-
-            if (orderInfo == null) throw new ArgumentNullException("orderInfo", "Geen order?!");
-            if (orderInfo.PaymentInfo == null) throw new NullReferenceException("orderInfo.PaymentInfo");
-
-			var errors = new List<OrderValidationError>();
-			if (orderInfo.PaymentInfo.Id != 0)
+			try
 			{
-				var paymentProvider = PaymentProvider.GetPaymentProvider(orderInfo.PaymentInfo.Id);
-                if (paymentProvider == null) throw new NullReferenceException("paymentProvider");
-                if (paymentProvider.Zones == null) throw new NullReferenceException("paymentProvider.Zones");
+				if (orderInfo == null) throw new ArgumentNullException("orderInfo", "Geen order?!");
+				if (orderInfo.PaymentInfo == null) throw new NullReferenceException("orderInfo.PaymentInfo");
 
-				if ((paymentProvider.Type != PaymentProviderType.OfflinePaymentAtCustomer && paymentProvider.Type != PaymentProviderType.OfflinePaymentInStore) && !paymentProvider.Zones.SelectMany(x => x.CountryCodes).Contains(orderInfo.CustomerInfo.CountryCode))
+				var errors = new List<OrderValidationError>();
+				if (orderInfo.PaymentInfo.Id != 0)
 				{
-					// country code for customer does not match zones for payment provider.
-					Log.Instance.LogWarning("ORDERVALIDATIONERROR: CUSTOMER COUNTRY DOES NOT MATCH PAYMENT PROVIDER");
-					errors.Add(new OrderValidationError { Id = orderInfo.PaymentInfo.Id, Key = "ValidationCustomerCountryPaymentProviderMismatch", Value = "The Customer Country Does Not Match Countries Allowed For The Chosen Payment Provider" });
+					var paymentProvider = PaymentProvider.GetPaymentProvider(orderInfo.PaymentInfo.Id);
+					if (paymentProvider == null) throw new NullReferenceException("paymentProvider");
+					if (paymentProvider.Zones == null) throw new NullReferenceException("paymentProvider.Zones");
+
+					if ((paymentProvider.Type != PaymentProviderType.OfflinePaymentAtCustomer && paymentProvider.Type != PaymentProviderType.OfflinePaymentInStore) && !paymentProvider.Zones.SelectMany(x => x.CountryCodes).Contains(orderInfo.CustomerInfo.CountryCode))
+					{
+						// country code for customer does not match zones for payment provider.
+						Log.Instance.LogWarning("ORDERVALIDATIONERROR: CUSTOMER COUNTRY DOES NOT MATCH PAYMENT PROVIDER");
+						errors.Add(new OrderValidationError {Id = orderInfo.PaymentInfo.Id, Key = "ValidationCustomerCountryPaymentProviderMismatch", Value = "The Customer Country Does Not Match Countries Allowed For The Chosen Payment Provider"});
+					}
+					errors.AddRange(PaymentProviderHelper.GetPaymentValidationResults(orderInfo).Where(e => e.Id == orderInfo.PaymentInfo.Id));
 				}
+				if (orderInfo.ConfirmValidationFailed && (orderInfo.PaymentInfo.Id == 0 && PaymentProviderHelper.GetPaymentProvidersForOrder(orderInfo).Count > 0))
+				{
+					Log.Instance.LogWarning("ORDERVALIDATIONERROR: PAYMENT PROVIDERS AVAILABLE BUT NOT CHOSEN");
+					errors.Add(new OrderValidationError {Id = 0, Key = "ValidationNoPaymentProviderChosen", Value = "No Payment Provider Chosen"});
+				}
+				return errors;
 			}
-			if (orderInfo.ConfirmValidationFailed &&
-			    (orderInfo.PaymentInfo.Id == 0 && PaymentProviderHelper.GetPaymentProvidersForOrder(orderInfo).Count > 0))
+			catch (Exception)
 			{
-				Log.Instance.LogWarning("ORDERVALIDATIONERROR: PAYMENT PROVIDERS AVAILABLE BUT NOT CHOSEN");
-				errors.Add(new OrderValidationError
-				           {
-					           Id = 0,
-					           Key = "ValidationNoPaymentProviderChosen",
-					           Value = "No Payment Provider Chosen"
-				           });
+				return new List<OrderValidationError>();
 			}
-			return errors;
-
-            }
-            catch (Exception)
-            {
-
-             return new List<OrderValidationError>();
-            }
 		}
+
 		public List<OrderValidationError> ValidateShipping(OrderInfo orderInfo)
 		{
 			var errors = new List<OrderValidationError>();
@@ -596,17 +579,19 @@ namespace uWebshop.Domain.Services
 				if (shippingProvider.Type != ShippingProviderType.Pickup && !shippingProvider.Zone.CountryCodes.Contains(shippingCountryCode))
 				{
 					Log.Instance.LogWarning("ORDERVALIDATIONERROR: SHIPPING COUNTRY DOES NOT MATCH SHIPPING PROVIDER");
-					errors.Add(new OrderValidationError { Id = orderInfo.ShippingInfo.Id, Key = "ValidationShippingCountryShippingProviderMismatch", Value = "The Shipping Country Does Not Match Countries Allowed For The Chosen Shipping Provider" });
+					errors.Add(new OrderValidationError {Id = orderInfo.ShippingInfo.Id, Key = "ValidationShippingCountryShippingProviderMismatch", Value = "The Shipping Country Does Not Match Countries Allowed For The Chosen Shipping Provider"});
 				}
+				errors.AddRange(ShippingProviderHelper.GetPaymentValidationResults(orderInfo).Where(e => e.Id == orderInfo.ShippingInfo.Id));
 			}
 
 			if (orderInfo.ConfirmValidationFailed && orderInfo.ShippingInfo.Id == 0 && ShippingProviderHelper.GetShippingProvidersForOrder(orderInfo).Count > 0)
 			{
 				Log.Instance.LogWarning("ORDERVALIDATIONERROR: SHIPPING PROVIDERS AVAILABLE BUT NOT CHOSEN");
-				errors.Add(new OrderValidationError { Id = 0, Key = "ValidationNoShippingProviderChosen", Value = "No Shipping Provider Chosen" });
+				errors.Add(new OrderValidationError {Id = 0, Key = "ValidationNoShippingProviderChosen", Value = "No Shipping Provider Chosen"});
 			}
 			return errors;
 		}
+
 		private void InitializeNewOrder(OrderInfo order)
 		{
 			order.UniqueOrderId = Guid.NewGuid();

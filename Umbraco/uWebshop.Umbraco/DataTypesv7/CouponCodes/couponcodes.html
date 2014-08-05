@@ -11,9 +11,9 @@
               <td class="text-center" valign="top">
                 <label class="text-center">Options</label><br/>
                 <div class="btn-group">
-                    <button class="btn btn-success" ng-click="saveItem()">Add</button>
-                    <button class="btn btn-default" ng-click="editItem(selected)">Edit</button>
-                    <button class="btn btn-default" ng-click="deleteItem(selected)">Remove</button>
+                    <button class="btn btn-success" ng-click="saveItem('save', $event)">Add</button>
+                    <button class="btn btn-default" ng-click="editItem(selected, $event)">Edit</button>
+                    <button class="btn btn-default" ng-click="deleteItem(selected, $event)">Remove</button>
                 </div>
              </td>
              <td>

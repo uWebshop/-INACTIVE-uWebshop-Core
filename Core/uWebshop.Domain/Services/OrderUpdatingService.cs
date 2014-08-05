@@ -464,12 +464,14 @@ namespace uWebshop.Domain.Services
 			return ProviderActionResult.Success;
 		}
 
-		public bool AddCustomerFields(OrderInfo order, Dictionary<string, string> fields, CustomerDatatypes customerDataType)
+		public bool AddCustomerFields(OrderInfo order, Dictionary<string, string> fields, CustomerDatatypes customerDataType, bool ingnoreNotAllowed = false)
 		{
-			if (ChangeOrderToIncompleteAndReturnTrueIfNotAllowed(order))
-				return false;
+		    if (ChangeOrderToIncompleteAndReturnTrueIfNotAllowed(order) && ingnoreNotAllowed == false)
+		    {
+		        return false;
+		    }
 
-			//var xDoc = OrderUpdatingService.CreateXDocumentBasedOnCMSDocumentType(fields, documentAlias);
+		    //var xDoc = OrderUpdatingService.CreateXDocumentBasedOnCMSDocumentType(fields, documentAlias);
 
 			var xDoc = new XDocument(new XElement(customerDataType.ToString()));
 

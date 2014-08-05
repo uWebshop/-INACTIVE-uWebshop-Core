@@ -49,13 +49,14 @@ namespace uWebshop.API
 		[IgnoreDataMember]
 		public IDiscountedPrice OrderAmount
 		{
-			get
-			{
-				var totalPrice = _source.OrderLineTotalInCents + _source.PaymentProviderPriceInCents + _source.ActiveShippingProviderAmountInCents;
-				var discount = _source.DiscountAmountInCents;
-				return Price.CreateDiscountedRanged(totalPrice, null, _source.PricesAreIncludingVAT, _source.AverageOrderVatPercentage, null
-					, i => i - discount, _source.Localization);
-			}
+			get { return new SimplePrice(_source, _source.Localization); }
+			//get
+			//{
+			//	var totalPrice = _source.OrderLineTotalInCents + _source.PaymentProviderPriceInCents + _source.ActiveShippingProviderAmountInCents;
+			//	var discount = _source.DiscountAmountInCents;
+			//	return Price.CreateDiscountedRanged(totalPrice, null, _source.PricesAreIncludingVAT, _source.AverageOrderVatPercentage, null
+			//		, i => i - discount, _source.Localization);
+			//}
 		}
 
 		[DataMember(Name = "OrderAmount")]
@@ -77,15 +78,8 @@ namespace uWebshop.API
 		[DataMember]
 		public IEnumerable<IAppliedOrderDiscount> Discounts
 		{
-			get
-			{
-				if (_source.Discounts.Any())
-				{
-					return _source.Discounts.Select(i => new AppliedOrderDiscountAdaptor(i, _source));
-				}
-				return Enumerable.Empty<IAppliedOrderDiscount>();
-			}
-			set { } 
+			get { return _source.Discounts.Select(i => new AppliedOrderDiscountAdaptor(i, _source)); }
+			set { }
 		}
 
 		[DataMember]

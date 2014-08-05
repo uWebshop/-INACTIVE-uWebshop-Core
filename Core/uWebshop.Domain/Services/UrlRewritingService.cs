@@ -116,17 +116,17 @@ namespace uWebshop.Domain.Services
 		    {
 		        var determinedStore = UwebshopRequest.Current.CurrentStore;
 
-                Log.Instance.LogDebug("UrlRewriting: HttpContext.Current != null: determinedStore: " + determinedStore.Alias);
+                Log.Instance.LogDebug("UrlRewriting: determinedStore: " + determinedStore.Alias);
 
-		        // todo: seprate service for this:
-		        // copy from UmbracoStoreService public ILocalization GetCurrentLocalization()
-		        ILocalization currentLocalisation = null;
+		        // todo: separate service for this:
+		        // copy from UmbracoStoreService public ILocalization GetCurrentLocalization() todo: why?
+		        ILocalization currentLocalization = null;
 
 		        var currencyCode = HttpContext.Current.Request["currency"];
 
 		        if (currencyCode != null && determinedStore.CurrencyCodes.Contains(currencyCode.ToUpperInvariant()))
 		        {
-		            currentLocalisation = Localization.CreateLocalization(determinedStore, currencyCode);
+		            currentLocalization = Localization.CreateLocalization(determinedStore, currencyCode);
 
 		        }
 		        else if (HttpContext.Current.Request.Cookies["StoreInfo"] != null)
@@ -134,11 +134,11 @@ namespace uWebshop.Domain.Services
 		            var currency = HttpContext.Current.Request.Cookies["StoreInfo"].Values["currency"];
 		            if (!string.IsNullOrEmpty(currency) && determinedStore.CurrencyCodes.Contains(currency.ToUpperInvariant()))
 		            {
-		                currentLocalisation = Localization.CreateLocalization(determinedStore, currency);
+		                currentLocalization = Localization.CreateLocalization(determinedStore, currency);
 		            }
 		        }
 
-		        UwebshopRequest.Current.Localization = currentLocalisation;
+		        UwebshopRequest.Current.Localization = currentLocalization;
                 
 		        if (currencyCode != null)
 		        {

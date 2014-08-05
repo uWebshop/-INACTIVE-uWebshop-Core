@@ -60,7 +60,7 @@ namespace uWebshop.Umbraco.WebApi
 
         public IEnumerable<BasketOrderInfoAdaptor> GetAllOrders(string status = "All")
         {
-            var orders = OrderHelper.GetAllOrders().Select(o => new BasketOrderInfoAdaptor(o));
+            var orders = OrderHelper.GetAllOrders().Select(o => new BasketOrderInfoAdaptor(o)).Where(x => x.Status != OrderStatus.Incomplete);
 
             if (string.IsNullOrEmpty(status) || status.ToLowerInvariant() == "all" || status.ToLowerInvariant() == "undefined")
             {
@@ -77,7 +77,7 @@ namespace uWebshop.Umbraco.WebApi
 
             return null;
         }
-
+        
         public IEnumerable<string> GetEmailTemplates()
         {
             var files = Directory.GetFiles(IOHelper.MapPath(SystemDirectories.Xslt), "*.xslt", SearchOption.AllDirectories).Select(file => file.Replace(IOHelper.MapPath(SystemDirectories.Xslt) + @"\", string.Empty)).ToList();
@@ -111,6 +111,18 @@ namespace uWebshop.Umbraco.WebApi
             return 0;
         }
 
+        public IEnumerable<CustomerGroup> GetAllMemberGroups()
+        {
+            if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated)
+            {
+                var membershipRoles = Roles.GetAllRoles();
+
+                return membershipRoles.Select(m => new CustomerGroup { Alias = m });
+            }
+
+            return Enumerable.Empty<CustomerGroup>();
+        }
+
         public BasketOrderInfoAdaptor GetOrder(string uniqueOrderId)
         {
             Guid guid;
@@ -129,6 +141,36 @@ namespace uWebshop.Umbraco.WebApi
             }
 
             return null;
+        }
+
+
+	    public BasketOrderInfoAdaptor GetOrderByNumber(string orderNumber)
+	    {
+	        var order = Orders.GetAllOrders()
+	            .FirstOrDefault(x => x.OrderReference.ToLowerInvariant() == orderNumber.ToLowerInvariant());
+
+	        return order != null ? order as BasketOrderInfoAdaptor : null;
+	    }
+
+	    public IEnumerable<BasketOrderInfoAdaptor> GetOrdersByFirstName(string customerFirstName)
+	    {
+	        var orders = OrderHelper.GetAllOrders().Where(x => x.CustomerFirstName.ToLowerInvariant() == customerFirstName.ToLowerInvariant());
+
+	        return orders.Select(o => new BasketOrderInfoAdaptor(o));
+	    }
+
+        public IEnumerable<BasketOrderInfoAdaptor> GetOrdersByLastName(string customerLastName)
+        {
+            var orders = OrderHelper.GetAllOrders().Where(x => x.CustomerLastName.ToLowerInvariant() == customerLastName.ToLowerInvariant());
+
+            return orders.Select(o => new BasketOrderInfoAdaptor(o));
+        }
+
+        public IEnumerable<BasketOrderInfoAdaptor> GetOrdersByEmail(string customerEmail)
+        {
+            var orders = OrderHelper.GetAllOrders().Where(x => x.CustomerEmail.ToLowerInvariant() == customerEmail.ToLowerInvariant());
+
+            return orders.Select(o => new BasketOrderInfoAdaptor(o));
         }
 
 	    public class PostStockRequest
@@ -209,6 +251,12 @@ namespace uWebshop.Umbraco.WebApi
                 }
             }
         }
+
+        public class CustomerGroup : ICustomerGroup
+        {
+            public string Alias { get; set; }
+        }
+
 
         public class Coupon : ICoupon
         {

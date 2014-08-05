@@ -66,7 +66,6 @@ namespace uWebshop.Test.Domain.Businesslogic.UwebshopUrlRewritingServiceTests
 
 		//[TestCase("/catalog/categories/")]
 		[TestCase("")]
-		[TestCase("/")]
 		[TestCase("any.ico")]
 		[TestCase("any.jpg")]
 		[TestCase("any.jpeg")]

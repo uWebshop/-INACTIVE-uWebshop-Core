@@ -30,7 +30,7 @@ namespace uWebshop.Umbraco.Services
 			{
 				var umbracoMember = Member.GetCurrentMember();
 
-				return umbracoMember.LoginName;
+				return umbracoMember != null ? umbracoMember.LoginName : null;
 			}
 		}
 	}

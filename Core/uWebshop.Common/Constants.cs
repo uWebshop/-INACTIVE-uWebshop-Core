@@ -53,6 +53,9 @@
 		public static string ValidateOrderResult = "ValidateOrderResult";
 
 		public static string ChangeCurrencyResult = "ChangeCurrencyResult";
+		public static string PaymentValidationResultsKey = "uwbs54fc9ca6-2207-4b8d-8e40-395e2f8ac8fa";
+
+		public static string ShippingValidationResultsKey = "uwbsf805b83e-f9e8-40d7-996c-055aec5df94a";
 	}
 	public static class RegistrationOrder
 	{

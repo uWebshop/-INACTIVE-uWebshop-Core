@@ -306,7 +306,8 @@ namespace uWebshop.Domain
 		/// </value>
 		public static List<string> DefaultProperties
 		{
-			get { return new List<string> {"productId", "title", "sku", "price", "ranges", "vat", "itemCount", "length", "width", "height", "weight", "image", "text", "orderedProductDiscountAmount", "orderedProductDiscountPercentage"}; }
+			get { return new List<string> {"productId", "title", "sku", "price", "ranges", "vat", "itemCount", "length", "width", 
+				"height", "weight", "image", "text", "orderedProductDiscountAmount", "orderedProductDiscountPercentage", "url",}; }
 		}
 
 		/// <summary>

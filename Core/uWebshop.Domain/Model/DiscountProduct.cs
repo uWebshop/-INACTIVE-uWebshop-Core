@@ -81,7 +81,7 @@ namespace uWebshop.Domain
 		/// </summary>
 		/// <param name="productId">The product unique identifier.</param>
 		/// <returns></returns>
-		public int GetDiscountAmountInCents(int productId = 0)
+		public int GetDiscountAmountInCents(int productId = 0, OrderInfo order = null)
 		{
 			var product = DomainHelper.GetProductById(productId);
 			var productPrice = 0;
@@ -99,24 +99,32 @@ namespace uWebshop.Domain
 				else
 				{
 					//productPrice = product.Price.BeforeDiscount.ValueInCents; this doesn't work, because IsDiscounted will call this function, creating a loop
-
 				}
 			}
 
+			if (order == null) order = OrderHelper.GetOrder();
+			var orderCount = 0;
+			if (order != null)
+			{
+				orderCount = order.OrderLines.Select(l => l.ProductInfo).Where(p => p.OriginalId == productId).Sum(p => p.Quantity);
+			}
+			var discountValue = RangedDiscountValue(orderCount);
+
 			if (DiscountType == DiscountType.NewPrice)
 			{
-				return DiscountValue - productPrice;
+				return discountValue - productPrice;
 			}
 			if (DiscountType == DiscountType.Amount)
 			{
-				return Math.Max(DiscountValue, productPrice);
+				return Math.Max(discountValue, productPrice);
 			}
 			if (DiscountType == DiscountType.Percentage)
 			{
-				return DiscountHelper.PercentageCalculation(DiscountValue, productPrice);
+				return DiscountHelper.PercentageCalculation(discountValue, productPrice);
 			}
 			return 0;
 		}
+
 
 		/// <summary>
 		/// Gets a value indicating whether the discount is once per customer.

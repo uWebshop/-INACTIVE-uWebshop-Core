@@ -68,14 +68,15 @@ namespace uWebshop.Domain.Interfaces
 		/// <returns></returns>
 		ProviderActionResult AddShippingProvider(OrderInfo orderInfo, int shippingProviderId, string shippingProviderMethodId, ILocalization localization);
 
-		/// <summary>
-		/// Adds the customer fields.
-		/// </summary>
-		/// <param name="orderInfo">The order information.</param>
-		/// <param name="fields">The fields.</param>
-		/// <param name="customerDataType">Type of the customer data.</param>
-		/// <returns></returns>
-		bool AddCustomerFields(OrderInfo orderInfo, Dictionary<string, string> fields, CustomerDatatypes customerDataType);
+	    /// <summary>
+	    /// Adds the customer fields.
+	    /// </summary>
+	    /// <param name="orderInfo">The order information.</param>
+	    /// <param name="fields">The fields.</param>
+	    /// <param name="customerDataType">Type of the customer data.</param>
+	    /// <param name="ingnoreNotAllowed">Ignore if order is not allowed to be written to</param>
+	    /// <returns></returns>
+	    bool AddCustomerFields(OrderInfo orderInfo, Dictionary<string, string> fields, CustomerDatatypes customerDataType, bool ingnoreNotAllowed = false);
 
 		/// <summary>
 		/// Changes the order automatic incomplete and return false difference not possible.

@@ -276,7 +276,6 @@ namespace uWebshop.Domain.Helpers
         /// </summary>
         /// <param name="customerId">The customer unique identifier.</param>
         /// <param name="storeAlias">The store alias.</param>
-        /// <param name="includeIncomplete">if set to <c>true</c> [include incomplete].</param>
         /// <returns></returns>
         public static IEnumerable<OrderInfo> GetWishlistsForCustomer(int customerId, string storeAlias = null)
         {
@@ -302,10 +301,13 @@ namespace uWebshop.Domain.Helpers
 		/// <returns></returns>
 		public static IEnumerable<OrderInfo> GetAllOrders(string storeAlias = null)
 		{
-			return OrderRepository.GetAllOrders();
+		    return storeAlias != null
+		        ? OrderRepository.GetAllOrders()
+		            .Where(x => x.StoreInfo.Alias.ToLowerInvariant() == storeAlias.ToLowerInvariant())
+		        : OrderRepository.GetAllOrders();
 		}
 
-		/// <summary>
+	    /// <summary>
 		/// Check if VAT should be applied for this order
 		/// </summary>
 		/// <returns>
@@ -497,8 +499,14 @@ namespace uWebshop.Domain.Helpers
 								try
 								{
 									orderInfo.PaymentInfo.TransactionMethod = iPaymentProvider.GetParameterRenderMethod();
-									handler.CreatePaymentRequest(orderInfo);
+									var handlerResult = handler.CreatePaymentRequest(orderInfo);
 									orderInfo.Save();
+
+								    if (handlerResult == null)
+								    {
+                                        Log.Instance.LogError("HandlePaymentRequest handler.CreatePaymentRequest(orderInfo) == null");
+                                        return "failed";
+								    }
 								}
 								catch (Exception ex)
 								{

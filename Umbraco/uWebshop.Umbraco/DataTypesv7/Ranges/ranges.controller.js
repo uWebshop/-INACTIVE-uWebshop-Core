@@ -1,9 +1,9 @@
 angular.module("umbraco").controller("uWebshop.Ranges", function ($scope, assetsService, $http) {
-        
+
     $scope.SavedData = $scope.model.value;
-    
+
     var splitData = $scope.SavedData.split("#");
-      
+
     var jsonData = [];
 
     $scope.jsonData = jsonData;
@@ -13,16 +13,20 @@ angular.module("umbraco").controller("uWebshop.Ranges", function ($scope, assets
         var data = splitData[i];
 
         var itemdata = data.split("|");
-		
+
         if (itemdata[0]) {
             jsonData.push({ "from": itemdata[0], "to": itemdata[1], "price": itemdata[2] });
         }
     }
-	
+
     $scope.RangeData = jsonData;
 
-    $scope.editItem = function (itemToEdit) {
-        event.preventDefault();
+    $scope.editItem = function (itemToEdit, event) {
+
+        if (event) {
+            event.stopPropagation();
+            event.preventDefault();
+        }
 
         var data = JSON.parse(itemToEdit);
 
@@ -32,7 +36,7 @@ angular.module("umbraco").controller("uWebshop.Ranges", function ($scope, assets
                 var matchedItem = $scope.jsonData[i];
 
                 var idx = $scope.jsonData.indexOf(matchedItem);
-               // $scope.jsonData.splice(idx, 1);
+                // $scope.jsonData.splice(idx, 1);
 
             }
         }
@@ -41,45 +45,42 @@ angular.module("umbraco").controller("uWebshop.Ranges", function ($scope, assets
         $scope.rangeprice = data.price;
     };
 
-    $scope.saveItem = function () {
-        event.preventDefault();
+    $scope.saveItem = function (action, event) {
 
-        /*if ($scope.rangefrom && $scope.rangeto && $scope.rangeprice) {
-            var data = { "from": $scope.rangefrom, "to": $scope.rangeto, "price": $scope.rangeprice };
+        if (event) {
+            event.stopPropagation();
+            event.preventDefault();
+        }
 
-            if (jsonData.indexOf(data) == -1) {
-                jsonData.push(data);
+        if ($scope.rangefrom && $scope.rangeto && $scope.rangeprice) {
+
+            var add = true;
+            var idx = 0;
+            for (i = 0; $scope.jsonData.length > i; i += 1) {
+                if ($scope.jsonData[i].from == $scope.rangefrom) {
+                    add = false;
+                    idx = i;
+                }
             }
 
-            $scope.rangefrom = "";
-            $scope.rangeto = "";
-            $scope.rangeprice = "";
-        } */
+            if (add == false) {
+                $scope.jsonData.splice(idx, 1);
+            }
 
-           if ($scope.rangefrom && $scope.rangeto && $scope.rangeprice) {
+            var data = { "from": $scope.rangefrom, "to": $scope.rangeto, "price": $scope.rangeprice };
 
-				var add = true;
-				var idx = 0;
-				for (i = 0; $scope.jsonData.length > i; i += 1) {
-					if ($scope.jsonData[i].from == $scope.rangefrom) {
-						add = false;
-						idx = i;
-					}
-				}
 
-				if (add == false) {
-					$scope.jsonData.splice(idx, 1);
-				}
-				
-				var data = { "from": $scope.rangefrom, "to": $scope.rangeto, "price": $scope.rangeprice };
-
-				
-				$scope.jsonData.push(data);
-			}
+            $scope.jsonData.push(data);
+        }
     };
 
-    $scope.deleteItem = function (itemToRemove) {
-        event.preventDefault();
+    $scope.deleteItem = function (itemToRemove, event) {
+
+        if (event) {
+            event.stopPropagation();
+            event.preventDefault();
+        }
+
         jsonData.splice(itemToRemove, 1);
     };
 

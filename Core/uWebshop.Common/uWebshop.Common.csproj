@@ -39,9 +39,6 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="uWebshop.Domain">
-      <HintPath>..\..\PaymentProviders\uWebshop.Payment.ePay\Bin\uWebshop.Domain.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assembly.cs" />

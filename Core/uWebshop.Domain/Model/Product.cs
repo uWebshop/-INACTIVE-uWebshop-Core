@@ -22,7 +22,7 @@ namespace uWebshop.Domain
 	/// </summary>
 	[DataContract(Namespace = "", IsReference = true)]
     [ContentType(ParentContentType = typeof(Catalog), Name = "Product", Description = "#ProductDescription", Alias = "uwbsProduct", IconClass = IconClass.box, Icon = ContentIcon.BoxLabel, Thumbnail = ContentThumbnail.Folder, AllowedChildTypes = new[] { typeof(ProductVariantGroup) })]
-	public class Product : MultiStoreUwebshopContent, IProductLegacy230, Common.Interfaces.IProduct
+	public class Product : MultiStoreUwebshopContent, IProductLegacy230, Common.Interfaces.IProduct//, IAmountUnit
 	{
 		internal ILocalization Localization;
         internal Func<List<IProductVariantGroup>> ProductVariantGroupsFactory;
@@ -415,6 +415,17 @@ namespace uWebshop.Domain
 					Localization);
 			}
 		}
+
+		//public int GetAmount(bool inclVat, bool discounted, bool ranged, int orderTotalItemCount)
+		//{
+		//	//incomplete
+		//	var price = ranged ? Ranges.GetRangeAmountForValue(orderTotalItemCount) ?? OriginalPriceInCents : OriginalPriceInCents;
+		//	if (discounted/* && Discount.ExcludeVariants*/)
+		//	{
+		//		price = Discount.GetAdjustedPrice(price, orderTotalItemCount);
+		//	}
+		//	return price;
+		//}
 
 		/// <summary>
 		/// Returns if the pricing is discounted

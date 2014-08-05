@@ -58,18 +58,6 @@
       <Project>{d08e0834-b25a-40a5-9c8e-31d4fb050df4}</Project>
       <Name>uWebshop.Services</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Starterkits\uWebshop.Starterkits.MVCStoreDemo\uWebshop.Starterkits.MVCStoreDemo.csproj">
-      <Project>{2e122beb-7b5b-459c-915e-1b6aca579b87}</Project>
-      <Name>uWebshop.Starterkits.MVCStoreDemo</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Starterkits\uWebshop.Starterkits.Sandbox\uWebshop.Starterkits.Sandbox.csproj">
-      <Project>{ea565e37-55b4-46e4-8fc7-00f989267d3c}</Project>
-      <Name>uWebshop.Starterkits.Sandbox</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Starterkits\uWebshop.Starterkits.StoreDemo\uWebshop.Starterkits.StoreDemo.csproj">
-      <Project>{a3578def-a8c0-4652-9868-03e40c1a0c0c}</Project>
-      <Name>uWebshop.Starterkits.StoreDemo</Name>
-    </ProjectReference>
     <ProjectReference Include="..\uWebshop.Umbraco6\uWebshop.Umbraco6.csproj">
       <Project>{9edfd59c-eaa5-4cb4-9642-8b6eda6b4469}</Project>
       <Name>uWebshop.Umbraco6</Name>
@@ -81,10 +69,6 @@
     <ProjectReference Include="..\uWebshop.Umbraco\uWebshop.Umbraco.csproj">
       <Project>{2c03a3a4-3380-4f6d-8c68-24e60a77e989}</Project>
       <Name>uWebshop.Umbraco</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Various\uWebshop.PackageGarden\uWebshop.PackageGarden.csproj">
-      <Project>{9b79d05e-64d0-4ea0-92f0-8262cf39eb00}</Project>
-      <Name>uWebshop.PackageGarden</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -98,7 +82,7 @@ IF EXIST "$(SolutionDir)builds\package.v7\" DEL /s /f /q "$(SolutionDir)builds\p
 </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>SET UWBSVER=2.5.0.0
+    <PostBuildEvent>SET UWBSVER=2.5.1.0
 echo Rendering packages as version %25UWBSVER%25
 
 IF EXIST "$(SolutionDir)builds\package\" DEL /s /f /q "$(SolutionDir)builds\package\*.*"

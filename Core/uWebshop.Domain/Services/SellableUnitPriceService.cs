@@ -60,7 +60,7 @@ namespace uWebshop.Domain.Services
 
 		public int ApplyOrderDiscount(int price)
 		{
-			return _sellableUnit.GetDiscountEffects().GetDiscountedPrice(price);
+			return _sellableUnit.GetDiscountEffects().GetDiscountedPrice(price, price);
 		}
 
 		public bool PricesAreIncludingVAT { get { return _product.Order.PricesAreIncludingVAT; } }

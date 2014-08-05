@@ -119,23 +119,34 @@ namespace uWebshop.Umbraco6
 	        var storeFolder = GetOrCreateChildContentWithName(orderRepository, storeFolderName, contentToSaveAndPublish,
 	            OrderStoreFolder.NodeAlias);
 
-	        Log.Instance.LogDebug("CreateOrderDocument STEP 7");
-	        var year = orderInfo.ConfirmDate.GetValueOrDefault().ToString("yyyy");
-	        var month = orderInfo.ConfirmDate.GetValueOrDefault().ToString("MM");
-	        var day = orderInfo.ConfirmDate.GetValueOrDefault().ToString("dd");
+	        var disableDateFolders = UwebshopConfiguration.Current.DisableDateFolders;
+	        var orderParent = storeFolder;
+	        IContent yearNode = null;
+            IContent monthNode = null;
+            IContent dayNode = null;
 
-	        Log.Instance.LogDebug("CreateOrderDocument STEP 8");
-	        var yearNode = GetOrCreateChildContentWithName(storeFolder, year, contentToSaveAndPublish, DateFolder.NodeAlias);
+	        if (!disableDateFolders)
+	        {
+	            Log.Instance.LogDebug("CreateOrderDocument STEP 7");
+	            var year = orderInfo.ConfirmDate.GetValueOrDefault().ToString("yyyy");
+	            var month = orderInfo.ConfirmDate.GetValueOrDefault().ToString("MM");
+	            var day = orderInfo.ConfirmDate.GetValueOrDefault().ToString("dd");
 
-	        Log.Instance.LogDebug("CreateOrderDocument STEP 9");
-	        var monthNode = GetOrCreateChildContentWithName(yearNode, month, contentToSaveAndPublish, DateFolder.NodeAlias);
+	            Log.Instance.LogDebug("CreateOrderDocument STEP 8");
+	            yearNode = GetOrCreateChildContentWithName(storeFolder, year, contentToSaveAndPublish,
+	                DateFolder.NodeAlias);
 
-	        Log.Instance.LogDebug("CreateOrderDocument STEP 10");
-	        var dayNode = GetOrCreateChildContentWithName(monthNode, day, contentToSaveAndPublish, DateFolder.NodeAlias);
+	            Log.Instance.LogDebug("CreateOrderDocument STEP 9");
+	            monthNode = GetOrCreateChildContentWithName(yearNode, month, contentToSaveAndPublish,
+	                DateFolder.NodeAlias);
 
-	        Log.Instance.LogDebug("CreateOrderDocument STEP 11");
+	            Log.Instance.LogDebug("CreateOrderDocument STEP 10");
+                dayNode = GetOrCreateChildContentWithName(monthNode, day, contentToSaveAndPublish, DateFolder.NodeAlias);
+                Log.Instance.LogDebug("CreateOrderDocument STEP 11");
+                orderParent = dayNode;
+	        }
 
-	        var orderDoc = GetOrCreateChildContentWithName(dayNode, orderInfo.OrderNumber, contentToSaveAndPublish,
+            var orderDoc = GetOrCreateChildContentWithName(orderParent, orderInfo.OrderNumber, contentToSaveAndPublish,
 	            Order.NodeAlias);
 
 	        if (orderDoc.HasProperty("orderGuid"))
@@ -208,9 +219,24 @@ namespace uWebshop.Umbraco6
 
 	        contentService.Save(contentToSaveAndPublish);
             contentService.Publish(storeFolder);
-            contentService.Publish(yearNode);
-            contentService.Publish(monthNode);
-            contentService.Publish(dayNode);
+
+	        if (!disableDateFolders)
+	        {
+	            if (yearNode != null)
+	            {
+	                contentService.Publish(yearNode);
+
+	                if (monthNode != null)
+	                {
+	                    contentService.Publish(monthNode);
+
+	                    if (dayNode != null)
+	                    {
+	                        contentService.Publish(dayNode);
+	                    }
+	                }
+	            }
+	        }
 
 	        orderInfo.OrderNodeId = orderDoc.Id;
 	        orderInfo.Save();
@@ -238,7 +264,7 @@ namespace uWebshop.Umbraco6
 	            {
                     var content = contentService.GetById(orderInfo.OrderNodeId);
 
-	                if (content.Trashed)
+	                if (content.Trashed || content.Name != orderInfo.OrderNumber)
 	                {
 	                    var orderDoc = CreateOrderContent(orderInfo);
 
@@ -264,7 +290,7 @@ namespace uWebshop.Umbraco6
 		{
             var orderDoc = CreateOrderContent(orderInfo);
 
-		    if (!string.IsNullOrEmpty(orderDoc.Path))
+		    if (orderDoc != null && !string.IsNullOrEmpty(orderDoc.Path))
 		    {
 		        if (BasePage.Current != null && orderInfo.OrderNodeId != 0)
 		        {

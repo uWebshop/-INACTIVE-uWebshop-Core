@@ -1,23 +1,105 @@
-<div ng-controller="uWebshop.OrderSection" ng-switch="model.config.multiple">
+<div ng-controller="uWebshop.OrderSection" ng-switch="model.config.multiple" class="umb-listview">
 
-    <select data-ng-options="item as item for item in StatusArray" data-ng-model="SelectedOption"></select>
+    <div class="row-fluid">
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">OrderNumber</th>
-                <th scope="col">OrderStatus</th>
-                <th scope="col">Customer Email</th>
-                <th scope="col">Edit</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr ng-repeat="item in ItemArray">
-                <td>{{ item.OrderReference }}</td>
-                <td>{{ item.Status }}</td>
-                <td>{{ item.Customer.Email }}</td>
-                <td><a href="#" ng-click="getTreeNodeUrl(item);">Open</a></td>
-            </tr>
-        </tbody>
-    </table>
+        <div class="umb-sub-header">
+
+            <label for="orderstatus">Status:</label><br />
+            <select name="orderstatus" data-ng-options="item as item for item in StatusArray" data-ng-model="SelectedOption"></select>
+
+            <div class="btn-group" ng-show="isAnythingSelected()">
+                <a class="btn btn-success" ng-disabled="actionInProgress" ng-click="changestatus()" prevent-default>
+                    Change Status
+                </a>
+            </div>
+            <div class="btn-group" ng-show="isAnythingSelected()">
+                <a class="btn btn-info" ng-disabled="actionInProgress" ng-click="paid()" prevent-default>
+                    Mark Paid
+                </a>
+            </div>
+            <div class="btn-group" ng-show="isAnythingSelected()">
+                <a class="btn btn-info" ng-disabled="actionInProgress" ng-click="fulfilled()" prevent-default>
+                    Mark Fulfilled
+                </a>
+            </div>
+            <span ng-bind="bulkStatus" ng-show="isAnythingSelected()"></span>
+        </div>
+        <hr />
+
+        <p ng-show="listViewResultSet.length === 0">
+            No orders found
+        </p>
+
+        <table class="table table-striped" ng-show="listViewResultSet.length > 0">
+            <thead>
+                <tr>
+                    <td style="width: 35px">
+                        <input type="checkbox" ng-click="selectAll($event)" ng-checked="isSelectedAll()">
+                    </td>
+                    <td scope="col"><a href="" ng-click="predicate = 'OrderReference'; reverse=!reverse">OrderNumber</a></td>
+                    <td scope="col"><a href="" ng-click="predicate = 'Status'; reverse=!reverse">OrderStatus</a></td>
+                    <td scope="col"><a href="" ng-click="predicate = 'Customer.Email'; reverse=!reverse">Customer Email</a></td>
+                    <td scope="col"><a href="" ng-click="predicate = 'ConfirmDate'; reverse=!reverse">ConfirmDate</a></td>
+                    <td scope="col">
+                        <a href="" ng-click="predicate = 'IsPaid'; reverse=!reverse">Paid</a>
+                        <input type="checkbox" ng-click="selectAllPaid($event)" ng-checked="isPaidSelectedAll()">
+                    </td>
+                    <td scope="col">
+                        <a href="" ng-click="predicate = 'IsFulFilled'; reverse=!reverse">FulFilled</a>
+                        <input type="checkbox" ng-click="selectAllFulfilled($event)" ng-checked="isFulfilledSelectedAll()">
+                    </td>
+                    <td>
+                        <form class="pull-right" novalidate>
+                            <i class="icon-search"></i>
+                            <input type="text" ng-model="options.filter" on-keyup="search()">
+                        </form>
+                    </td>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="item in listViewResultSet | orderBy:predicate:reverse | filter:searchText" ng-class="{selected:item.selected}">
+                    <td><input type="checkbox" ng-model="item.selected"></td>
+                    <td><a href="#" ng-click="getTreeNodeUrl(item);">{{ item.OrderReference }}</a></td>
+                    <td>
+                        <select name="itemstatus" data-ng-options="status as status for status in ItemStatusArray" data-ng-model="item.Status"></select>
+                    </td>
+                    <td>{{ item.Customer.Email }}</td>
+                    <td>{{ item.ConfirmDate | date:'medium' }}</td>
+                    <td><input name='ispaid' type="checkbox" style="display: inline" ng-model="item.ispaidselected" ng-checked="item.IsPaid" /></td>
+                    <td><input name='isfulfilled' type="checkbox" style="display: inline" ng-model="item.isfulfilledselected" ng-checked="item.IsFulfilled" /></td>
+                    <td></td>
+                </tr>
+            </tbody>
+            <tfoot ng-show="pagination.length > 1">
+                <tr>
+                    <th colspan="8">
+                        <div class="pull-left">
+                        </div>
+                        <div class="pagination pagination-right">
+                            <ul>
+                                <li>
+                                    <a href="#" ng-click="prev()" prevent-default>
+                                        <localize key="general_previous">Previous</localize>
+                                    </a>
+                                </li>
+
+                                <li ng-repeat="pgn in pagination track by $index"
+                                    ng-class="{active:$index==options.offset}">
+                                    <a href="#" ng-click="goToPage($index)" prevent-default>{{$index + 1}}</a>
+                                </li>
+
+                                <li>
+                                    <a href="#" ng-click="next()" prevent-default>
+                                        <localize key="general_next">Next</localize>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                    </th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
 </div>

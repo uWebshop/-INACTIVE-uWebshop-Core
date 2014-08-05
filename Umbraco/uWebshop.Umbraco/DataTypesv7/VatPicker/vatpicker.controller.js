@@ -14,9 +14,8 @@ angular.module("umbraco").controller("uWebshop.VatPicker", function ($scope, ass
     $scope.VatArray = [];
 	
     if(editorState.current.contentTypeAlias != "uwbsStore") {
-	$scope.VatArray.push({ name: "Store Default", value: "default" });
+		$scope.VatArray.push({ name: "Store Default", value: "default" });
 	}
-
 
     if (angular.isArray($scope.model.config.items)) {
 

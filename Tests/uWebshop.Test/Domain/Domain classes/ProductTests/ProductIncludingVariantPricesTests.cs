@@ -39,11 +39,11 @@ namespace uWebshop.Test.Domain.Domain_classes.ProductTests
 		public void PriceIncludingProductPriceInCents_ProductDiscountExcludingVariants_GivesDiscountedProductPlusVariant()
 		{
 			var setupNewMock = IOC.ProductDiscountService.SetupNewMock();
-			setupNewMock.Setup(m => m.GetDiscountByProductId(12234, It.IsAny<ILocalization>())).Returns(new DiscountProduct { DiscountValue = 10 * 100, DiscountType = DiscountType.Percentage, ExcludeVariants = true, });
+			setupNewMock.Setup(m => m.GetDiscountByProductId(12234, It.IsAny<ILocalization>(), It.IsAny<OrderInfo>())).Returns(new DiscountProduct { DiscountValue = 10 * 100, DiscountType = DiscountType.Percentage, ExcludeVariants = true, });
 			setupNewMock.Setup(m => m.GetAdjustedPriceForProductWithId(12234, It.IsAny<ILocalization>(), 1000, It.IsAny<int>())).Returns(900);
 
 			//setupNewMock.Verify(m => m.GetAdjustedPriceForProductWithId(12234, It.IsAny<ILocalization>(), 1000, It.IsAny<int>()));
-			Assert.AreEqual(900, _product.PriceInCents);
+			Assert.AreEqual(900, _product.Price.ValueInCents());
 			Assert.AreEqual(100, _variant.PriceInCents);
 
 
@@ -54,7 +54,7 @@ namespace uWebshop.Test.Domain.Domain_classes.ProductTests
 		public void PriceIncludingProductPriceInCents_ProductDiscountIncludingVariants_GivesDiscountedProductPlusVariant()
 		{
 			var setupNewMock = IOC.ProductDiscountService.SetupNewMock();
-			setupNewMock.Setup(m => m.GetDiscountByProductId(12234, It.IsAny<ILocalization>())).Returns(new DiscountProduct { DiscountValue = 10 * 100, DiscountType = DiscountType.Percentage, ExcludeVariants = false, });
+			setupNewMock.Setup(m => m.GetDiscountByProductId(12234, It.IsAny<ILocalization>(), It.IsAny<OrderInfo>())).Returns(new DiscountProduct { DiscountValue = 10 * 100, DiscountType = DiscountType.Percentage, ExcludeVariants = false, });
 			setupNewMock.Setup(m => m.GetAdjustedPriceForProductWithId(12234, It.IsAny<ILocalization>(), 1000, It.IsAny<int>())).Returns(900);
 
 			Assert.AreEqual(1000, _product.OriginalPriceInCents);

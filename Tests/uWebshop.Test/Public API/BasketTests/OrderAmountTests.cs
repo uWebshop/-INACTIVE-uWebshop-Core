@@ -73,6 +73,9 @@ namespace uWebshop.Test.Public_API.BasketTests
 			Assert.AreEqual(3000, basket.OrderAmount.ValueInCents());
 			Assert.AreEqual(4000, basket.OrderAmount.BeforeDiscount.ValueInCents());
 
+			Assert.AreEqual(4000, basket.OrderAmount.BeforeDiscount.WithVat.ValueInCents);
+			Assert.AreEqual(3361, basket.OrderAmount.BeforeDiscount.WithoutVat.ValueInCents);
+
 			Assert.AreEqual(4000, oldLine.Amount.ValueInCents());
 			Assert.AreEqual(4000, oldLine.Amount.BeforeDiscount.ValueInCents());
 			Assert.AreEqual(0, oldLine.Amount.Discount.WithVat.ValueInCents);
@@ -92,7 +95,9 @@ namespace uWebshop.Test.Public_API.BasketTests
 			Assert.AreEqual(0, line.Amount.Discount.ValueInCents());
 
 			Assert.AreEqual(1000, basket.OrderAmount.Discount.ValueInCents());
+			Assert.AreEqual(840, basket.OrderAmount.Discount.WithoutVat.ValueInCents); 
 			Assert.AreEqual(1000, basket.OrderAmount.Discount.WithVat.ValueInCents);
+
 		}
 		[Test]
 		public void TestSummedPrice()
@@ -141,6 +146,11 @@ namespace uWebshop.Test.Public_API.BasketTests
 			//Assert.AreEqual(2255, discountAmount);
 
 			var line = order.OrderLines.First();
+
+			var unit = line.SellableUnits.First();
+			Assert.AreEqual(10, unit.PriceInCents);
+			Assert.AreEqual(0, unit.DiscountedPrice);
+
 			var newDiscount = line.SellableUnits.Select(su => su.PriceInCents - su.DiscountedPrice).Sum();
 			Assert.AreEqual(50, newDiscount);
             
@@ -157,8 +167,49 @@ namespace uWebshop.Test.Public_API.BasketTests
 			Assert.AreEqual(50, line.DiscountInCents);
 		}
 
+		[Test]
+		public void DiscountAmountRegressionTest20140626()
+		{
+			IOC.IntegrationTest();
+			IOC.SettingsService.ExclVat();
+			var product1 = DefaultFactoriesAndSharedFunctionality.CreateProductInfo(1000, 1, 0);
+			var product2 = DefaultFactoriesAndSharedFunctionality.CreateProductInfo(1000, 1, 20);
 
-        [Test]
+			var order = DefaultFactoriesAndSharedFunctionality.CreateIncompleteOrderInfo(product1, product2);
+
+			Assert.AreEqual(2000, order.SubtotalInCents);
+			Assert.AreEqual(2200, order.GrandtotalInCents);
+			Assert.AreEqual(200, order.VatTotalInCents);
+
+			var basket = Basket.CreateBasketFromOrderInfo(order);
+
+			Assert.AreEqual(2000, basket.OrderAmount.WithoutVat.ValueInCents);
+			Assert.AreEqual(2200, basket.OrderAmount.WithVat.ValueInCents);
+			Assert.AreEqual(200, basket.OrderAmount.Vat.ValueInCents);
+		}
+		[Test]
+		public void DiscountAmountRegressionTest20140627()
+		{
+			IOC.IntegrationTest();
+			IOC.SettingsService.ExclVat();
+			var product1 = DefaultFactoriesAndSharedFunctionality.CreateProductInfo(4000, 1, 0);
+			var product2 = DefaultFactoriesAndSharedFunctionality.CreateProductInfo(1800, 1, 20);
+
+			var order = DefaultFactoriesAndSharedFunctionality.CreateIncompleteOrderInfo(product1, product2);
+
+			Assert.AreEqual(5800, order.SubtotalInCents);
+			Assert.AreEqual(6160, order.GrandtotalInCents);
+			Assert.AreEqual(360, order.VatTotalInCents);
+
+			var basket = Basket.CreateBasketFromOrderInfo(order);
+
+			Assert.AreEqual(5800, basket.OrderAmount.WithoutVat.ValueInCents);
+			Assert.AreEqual(6160, basket.OrderAmount.WithVat.ValueInCents);
+			Assert.AreEqual(360, basket.OrderAmount.Vat.ValueInCents);
+		}
+
+
+		[Test]
         public void DiscountAmountRegressionTest20140408()
         {
             IOC.IntegrationTest();

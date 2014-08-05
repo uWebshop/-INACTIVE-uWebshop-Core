@@ -23,7 +23,7 @@ namespace uWebshop.Domain.Interfaces
 		/// <param name="localization">The localization.</param>
 		/// <param name="itemCount">The item count.</param>
 		/// <returns></returns>
-		ProductInfo CreateProductInfoByProductId(int productId, IOrderInfo order, ILocalization localization, int itemCount);
+		ProductInfo CreateProductInfoByProductId(int productId, OrderInfo order, ILocalization localization, int itemCount);
 
 		/// <summary>
 		/// Gets all enabled and with category.

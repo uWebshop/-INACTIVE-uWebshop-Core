@@ -49,8 +49,7 @@ namespace uWebshop.Umbraco.DataTypes.EmailTemplateSelector
 			base.OnInit(e);
 
 			Licensing.uWebshopTrialMessage();
-
-
+            
 			_dlTemplates = new DropDownList();
 
 			var filePaths = Directory.GetFiles(IOHelper.MapPath(SystemDirectories.Xslt), "*.xslt", SearchOption.AllDirectories);

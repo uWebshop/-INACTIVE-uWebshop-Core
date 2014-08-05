@@ -17,11 +17,12 @@ namespace uWebshop.Domain.Services
 		{
 			return GetAll(localization).Where(discount => discount.IsActive && discount.Products.Any(x => x.Id == productId) && (!discount.MemberGroups.Any() || Membership.GetUser() != null && discount.MemberGroups.Intersect(Roles.GetRolesForUser(Membership.GetUser().UserName)).Any()));
 		}
-		public DiscountProduct GetDiscountByProductId(int productId, ILocalization localization)
+		
+		public DiscountProduct GetDiscountByProductId(int productId, ILocalization localization, OrderInfo order = null)
 		{
 			return GetAllForProductAndCurrentUser(productId, localization)
 				// todo: below can give some unexpected behaviour since GetDiscountAmountInCents doens't take ranges into account
-			                           .OrderByDescending(discount => discount.GetDiscountAmountInCents(productId)).FirstOrDefault();
+									   .OrderByDescending(discount => discount.GetDiscountAmountInCents(productId, order)).FirstOrDefault();
 		}
 
 		public int GetAdjustedPriceForProductWithId(int productId, ILocalization localization, int currentProductPrice, int orderTotalItemCount = 0)

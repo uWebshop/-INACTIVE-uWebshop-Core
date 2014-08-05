@@ -116,7 +116,7 @@ namespace uWebshop.Test
 		{
 			Console.WriteLine("Repository setup");
 			IOC.OrderDiscountRepository.SetupFake(discountOrders.Select(d => d.ToDiscountOrder()).ToArray());
-			var a = orderInfo.DiscountAmountInCents;
+			if (orderInfo != null){var a = orderInfo.DiscountAmountInCents;}
 		}
 
 		public static void SetProductDiscountOnProductInfo(ProductInfo productInfo, DiscountProduct discount)

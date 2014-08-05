@@ -6,9 +6,13 @@ angular.module("umbraco").controller("uWebshop.CouponCodes", function ($scope, a
 
         $scope.Coupons = res.data;
 
-        $scope.editItem = function(itemToEdit) {
-            event.preventDefault();
+        $scope.editItem = function (itemToEdit, event) {
 
+            if (event) {
+                event.stopPropagation();
+                event.preventDefault();
+            }
+          
             var data = JSON.parse(itemToEdit);
 
             for (i = 0; $scope.Coupons.length > i; i += 1) {
@@ -25,8 +29,12 @@ angular.module("umbraco").controller("uWebshop.CouponCodes", function ($scope, a
             $scope.NumberAvailable = data.NumberAvailable;
         };
 
-        $scope.saveItem = function() {
-            event.preventDefault();
+        $scope.saveItem = function (name, event) {
+
+            if (event) {
+                event.stopPropagation();
+                event.preventDefault();
+            }
 
             if ($scope.CouponCode && $scope.NumberAvailable) {
                 console.log("Save!");
@@ -51,8 +59,11 @@ angular.module("umbraco").controller("uWebshop.CouponCodes", function ($scope, a
             }
         };
 
-        $scope.deleteItem = function(itemToRemove) {
-            event.preventDefault();
+        $scope.deleteItem = function(itemToRemove, event) {
+            if (event) {
+                event.stopPropagation();
+                event.preventDefault();
+            }
             $scope.Coupons.splice(itemToRemove, 1);
         };
 

@@ -61,6 +61,7 @@ namespace uWebshop.Test.Domain.Businesslogic.UwebshopUrlsRewritingServiceTests
 		public string ExamineSearcher { get; set; }
 		public string ExamineIndexer { get; set; }
 		public bool ShareBasketBetweenStores { get; set; }
-		public int OrdersCacheTimeoutMilliseconds { get; set; }
+	    public bool DisableDateFolders { get; set; }
+	    public int OrdersCacheTimeoutMilliseconds { get; set; }
 	}
 }

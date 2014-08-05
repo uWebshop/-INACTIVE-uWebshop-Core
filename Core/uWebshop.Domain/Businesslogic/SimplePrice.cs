@@ -1,21 +1,23 @@
-﻿using uWebshop.Domain.Helpers;
+﻿using System;
+using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
 
 namespace uWebshop.Domain
 {
 	internal sealed class SimplePrice : IDiscountedRangedPrice, IPrice
 	{
-		private enum YesNoDifference
+		internal enum YesNoDifference
 		{
 			Yes, No, Difference
 		}
 		private readonly IAmountUnit _source;
 		private readonly ILocalization _localization;
-		private YesNoDifference _vat;
+		private YesNoDifference? _vat;
 		private YesNoDifference _discount;
 		private bool _ranged;
 		public SimplePrice(IAmountUnit source, ILocalization localization)
 		{
+			if (localization == null) throw new ArgumentNullException("lo");
 			//_ranged = true;
 			_source = source;
 			_localization = localization;
@@ -24,34 +26,12 @@ namespace uWebshop.Domain
 
 		public SimplePrice(SimplePrice previous)
 		{
+			_localization = previous._localization;
 			_source = previous._source;
 			_vat = previous._vat;
 			_discount = previous._discount;
 			_ranged = previous._ranged;
 		}
-
-		public IPrice WithVat
-		{
-			get
-			{
-				var price = new SimplePrice(this);
-				price._vat = YesNoDifference.Yes;
-				return price;
-			}
-		}
-
-		public IPrice WithoutVat { get
-		{
-			var price = new SimplePrice(this);
-			price._vat = YesNoDifference.No;
-			return price;
-		} }
-		public IPrice Vat { get
-		{
-			var price = new SimplePrice(this);
-			price._vat = YesNoDifference.Difference;
-			return price;
-		} }
 
 		public decimal Value { get { return ValueInCents/100m; }}
 
@@ -59,22 +39,32 @@ namespace uWebshop.Domain
 		{
 			get
 			{
-				if (_discount == YesNoDifference.Difference)
+				if (!_vat.HasValue)
 				{
-					var inclVat = _vat != YesNoDifference.No;
-					return _source.GetAmount(inclVat, false, _ranged) - _source.GetAmount(inclVat, true, _ranged);
+					_vat = IO.Container.Resolve<ISettingsService>().IncludingVat ? YesNoDifference.Yes : YesNoDifference.No;
 				}
-
-				var discounted = _discount == YesNoDifference.Yes;
-				if (_vat == YesNoDifference.Difference)
-				{
-					return _source.GetAmount(true, discounted, _ranged) - _source.GetAmount(false, discounted, _ranged);
-				}
-
-				var vat = _vat == YesNoDifference.Yes;
-
-				return _source.GetAmount(vat, discounted, _ranged);
+				return Amount(_discount, _vat.Value, _source, _ranged);
 			}
+		}
+
+		// todo: test
+		internal int Amount(YesNoDifference discount, YesNoDifference vatVal, IAmountUnit source, bool ranged)
+		{
+			if (discount == YesNoDifference.Difference)
+			{
+				var inclVat = vatVal != YesNoDifference.No;
+				return source.GetAmount(inclVat, false, ranged) - _source.GetAmount(inclVat, true, ranged);
+			}
+
+			var discounted = discount == YesNoDifference.Yes;
+			if (vatVal == YesNoDifference.Difference)
+			{
+				return source.GetAmount(true, discounted, ranged) - _source.GetAmount(false, discounted, ranged);
+			}
+
+			var vat = vatVal == YesNoDifference.Yes;
+
+			return source.GetAmount(vat, discounted, ranged);
 		}
 
 		public string ToCurrencyString()
@@ -92,27 +82,64 @@ namespace uWebshop.Domain
 			}
 		}
 
-		public IRangedPrice BeforeDiscount { get
+		public IRangedPrice BeforeDiscount
 		{
-			var price = new SimplePrice(this);
-			price._discount = YesNoDifference.No;
-			return price;
-		}}
+			get
+			{
+				var price = new SimplePrice(this);
+				price._discount = YesNoDifference.No;
+				return price;
+			}
+		}
 
 		IVatPrice IDiscountedPrice.BeforeDiscount
 		{
 			get { return BeforeDiscount; }
 		}
 
-		public IVatPrice Discount { get
+		public IVatPrice Discount
 		{
-			var price = new SimplePrice(this);
-			price._discount = YesNoDifference.Difference;
-			return price;
-		} }
+			get
+			{
+				var price = new SimplePrice(this);
+				price._discount = YesNoDifference.Difference;
+				return price;
+			}
+		}
+
 		IVatPrice IRangedPrice.Ranged
 		{
 			get { return Ranged; }
+		}
+
+		public IPrice WithVat
+		{
+			get
+			{
+				var price = new SimplePrice(this);
+				price._vat = YesNoDifference.Yes;
+				return price;
+			}
+		}
+
+		public IPrice WithoutVat
+		{
+			get
+			{
+				var price = new SimplePrice(this);
+				price._vat = YesNoDifference.No;
+				return price;
+			}
+		}
+
+		public IPrice Vat
+		{
+			get
+			{
+				var price = new SimplePrice(this);
+				price._vat = YesNoDifference.Difference;
+				return price;
+			}
 		}
 	}
 }

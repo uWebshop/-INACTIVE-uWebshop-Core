@@ -67,10 +67,18 @@ namespace uWebshop.Domain.Helpers
 				{
 					body = IO.Container.Resolve<ICMSApplication>().RenderXsltMacro(email.Template, parameters, orderInfoXml);
 				}
-				else
-				{
-					body = IO.Container.Resolve<ICMSApplication>().RenderMacro(email.Template, email.Id, parameters);
-				}
+                else 
+                {
+                    if (email.Template.Contains("."))
+                    {
+                        body = IO.Container.Resolve<ICMSApplication>().RenderMacro(email.Template, email.Id, parameters);
+                    }
+                    else
+                    {
+                        Log.Instance.LogWarning("SendOrderEmailCustomer email.Template no valid value: " + email.Template + " no email send");
+                        return;
+                    }
+                }
 
 				var emailTo = OrderHelper.CustomerInformationValue(orderInfo, "customerEmail");
 				Log.Instance.LogDebug("SendOrderEmailCustomer emailTo: " + emailTo);
@@ -115,7 +123,7 @@ namespace uWebshop.Domain.Helpers
 
 				if (string.IsNullOrEmpty(email.Template))
 				{
-					Log.Instance.LogWarning("SendOrderEmailCustomer nodeId: " + emailNodeId + " No Template Defined");
+                    Log.Instance.LogWarning("SendOrderEmailCustomer nodeId: " + emailNodeId + " no valid Tempalte value: " + email.Template + " : no email send");
 
 					return;
 				}
@@ -136,7 +144,15 @@ namespace uWebshop.Domain.Helpers
 				}
 				else
 				{
-					body = IO.Container.Resolve<ICMSApplication>().RenderMacro(email.Template, email.Id, parameters);
+                    if (email.Template.Contains("."))
+                    {
+                        body = IO.Container.Resolve<ICMSApplication>().RenderMacro(email.Template, email.Id, parameters);
+                    }
+                    else
+                    {
+                        Log.Instance.LogWarning("SendOrderEmailStore nodeId: " + emailNodeId + " no valid Tempalte value: " + email.Template + " : no email send");
+                        return;
+                    }
 				}
 
 				var emailTo = orderInfo.StoreInfo.Store.EmailAddressTo;

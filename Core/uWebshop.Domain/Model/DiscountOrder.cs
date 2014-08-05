@@ -154,7 +154,11 @@ namespace uWebshop.Domain
 		/// The coupon codes.
 		/// </value>
 		[ContentPropertyType(Alias = "couponCodes", DataType = DataType.CouponCodes, Tab = ContentTypeTab.Conditions, Name = "#CouponCodes", Description = "#CouponCodesDescription", SortOrder = 22)]
-		public string CouponCodes { get; set; }
+		public IEnumerable<string> CouponCodes
+		{
+			get { return IO.Container.Resolve<ICouponCodeService>().GetAllForDiscount(Id).Select(c => c.CouponCode); }
+			set { }
+		}
 
 		/// <summary>
 		/// Can this discount be only used once per customer?

@@ -7,13 +7,15 @@ angular.module("umbraco").controller("uWebshop.DiscountType", function ($scope, 
         $scope.ItemArray = res.data;
 
         $scope.selectedOption = $scope.ItemArray[0];
+        $scope.model.value = $scope.ItemArray[0];
 
         for (i = 0; $scope.ItemArray.length > i; i += 1) {
             if ($scope.ItemArray[i] == $scope.model.value) {
                 $scope.selectedOption = $scope.ItemArray[i];
+                $scope.model.value = $scope.ItemArray[i];
             }
         }
-        
+
         $scope.update = function () {
             $scope.model.value = $scope.selectedOption;
         };

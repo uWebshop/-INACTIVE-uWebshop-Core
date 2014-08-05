@@ -65,6 +65,13 @@
             editor: {
                 view: "~/App_Plugins/uWebshop/DataTypes/Cultures/cultures.html"
             }         
+        },	
+		{          
+            alias: "uWebshop.MemberGroups",           
+            name: "uWebshop MemberGroup Picker",         
+            editor: {
+                view: "~/App_Plugins/uWebshop/DataTypes/MemberGroups/membergroup.html"
+            }         
         },		
 		{          
             alias: "uWebshop.Currencies",           
@@ -244,6 +251,6 @@
 		'~/App_Plugins/uWebshop/DataTypes/CouponCodes/couponcodes.controller.js',
 		'~/App_Plugins/uWebshop/DataTypes/DiscountType/discounttype.controller.js',
 		'~/App_Plugins/uWebshop/DataTypes/DiscountOrderCondition/discountordercondition.controller.js',
-
+		'~/App_Plugins/uWebshop/DataTypes/MemberGroups/membergroup.controller.js',
     ]
 }

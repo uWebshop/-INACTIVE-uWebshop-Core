@@ -45,16 +45,6 @@ var EnableDisableDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.En
 				
 				newDataTypesList.Add(EnableDisableDataTypeDef);
 			}
-			var MemberGroupsDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.MemberGroups", new Guid("a99d5614-8b33-4a63-891a-a254c87af481"));
-			if (MemberGroupsDataTypeDef == null)
-			{				
-				MemberGroupsDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.MemberGroups", new Guid("bd6054bc-86ec-4f2c-bcc8-447766f1d569"));
-				MemberGroupsDataTypeDef.Name = "MemberGroup Picker";
-				MemberGroupsDataTypeDef.Key = new Guid("a99d5614-8b33-4a63-891a-a254c87af481");
-				MemberGroupsDataTypeDef.DatabaseType = DataTypeDatabaseType.Ntext;
-				
-				newDataTypesList.Add(MemberGroupsDataTypeDef);
-			}
 			var MultiContentPickerCatalogDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.MultiContentPickerCatalog", new Guid("ea745beb-271c-4542-a5be-5fba2be86f07"));
 			if (MultiContentPickerCatalogDataTypeDef == null)
 			{				
@@ -194,6 +184,16 @@ var EnableDisableDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.En
 				CulturesDataTypeDef.DatabaseType = DataTypeDatabaseType.Ntext;
 				
 				newDataTypesList.Add(CulturesDataTypeDef);
+			}
+			var MemberGroupsDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.MemberGroups", new Guid("a99d5614-8b33-4a63-891a-a254c87af481"));
+			if (MemberGroupsDataTypeDef == null)
+			{				
+				MemberGroupsDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.MemberGroups", new Guid("bd6054bc-86ec-4f2c-bcc8-447766f1d569"));
+				MemberGroupsDataTypeDef.Name = "uWebshop MemberGroup Picker";
+				MemberGroupsDataTypeDef.Key = new Guid("a99d5614-8b33-4a63-891a-a254c87af481");
+				MemberGroupsDataTypeDef.DatabaseType = DataTypeDatabaseType.Ntext;
+				
+				newDataTypesList.Add(MemberGroupsDataTypeDef);
 			}
 			var OrderStatusPickerDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.OrderStatusPicker", new Guid("8fa38a1b-7854-43ce-b03e-c7cc2ffd3d20"));
 			if (OrderStatusPickerDataTypeDef == null)
@@ -379,8 +379,6 @@ var EnableDisableDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.En
 
 EnableDisableDataTypeDef = dataTypeService.GetDataTypeDefinitionById(new Guid("63c6fa9a-975f-4474-9155-62a229bafaef"));
 if (EnableDisableDataTypeDef == null) throw new Exception("Could not create and/or load EnableDisable datatype");
-MemberGroupsDataTypeDef = dataTypeService.GetDataTypeDefinitionById(new Guid("a99d5614-8b33-4a63-891a-a254c87af481"));
-if (MemberGroupsDataTypeDef == null) throw new Exception("Could not create and/or load MemberGroups datatype");
 MultiContentPickerCatalogDataTypeDef = dataTypeService.GetDataTypeDefinitionById(new Guid("ea745beb-271c-4542-a5be-5fba2be86f07"));
 if (MultiContentPickerCatalogDataTypeDef == null) throw new Exception("Could not create and/or load MultiContentPickerCatalog datatype");
 MultiContentPickerCategoriesDataTypeDef = dataTypeService.GetDataTypeDefinitionById(new Guid("c0d85cb4-6e4d-4f10-9107-abdee89b5d7d"));
@@ -409,6 +407,8 @@ OrderedCountDataTypeDef = dataTypeService.GetDataTypeDefinitionById(new Guid("2f
 if (OrderedCountDataTypeDef == null) throw new Exception("Could not create and/or load OrderedCount datatype");
 CulturesDataTypeDef = dataTypeService.GetDataTypeDefinitionById(new Guid("4235f880-64cc-4d78-8fc2-6e6e5ee72010"));
 if (CulturesDataTypeDef == null) throw new Exception("Could not create and/or load Cultures datatype");
+MemberGroupsDataTypeDef = dataTypeService.GetDataTypeDefinitionById(new Guid("a99d5614-8b33-4a63-891a-a254c87af481"));
+if (MemberGroupsDataTypeDef == null) throw new Exception("Could not create and/or load MemberGroups datatype");
 OrderStatusPickerDataTypeDef = dataTypeService.GetDataTypeDefinitionById(new Guid("8fa38a1b-7854-43ce-b03e-c7cc2ffd3d20"));
 if (OrderStatusPickerDataTypeDef == null) throw new Exception("Could not create and/or load OrderStatusPicker datatype");
 OrderInfoViewerDataTypeDef = dataTypeService.GetDataTypeDefinitionById(new Guid("6f455770-3677-4c6c-843d-2c76d7b33893"));

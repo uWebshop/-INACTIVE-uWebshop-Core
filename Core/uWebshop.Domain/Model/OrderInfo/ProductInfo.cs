@@ -422,7 +422,7 @@ namespace uWebshop.Domain
 		/// <param name="product">The product.</param>
 		/// <param name="order">The order.</param>
 		/// <param name="itemCount">The item count.</param>
-		public ProductInfo(Product product, IOrderInfo order, int itemCount) : this()
+		public ProductInfo(Product product, OrderInfo order, int itemCount) : this()
 		{
 			if (product == null)
 			{
@@ -448,9 +448,10 @@ namespace uWebshop.Domain
 
 			OriginalPriceInCents = product.Price.BeforeDiscount.ValueInCents();
 
-			if (product.IsDiscounted)
+			var discount = IO.Container.Resolve<IProductDiscountService>().GetDiscountByProductId(product.Id, order.Localization, order);
+			if (discount != null)
 			{
-				DiscountId = product.ProductDiscount.Id;
+				DiscountId = discount.Id;
 			}
 			IO.Container.Resolve<IOrderUpdatingService>().UpdateProductInfoDiscountInformation(this);
 

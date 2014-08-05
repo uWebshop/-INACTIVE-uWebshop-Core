@@ -28,7 +28,7 @@ namespace uWebshop.Domain
 	/// </summary>
 	[DataContract(Namespace = "")]
 	[Serializable]
-	public class OrderInfo : IOrderInfo, IDatabaseOrder, IDiscountableUnit
+	public class OrderInfo : IOrderInfo, IDatabaseOrder, IDiscountableUnit, IAmountUnit
 	{
 		#region events
 
@@ -1195,9 +1195,10 @@ namespace uWebshop.Domain
 		/// </summary>
 		/// <param name="fields"></param>
 		/// <param name="customerDataType"></param>
-		public bool AddCustomerFields(Dictionary<string, string> fields, CustomerDatatypes customerDataType)
+        /// <param name="ingnoreNotAllowed">Ignore if order is not allowed to be written to</param>
+        public bool AddCustomerFields(Dictionary<string, string> fields, CustomerDatatypes customerDataType, bool ingnoreNotAllowed = false)
 		{
-			return IO.Container.Resolve<IOrderUpdatingService>().AddCustomerFields(this, fields, customerDataType);
+			return IO.Container.Resolve<IOrderUpdatingService>().AddCustomerFields(this, fields, customerDataType, ingnoreNotAllowed);
 		}
 
 		/// <summary>
@@ -1668,6 +1669,7 @@ namespace uWebshop.Domain
 			return OrderLines.Sum(su => su.GetAmount(inclVat, discounted, ranged));
 		}
 
+		// todo: test
 		public int GetAmount(bool inclVat, bool discounted, bool ranged)
 		{
 			if (discounted)
@@ -1675,7 +1677,9 @@ namespace uWebshop.Domain
 				ApplyDiscounts(); // todo: inefficient at this location, but secure (until a better architecture is built for this)
 			}
 			var total = GetOrderLineTotalAmount(inclVat, discounted, ranged);
-			var discountedTotal = discounted ? OrderDiscountEffects.GetDiscountedPrice(total) : total;
+			var originalTotal = OrderLines.Sum(su => su.GetOriginalAmount(discounted, ranged));
+
+			var discountedTotal = discounted ? OrderDiscountEffects.GetDiscountedPrice(total, originalTotal) : total;
 			discountedTotal = Math.Max(0, discountedTotal);
 			discountedTotal += (inclVat ? PaymentProviderCostsWithVatInCents : PaymentProviderCostsWithoutVatInCents);
 			if (!FreeShipping)

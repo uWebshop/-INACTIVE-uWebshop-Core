@@ -207,5 +207,24 @@ namespace uWebshop.Domain.Helpers
 		{
 			return IO.Container.Resolve<IShippingProviderService>().GetById(id, StoreHelper.GetLocalization(storeAlias, currencyCode) ?? StoreHelper.CurrentLocalization);
 		}
+
+		public static void ClearValidationResult(OrderInfo order)
+		{
+			if (HttpContext.Current.Session[Constants.ShippingValidationResultsKey + order.UniqueOrderId] != null)
+				HttpContext.Current.Session.Remove(Constants.ShippingValidationResultsKey + order.UniqueOrderId);
+		}
+
+		public static void AddValidationResult(OrderInfo order, int id, string key, string value, string alias = null, string name = null)
+		{
+			var results = GetPaymentValidationResults(order);
+			results.Add(new OrderValidationError { Id = id, Key = key, Value = value, Alias = alias, Name = name });
+			HttpContext.Current.Session.Add(Constants.ShippingValidationResultsKey + order.UniqueOrderId, results);
+		}
+		internal static List<OrderValidationError> GetPaymentValidationResults(OrderInfo order)
+		{
+			if (HttpContext.Current.Session[Constants.ShippingValidationResultsKey + order.UniqueOrderId] != null)
+				return (List<OrderValidationError>)HttpContext.Current.Session[Constants.ShippingValidationResultsKey + order.UniqueOrderId];
+			return new List<OrderValidationError>();
+		}
 	}
 }

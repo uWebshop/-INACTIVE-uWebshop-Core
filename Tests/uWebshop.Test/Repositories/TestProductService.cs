@@ -29,7 +29,7 @@ namespace uWebshop.Test.Repositories
 			return 1; // hmm
 		}
 
-		public ProductInfo CreateProductInfoByProductId(int productId, IOrderInfo order, ILocalization localization, int itemCount)
+		public ProductInfo CreateProductInfoByProductId(int productId, OrderInfo order, ILocalization localization, int itemCount)
 		{
 			if (productId == ProductId1) return DefaultFactoriesAndSharedFunctionality.CreateProductInfo(995, 1);
 			return null;

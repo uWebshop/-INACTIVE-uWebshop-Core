@@ -65,10 +65,9 @@ namespace uWebshop.Domain
 					splitStrings => 
 						new Range
 						{
-					
 							From = int.Parse(splitStrings[0]), 
-							PriceInCents = int.Parse(splitStrings[2]), 
-							To = splitStrings[1] == "*" || splitStrings[1] == "0" ? int.MaxValue : int.Parse(splitStrings[1]),
+							PriceInCents = int.Parse(splitStrings[2]),
+							To = splitStrings[1] == "*" || splitStrings[1] == "0" || splitStrings[1] == "" ? int.MaxValue : int.Parse(splitStrings[1]),
 						}).ToList();
 			}
 			catch (Exception ex)
