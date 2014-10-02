@@ -15,10 +15,7 @@ uWebshop/Resources/*.dll
 Dotfuscator1.xml
 uWebshop.sln.DotSettings
 .nuget/packages.config
-uWebshop.APIDocumentation/Help
-uWebshop/packages.config
 Performance.psess
-Binary Dependencies/iDeal.dll
 
 
 #################
