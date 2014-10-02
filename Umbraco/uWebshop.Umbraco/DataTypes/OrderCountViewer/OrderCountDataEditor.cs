@@ -42,7 +42,7 @@ namespace uWebshop.Umbraco.DataTypes.OrderCountViewer
 		{
 			base.OnInit(e);
 
-			Licensing.uWebshopTrialMessage();
+			
 
 			if (!(Page.Request.CurrentExecutionFilePath ?? string.Empty).Contains("editContent.aspx"))
 				return;

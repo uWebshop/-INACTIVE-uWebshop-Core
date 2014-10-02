@@ -16,7 +16,7 @@ namespace uWebshop.Starterkits.Sandbox
 		{
 			base.OnInit(e);
 
-			Licensing.uWebshopTrialMessage();
+			
 		}
 
 		protected void Page_Load(object sender, EventArgs e)

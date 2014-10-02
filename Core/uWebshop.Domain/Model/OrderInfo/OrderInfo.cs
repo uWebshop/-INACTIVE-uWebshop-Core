@@ -115,6 +115,13 @@ namespace uWebshop.Domain
 		/// <param name="e">The <see cref="OrderPaidChangedEventArgs"/> instance containing the event data.</param>
 		public delegate void OrderPaidChangedEventHandler(OrderInfo orderInfo, OrderPaidChangedEventArgs e);
 
+        /// <summary>
+		/// 
+		/// </summary>
+		/// <param name="orderInfo">The order information.</param>
+        /// <param name="e">The <see cref="OrderFulfilledChangedEventArgs"/> instance containing the event data.</param>
+        public delegate void OrderFulfilledChangedEventHandler(OrderInfo orderInfo, OrderFulfillChangedEventArgs e);
+        
 		/// <summary>
 		/// Occurs when [before order updated].
 		/// </summary>
@@ -169,6 +176,11 @@ namespace uWebshop.Domain
 		/// Occurs when [order paid changed].
 		/// </summary>
 		public static event OrderPaidChangedEventHandler OrderPaidChanged;
+
+        /// <summary>
+        /// Occurs when [order fulfilled changed].
+        /// </summary>
+        public static event OrderFulfilledChangedEventHandler OrderFulfillChanged;
 
 		/// <summary>
 		/// Occurs when [order loaded].
@@ -428,6 +440,33 @@ namespace uWebshop.Domain
 			}
 		}
 
+        /// <summary>
+        /// Gets or sets the paid.
+        /// </summary>
+        /// <value>
+        /// The paid.
+        /// </value>
+        [DataMember(IsRequired = false)]
+        public bool? Fulfilled
+        {
+            get { return FulfillDate.HasValue; }
+            set
+            {
+                if (Fulfilled != value && OrderFulfillChanged != null)
+                {
+                    try
+                    {
+                        OrderFulfillChanged(this, new OrderFulfillChangedEventArgs { OrderInfo = this, Fulfilled = value.GetValueOrDefault() });
+                    }
+                    catch
+                    {
+                        Log.Instance.LogError("OrderFulfillChanged Event Failed for Order: " + UniqueOrderId);
+                    }
+                }
+                FulfillDate = value.GetValueOrDefault() ? (DateTime?)DateTime.Now : null;
+            }
+        }
+
 		/// <summary>
 		/// Gets or sets a value indicating whether [terms accepted].
 		/// </summary>
@@ -451,6 +490,15 @@ namespace uWebshop.Domain
 		/// </value>
 		[DataMember(IsRequired = false)]
 		public DateTime? PaidDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the paid date.
+        /// </summary>
+        /// <value>
+        /// The paid date.
+        /// </value>
+        [DataMember(IsRequired = false)]
+        public DateTime? FulfillDate { get; set; }
 
 		/// <summary>
 		///     Gets a list with the coupons of the order
@@ -1927,6 +1975,26 @@ namespace uWebshop.Domain
 		/// </value>
 		public bool Paid { get; set; }
 	}
+
+    public class OrderFulfillChangedEventArgs : EventArgs
+	{
+		/// <summary>
+		/// Gets or sets the order information.
+		/// </summary>
+		/// <value>
+		/// The order information.
+		/// </value>
+		public OrderInfo OrderInfo { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether [paid].
+		/// </summary>
+		/// <value>
+		///   <c>true</c> if [paid]; otherwise, <c>false</c>.
+		/// </value>
+		public bool Fulfilled { get; set; }
+	}
+    
 
 	/// <summary>
 	/// 

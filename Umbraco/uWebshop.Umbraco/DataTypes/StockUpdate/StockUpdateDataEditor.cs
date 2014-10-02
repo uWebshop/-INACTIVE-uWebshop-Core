@@ -79,7 +79,7 @@ namespace uWebshop.Umbraco.DataTypes.StockUpdate
 		{
 			base.OnInit(e);
 
-			Licensing.uWebshopTrialMessage();
+			
 
 			int currentId;
 

@@ -11,7 +11,6 @@
     <AssemblyName>uWebshop.Umbraco</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -32,25 +31,22 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="businesslogic">
-      <HintPath>..\..\Binary Dependencies umbraco6.1\businesslogic.dll</HintPath>
+      <HintPath>..\..\Binary Dependencies umbraco6\businesslogic.dll</HintPath>
     </Reference>
     <Reference Include="cms">
-      <HintPath>..\..\Binary Dependencies umbraco6.1\cms.dll</HintPath>
+      <HintPath>..\..\Binary Dependencies umbraco6\cms.dll</HintPath>
     </Reference>
     <Reference Include="controls">
-      <HintPath>..\..\Binary Dependencies umbraco6.1\controls.dll</HintPath>
+      <HintPath>..\..\Binary Dependencies umbraco6\controls.dll</HintPath>
     </Reference>
     <Reference Include="Examine">
-      <HintPath>..\..\Binary Dependencies umbraco6.1\Examine.dll</HintPath>
+      <HintPath>..\..\Binary Dependencies umbraco6\Examine.dll</HintPath>
     </Reference>
     <Reference Include="interfaces">
-      <HintPath>..\..\Binary Dependencies umbraco6.1\interfaces.dll</HintPath>
+      <HintPath>..\..\Binary Dependencies umbraco6\interfaces.dll</HintPath>
     </Reference>
     <Reference Include="Lucene.Net">
-      <HintPath>..\..\Binary Dependencies\Lucene.Net.dll</HintPath>
-    </Reference>
-    <Reference Include="PackageGarden.Licensing">
-      <HintPath>..\..\Binary Dependencies\PackageGarden.Licensing.dll</HintPath>
+      <HintPath>..\..\Binary Dependencies umbraco6\Lucene.Net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -79,9 +75,6 @@
     <Reference Include="umbraco.editorControls">
       <HintPath>..\..\Binary Dependencies umbraco6.1\umbraco.editorControls.dll</HintPath>
     </Reference>
-    <Reference Include="Umbraco.Licensing">
-      <HintPath>..\..\Binary Dependencies\Umbraco.Licensing.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="API\ExtensionMethods.cs" />
@@ -100,9 +93,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Businesslogic\DictionaryPropertyProvider.cs" />
-    <Compile Include="Businesslogic\Licensing.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Businesslogic\MediaValues.cs" />
     <Compile Include="Businesslogic\OrderEvents.cs" />
     <Compile Include="Businesslogic\UwbsImage.cs" />
@@ -278,10 +268,6 @@
       <Project>{30ac1fb6-eb29-4e4e-92c4-0481c503215c}</Project>
       <Name>uWebshop.Domain</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Core\uWebshop.Services\uWebshop.Services.csproj">
-      <Project>{d08e0834-b25a-40a5-9c8e-31d4fb050df4}</Project>
-      <Name>uWebshop.Services</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="DataTypesv7\Countries\countries.controller.js" />
@@ -456,7 +442,4 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <PropertyGroup>
-    <PostBuildEvent>if /I "$(ConfigurationName)" == "Release" Eazfuscator.NET.exe "$(TargetPath)" --msbuild-project-path "$(ProjectPath)" --msbuild-project-configuration "$(ConfigurationName)" --msbuild-project-platform "$(PlatformName)" --msbuild-solution-path "$(SolutionPath)" -n --newline-flush -v 4.0</PostBuildEvent>
-  </PropertyGroup>
 </Project>

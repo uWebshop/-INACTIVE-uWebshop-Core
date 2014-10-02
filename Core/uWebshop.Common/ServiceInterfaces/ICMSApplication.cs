@@ -155,12 +155,6 @@ namespace uWebshop.Domain.Interfaces
 		int CurrentNodeId();
 
 		/// <summary>
-		/// Determines whether [has valid license].
-		/// </summary>
-		/// <returns></returns>
-		bool HasValidLicense();
-
-		/// <summary>
 		/// Gets the multi store content property.
 		/// </summary>
 		/// <param name="contentId">The content unique identifier.</param>

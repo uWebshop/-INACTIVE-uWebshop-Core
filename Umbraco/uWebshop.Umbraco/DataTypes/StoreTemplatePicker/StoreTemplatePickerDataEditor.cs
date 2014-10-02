@@ -48,7 +48,7 @@ namespace uWebshop.Umbraco.DataTypes.StoreTemplatePicker
 		{
 			base.OnInit(e);
 
-			Licensing.uWebshopTrialMessage();
+			
 
 			if (!(Page.Request.CurrentExecutionFilePath ?? string.Empty).Contains("editContent.aspx"))
 				return;

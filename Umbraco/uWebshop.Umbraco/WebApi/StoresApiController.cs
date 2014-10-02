@@ -15,6 +15,7 @@ using uWebshop.Domain;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
 using uWebshop.Domain.Model;
+using uWebshop.Domain.Repositories;
 using uWebshop.Umbraco.DataTypes.CouponCodeEditor;
 using IProduct = uWebshop.API.IProduct;
 
@@ -289,6 +290,37 @@ namespace uWebshop.Umbraco.WebApi
 
             return null;
         }
+
+        public string PostOrder(PostOrderRequest data)
+        {
+            if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated)
+            {
+                var order = OrderHelper.GetOrder(data.id);
+
+                OrderStatus status;
+                Enum.TryParse(data.status, out status);
+                
+                order.SetStatus(status, data.emails);
+
+                order.Fulfilled = data.fulfilled;
+                order.Paid = data.paid;
+                
+                order.Save();
+
+                return data.status;
+            }
+
+            return null;
+        }
+
+	    public class PostOrderRequest
+	    {
+            public Guid id { get; set; }
+            public bool paid { get; set; }
+            public bool fulfilled { get; set; }
+            public string status { get; set; }
+            public bool emails { get; set; }
+	    }
 
         public class PostPaidRequest
         {

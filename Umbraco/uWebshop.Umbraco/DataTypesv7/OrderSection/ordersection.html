@@ -1,36 +1,36 @@
-<div ng-controller="uWebshop.OrderSection" ng-switch="model.config.multiple" class="umb-listview">
+<div class="umb-editor umb-listview" ng-controller="uWebshop.OrderSection" ng-switch="isNew">
 
-    <div class="row-fluid">
+    <div class="row-fluid" ng-switch-when="true">
 
+    </div>
+
+    <div class="row-fluid" ng-switch-when="false">
         <div class="umb-sub-header">
 
-            <label for="orderstatus">Status:</label><br />
-            <select name="orderstatus" data-ng-options="item as item for item in StatusArray" data-ng-model="SelectedOption"></select>
+            <div class="btn-group" ng-show="listViewAllowedTypes">
+                <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                    <localize key="actions_create">Create</localize>
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li ng-repeat="contentType in listViewAllowedTypes">
+                        <a href="#/{{entityType}}/{{entityType}}/edit/{{contentId}}?doctype={{contentType.alias}}&create=true">
+                            <i class="icon-{{contentType.cssClass}}"></i>
+                            {{contentType.name}}
+                        </a>
+                    </li>
+                </ul>
+            </div>
 
-            <div class="btn-group" ng-show="isAnythingSelected()">
-                <a class="btn btn-success" ng-disabled="actionInProgress" ng-click="changestatus()" prevent-default>
-                    Change Status
-                </a>
-            </div>
-            <div class="btn-group" ng-show="isAnythingSelected()">
-                <a class="btn btn-info" ng-disabled="actionInProgress" ng-click="paid()" prevent-default>
-                    Mark Paid
-                </a>
-            </div>
-            <div class="btn-group" ng-show="isAnythingSelected()">
-                <a class="btn btn-info" ng-disabled="actionInProgress" ng-click="fulfilled()" prevent-default>
-                    Mark Fulfilled
+            <div class="btn-group" ng-show="isAnythingSelected()" ng-if="entityType === 'content' && !isTrashed">
+                <a class="btn btn-success" ng-disabled="actionInProgress" ng-click="publish()" prevent-default>
+                    <localize key="actions_update">Update</localize>
                 </a>
             </div>
             <span ng-bind="bulkStatus" ng-show="isAnythingSelected()"></span>
         </div>
-        <hr />
 
-        <p ng-show="listViewResultSet.length === 0">
-            No orders found
-        </p>
-
-        <table class="table table-striped" ng-show="listViewResultSet.length > 0">
+        <table class="table table-striped">
             <thead>
                 <tr>
                     <td style="width: 35px">
@@ -57,39 +57,51 @@
 
                 </tr>
             </thead>
-            <tbody>
-                <tr ng-repeat="item in listViewResultSet | orderBy:predicate:reverse | filter:searchText" ng-class="{selected:item.selected}">
-                    <td><input type="checkbox" ng-model="item.selected"></td>
-                    <td><a href="#" ng-click="getTreeNodeUrl(item);">{{ item.OrderReference }}</a></td>
-                    <td>
-                        <select name="itemstatus" data-ng-options="status as status for status in ItemStatusArray" data-ng-model="item.Status"></select>
+
+            <tbody ng-show="listViewResultSet.totalItems === 0">
+                <tr>
+                    <td colspan="5">
+                        <p><localize key="content_listViewNoItems">There are no items show in the list.</localize></p>
                     </td>
-                    <td>{{ item.Customer.Email }}</td>
-                    <td>{{ item.ConfirmDate | date:'medium' }}</td>
-                    <td><input name='ispaid' type="checkbox" style="display: inline" ng-model="item.ispaidselected" ng-checked="item.IsPaid" /></td>
-                    <td><input name='isfulfilled' type="checkbox" style="display: inline" ng-model="item.isfulfilledselected" ng-checked="item.IsFulfilled" /></td>
+                </tr>
+            </tbody>
+
+            <tbody ng-show="listViewResultSet.totalItems > 0">
+                <tr ng-repeat="result in listViewResultSet.items | orderBy:predicate:reverse | filter:searchText"
+                    ng-class="{selected:result.selected}">
+
+                    <td><input type="checkbox" ng-model="result.selected"></td>
+                    <td><a href="#" prevent-default ng-click="getTreeNodeUrl(result);">{{ result.OrderReference }}</a></td>
+                    <td>
+                        <select name="itemstatus" data-ng-options="status as status for status in ItemStatusArray" ng-model="result.Status" ng-change="selectrow(result)"></select>
+                    </td>
+                    <td>{{ result.Customer.Email }}</td>
+                    <td>{{ result.ConfirmDate | date:'medium' }}</td>
+                    <td><input name='ispaid' type="checkbox" style="display: inline" ng-model="result.ispaidselected" ng-checked="result.IsPaid" ng-change="selectrow(result)" /></td>
+                    <td><input name='isfulfilled' type="checkbox" style="display: inline" ng-model="result.isfulfilledselected" ng-checked="result.IsFulfilled" ng-change="selectrow(result)" /></td>
                     <td></td>
                 </tr>
             </tbody>
+
             <tfoot ng-show="pagination.length > 1">
                 <tr>
-                    <th colspan="8">
+                    <th colspan="5">
                         <div class="pull-left">
                         </div>
                         <div class="pagination pagination-right">
                             <ul>
-                                <li>
+                                <li ng-class="{disabled:options.pageNumber <= 1}">
                                     <a href="#" ng-click="prev()" prevent-default>
                                         <localize key="general_previous">Previous</localize>
                                     </a>
                                 </li>
 
                                 <li ng-repeat="pgn in pagination track by $index"
-                                    ng-class="{active:$index==options.offset}">
+                                    ng-class="{active:$index + 1 == options.pageNumber}">
                                     <a href="#" ng-click="goToPage($index)" prevent-default>{{$index + 1}}</a>
                                 </li>
 
-                                <li>
+                                <li ng-class="{disabled:options.pageNumber >= listViewResultSet.totalPages}">
                                     <a href="#" ng-click="next()" prevent-default>
                                         <localize key="general_next">Next</localize>
                                     </a>

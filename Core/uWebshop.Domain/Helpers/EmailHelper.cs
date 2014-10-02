@@ -316,20 +316,10 @@ namespace uWebshop.Domain.Helpers
 					nameFrom = @from;
 				}
 				var msg = new MailMessage {From = new MailAddress(from, nameFrom), Subject = subject, Body = body, IsBodyHtml = true};
-				var cmsApp = IO.Container.Resolve<ICMSApplication>();
-				if (!cmsApp.HasValidLicense())
-				{
-					msg.From = new MailAddress(from, "uWebshop.com Trial Version");
-				}
-
+				
 				msg.To.Add(new MailAddress(to));
 
 				var client = new SmtpClient();
-
-				if (!cmsApp.HasValidLicense())
-				{
-					msg.Subject = "[uWebshop.com Trial] " + msg.Subject;
-				}
 
 				Log.Instance.LogDebug("SendMail before send event");
 				if (BeforeSendEmail != null)

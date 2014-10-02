@@ -43,7 +43,7 @@ namespace uWebshop.Umbraco.DataTypes.LanguagePicker
 		{
 			base.OnInit(e);
 
-			Licensing.uWebshopTrialMessage();
+			
 
 			_dlInstalledLanguages = new DropDownList();
 

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Examine;
-using Umbraco.Licensing;
 using uWebshop.Domain.Model;
 using uWebshop.Domain.Services;
 using umbraco;

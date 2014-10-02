@@ -41,6 +41,7 @@ namespace uWebshop.Domain.OrderDTO
 
 		public List<OrderLine> OrderLines;
 		public DateTime? PaidDate;
+	    public DateTime? FulfillDate;
 		public PaymentInfo PaymentInfo;
 		public int PaymentProviderPrice;
 		public int? PaymentProviderOrderPercentage;
@@ -65,6 +66,7 @@ namespace uWebshop.Domain.OrderDTO
 			Name = orderInfo.Name;
 			TermsAccepted = orderInfo.TermsAccepted;
 			PaidDate = orderInfo.PaidDate;
+		    FulfillDate = orderInfo.FulfillDate;
 			ConfirmDate = orderInfo.ConfirmDate;
 			OrderLines = orderInfo.OrderLines.Select(line => new OrderLine(line)).ToList();
 			CouponCodes = orderInfo.CouponCodesData;
@@ -113,6 +115,7 @@ namespace uWebshop.Domain.OrderDTO
 			var orderInfo = new OrderInfo();
 			orderInfo.CreatedInTestMode = CreatedInTestMode.GetValueOrDefault();
 			orderInfo.PaidDate = PaidDate;
+		    orderInfo.FulfillDate = FulfillDate;
 			orderInfo.ConfirmDate = ConfirmDate;
 			orderInfo.OrderLines = OrderLines.Select(line => line.ToOrderLine(orderInfo)).ToList();
 			orderInfo.SetOrderReferenceOnOrderLinesAndProductInfos();

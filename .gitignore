@@ -151,5 +151,5 @@ App_Data/*.ldf
 
 *.zip
 Binary Dependencies umbraco7/Umbraco.Core.xml
+builds/
 
-/Builds

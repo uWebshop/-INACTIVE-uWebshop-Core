@@ -152,11 +152,6 @@ namespace uWebshop.Umbraco
 			return Node.getCurrentNodeId();
 		}
 
-		public bool HasValidLicense()
-		{
-			return Licensing.IsValid();
-		}
-
 		// unsure about location! (maybe another service)
 		public string GetMultiStoreContentProperty(int contentId, string propertyAlias, ILocalization localization, bool globalOverrulesStore = false)
 		{

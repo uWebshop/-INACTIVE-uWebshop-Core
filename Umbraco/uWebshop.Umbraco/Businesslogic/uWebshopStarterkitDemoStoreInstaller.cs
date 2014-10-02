@@ -29,7 +29,7 @@ namespace uWebshop.Starterkits.DemoStore
 		{
 			base.OnInit(e);
 
-			Licensing.uWebshopTrialMessage();
+			
 		}
 
 		protected void Page_Load(object sender, EventArgs e)

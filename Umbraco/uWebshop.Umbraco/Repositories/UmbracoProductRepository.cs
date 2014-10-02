@@ -92,9 +92,14 @@ namespace uWebshop.Umbraco.Repositories
             var vatProperty = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.vat, localization, fields);
 		    if (!string.IsNullOrEmpty(vatProperty))
 		    {
-		        vatProperty = vatProperty.Replace(',', '.');
-                
-		        var vat = Convert.ToDecimal(vatProperty, CultureInfo.InvariantCulture);
+                var vat = store.GlobalVat;
+
+		        if (vatProperty.ToLowerInvariant() != "default")
+		        {
+                    vatProperty = vatProperty.Replace(',', '.').Replace("%", string.Empty);
+
+		            vat = Convert.ToDecimal(vatProperty, CultureInfo.InvariantCulture);
+		        }
 
 		        product.Vat = vat;
 		    }

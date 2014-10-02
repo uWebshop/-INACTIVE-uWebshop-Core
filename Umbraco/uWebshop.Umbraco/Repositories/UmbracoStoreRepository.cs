@@ -121,11 +121,18 @@ namespace uWebshop.Umbraco.Repositories
 				    var vatProperty = fields.GetStringValue("globalVat");
                     if (!string.IsNullOrEmpty(vatProperty))
                     {
-                        vatProperty = vatProperty.Replace(',', '.');
+                        if (vatProperty.ToLowerInvariant() != "default")
+                        {
+                            vatProperty = vatProperty.Replace(',', '.');
 
-                        var vat = Convert.ToDecimal(vatProperty, CultureInfo.InvariantCulture);
+                            var vat = Convert.ToDecimal(vatProperty, CultureInfo.InvariantCulture);
 
-                        store.GlobalVat = vat;
+                            store.GlobalVat = vat;
+                        }
+                        else
+                        {
+                            store.GlobalVat = 0;
+                        }
                     }
 				}
 				if (fields.ContainsKey("storeCulture"))

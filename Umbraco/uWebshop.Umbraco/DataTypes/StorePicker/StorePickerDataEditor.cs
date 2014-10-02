@@ -49,7 +49,7 @@ namespace uWebshop.Umbraco.DataTypes.StorePicker
 			//if (!(Page.Request.CurrentExecutionFilePath ?? string.Empty).Contains("editContent.aspx"))
 			//    return;
 
-			Licensing.uWebshopTrialMessage();
+			
 
 			_dlInstalledStores = new DropDownList();
 

@@ -82,8 +82,7 @@ namespace uWebshop.Umbraco.DataTypes.OrderStatusSection
 
 			if (!(Page.Request.CurrentExecutionFilePath ?? string.Empty).Contains("editContent.aspx"))
 				return;
-			Licensing.uWebshopTrialMessage();
-
+			
 			_dlOrderStatus = new DropDownList {ID = "ddlOrderStatus"};
 			_dlOrderStatus.SelectedIndexChanged += DlOrderStatusOnSelectedIndexChanged;
 			_dlOrderStatus.AutoPostBack = false;

@@ -44,9 +44,6 @@
     <Reference Include="Umbraco.Core">
       <HintPath>..\..\Binary Dependencies umbraco6\Umbraco.Core.dll</HintPath>
     </Reference>
-    <Reference Include="UmbracoExamine">
-      <HintPath>..\..\Binary Dependencies\UmbracoExamine.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IOC.cs" />
