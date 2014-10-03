@@ -24,6 +24,18 @@ namespace uWebshop.API
 			return IO.Container.Resolve<IOrderDiscountService>().GetAll(StoreHelper.GetLocalizationOrCurrent(storeAlias, currencyCode)).Select(d => new DiscountAdaptor(d));
 		}
 
+	    /// <summary>
+	    /// Get order discount by Id
+	    /// </summary>
+	    /// <param name="discountId"></param>
+	    /// <param name="storeAlias">The store alias.</param>
+	    /// <param name="currencyCode">The currency code.</param>
+	    /// <returns></returns>
+	    public static IOrderDiscount GetOrderDiscount(int discountId, string storeAlias = null, string currencyCode = null)
+        {
+	        return new DiscountAdaptor(IO.Container.Resolve<IOrderDiscountService>().GetById(discountId, StoreHelper.GetLocalizationOrCurrent(storeAlias, currencyCode)));
+        }
+
 		/// <summary>
 		/// Gets all discounts for the given order
 		/// </summary>
@@ -48,6 +60,18 @@ namespace uWebshop.API
 			var orderInfo = Basket.GetOrderInfoFromOrderBasket(order);
 			return IO.Container.Resolve<IOrderDiscountService>().GetApplicableDiscountsForOrder(orderInfo, StoreHelper.GetLocalizationOrCurrent(storeAlias, currencyCode)).Select(d => new DiscountAdaptor(d));
 		}
+
+        /// <summary>
+        /// Get the product discount by Id
+        /// </summary>
+        /// <param name="discountId">The product unique identifier.</param>
+        /// <param name="storeAlias">The store alias.</param>
+        /// <param name="currencyCode">The currency code.</param>
+        /// <returns></returns>
+        public static IProductDiscount GetProductDiscount(int discountId, string storeAlias = null, string currencyCode = null)
+        {
+            return IO.Container.Resolve<IProductDiscountService>().GetById(discountId, StoreHelper.GetLocalizationOrCurrent(storeAlias, currencyCode));
+        }
 
 		/// <summary>
 		/// Gets the discount for product.
