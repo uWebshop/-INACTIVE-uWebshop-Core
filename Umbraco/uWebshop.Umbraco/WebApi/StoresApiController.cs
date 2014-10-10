@@ -35,6 +35,16 @@ namespace uWebshop.Umbraco.WebApi
 		    return Enumerable.Empty<string>();
 		}
 
+        public IEnumerable<IStore> GetAllStores()
+        {
+            if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated)
+            {
+                return StoreHelper.GetAllStores();
+            }
+
+            return Enumerable.Empty<IStore>();
+        }
+
         public IEnumerable<string> GetStoreSpecificStockStoreAliasses()
         {
             if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated)
