@@ -462,6 +462,10 @@ namespace uWebshop.Domain.Businesslogic
 			return handleObjectList;
 		}
 
+        public void ClearFeedbackMessagesExternal() {
+            ClearFeedbackMessages();
+        }
+
 		internal static void ClearFeedbackMessages()
 		{
 			Session.Remove(Constants.BasketActionResult);
