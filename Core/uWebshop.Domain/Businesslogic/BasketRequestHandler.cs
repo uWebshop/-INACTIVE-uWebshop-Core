@@ -875,7 +875,7 @@ namespace uWebshop.Domain.Businesslogic
 				return handleObject;
 			}
 
-		    order.OrderLines.Clear();
+		    order.OrderLines.Clear();s
 
             order.Save();
 
@@ -1329,6 +1329,7 @@ namespace uWebshop.Domain.Businesslogic
                 result.Add(Constants.RequestPasswordSessionKey, AccountActionResult.Success.ToString());
                 handleObject.Success = true;
                 handleObject.Messages = result;
+                handleObject.Validated = true;
                 return handleObject;
             }
 
@@ -1438,6 +1439,7 @@ namespace uWebshop.Domain.Businesslogic
 
 					handleObject.Success = true;
 					handleObject.Messages = result;
+                    handleObject.Validated = true;
 					return handleObject;
 				}
 
@@ -1530,6 +1532,7 @@ namespace uWebshop.Domain.Businesslogic
 			result.Add(Constants.UpdateMemberSessionKey, AccountActionResult.Success.ToString());
 			handleObject.Success = true;
 			handleObject.Messages = result;
+		    handleObject.Validated = true;
 			return handleObject;
 		}
 
