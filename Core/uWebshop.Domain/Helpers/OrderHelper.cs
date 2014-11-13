@@ -149,20 +149,52 @@ namespace uWebshop.Domain.Helpers
 			var uwebshopRequest = UwebshopRequest.Current;
 			var orderInfo = uwebshopRequest.OrderInfo;
 
-			if (orderInfo == null)
-			{
-				LogThis("GetUnmodifiedCurrentOrder() get cookie");
-				var cookieGuid = OrderService.GetOrderIdFromOrderIdCookie();
+		    if (orderInfo == null)
+		    {
+		        LogThis("GetUnmodifiedCurrentOrder() get cookie");
+		        var cookieGuid = OrderService.GetOrderIdFromOrderIdCookie();
 
-				if (cookieGuid == Guid.Empty)
-				{
-					return null;
-				}
+		        if (cookieGuid == Guid.Empty)
+		        {
+		            return null;
+		        }
+                
+		        orderInfo = GetOrder(cookieGuid);
 
-				orderInfo = GetOrder(cookieGuid);
+                if (IsCompletedOrderWithinValidLifetime(orderInfo) &&
+                  orderInfo.PaymentInfo.PaymentType == PaymentProviderType.OnlinePayment &&
+                  orderInfo.Paid == true)
+                {
+                    return null;
+                }
 
-				uwebshopRequest.OrderInfo = orderInfo;
-			}
+                if (IsCompletedOrderWithinValidLifetime(orderInfo) &&
+                  orderInfo.PaymentInfo.PaymentType != PaymentProviderType.OnlinePayment)
+                {
+                    return null;
+                }
+
+		        uwebshopRequest.OrderInfo = orderInfo;
+		    }
+		    else
+		    {
+                // order from request
+                // is order marked as completed?
+                // AND is order set to use online payment provider?
+                // AND is payment not failed?
+		        if (IsCompletedOrderWithinValidLifetime(orderInfo) && 
+		            orderInfo.PaymentInfo.PaymentType == PaymentProviderType.OnlinePayment &&
+                    orderInfo.Paid == true)
+		        {
+                    // the return null, so a new order should be made instead of having access to this one...
+		            return null;
+		        }
+                if (IsCompletedOrderWithinValidLifetime(orderInfo) &&
+                  orderInfo.PaymentInfo.PaymentType != PaymentProviderType.OnlinePayment)
+                {
+                    return null;
+                }
+		    }
 			return orderInfo;
 		}
 

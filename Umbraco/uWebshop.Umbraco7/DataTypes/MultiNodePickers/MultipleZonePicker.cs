@@ -16,7 +16,7 @@ namespace uWebshop.Umbraco7.DataTypes.MultiNodePickers
                     { "startNode",  
                         new MultiNodePickerPreValues {
                             type = "content",
-                            query = "//uwbsPaymentProviderZone"
+                            query = "//uwbsPaymentProviderZoneSection"
                         }  
                     },
                     { "filter",  "uwbsPaymentProviderZone" }
@@ -41,7 +41,7 @@ namespace uWebshop.Umbraco7.DataTypes.MultiNodePickers
                     { "startNode",  
                         new MultiNodePickerPreValues {
                             type = "content",
-                            query = "//uwbsShippingProviderZone"
+                            query = "//uwbsShippingProviderZoneSection"
                         }  
                     },
                     { "filter",  "uwbsShippingProviderZone" }

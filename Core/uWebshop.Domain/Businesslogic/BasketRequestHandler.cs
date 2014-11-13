@@ -13,6 +13,7 @@ using System.Web.Profile;
 using System.Web.Security;
 using System.Web.SessionState;
 using System.Xml;
+using System.Xml.Linq;
 using uWebshop.API;
 using uWebshop.Common;
 using uWebshop.Domain.Helpers;
@@ -182,6 +183,19 @@ namespace uWebshop.Domain.Businesslogic
 					handleObjectList.Add(result);
 				}
 			}
+
+            List<string> cleanOrderCollection = requestParameters.AllKeys.Where(x => x != null && x.ToLower() == "clearorder").ToList();
+
+            if (cleanOrderCollection.Any())
+            {
+                var keyValue = requestParameters[cleanOrderCollection.First()];
+                if (keyValue.ToLower() == "true" || keyValue.ToLower() == "clearorder" || keyValue.ToLower() == "on" ||
+                    keyValue == "1")
+                {
+                    var result = ClearOrder(requestParameters, rawRequestUrl);
+                    handleObjectList.Add(result);
+                }
+            }
 
 			List<string> productQueryStringCollection = requestParameters.AllKeys.Where(x => x != null && x.ToLower() == "productid").ToList();
 			List<string> orderlineIdQueryStringCollection = requestParameters.AllKeys.Where(x => x != null && x.ToLower() == "orderlineid").ToList();
@@ -860,9 +874,11 @@ namespace uWebshop.Domain.Businesslogic
 				result.Add(Constants.BasketActionResult, BasketActionResult.Failed.ToString());
 				return handleObject;
 			}
-			order.OrderLines.Clear();
 
-			order.Save();
+		    order.OrderLines.Clear();
+
+            order.Save();
+
 			Session.Add(Constants.BasketActionResult, BasketActionResult.Success);
 			result.Add(Constants.BasketActionResult, BasketActionResult.Success.ToString());
 			SetBasket(handleObject, order);
@@ -870,6 +886,34 @@ namespace uWebshop.Domain.Businesslogic
 			handleObject.Success = true;
 			return handleObject;
 		}
+
+        private HandleObject ClearOrder(NameValueCollection requestParameters, Uri urlReferrer)
+        {
+            var handleObject = new HandleObject { Action = "ClearOrder", Url = urlReferrer };
+            var result = new Dictionary<string, string>();
+
+            var order = OrderHelper.GetOrder();
+
+            if (order == null)
+            {
+                handleObject.Success = false;
+                handleObject.Messages = result;
+                Session.Add(Constants.BasketActionResult, BasketActionResult.Failed);
+
+                result.Add(Constants.BasketActionResult, BasketActionResult.Failed.ToString());
+                return handleObject;
+            }
+
+            order = OrderHelper.CreateOrder();
+
+            Session.Add(Constants.BasketActionResult, BasketActionResult.Success);
+            result.Add(Constants.BasketActionResult, BasketActionResult.Success.ToString());
+            SetBasket(handleObject, order);
+            handleObject.Messages = result;
+            handleObject.Success = true;
+            return handleObject;
+        }
+
 
 		private HandleObject AccountSignOut(NameValueCollection requestParameters, Uri urlReferrer)
 		{

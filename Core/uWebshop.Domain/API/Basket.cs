@@ -28,8 +28,13 @@ namespace uWebshop.API
 		{
 			OrderHelper.LogThis("ENTRY GetBasket()");
 		    var order = OrderHelper.GetOrder();
-		    
-            return CreateBasketFromOrderInfo(order);
+
+            if (order == null)
+            {
+                order = OrderHelper.CreateOrder();
+            }
+            
+		    return CreateBasketFromOrderInfo(order);
 		}
 
 		/// <summary>
