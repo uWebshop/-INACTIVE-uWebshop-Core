@@ -875,7 +875,7 @@ namespace uWebshop.Domain.Businesslogic
 				return handleObject;
 			}
 
-		    order.OrderLines.Clear();s
+		    order.OrderLines.Clear();
 
             order.Save();
 

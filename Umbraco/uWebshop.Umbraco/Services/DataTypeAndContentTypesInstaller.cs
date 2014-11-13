@@ -1121,22 +1121,8 @@ AllowedTemplates = new List<ITemplate>(),
 PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),};
 contentTypeList.Add(uwbsOrderRepositoryContentType);
 
-
-
-var uwbsOrderSectionContentType = contentTypeService.GetContentType("uwbsOrderSection") ?? new ContentType(-1) {
-Alias = "uwbsOrderSection",
-Name = "Order Section",
-Description = "#OrderSectionDescription",
-Thumbnail = "Folder.png",
-Icon = umbracoVersionMajor > 6 ? "icon-uwebshop-statistics" : "folder-open-table.png",
-SortOrder = 1,
-AllowedContentTypes = new List<ContentTypeSort>(),
-AllowedTemplates = new List<ITemplate>(),
-PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),};
-contentTypeList.Add(uwbsOrderSectionContentType);
-
-if (uwbsOrderSectionContentType.PropertyTypes.All(p => p.Alias != "orderSection")){
-GetOrAddPropertyGroup(uwbsOrderSectionContentType, "Global").PropertyTypes.Add(new PropertyType(OrderSectionDataTypeDef) { Alias = "orderSection", Name = "#OrderSection", Description = "#OrderSectionDescription",});
+if (uwbsOrderRepositoryContentType.PropertyTypes.All(p => p.Alias != "orderSection")){
+GetOrAddPropertyGroup(uwbsOrderRepositoryContentType, "Global").PropertyTypes.Add(new PropertyType(OrderSectionDataTypeDef) { Alias = "orderSection", Name = "#OrderSection", Description = "#OrderSectionDescription",});
 }
 
 
@@ -1807,7 +1793,6 @@ uwbsOrderContentType.SetLazyParentId(new Lazy<int>(() => uwbsOrderRepositoryCont
 uwbsOrderedProductContentType.SetLazyParentId(new Lazy<int>(() => uwbsOrderRepositoryContentType.Id));
 uwbsOrderedProductVariantContentType.SetLazyParentId(new Lazy<int>(() => uwbsOrderRepositoryContentType.Id));
 uwbsOrderRepositoryContentType.SetLazyParentId(new Lazy<int>(() => uWebshopContentType.Id));
-uwbsOrderSectionContentType.SetLazyParentId(new Lazy<int>(() => uwbsOrderRepositoryContentType.Id));
 uwbsOrderStoreFolderContentType.SetLazyParentId(new Lazy<int>(() => uwbsOrderRepositoryContentType.Id));
 uwbsPaymentProviderContentType.SetLazyParentId(new Lazy<int>(() => uwbsPaymentProviderSectionContentType.Id));
 uwbsPaymentProviderMethodContentType.SetLazyParentId(new Lazy<int>(() => uwbsPaymentProviderSectionContentType.Id));
@@ -1843,7 +1828,6 @@ uwbsEmailRepositoryContentType.AllowedContentTypes = new List<ContentTypeSort> {
 uwbsEmailTemplateStoreSectionContentType.AllowedContentTypes = new List<ContentTypeSort> { new ContentTypeSort { Alias = "uwbsEmailTemplateStore", Id = new Lazy<int>(() => uwbsEmailTemplateStoreContentType.Id) },};
 uwbsOrderContentType.AllowedContentTypes = new List<ContentTypeSort> { new ContentTypeSort { Alias = "uwbsOrderedProduct", Id = new Lazy<int>(() => uwbsOrderedProductContentType.Id) },};
 uwbsOrderedProductContentType.AllowedContentTypes = new List<ContentTypeSort> { new ContentTypeSort { Alias = "uwbsOrderedProductVariant", Id = new Lazy<int>(() => uwbsOrderedProductVariantContentType.Id) },};
-uwbsOrderRepositoryContentType.AllowedContentTypes = new List<ContentTypeSort> { new ContentTypeSort { Alias = "uwbsOrderSection", Id = new Lazy<int>(() => uwbsOrderSectionContentType.Id) },};
 uwbsOrderStoreFolderContentType.AllowedContentTypes = new List<ContentTypeSort> { new ContentTypeSort { Alias = "uwbsOrderDateFolder", Id = new Lazy<int>(() => uwbsOrderDateFolderContentType.Id) },};
 uwbsPaymentProviderContentType.AllowedContentTypes = new List<ContentTypeSort> { new ContentTypeSort { Alias = "uwbsPaymentProviderMethod", Id = new Lazy<int>(() => uwbsPaymentProviderMethodContentType.Id) },};
 uwbsPaymentProviderRepositoryContentType.AllowedContentTypes = new List<ContentTypeSort> { new ContentTypeSort { Alias = "uwbsPaymentProviderSection", Id = new Lazy<int>(() => uwbsPaymentProviderSectionContentType.Id) },new ContentTypeSort { Alias = "uwbsPaymentProviderZoneSection", Id = new Lazy<int>(() => uwbsPaymentProviderZoneSectionContentType.Id) },};
