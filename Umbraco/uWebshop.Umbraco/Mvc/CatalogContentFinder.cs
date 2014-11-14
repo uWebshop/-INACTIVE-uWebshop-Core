@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Web;
 using System.Web.Security;
 using Umbraco.Core;
@@ -98,6 +99,13 @@ namespace uWebshop.Umbraco.Mvc
 	{
 		public bool TryFindContent(PublishedContentRequest contentRequest)
 		{
+		    var stores = StoreHelper.GetAllStores();
+
+		    if (!stores.Any())
+		    {
+		        return false;
+		    }
+
 			var uwebshopRequest = UwebshopRequest.Current;
 			var content = uwebshopRequest.Product ?? uwebshopRequest.Category ?? uwebshopRequest.PaymentProvider ?? // in case ResolveUwebshopEntityUrl was already called from the module
 			              IO.Container.Resolve<IUrlRewritingService>().ResolveUwebshopEntityUrl().Entity;
