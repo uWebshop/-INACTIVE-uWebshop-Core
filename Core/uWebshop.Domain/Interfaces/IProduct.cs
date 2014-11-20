@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using uWebshop.Common.Interfaces.Shared;
 using uWebshop.Domain;
 using uWebshop.Domain.Interfaces;
@@ -17,7 +18,7 @@ namespace uWebshop.API
 	/// <summary>
 	/// 
 	/// </summary>
-	public interface IProduct : IUwebshopSortableEntity, IProductInternalExternalShared
+    public interface IProduct : IUwebshopSortableEntity, IProductInternalExternalShared
 	{
 		/// <summary>
 		/// Gets the price.

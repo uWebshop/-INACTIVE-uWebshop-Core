@@ -33,40 +33,60 @@ namespace uWebshop.API
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		public FlatDiscountedRangedPrice PriceFlat { get { return new FlatDiscountedRangedPrice(Price); } }
 
-		public string SKU { get { return _source.SKU; } }
-		public string Group { get { return _source.SKU; } }
-		public bool Required { get { return _source.Required; } }
-		public double Length { get { return _source.Length; } }
-		public double Width { get { return _source.Width; } }
-		public double Height { get { return _source.Height; } }
-		public double Weight { get { return _source.Weight; } }
-		public IEnumerable<Range> Ranges { get { return _source.Ranges; } }
-		public decimal Vat { get { return _source.Id; } }
-		public int Stock { get { return _source.Stock; } }
-		public int OrderCount { get { return _source.OrderCount; } }
-		public bool StockStatus { get { return _source.StockStatus; } }
-		public bool BackorderStatus { get { return _source.BackorderStatus; } }
+        [JsonProperty]
+        public string SKU { get { return _source.SKU; } }
+        [JsonProperty]
+        public string Group { get { return _source.SKU; } }
+        [JsonProperty]
+        public bool Required { get { return _source.Required; } }
+        [JsonProperty]
+        public double Length { get { return _source.Length; } }
+        [JsonProperty]
+        public double Width { get { return _source.Width; } }
+        [JsonProperty]
+        public double Height { get { return _source.Height; } }
+        [JsonProperty]
+        public double Weight { get { return _source.Weight; } }
+        [JsonProperty]
+        public IEnumerable<Range> Ranges { get { return _source.Ranges; } }
+        [JsonProperty]
+        public decimal Vat { get { return _source.Id; } }
+        [JsonProperty]
+        public int Stock { get { return _source.Stock; } }
+        [JsonProperty]
+        public int OrderCount { get { return _source.OrderCount; } }
+        [JsonProperty]
+        public bool StockStatus { get { return _source.StockStatus; } }
+        [JsonProperty]
+        public bool BackorderStatus { get { return _source.BackorderStatus; } }
 		public string GetProperty(string propertyAlias)
 		{
 			return _source.GetProperty(propertyAlias);
 		}
 
-		public bool Orderable { get { return _source.Orderable; } }
+        [JsonProperty]
+        public bool Orderable { get { return _source.Orderable; } }
 		[IgnoreDataMember]
 		public IProductDiscount Discount { get { return _source.Discount; } }
-		public bool IsDiscounted { get { return _source.IsDiscounted; } }
-		public string Title { get { return _source.Title; } }
-		public string Description { get { return _source.Description; } }
+        [JsonProperty]
+        public bool IsDiscounted { get { return _source.IsDiscounted; } }
+        [JsonProperty]
+        public string Title { get { return _source.Title; } }
+        [JsonProperty]
+        public string Description { get { return _source.Description; } }
 
-		public int Id { get { return _source.Id; } }
-		public string TypeAlias { get { return _source.TypeAlias; } }
+        [JsonProperty]
+        public int Id { get { return _source.Id; } }
+        [JsonProperty]
+        public string TypeAlias { get { return _source.TypeAlias; } }
 
 		[IgnoreDataMember]
 		public bool Disabled { get { return _source.Disabled; } }
 		[IgnoreDataMember]
 		public DateTime CreateDate { get { return _source.CreateDate; } }
-		[IgnoreDataMember]
+         [JsonProperty]
 		public DateTime UpdateDate { get { return _source.UpdateDate; } }
-		public int SortOrder { get { return _source.SortOrder; } }
+         [JsonProperty]
+         public int SortOrder { get { return _source.SortOrder; } }
 	}
 }

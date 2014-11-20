@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using uWebshop.Domain;
+using uWebshop.Newtonsoft.Json;
 
 namespace uWebshop.API
 {
@@ -20,36 +21,47 @@ namespace uWebshop.API
 			return source == null ? null : new CategoryAdaptor(source);
 		}
 
-		public string Title { get { return _source.Title; } }
-		public string Description { get { return _source.Description; } }
+        [JsonProperty]
+        public string Title { get { return _source.Title; } }
+        [JsonProperty]
+        public string Description { get { return _source.Description; } }
 
-		public int Id { get { return _source.Id; } }
+        [JsonProperty]
+        public int Id { get { return _source.Id; } }
 		public string TypeAlias { get { return _source.TypeAlias; } }
 
 		[IgnoreDataMember]
 		public bool Disabled { get { return _source.Disabled; } }
 		[IgnoreDataMember]
 		public DateTime CreateDate { get { return _source.CreateDate; } }
-		[IgnoreDataMember]
+        [JsonProperty]
 		public DateTime UpdateDate { get { return _source.UpdateDate; } }
-		public int SortOrder { get { return _source.SortOrder; } }
+        [JsonProperty]
+        public int SortOrder { get { return _source.SortOrder; } }
 
 		[IgnoreDataMember]
 		public ICategory ParentCategory { get { return Create(_source.ParentCategory); } }
-		public string UrlName { get { return _source.UrlName; } }
+        [JsonProperty]
+        public string UrlName { get { return _source.UrlName; } }
 		[IgnoreDataMember]
 		public string ParentNodeTypeAlias { get { return _source.ParentNodeTypeAlias; } }
-		public string MetaDescription { get { return _source.MetaDescription; } }
-		public string[] Tags { get { return _source.Tags; } }
-		public IEnumerable<Image> Images { get { return _source.Images; } }
+        [JsonProperty]
+        public string MetaDescription { get { return _source.MetaDescription; } }
+        [JsonProperty]
+        public string[] Tags { get { return _source.Tags; } }
+        [JsonProperty]
+        public IEnumerable<Image> Images { get { return _source.Images; } }
 		[IgnoreDataMember]
-		public IEnumerable<ICategory> SubCategories { get { return _source.SubCategories.Select(Create); } }
-		public bool HasCategories { get { return _source.HasCategories; } }
+        [JsonProperty]
+        public IEnumerable<ICategory> SubCategories { get { return _source.SubCategories.Select(Create); } }
+        [JsonProperty]
+        public bool HasCategories { get { return _source.HasCategories; } }
 		[IgnoreDataMember]
 		public IEnumerable<IProduct> Products { get { return _source.Products.Select(p => new ProductAdaptor(p)); } }
 		[IgnoreDataMember]
 		public IEnumerable<IProduct> ProductsRecursive { get { return _source.ProductsRecursive.Select(p => new ProductAdaptor(p)); } }
-		public string Url { get { return _source.Url; } }
+        [JsonProperty]
+        public string Url { get { return _source.Url; } }
 		public string GetProperty(string propertyAlias)
 		{
 			return _source.GetProperty(propertyAlias);

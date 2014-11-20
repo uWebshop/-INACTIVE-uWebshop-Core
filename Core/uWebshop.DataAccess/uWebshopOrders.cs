@@ -413,6 +413,14 @@ namespace uWebshop.DataAccess
 		}
 		public static void SetCustomerInfo(Guid orderId, string customerEmail, string customerFirstName, string customerLastName)
 		{
+		    if (string.IsNullOrEmpty(customerFirstName))
+		    {
+		        customerFirstName = string.Empty;
+		    }
+            if (string.IsNullOrEmpty(customerLastName))
+            {
+                customerLastName = string.Empty;
+            }
 			var sqlHelper = DataLayerHelper.CreateSqlHelper(GlobalSettings.DbDSN);
 			
 			sqlHelper.ExecuteNonQuery("update uWebshopOrders set customerEmail = @customerEmail, " +
