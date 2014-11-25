@@ -24,7 +24,7 @@ namespace uWebshop.Domain
 			ExamineIndexer = ConfigurationManager.AppSettings["uwbsExamineIndexer"] ?? "ExternalIndexer";
 			ShareBasketBetweenStores = ConfigurationManager.AppSettings["uwbsShareBasketBetweenStores"] == "true";
 			OrdersCacheTimeoutMilliseconds = Common.Helpers.ParseInt(ConfigurationManager.AppSettings["uwbsOrdersCacheTimeoutMilliseconds"], 2000);
-            DisableDateFolders = ConfigurationManager.AppSettings["uwbsDisableDatFolders"] == "true";
+            DisableDateFolders = ConfigurationManager.AppSettings["uwbsDisableDateFolders"] == "true";
 		}
 
 		/// <summary>
