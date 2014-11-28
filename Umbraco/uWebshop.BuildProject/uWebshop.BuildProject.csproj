@@ -82,7 +82,7 @@ IF EXIST "$(SolutionDir)builds\package.v7\" DEL /s /f /q "$(SolutionDir)builds\p
 </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>SET UWBSVER=2.6.0.2
+    <PostBuildEvent>SET UWBSVER=2.6.1.0
 echo Rendering packages as version %25UWBSVER%25
 
 IF EXIST "$(SolutionDir)builds\package\" DEL /s /f /q "$(SolutionDir)builds\package\*.*"
