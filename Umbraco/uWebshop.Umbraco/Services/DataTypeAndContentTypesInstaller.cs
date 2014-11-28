@@ -1173,6 +1173,9 @@ GetOrAddPropertyGroup(uwbsPaymentProviderContentType, "Details").PropertyTypes.A
 if (uwbsPaymentProviderContentType.PropertyTypes.All(p => p.Alias != "errorNode")){
 GetOrAddPropertyGroup(uwbsPaymentProviderContentType, "Details").PropertyTypes.Add(new PropertyType(ContentPickerDataTypeDef) { Alias = "errorNode", Name = "#ErrorNode", Description = "#ErrorNodeDescription",});
 }
+if (uwbsPaymentProviderContentType.PropertyTypes.All(p => p.Alias != "cancelNode")){
+GetOrAddPropertyGroup(uwbsPaymentProviderContentType, "Details").PropertyTypes.Add(new PropertyType(ContentPickerDataTypeDef) { Alias = "cancelNode", Name = "#CancelNode", Description = "#CancelNodeDescription",});
+}
 if (uwbsPaymentProviderContentType.PropertyTypes.All(p => p.Alias != "testMode")){
 GetOrAddPropertyGroup(uwbsPaymentProviderContentType, "Details").PropertyTypes.Add(new PropertyType(EnableDisableDataTypeDef) { Alias = "testMode", Name = "#TestMode", Description = "#TestModeDescription",});
 }

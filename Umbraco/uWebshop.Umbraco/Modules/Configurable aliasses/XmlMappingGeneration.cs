@@ -718,6 +718,7 @@ internal interface IPaymentProviderAliassesService
 	string zone { get; }
 	string successNode { get; }
 	string errorNode { get; }
+	string cancelNode { get; }
 	string testMode { get; }
 }
 
@@ -739,6 +740,7 @@ public string type { get { return _xml.type ?? "type"; } }
 public string zone { get { return _xml.zone ?? "zone"; } }
 public string successNode { get { return _xml.successNode ?? "successNode"; } }
 public string errorNode { get { return _xml.errorNode ?? "errorNode"; } }
+public string cancelNode { get { return _xml.cancelNode ?? "cancelNode"; } }
 public string testMode { get { return _xml.testMode ?? "testMode"; } }
 }
 
@@ -753,6 +755,7 @@ public string ContentTypeAlias;
 	public string zone;
 	public string successNode;
 	public string errorNode;
+	public string cancelNode;
 	public string testMode;
 }
 
@@ -1779,6 +1782,7 @@ xml.PaymentProvider.type = "type";
 xml.PaymentProvider.zone = "zone";
 xml.PaymentProvider.successNode = "successNode";
 xml.PaymentProvider.errorNode = "errorNode";
+xml.PaymentProvider.cancelNode = "cancelNode";
 xml.PaymentProvider.testMode = "testMode";
 xml.PaymentProviderMethod.ContentTypeAlias = "uwbsPaymentProviderMethod";
 xml.PaymentProviderMethod.disable = "disable";

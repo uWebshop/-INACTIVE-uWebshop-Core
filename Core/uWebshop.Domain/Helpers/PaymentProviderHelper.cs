@@ -366,6 +366,35 @@ namespace uWebshop.Domain.Helpers
 			return baseUrl;
 		}
 
+        /// <summary>
+        /// Successes the node URL.
+        /// </summary>
+        /// <param name="paymentProvider">The payment provider.</param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception"></exception>
+        public static string CancelUrl(this PaymentProvider paymentProvider)
+        {
+            var baseUrl = PaymentProviderHelper.GenerateBaseUrl();
+
+            var cancelNodeIdAsString = paymentProvider.CancelNodeId;
+
+            int cancelNodeId;
+            int.TryParse(cancelNodeIdAsString, out cancelNodeId);
+
+            if (cancelNodeId != 0)
+            {
+                var cancelUrl = IO.Container.Resolve<ICMSApplication>().GetUrlForContentWithId(cancelNodeId);
+                if (!cancelUrl.StartsWith("http"))
+                {
+                    cancelUrl = string.Format("{0}/{1}", baseUrl, cancelUrl.TrimStart('/'));
+                }
+
+                return cancelUrl;
+            }
+
+            return baseUrl;
+        }
+
 		/// <summary>
 		/// Successes the node URL.
 		/// </summary>

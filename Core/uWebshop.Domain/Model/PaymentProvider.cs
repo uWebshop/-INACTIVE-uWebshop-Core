@@ -132,6 +132,16 @@ namespace uWebshop.Domain
 		[ContentPropertyType(Alias = "errorNode", DataType = DataType.ContentPicker, Tab = ContentTypeTab.Details, Name = "#ErrorNode", Description = "#ErrorNodeDescription", SortOrder = 8)]
 		public string ErrorNodeId { get; set; }
 
+        /// <summary>
+        /// Gets or sets the error node unique identifier.
+        /// </summary>
+        /// <value>
+        /// The error node unique identifier.
+        /// </value>
+        [DataMember]
+        [ContentPropertyType(Alias = "cancelNode", DataType = DataType.ContentPicker, Tab = ContentTypeTab.Details, Name = "#CancelNode", Description = "#CancelNodeDescription", SortOrder = 9)]
+        public string CancelNodeId { get; set; }
+
 
 		/// <summary>
 		/// Provider in testmode?
@@ -141,7 +151,7 @@ namespace uWebshop.Domain
 		///   <c>true</c> if [test mode]; otherwise, <c>false</c>.
 		/// </value>
 		[DataMember]
-		[ContentPropertyType(Alias = "testMode", DataType = DataType.EnableDisable, Tab = ContentTypeTab.Details, Name = "#TestMode", Description = "#TestModeDescription", SortOrder = 9)]
+		[ContentPropertyType(Alias = "testMode", DataType = DataType.EnableDisable, Tab = ContentTypeTab.Details, Name = "#TestMode", Description = "#TestModeDescription", SortOrder = 10)]
 		public bool TestMode { get; set; }
 
 		/// <summary>

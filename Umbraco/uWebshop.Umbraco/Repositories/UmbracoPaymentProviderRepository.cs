@@ -72,6 +72,7 @@ namespace uWebshop.Umbraco.Repositories
 			entity.ControlNodeId = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary("controlNode", localization, fields);
 			entity.SuccesNodeId = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.successNode, localization, fields);
 			entity.ErrorNodeId = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.errorNode, localization, fields);
+            entity.CancelNodeId = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.cancelNode, localization, fields);
 		}
 
 		public override string TypeAlias
