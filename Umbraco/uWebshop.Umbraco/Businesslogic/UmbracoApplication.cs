@@ -37,8 +37,18 @@ namespace uWebshop.Umbraco
 
 		public bool RequestIsInCMSBackend(HttpContext context)
 		{
-			// todo: cache per request if umbraco if slow
-			return GlobalSettings.RequestIsInUmbracoApplication(context);
+		    var value = false;
+            // return context.Request.Path.ToLower().IndexOf(IOHelper.ResolveUrl(SystemDirectories.Umbraco).ToLower()) > -1;
+		    var path = context.Request.Path.ToLower();
+            // MVC request go through /umbraco/rendermvc, which is not  checked in the RequestIsInUmbracoApplication.
+            // if /umbraco/rendermvc is not used, then check for RequestIsInUmbracoApplication (because not in backend), otherwise do the default Umbraco check.
+		    if (!path.Contains("/umbraco/rendermvc"))
+		    {
+		        value = GlobalSettings.RequestIsInUmbracoApplication(context);
+		    }
+
+		    Log.Instance.LogError("RequestIsInCMSBackend: " + value);
+		    return value;
 		}
 
 		public bool IsReservedPathOrUrl(string path)
