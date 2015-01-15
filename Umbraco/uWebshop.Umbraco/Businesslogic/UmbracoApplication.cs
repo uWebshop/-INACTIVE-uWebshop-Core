@@ -47,7 +47,7 @@ namespace uWebshop.Umbraco
 		        value = GlobalSettings.RequestIsInUmbracoApplication(context);
 		    }
 
-		    Log.Instance.LogError("RequestIsInCMSBackend: " + value);
+		    Log.Instance.LogDebug("RequestIsInCMSBackend: " + value);
 		    return value;
 		}
 
