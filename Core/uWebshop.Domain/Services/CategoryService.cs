@@ -37,5 +37,10 @@ namespace uWebshop.Domain.Services
 		    if (category == null) return null;
 	        return GetById(category.Id, localization);
 	    }
+
+        public new void FullResetCache()
+        {
+            _rootCategoriesCache.Clear();
+        }
 	}
 }

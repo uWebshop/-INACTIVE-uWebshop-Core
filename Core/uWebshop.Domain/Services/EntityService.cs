@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using uWebshop.Domain.Interfaces;
 
@@ -6,36 +8,51 @@ namespace uWebshop.Domain.Services
 {
 	internal abstract class EntityService<T> where T : class, IUwebshopRepositoryEntity
 	{
+        protected readonly ConcurrentDictionary<string, List<T>> _cache = new ConcurrentDictionary<string, List<T>>();
 		private readonly IEntityRepository<T> _repository;
 
-		protected EntityService(IEntityRepository<T> repository)
+        protected EntityService(IEntityRepository<T> repository)
 		{
 			_repository = repository;
 		}
 
-		public T GetById(int id, ILocalization localization, bool includeDisabled = false)
-		{
-			var entity = _repository.GetById(id, localization);
-			if (includeDisabled || entity == null || !entity.Disabled) return entity;
-			return null;
-		}
+        public T GetById(int id, ILocalization localization, bool includeDisabled = false)
+        {
+            var entity = GetAll(localization).FirstOrDefault(p => p.Id == id);
+            if (entity != null) return entity;
+            entity = _repository.GetById(id, localization);
+            List<T> cache;
+            if (entity != null && _cache.TryGetValue(GetCacheKey(localization), out cache))
+            {
+                cache.Add(entity);
+            }
+            return includeDisabled || (entity != null && !entity.Disabled) ? entity : null;
+        }
 
-		public IEnumerable<T> GetAll(ILocalization localization, bool includeDisabled = false)
-		{
-			return _repository.GetAll(localization).Where(e => includeDisabled || !e.Disabled);
-		}
+        public IEnumerable<T> GetAll(ILocalization localization, bool includeDisabled = false)
+        {
+            if (localization == null) throw new Exception("Trying to load localized content without localization");
+            var entities = _cache.GetOrAdd(GetCacheKey(localization), alias => _repository.GetAll(localization).Cast<T>().ToList());
+            return includeDisabled ? entities : entities.Where(e => e != null && !e.Disabled).ToList();
+        }
+
+        protected string GetCacheKey(ILocalization localization)
+        {
+            return localization.StoreAlias + localization.CurrencyCode;
+        }
 
 		public void ReloadEntityWithId(int id)
 		{
 		}
 
-		public void UnloadEntityWithId(int id)
-		{
-			// maybe todo
-		}
+        public virtual void UnloadEntityWithId(int id)
+	    {
+         // todo?   
+	    }
 
-		public void FullResetCache()
+	    public void FullResetCache()
 		{
+            _cache.Clear();
 		}
 	}
 }
