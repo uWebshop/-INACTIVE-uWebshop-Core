@@ -1763,22 +1763,35 @@ namespace uWebshop.Domain.Businesslogic
 				handleObject.Messages = result;
 				return handleObject;
 			}
-			IO.Container.Resolve<IOrderUpdatingService>().AddCustomerFields(order, fields, customerDataType);
+			
+            IO.Container.Resolve<IOrderUpdatingService>().AddCustomerFields(order, fields, customerDataType);
 
-			var customerIsShippingKey = requestParameters.AllKeys.FirstOrDefault(x => x.ToLower() == "customerisshipping"); //requestParameters["customerIsShipping"];
+		    if (customerDataType == CustomerDatatypes.Shipping)
+		    {
+                var customerIsShippingKey = requestParameters.AllKeys.FirstOrDefault(x => x.ToLower() == "customerisshipping"); //requestParameters["customerIsShipping"];
 
-			if (customerIsShippingKey != null)
-			{
-				var customerIsShippingValue = requestParameters[customerIsShippingKey];
+			    if (customerIsShippingKey != null)
+			    {
+				    var customerIsShippingValue = requestParameters[customerIsShippingKey];
 
-				if (customerIsShippingValue != null && (customerIsShippingValue.ToLower() == "customerisshipping" || customerIsShippingValue.ToLower() == "true" || customerIsShippingValue.ToLower() == "on" || customerIsShippingValue == "1"))
-				{
-					var shippingFields = stringCollection.ToDictionary(s => s.Replace("customer", "shipping"), s => requestParameters[s]);
+				    if (customerIsShippingValue != null && (customerIsShippingValue.ToLower() == "customerisshipping" || customerIsShippingValue.ToLower() == "true" || customerIsShippingValue.ToLower() == "on" || customerIsShippingValue == "1"))
+				    {
+					    var shippingFields = stringCollection.ToDictionary(s => s.Replace("customer", "shipping"), s => requestParameters[s]);
 
-					if (!shippingFields.Any()) return handleObject;
-					order.AddCustomerFields(shippingFields, CustomerDatatypes.Shipping);
-				}
-			}
+					    if (!shippingFields.Any()) return handleObject;
+					    order.AddCustomerFields(shippingFields, CustomerDatatypes.Shipping);
+				    }
+			    }
+		        else
+		        {
+				    var shippingFields = stringCollection.ToDictionary(s => s, s => requestParameters[s]);
+
+				    if (!shippingFields.Any()) return handleObject;
+
+                    order.AddCustomerFields(shippingFields, CustomerDatatypes.Shipping);
+		        }
+		    }
+            
 
 			order.Save();
 
