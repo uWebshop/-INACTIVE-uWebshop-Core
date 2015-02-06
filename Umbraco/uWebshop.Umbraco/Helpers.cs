@@ -50,7 +50,7 @@ namespace uWebshop.Umbraco
 				return null;
 			var filter = searcher.RawQuery("__NodeId:" + documentId);
 			var searchResults = ExamineManager.Instance.SearchProviderCollection[UwebshopConfiguration.Current.ExamineSearcher].Search(filter);
-            
+			
 			return searchResults.FirstOrDefault();
 		}
 
@@ -58,10 +58,9 @@ namespace uWebshop.Umbraco
 		/// Gets the image by unique identifier.
 		/// </summary>
 		/// <param name="id">The unique identifier.</param>
-		/// <returns></returns>
 		public static UwbsImage GetImageById(int id)
 		{
-			// todo: nodetypealias image werkt nog niet
+			// todo: nodetypealias image doesn't work yet
 			return DomainHelper.GetObjectsByAlias<UwbsImage>("image").FirstOrDefault(img => img.Id == id);
 		}
 
@@ -72,7 +71,6 @@ namespace uWebshop.Umbraco
 				propertyAlias = StoreHelper.MakeRTEItemPropertyAliasIfApplicable(propertyAlias);
 				return StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(propertyAlias, StoreHelper.GetLocalizationOrCurrent(storeAlias, currencyCode), new DictionaryPropertyProvider(examineNode));
 			}
-
 			return string.Empty;
 		}
 
@@ -247,11 +245,10 @@ namespace uWebshop.Umbraco
 		}
 
 		/// <summary>
-		///     Get node ID based on document
+		///  Get node ID based on document
 		/// </summary>
 		/// <param name="documentTypeAlias"></param>
 		/// <param name="documentName"></param>
-		/// <returns></returns>
 		public static int GetNodeIdForDocument(string documentTypeAlias, string documentName)
 		{
 			try
@@ -278,8 +275,6 @@ namespace uWebshop.Umbraco
 						}
 					}
 				}
-
-
 				return -1;
 			}
 			catch
@@ -300,8 +295,7 @@ namespace uWebshop.Umbraco
 			{
 				if (documentTypeAlias != null)
 				{
-					//var it = library.GetXmlNodeByXPath(string.Format("//{0}", documentTypeAlias));
-					XPathNodeIterator it = library.GetXmlNodeByXPath(string.Format("//*[starts-with(name(), '{0}')]", documentTypeAlias));
+					var it = library.GetXmlNodeByXPath(string.Format("//*[starts-with(name(), '{0}')]", documentTypeAlias));
 
 					while (it.MoveNext())
 					{
@@ -327,9 +321,9 @@ namespace uWebshop.Umbraco
 		public static MediaValues GetUmbracoMedia(int id)
 		{
 			//first check in Examine as this is WAY faster
-			ISearchCriteria criteria = ExamineManager.Instance.SearchProviderCollection[UwebshopConfiguration.Current.ExamineSearcher].CreateSearchCriteria("media");
-			IBooleanOperation filter = criteria.Id(id);
-			ISearchResults results = ExamineManager.Instance.SearchProviderCollection[UwebshopConfiguration.Current.ExamineSearcher].Search(filter.Compile());
+			var criteria = ExamineManager.Instance.SearchProviderCollection[UwebshopConfiguration.Current.ExamineSearcher].CreateSearchCriteria("media");
+			var filter = criteria.Id(id);
+			var results = ExamineManager.Instance.SearchProviderCollection[UwebshopConfiguration.Current.ExamineSearcher].Search(filter.Compile());
 			if (results.Any())
 			{
 				return new MediaValues(results.First());
@@ -345,7 +339,6 @@ namespace uWebshop.Umbraco
 			return null;
 		}
 	}
-
 
 	public class UmbracoNode : uWebshopEntity
 	{

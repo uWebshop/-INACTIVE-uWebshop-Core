@@ -49,7 +49,6 @@ namespace uWebshop.ActionHandlers
 			}
 			try
 			{
-				// todo: not 100% about moving this from static constructor
 				NoRewriting = (InternalHelpers.MvcRenderMode && (GlobalSettings.VersionMajor > 6 || GlobalSettings.VersionMajor == 6 && GlobalSettings.VersionMinor >= 1));
 			}
 			catch (Exception)

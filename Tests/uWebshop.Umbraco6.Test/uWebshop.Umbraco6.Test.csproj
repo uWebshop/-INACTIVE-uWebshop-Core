@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="businesslogic">
+      <HintPath>..\..\Binary Dependencies umbraco6\businesslogic.dll</HintPath>
+    </Reference>
     <Reference Include="Moq">
       <HintPath>..\..\Binary Dependencies\Moq.dll</HintPath>
     </Reference>

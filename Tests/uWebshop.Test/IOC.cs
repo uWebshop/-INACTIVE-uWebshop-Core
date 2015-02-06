@@ -96,10 +96,10 @@ namespace uWebshop.Test
 			get { return Config<IUrlLocalizationService>(); }
 		}
 
-        public static IOCBuilder<IUrlService> UrlService
-        {
-            get { return Config<IUrlService>(); }
-        }
+		public static IOCBuilder<IUrlService> UrlService
+		{
+			get { return Config<IUrlService>(); }
+		}
 
 		public static IOCBuilder<ISettingsService> SettingsService
 		{
@@ -363,7 +363,7 @@ namespace uWebshop.Test
 			ProductUrlService.Actual();
 			CategoryCatalogUrlService.Actual();
 			UrlLocalizationService.Actual();
-		    UrlService.Actual();
+			UrlService.Actual();
 
 			InitializeServiceLocators();
 		}
@@ -529,11 +529,11 @@ namespace uWebshop.Test
 			return iocBuilder;
 		}
 
-        public static IOCBuilder<IUrlService> Actual(this IOCBuilder<IUrlService> iocBuilder)
-        {
-            iocBuilder.UseType<UrlService>();
-            return iocBuilder;
-        }
+		public static IOCBuilder<IUrlService> Actual(this IOCBuilder<IUrlService> iocBuilder)
+		{
+			iocBuilder.UseType<UrlService>();
+			return iocBuilder;
+		}
 
 		public static IOCBuilder<ICategoryCatalogUrlService> Actual(this IOCBuilder<ICategoryCatalogUrlService> iocBuilder)
 		{

@@ -41,52 +41,52 @@ namespace uWebshop.Umbraco.Services
 			// in feite zou onderstaande code alleen in de backend bereikt kunnen worden of wanneer op node buiten shop tree
 			if (HttpContext.Current != null)
 			{
-			    // get store from cookie (this makes javascript understand what store there is)
-                if (!_cmsApplication.RequestIsInCMSBackend(HttpContext.Current))
-			    {
-			        store = _storeRepository.TryGetStoreFromCookie();
+				// get store from cookie (this makes javascript understand what store there is)
+				if (!_cmsApplication.RequestIsInCMSBackend(HttpContext.Current))
+				{
+					store = _storeRepository.TryGetStoreFromCookie();
 
-                    if (store != null)
-                    {
-                        Log.Instance.LogDebug("GetCurrentStoreNoFallback, request outside shop, ABLE to use cookie to determine store");
-                    }
-			    }
+					if (store != null)
+					{
+						Log.Instance.LogDebug("GetCurrentStoreNoFallback, request outside shop, ABLE to use cookie to determine store");
+					}
+				}
 
-                if(store == null)
-			    {
-                    Log.Instance.LogDebug("GetCurrentStoreNoFallback, request outside shop, UNable to use cookie to determine store");
+				if(store == null)
+				{
+					Log.Instance.LogDebug("GetCurrentStoreNoFallback, request outside shop, UNable to use cookie to determine store");
 
-			        var storeResult =
-			            IO.Container.Resolve<IStoreFromUrlDeterminationService>()
-			                .DetermineStoreAndUrlParts(HttpContext.Current.Request.Url.Authority,
-			                    HttpContext.Current.Request.Url.AbsolutePath);
+					var storeResult =
+						IO.Container.Resolve<IStoreFromUrlDeterminationService>()
+							.DetermineStoreAndUrlParts(HttpContext.Current.Request.Url.Authority,
+								HttpContext.Current.Request.Url.AbsolutePath);
 
-			        //todo gewoon altijd via storeResult ipv onderstaande checks? alleen als die null is terugvallen op node/order???
-			        // waarom wilden we hier eerst de andere opties en pas daarna terugvallen op wat storeResult bepaald?
+					//todo gewoon altijd via storeResult ipv onderstaande checks? alleen als die null is terugvallen op node/order???
+					// waarom wilden we hier eerst de andere opties en pas daarna terugvallen op wat storeResult bepaald?
 
-			        if (storeResult != null)
-			        {
-			            store = storeResult.Store;
-			        }
+					if (storeResult != null)
+					{
+						store = storeResult.Store;
+					}
 
-			        if (store == null)
-			        {
-			            store = _storeRepository.TryGetStoreFromCurrentNode();
-			        }
-			    }
+					if (store == null)
+					{
+						store = _storeRepository.TryGetStoreFromCurrentNode();
+					}
+				}
 
-			    //store = storefromOrder ?? storefromCurrentNode ?? storefromDomain;
+				//store = storefromOrder ?? storefromCurrentNode ?? storefromDomain;
 				//if (store == null && storeResult != null)
 				//{
 				//	store = storeResult.Store;
 				//}
 			}
 
-		    if (store != null && !string.IsNullOrEmpty(store.Alias))
+			if (store != null && !string.IsNullOrEmpty(store.Alias))
 			{
 				uwbsRequest.CurrentStore = store;
 			}
-            
+			
 			return store;
 		}
 
@@ -144,7 +144,7 @@ namespace uWebshop.Umbraco.Services
 					uwebshopRequest.Localization = Localization.CreateLocalization(store);
 				}
 			}
-            
+			
 			return uwebshopRequest.Localization;
 		}
 
@@ -167,7 +167,7 @@ namespace uWebshop.Umbraco.Services
 
 			if (store == null)
 			{
-                Log.Instance.LogError("Could not determine current store, fallback cookie");
+				Log.Instance.LogError("Could not determine current store, fallback cookie");
 				store = _storeRepository.TryGetStoreFromCookie();
 			}
 
@@ -183,7 +183,7 @@ namespace uWebshop.Umbraco.Services
 				Log.Instance.LogWarning("uWebshop had to make a dummy store, please make sure that a published store exists and republish entire site & rebuild examine index, if this doesn't work please reset the IIS application pool");
 			}
 
-            Log.Instance.LogDebug("GetCurrentStore() store: " + store.Alias);
+			Log.Instance.LogDebug("GetCurrentStore() store: " + store.Alias);
 
 			UwebshopRequest.Current.CurrentStore = store;
 			return store;
@@ -289,7 +289,7 @@ namespace uWebshop.Umbraco.Services
 			// todo: move to urlservice
 			// todo: needs lots of refactoring/checking
 
-			var store = GetByAlias(localization.StoreAlias) ?? GetCurrentStore(); // todo check
+			var store = GetByAlias(localization.StoreAlias) ?? GetCurrentStore();
 			if (store == null) throw new Exception("No published stores, please publish");
 
 			var uwebshopNode = IO.Container.Resolve<ICMSEntityRepository>().GetByGlobalId(id);
@@ -298,8 +298,6 @@ namespace uWebshop.Umbraco.Services
 			var typeAlias = uwebshopNode.NodeTypeAlias;
 			if (Product.IsAlias(typeAlias))
 			{
-				// todo: test
-				// todo: clean
 				var product = IO.Container.Resolve<IProductService>().GetById(id, localization);
 				if (product == null)
 				{
@@ -319,7 +317,7 @@ namespace uWebshop.Umbraco.Services
 			{
 				var category = IO.Container.Resolve<ICategoryService>().GetById(id, localization);
 				
-                return IO.Container.Resolve<IUrlService>().CategoryUrlUsingCurrentPath(category, localization);
+				return IO.Container.Resolve<IUrlService>().CategoryUrlUsingCurrentPath(category, localization);
 			}
 			return IO.Container.Resolve<IUrlFormatService>().FormatUrl(library.NiceUrl(id));
 		}

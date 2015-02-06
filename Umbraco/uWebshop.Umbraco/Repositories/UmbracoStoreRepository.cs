@@ -59,7 +59,6 @@ namespace uWebshop.Umbraco.Repositories
 			return null;
 		}
 
-
 		public Store TryGetStoreFromCurrentNode()
 		{
 			//var currencyCode = UwebshopRequest.Current.CurrentCurrencyCode;
@@ -118,22 +117,22 @@ namespace uWebshop.Umbraco.Repositories
 				}
 				if (fields.ContainsKey("globalVat"))
 				{
-				    var vatProperty = fields.GetStringValue("globalVat");
-                    if (!string.IsNullOrEmpty(vatProperty))
-                    {
-                        if (vatProperty.ToLowerInvariant() != "default")
-                        {
-                            vatProperty = vatProperty.Replace(',', '.');
+					var vatProperty = fields.GetStringValue("globalVat");
+					if (!string.IsNullOrEmpty(vatProperty))
+					{
+						if (vatProperty.ToLowerInvariant() != "default")
+						{
+							vatProperty = vatProperty.Replace(',', '.');
 
-                            var vat = Convert.ToDecimal(vatProperty, CultureInfo.InvariantCulture);
+							var vat = Convert.ToDecimal(vatProperty, CultureInfo.InvariantCulture);
 
-                            store.GlobalVat = vat;
-                        }
-                        else
-                        {
-                            store.GlobalVat = 0;
-                        }
-                    }
+							store.GlobalVat = vat;
+						}
+						else
+						{
+							store.GlobalVat = 0;
+						}
+					}
 				}
 				if (fields.ContainsKey("storeCulture"))
 				{

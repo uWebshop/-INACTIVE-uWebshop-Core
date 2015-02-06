@@ -99,8 +99,8 @@ namespace uWebshop.Domain.Services
 			{
 				throw new ArgumentException("itemCount can't be smaller than 0");
 			}
-            
-            Log.Instance.LogDebug("AddOrUpdateOrderLine Before action");
+			
+			Log.Instance.LogDebug("AddOrUpdateOrderLine Before action");
 
 			var variants = variantsList.Where(v => v != 0).OrderBy(v => v);
 
@@ -433,7 +433,7 @@ namespace uWebshop.Domain.Services
 			}
 
 			// todo: move logic and update API
-            var shippingProvider = ShippingProviderHelper.GetAllShippingProviders(localization.StoreAlias, localization.CurrencyCode).FirstOrDefault(x => x.Id == shippingProviderId);
+			var shippingProvider = ShippingProviderHelper.GetAllShippingProviders(localization.StoreAlias, localization.CurrencyCode).FirstOrDefault(x => x.Id == shippingProviderId);
 
 			if (shippingProvider == null)
 			{
@@ -466,12 +466,12 @@ namespace uWebshop.Domain.Services
 
 		public bool AddCustomerFields(OrderInfo order, Dictionary<string, string> fields, CustomerDatatypes customerDataType, bool ingnoreNotAllowed = false)
 		{
-		    if (ChangeOrderToIncompleteAndReturnTrueIfNotAllowed(order) && ingnoreNotAllowed == false)
-		    {
-		        return false;
-		    }
+			if (ChangeOrderToIncompleteAndReturnTrueIfNotAllowed(order) && ingnoreNotAllowed == false)
+			{
+				return false;
+			}
 
-		    //var xDoc = OrderUpdatingService.CreateXDocumentBasedOnCMSDocumentType(fields, documentAlias);
+			//var xDoc = OrderUpdatingService.CreateXDocumentBasedOnCMSDocumentType(fields, documentAlias);
 
 			var xDoc = new XDocument(new XElement(customerDataType.ToString()));
 
@@ -548,9 +548,9 @@ namespace uWebshop.Domain.Services
 					}
 				}
 
-                if (field.Key.ToLower() == "acceptsmarketing" || field.Key.ToLower() == "customeracceptsmarketing")
+				if (field.Key.ToLower() == "acceptsmarketing" || field.Key.ToLower() == "customeracceptsmarketing")
 				{
-                    if (field.Value == "1" || field.Value == "true" || field.Value == "on" || field.Value == "acceptsmarketing" || field.Value == "customeracceptsmarketing")
+					if (field.Value == "1" || field.Value == "true" || field.Value == "on" || field.Value == "acceptsmarketing" || field.Value == "customeracceptsmarketing")
 					{
 						order.CustomerInfo.AcceptsMarketing = true;
 					}
@@ -560,14 +560,14 @@ namespace uWebshop.Domain.Services
 					}
 				}
 
-                // 'hack' because if you an empty checkbox is not send to the browser, by supporting this option the developer can add a hidden input 'false' field and make it checked using javascript.
-                if (field.Key.ToLower() == "acceptsmarketingfalse" || field.Key.ToLower() == "customeracceptsmarketingfalse")
-                {
-                    if (field.Value == "1" || field.Value == "true" || field.Value == "on" || field.Value == "acceptsmarketingfalse" || field.Value == "customeracceptsmarketingfalse")
-                    {
-                        order.CustomerInfo.AcceptsMarketing = false;
-                    }
-                }
+				// 'hack' because if you an empty checkbox is not send to the browser, by supporting this option the developer can add a hidden input 'false' field and make it checked using javascript.
+				if (field.Key.ToLower() == "acceptsmarketingfalse" || field.Key.ToLower() == "customeracceptsmarketingfalse")
+				{
+					if (field.Value == "1" || field.Value == "true" || field.Value == "on" || field.Value == "acceptsmarketingfalse" || field.Value == "customeracceptsmarketingfalse")
+					{
+						order.CustomerInfo.AcceptsMarketing = false;
+					}
+				}
 			}
 
 			if (customerDataType == CustomerDatatypes.Customer)
@@ -694,9 +694,9 @@ namespace uWebshop.Domain.Services
 					return false;
 				}
 			
-			    order.RedirectUrl = paymentRedirectUrl;
-			    
-			    orderNrTransaction.Persist();
+				order.RedirectUrl = paymentRedirectUrl;
+				
+				orderNrTransaction.Persist();
 			}
 
 			order.Status = OrderStatus.Confirmed;
@@ -771,7 +771,6 @@ namespace uWebshop.Domain.Services
 			if (variants != null && variants.Any())
 			{
 				var productVariantService = IO.Container.Resolve<IProductVariantService>();
-				// todo test
 				var variantClasses = variants.Select(variant => productVariantService.GetById(variant, currentLocalization)).Where(variant => variant != null).GroupBy(a => a.Group).Select(g => g.FirstOrDefault()).Where(variant => variant != null);
 
 				productInfo.ProductVariants = variantClasses.Select(variant => new ProductVariantInfo(variant, productInfo, itemCount)).ToList();

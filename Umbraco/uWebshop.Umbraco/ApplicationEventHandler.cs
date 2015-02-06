@@ -81,80 +81,80 @@ namespace uWebshop.Umbraco6
 			UmbracoDefault.BeforeRequestInit += UmbracoDefaultBeforeRequestInit;
 			UmbracoDefault.AfterRequestInit += UmbracoDefaultAfterRequestInit;
 
-            var indexer = ExamineManager.Instance.IndexProviderCollection[UwebshopConfiguration.Current.ExamineIndexer];
-            indexer.GatheringNodeData += GatheringNodeDataHandler;
+			var indexer = ExamineManager.Instance.IndexProviderCollection[UwebshopConfiguration.Current.ExamineIndexer];
+			indexer.GatheringNodeData += GatheringNodeDataHandler;
 		}
 
-        protected void GatheringNodeDataHandler(object sender, IndexingNodeDataEventArgs e)
-        {
-            try
-            {
-                foreach (var xElement in e.Node.Elements().Where(element => element.Name.LocalName.StartsWith("description")))
-                {
-                    if (xElement != null) e.Fields.Add("RTEItem" + xElement.Name.LocalName, xElement.Value);
-                }
-            }
-            catch
-            {
-            }
+		protected void GatheringNodeDataHandler(object sender, IndexingNodeDataEventArgs e)
+		{
+			try
+			{
+				foreach (var xElement in e.Node.Elements().Where(element => element.Name.LocalName.StartsWith("description")))
+				{
+					if (xElement != null) e.Fields.Add("RTEItem" + xElement.Name.LocalName, xElement.Value);
+				}
+			}
+			catch
+			{
+			}
 
-            foreach (var field in defaultPriceValues())
-            {
-                try
-                {
-                    //grab the current data from the Fields collection
-                    string value;
-                    if (e.Fields == null || !e.Fields.TryGetValue(field, out value))
-                        continue;
-                    var currencyFieldValue = e.Fields[field];
+			foreach (var field in defaultPriceValues())
+			{
+				try
+				{
+					//grab the current data from the Fields collection
+					string value;
+					if (e.Fields == null || !e.Fields.TryGetValue(field, out value))
+						continue;
+					var currencyFieldValue = e.Fields[field];
 
-                    var currencyValueAsInt = int.Parse(currencyFieldValue);
+					var currencyValueAsInt = int.Parse(currencyFieldValue);
 
-                    //prefix with leading zero's
-                    currencyFieldValue = currencyValueAsInt.ToString("D8");
+					//prefix with leading zero's
+					currencyFieldValue = currencyValueAsInt.ToString("D8");
 
-                    //now put it back into the Fields so we can pretend nothing happened! ;)
-                    e.Fields[field] = currencyFieldValue;
-                }
-                catch (Exception ex)
-                {
-                    Domain.Log.Instance.LogError("GatheringNodeDataHandler defaultPriceValues Examine: " + ex);
-                }
-            }
+					//now put it back into the Fields so we can pretend nothing happened! ;)
+					e.Fields[field] = currencyFieldValue;
+				}
+				catch (Exception ex)
+				{
+					Domain.Log.Instance.LogError("GatheringNodeDataHandler defaultPriceValues Examine: " + ex);
+				}
+			}
 
-            foreach (var field in DefaultCsvValues())
-            {
-                try
-                {
-                    string value;
-                    if (e.Fields == null || !e.Fields.TryGetValue(field, out value))
-                        continue;
-                    var csvFieldValue = e.Fields[field];
-                    //Log.Instance.LogDebug( "examine MNTP before: " + mntp);
-                    //let's get rid of those commas!
-                    csvFieldValue = csvFieldValue.Replace(",", " ");
-                    //Log.Instance.LogDebug( "examine MNTP after: " + mntp);
-                    //now put it back into the Fields so we can pretend nothing happened!
-                    e.Fields[field] = csvFieldValue;
-                }
-                catch (Exception ex)
-                {
-                    Domain.Log.Instance.LogError("GatheringNodeDataHandler DefaultCsvValues Examine: " + ex);
-                }
-            }
-        }
+			foreach (var field in DefaultCsvValues())
+			{
+				try
+				{
+					string value;
+					if (e.Fields == null || !e.Fields.TryGetValue(field, out value))
+						continue;
+					var csvFieldValue = e.Fields[field];
+					//Log.Instance.LogDebug( "examine MNTP before: " + mntp);
+					//let's get rid of those commas!
+					csvFieldValue = csvFieldValue.Replace(",", " ");
+					//Log.Instance.LogDebug( "examine MNTP after: " + mntp);
+					//now put it back into the Fields so we can pretend nothing happened!
+					e.Fields[field] = csvFieldValue;
+				}
+				catch (Exception ex)
+				{
+					Domain.Log.Instance.LogError("GatheringNodeDataHandler DefaultCsvValues Examine: " + ex);
+				}
+			}
+		}
 
-        public List<string> defaultPriceValues()
-        {
-            return new List<string> { "price" };
-        }
+		public List<string> defaultPriceValues()
+		{
+			return new List<string> { "price" };
+		}
 
-        public List<string> DefaultCsvValues()
-        {
-            return new List<string> {"categories",
+		public List<string> DefaultCsvValues()
+		{
+			return new List<string> {"categories",
 				//"metaTags", metatags can't be stripped of comma
 				"images", "files"};
-        }
+		}
 
 		private void DocumentAfterCopy(Document sender, CopyEventArgs e)
 		{
@@ -286,7 +286,7 @@ namespace uWebshop.Umbraco6
 
 			if (alias.StartsWith(Store.NodeAlias))
 			{
-                //todo: naar nieuwe v6+ API omzetten
+				//todo: naar nieuwe v6+ API omzetten
 				var storeService = StoreHelper.StoreService;
 				storeService.TriggerStoreChangedEvent(storeService.GetById(sender.Id, null));
 				var node = new Node(sender.Id);
@@ -326,45 +326,6 @@ namespace uWebshop.Umbraco6
 				return;
 			}
 			
-			if (StoreHelper.GetAllStores().Any())
-			{
-				// if page content
-				// determine url(s) for this content
-				// use to resolve catalog item, if resolve rename
-
-				var cmsApplication = IO.Container.Resolve<ICMSApplication>();
-
-				//var urls = new List<string>();
-				//var currentDoc = sender;
-				//while (currentDoc.ParentId > 0)
-				//{
-				//	urls.Add(cmsApplication.ApplyUrlFormatRules(currentDoc.Text.ToLowerInvariant()));
-				//	currentDoc = new Document(currentDoc.ParentId);
-				//}
-				
-
-				// if category/product
-
-				//// todo: wrong
-				//var urlNameforDocument = cmsApplication.ApplyUrlFormatRules(sender.Text.ToLowerInvariant());
-				//var doesCategoryWithNameAlreadyExists = IO.Container.Resolve<ICatalogUrlSplitterService>().DetermineCatalogUrlComponents("/" + urlNameforDocument, true);
-				//if (!Category.IsAlias(sender.ContentType.Alias) && doesCategoryWithNameAlreadyExists.StoreNodeUrl != "/")
-				//{
-				//	//_catalogUrlResolvingService.GetCategoryFromUrlName(categoryUrlName);
-				//	var category = IO.Container.Resolve<ICatalogUrlResolvingService>().GetCategoryFromUrlName(doesCategoryWithNameAlreadyExists.StoreNodeUrl);
-
-				//	if (category != null)
-				//	{
-				//		var path = IO.Container.Resolve<ICMSEntityRepository>().GetByGlobalId(category.Id).Path;
-
-				//		if (sender.Path.Split(',').Count() == path.Split(',').Count() - 2)
-				//		{
-				//			sender.Text = sender.Text + " (1)";
-				//		}
-				//	}
-				//}
-			}
-
 			var parentId = sender.ParentId;
 
 			if (parentId < 0)
@@ -435,20 +396,6 @@ namespace uWebshop.Umbraco6
 			}
 			ClearCaches(sender);
 		}
-
-		//private static void DocumentNew(Document sender, NewEventArgs e)
-		//{
-		//	if (sender.ContentType.Alias.StartsWith(Store.NodeAlias))
-		//	{
-		//		var reg = new Regex(@"\s*");
-		//		var storeAlias = reg.Replace(sender.Text, "");
-
-		//		Umbraco.Helpers.InstallStore(storeAlias, sender);
-
-		//		sender.Text = storeAlias;
-		//		sender.Save();
-		//	}
-		//}
 
 		protected void UmbracoDefaultBeforeRequestInit(object sender, RequestInitEventArgs e)
 		{
@@ -874,7 +821,6 @@ namespace uWebshop.Umbraco6
 
 			foreach (var shopAlias in StoreHelper.GetAllStores())
 			{
-				// todo: check this
 				var aliasedEnabled = sender.getProperty("enable_" + shopAlias.Alias.ToUpper());
 				if (aliasedEnabled == null || aliasedEnabled.Value.ToString() != "1") continue;
 

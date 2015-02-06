@@ -153,7 +153,7 @@ namespace uWebshop.Domain.OrderDTO
 			orderInfo.PaymentProviderAmount = PaymentProviderPrice;
 			orderInfo.PaymentProviderOrderPercentage = PaymentProviderOrderPercentage.GetValueOrDefault();
 			orderInfo.ShippingProviderAmountInCents = ShippingProviderPrice;
-			orderInfo.RegionalVatInCents = RegionalVatAmount; // todo!!!
+			orderInfo.RegionalVatInCents = RegionalVatAmount;
 			orderInfo.EventsOn = true;
 
 			orderInfo.OrderNodeId = CorrespondingOrderDocumentId.GetValueOrDefault(0);

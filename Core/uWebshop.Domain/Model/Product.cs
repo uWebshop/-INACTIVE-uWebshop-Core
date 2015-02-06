@@ -21,11 +21,11 @@ namespace uWebshop.Domain
 	/// 
 	/// </summary>
 	[DataContract(Namespace = "", IsReference = true)]
-    [ContentType(ParentContentType = typeof(Catalog), Name = "Product", Description = "#ProductDescription", Alias = "uwbsProduct", IconClass = IconClass.box, Icon = ContentIcon.BoxLabel, Thumbnail = ContentThumbnail.Folder, AllowedChildTypes = new[] { typeof(ProductVariantGroup) })]
+	[ContentType(ParentContentType = typeof(Catalog), Name = "Product", Description = "#ProductDescription", Alias = "uwbsProduct", IconClass = IconClass.box, Icon = ContentIcon.BoxLabel, Thumbnail = ContentThumbnail.Folder, AllowedChildTypes = new[] { typeof(ProductVariantGroup) })]
 	public class Product : MultiStoreUwebshopContent, IProductLegacy230, Common.Interfaces.IProduct//, IAmountUnit
 	{
 		internal ILocalization Localization;
-        internal Func<List<IProductVariantGroup>> ProductVariantGroupsFactory;
+		internal Func<List<IProductVariantGroup>> ProductVariantGroupsFactory;
 
 		/// <summary>
 		/// The node alias
@@ -275,30 +275,30 @@ namespace uWebshop.Domain
 
 		#region Relations
 
-        //private List<ProductVariantGroup> _productVariantGroups;
+		//private List<ProductVariantGroup> _productVariantGroups;
 
-        /// <summary>
-        /// Gets or sets the variants.
-        /// </summary>
-        /// <value>
-        /// The variants.
-        /// </value>
-        /// 
-        [Browsable(false)]
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        [Obsolete("Use GetAllVariants")]
-        public IEnumerable<ProductVariant> Variants { get; set; }
+		/// <summary>
+		/// Gets or sets the variants.
+		/// </summary>
+		/// <value>
+		/// The variants.
+		/// </value>
+		/// 
+		[Browsable(false)]
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		[Obsolete("Use GetAllVariants")]
+		public IEnumerable<ProductVariant> Variants { get; set; }
 
-        /// <summary>
-        /// Gets all variants.
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerable<IProductVariant> GetAllVariants()
-        {
-            return VariantGroups.SelectMany(variantgroup => variantgroup.Variants).ToList();
-        }
+		/// <summary>
+		/// Gets all variants.
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<IProductVariant> GetAllVariants()
+		{
+			return VariantGroups.SelectMany(variantgroup => variantgroup.Variants).ToList();
+		}
 
-	    public IProductDiscount Discount
+		public IProductDiscount Discount
 		{
 			get { return ProductDiscount; }
 		}
@@ -316,57 +316,39 @@ namespace uWebshop.Domain
 			set { }
 		}
 
-        ///// <summary>
-        ///// The groups with variants for this product
-        ///// </summary>
-        ///// <value>
-        ///// The product variant groups.
-        ///// </value>
-        //[DataMember]
-        //public IEnumerable<ProductVariantGroup> ProductVariantGroups
-        //{
-        //    get
-        //    {
-        //        var counter = 0;
-        //        return _productVariantGroups ?? (_productVariantGroups = Variants.GroupBy(v => v.Group).Select(g => new ProductVariantGroup(g.Key, g.ToList(), counter++)).ToList());
-        //    }
-        //}
-		
-        /// <summary>
-        ///     Gets a list of products which belong to the category
-        /// </summary>
-        [DataMember]
-        public IEnumerable<IProductVariantGroup> VariantGroups
-        {
-            get { return (_productVariantGroups ?? (_productVariantGroups = ProductVariantGroupsFactory())); } //DomainHelper.GetProducts(Id).ToList()); }
-            set { }
-        }
+		/// <summary>
+		/// Gets a list of products which belong to the category
+		/// </summary>
+		[DataMember]
+		public IEnumerable<IProductVariantGroup> VariantGroups
+		{
+			get { return (_productVariantGroups ?? (_productVariantGroups = ProductVariantGroupsFactory())); } //DomainHelper.GetProducts(Id).ToList()); }
+			set { }
+		}
 
-        [Browsable(false)]
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        [Obsolete("Use VariantGroups")]
-        public IEnumerable<ProductVariantGroup> ProductVariantGroups {
-            // todo!
-            get
-            {
-                return
-                    IO.Container.Resolve<IProductVariantGroupService>()
-                        .GetAll(Localization)
-                        .Where(c => c.ParentId == Id)
-                        .ToList();
-            }
-
-            set {}
-        }
+		[Browsable(false)]
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		[Obsolete("Use VariantGroups")]
+		public IEnumerable<ProductVariantGroup> ProductVariantGroups
+		{
+			get
+			{
+				return IO.Container.Resolve<IProductVariantGroupService>()
+						.GetAll(Localization)
+						.Where(c => c.ParentId == Id)
+						.ToList();
+			}
+			set { }
+		}
 
 		#endregion
 
 		#region Calculated properties
 
 		private string _localizedUrl;
-	    private IEnumerable<IProductVariantGroup> _productVariantGroups;
+		private IEnumerable<IProductVariantGroup> _productVariantGroups;
 
-	    /// <summary>
+		/// <summary>
 		/// Is this product orderable
 		/// stock should be higher then 0
 		/// if stock is lower then 0, but backorder is enabled
@@ -385,14 +367,14 @@ namespace uWebshop.Domain
 				{
 					return false;
 				}
-                //if (UseVariantStock && Variants.Any() && Variants.All(x => x.Orderable))
-                //{
-                //    return true;
-                //}
-                //if (UseVariantStock && Variants.Any() && Variants.All(x => !x.Orderable))
-                //{
-                //    return false;
-                //}
+				//if (UseVariantStock && Variants.Any() && Variants.All(x => x.Orderable))
+				//{
+				//    return true;
+				//}
+				//if (UseVariantStock && Variants.Any() && Variants.All(x => !x.Orderable))
+				//{
+				//    return false;
+				//}
 
 				return Stock > 0 || Stock <= 0 && BackorderStatus || !StockStatus;
 			}
@@ -549,7 +531,7 @@ namespace uWebshop.Domain
 		}
 
 		#endregion
-		
+
 		internal void ClearCachedValues()
 		{
 			_categories = null;
@@ -799,8 +781,6 @@ namespace uWebshop.Domain
 		{
 			get { return Categories.Cast<Common.Interfaces.ICategory>(); }
 		}
-
-	    
 	}
 
 	internal static class IProductExtensions

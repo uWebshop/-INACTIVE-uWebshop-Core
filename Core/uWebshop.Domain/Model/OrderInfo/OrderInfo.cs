@@ -115,13 +115,13 @@ namespace uWebshop.Domain
 		/// <param name="e">The <see cref="OrderPaidChangedEventArgs"/> instance containing the event data.</param>
 		public delegate void OrderPaidChangedEventHandler(OrderInfo orderInfo, OrderPaidChangedEventArgs e);
 
-        /// <summary>
+		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="orderInfo">The order information.</param>
-        /// <param name="e">The <see cref="OrderFulfilledChangedEventArgs"/> instance containing the event data.</param>
-        public delegate void OrderFulfilledChangedEventHandler(OrderInfo orderInfo, OrderFulfillChangedEventArgs e);
-        
+		/// <param name="e">The <see cref="OrderFulfilledChangedEventArgs"/> instance containing the event data.</param>
+		public delegate void OrderFulfilledChangedEventHandler(OrderInfo orderInfo, OrderFulfillChangedEventArgs e);
+		
 		/// <summary>
 		/// Occurs when [before order updated].
 		/// </summary>
@@ -177,10 +177,10 @@ namespace uWebshop.Domain
 		/// </summary>
 		public static event OrderPaidChangedEventHandler OrderPaidChanged;
 
-        /// <summary>
-        /// Occurs when [order fulfilled changed].
-        /// </summary>
-        public static event OrderFulfilledChangedEventHandler OrderFulfillChanged;
+		/// <summary>
+		/// Occurs when [order fulfilled changed].
+		/// </summary>
+		public static event OrderFulfilledChangedEventHandler OrderFulfillChanged;
 
 		/// <summary>
 		/// Occurs when [order loaded].
@@ -440,32 +440,32 @@ namespace uWebshop.Domain
 			}
 		}
 
-        /// <summary>
-        /// Gets or sets the paid.
-        /// </summary>
-        /// <value>
-        /// The paid.
-        /// </value>
-        [DataMember(IsRequired = false)]
-        public bool? Fulfilled
-        {
-            get { return FulfillDate.HasValue; }
-            set
-            {
-                if (Fulfilled != value && OrderFulfillChanged != null)
-                {
-                    try
-                    {
-                        OrderFulfillChanged(this, new OrderFulfillChangedEventArgs { OrderInfo = this, Fulfilled = value.GetValueOrDefault() });
-                    }
-                    catch
-                    {
-                        Log.Instance.LogError("OrderFulfillChanged Event Failed for Order: " + UniqueOrderId);
-                    }
-                }
-                FulfillDate = value.GetValueOrDefault() ? (DateTime?)DateTime.Now : null;
-            }
-        }
+		/// <summary>
+		/// Gets or sets the paid.
+		/// </summary>
+		/// <value>
+		/// The paid.
+		/// </value>
+		[DataMember(IsRequired = false)]
+		public bool? Fulfilled
+		{
+			get { return FulfillDate.HasValue; }
+			set
+			{
+				if (Fulfilled != value && OrderFulfillChanged != null)
+				{
+					try
+					{
+						OrderFulfillChanged(this, new OrderFulfillChangedEventArgs { OrderInfo = this, Fulfilled = value.GetValueOrDefault() });
+					}
+					catch
+					{
+						Log.Instance.LogError("OrderFulfillChanged Event Failed for Order: " + UniqueOrderId);
+					}
+				}
+				FulfillDate = value.GetValueOrDefault() ? (DateTime?)DateTime.Now : null;
+			}
+		}
 
 		/// <summary>
 		/// Gets or sets a value indicating whether [terms accepted].
@@ -491,14 +491,14 @@ namespace uWebshop.Domain
 		[DataMember(IsRequired = false)]
 		public DateTime? PaidDate { get; set; }
 
-        /// <summary>
-        /// Gets or sets the paid date.
-        /// </summary>
-        /// <value>
-        /// The paid date.
-        /// </value>
-        [DataMember(IsRequired = false)]
-        public DateTime? FulfillDate { get; set; }
+		/// <summary>
+		/// Gets or sets the paid date.
+		/// </summary>
+		/// <value>
+		/// The paid date.
+		/// </value>
+		[DataMember(IsRequired = false)]
+		public DateTime? FulfillDate { get; set; }
 
 		/// <summary>
 		///     Gets a list with the coupons of the order
@@ -716,7 +716,6 @@ namespace uWebshop.Domain
 		{
 			get
 			{
-				// todo: clean!
 				if (_regionalVatInCents != null)
 				{
 					return _regionalVatInCents.GetValueOrDefault();
@@ -994,7 +993,7 @@ namespace uWebshop.Domain
 			orderInfo.StoreOrderReferenceId = orderData.StoreOrderReferenceId;
 			orderInfo.OrderNumber = orderData.OrderReferenceNumber;
 
-            if (!IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated && HttpContext.Current != null || UwebshopRequest.Current.PaymentProvider != null)
+			if (!IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated && HttpContext.Current != null || UwebshopRequest.Current.PaymentProvider != null)
 			{
 				var currentUserIp = HttpContext.Current.Request.UserHostAddress;
 				if (orderInfo.CustomerInfo.CustomerIPAddress != currentUserIp)
@@ -1243,8 +1242,8 @@ namespace uWebshop.Domain
 		/// </summary>
 		/// <param name="fields"></param>
 		/// <param name="customerDataType"></param>
-        /// <param name="ingnoreNotAllowed">Ignore if order is not allowed to be written to</param>
-        public bool AddCustomerFields(Dictionary<string, string> fields, CustomerDatatypes customerDataType, bool ingnoreNotAllowed = false)
+		/// <param name="ingnoreNotAllowed">Ignore if order is not allowed to be written to</param>
+		public bool AddCustomerFields(Dictionary<string, string> fields, CustomerDatatypes customerDataType, bool ingnoreNotAllowed = false)
 		{
 			return IO.Container.Resolve<IOrderUpdatingService>().AddCustomerFields(this, fields, customerDataType, ingnoreNotAllowed);
 		}
@@ -1818,8 +1817,8 @@ namespace uWebshop.Domain
 		{
 			get
 			{
-			    var total = GetAmount(true, false, true);
-                return Math.Min(total, total - GetAmount(true, true, true));
+				var total = GetAmount(true, false, true);
+				return Math.Min(total, total - GetAmount(true, true, true));
 			}
 			set { }
 		}
@@ -1835,8 +1834,8 @@ namespace uWebshop.Domain
 		{
 			get
 			{
-			    var total = GetAmount(false, false, true);
-                return Math.Min(total, total - GetAmount(false, true, true));
+				var total = GetAmount(false, false, true);
+				return Math.Min(total, total - GetAmount(false, true, true));
 			}
 			set { }
 		}
@@ -1976,7 +1975,7 @@ namespace uWebshop.Domain
 		public bool Paid { get; set; }
 	}
 
-    public class OrderFulfillChangedEventArgs : EventArgs
+	public class OrderFulfillChangedEventArgs : EventArgs
 	{
 		/// <summary>
 		/// Gets or sets the order information.
@@ -1994,7 +1993,7 @@ namespace uWebshop.Domain
 		/// </value>
 		public bool Fulfilled { get; set; }
 	}
-    
+	
 
 	/// <summary>
 	/// 

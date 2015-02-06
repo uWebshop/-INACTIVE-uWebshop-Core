@@ -22,366 +22,366 @@ using IProduct = uWebshop.API.IProduct;
 namespace uWebshop.Umbraco.WebApi
 {
 	[PluginController("uWebshop")]
-    [KnownType(typeof(BasketOrderInfoAdaptor))]
+	[KnownType(typeof(BasketOrderInfoAdaptor))]
 	public class StoreApiController : UmbracoApiController
 	{
 		public IEnumerable<string> GetAllStoreAliasses()
 		{
-		    if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated)
-		    {
-		        return StoreHelper.GetAllStores().Select(s => s.Alias);
-		    }
+			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated)
+			{
+				return StoreHelper.GetAllStores().Select(s => s.Alias);
+			}
 
-		    return Enumerable.Empty<string>();
+			return Enumerable.Empty<string>();
 		}
 
-        public IEnumerable<IStore> GetAllStores()
-        {
-            if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated)
-            {
-                return StoreHelper.GetAllStores();
-            }
-
-            return Enumerable.Empty<IStore>();
-        }
-
-        public IEnumerable<string> GetStoreSpecificStockStoreAliasses()
-        {
-            if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated)
-            {
-                return StoreHelper.GetAllStores().Where(x => x.UseStoreSpecificStock).Select(s => s.Alias);
-            }
-
-            return Enumerable.Empty<string>();
-        }
-
-        public BasketOrderInfoAdaptor GetOrderData(string guid)
-        {
-            var order = Orders.GetOrder(guid);
-
-            var membershipUser = Membership.GetUser();
-
-            if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || membershipUser != null && membershipUser.UserName == order.Customer.UserName || UwebshopRequest.Current.PaymentProvider != null || OrderHelper.IsCompletedOrderWithinValidLifetime(order))
-            {
-                return order as BasketOrderInfoAdaptor;
-            }
-
-            return null;
-        }
-
-        public IEnumerable<BasketOrderInfoAdaptor> GetAllOrders(string status = "All")
-        {
-            var orders = OrderHelper.GetAllOrders().Select(o => new BasketOrderInfoAdaptor(o)).Where(x => x.Status != OrderStatus.Incomplete);
-
-            if (string.IsNullOrEmpty(status) || status.ToLowerInvariant() == "all" || status.ToLowerInvariant() == "undefined")
-            {
-                return orders;
-            }
-
-            OrderStatus orderStatus;
-            Enum.TryParse(status, out orderStatus);
-
-            if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated)
-            {
-                return orders.Where(x => x.Status == orderStatus);
-            }
-
-            return null;
-        }
-        
-        public IEnumerable<string> GetEmailTemplates()
-        {
-            var files = Directory.GetFiles(IOHelper.MapPath(SystemDirectories.Xslt), "*.xslt", SearchOption.AllDirectories).Select(file => file.Replace(IOHelper.MapPath(SystemDirectories.Xslt) + @"\", string.Empty)).ToList();
-
-            files.AddRange(Directory.GetFiles(IOHelper.MapPath(SystemDirectories.MacroScripts), "*.cshtml", SearchOption.AllDirectories).Select(file => file.Replace(IOHelper.MapPath(SystemDirectories.MacroScripts) + @"\", string.Empty)));
-
-            if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated)
-            {
-                return files.Where(x => x.ToLowerInvariant().Contains("email") || x.ToLowerInvariant().Contains("mail"));
-            }
-
-            return null;
-        }
-
-	    public string GetRenderedTemplate(int nodeId, string template)
-	    {
-            return RazorLibraryExtensions.RenderMacro(template, nodeId);
-	    }
-        
-        public int GetOrCreateOrderNode(string uniqueOrderId)
-        {
-            Guid orderGuid;
-            Guid.TryParse(uniqueOrderId, out orderGuid);
-
-            var order = OrderHelper.GetOrder(orderGuid);
-
-            if (order != null && IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated)
-            {
-                return IO.Container.Resolve<IUmbracoDocumentTypeInstaller>().GetOrCreateOrderContent(order);
-            }
-            return 0;
-        }
-
-        public IEnumerable<CustomerGroup> GetAllMemberGroups()
-        {
-            if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated)
-            {
-                var membershipRoles = Roles.GetAllRoles();
-
-                return membershipRoles.Select(m => new CustomerGroup { Alias = m });
-            }
-
-            return Enumerable.Empty<CustomerGroup>();
-        }
-
-        public BasketOrderInfoAdaptor GetOrder(string uniqueOrderId)
-        {
-            Guid guid;
-            Guid.TryParse(uniqueOrderId, out guid);
-            
-            var order = Orders.GetOrder(guid) as BasketOrderInfoAdaptor;
-
-            var membershipUser = Membership.GetUser();
-
-            if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated ||
-                membershipUser != null && membershipUser.UserName == order.Customer.UserName ||
-                UwebshopRequest.Current.PaymentProvider != null ||
-                OrderHelper.IsCompletedOrderWithinValidLifetime(order))
-            {
-                return order;
-            }
-
-            return null;
-        }
-
-
-	    public BasketOrderInfoAdaptor GetOrderByNumber(string orderNumber)
-	    {
-	        var order = Orders.GetAllOrders()
-	            .FirstOrDefault(x => x.OrderReference.ToLowerInvariant() == orderNumber.ToLowerInvariant());
-
-	        return order != null ? order as BasketOrderInfoAdaptor : null;
-	    }
-
-	    public IEnumerable<BasketOrderInfoAdaptor> GetOrdersByFirstName(string customerFirstName)
-	    {
-	        var orders = OrderHelper.GetAllOrders().Where(x => x.CustomerFirstName.ToLowerInvariant() == customerFirstName.ToLowerInvariant());
-
-	        return orders.Select(o => new BasketOrderInfoAdaptor(o));
-	    }
-
-        public IEnumerable<BasketOrderInfoAdaptor> GetOrdersByLastName(string customerLastName)
-        {
-            var orders = OrderHelper.GetAllOrders().Where(x => x.CustomerLastName.ToLowerInvariant() == customerLastName.ToLowerInvariant());
-
-            return orders.Select(o => new BasketOrderInfoAdaptor(o));
-        }
-
-        public IEnumerable<BasketOrderInfoAdaptor> GetOrdersByEmail(string customerEmail)
-        {
-            var orders = OrderHelper.GetAllOrders().Where(x => x.CustomerEmail.ToLowerInvariant() == customerEmail.ToLowerInvariant());
-
-            return orders.Select(o => new BasketOrderInfoAdaptor(o));
-        }
-
-	    public class PostStockRequest
-	    {
-	        public int id { get; set; }
-	        public int stock { get; set; }
-
-            public string storealias { get; set; }
-	    }
-
-        public int PostStock(PostStockRequest data)
-        {
-            if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated)
-            {
-                string storeAlias = null;
-                if (!string.IsNullOrEmpty(data.storealias) && data.storealias.ToLowerInvariant() != "all stores")
-                {
-                    storeAlias = data.storealias;
-                }
-
-                IO.Container.Resolve<IStockService>().ReplaceStock(data.id, data.stock, false, storeAlias);
-
-                return data.stock;
-            }
-
-            return 0;
-        }
-
-	    public IEnumerable<Coupon> GetCouponCodes(int discountId)
-	    {
-	        if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated)
-	        {
-	            var couponCodes = IO.Container.Resolve<ICouponCodeService>().GetAllForDiscount(discountId);
-
-	            return
-	                couponCodes.Select(
-	                    coupon =>
-	                        new Coupon
-	                        {
-	                            CouponCode = coupon.CouponCode,
-	                            DiscountId = discountId,
-	                            NumberAvailable = coupon.NumberAvailable
-	                        }).ToList();
-	        }
-
-	        return null;
-	    }
-
-        public class PostCouponRequest
-        {
-            public IEnumerable<PostCoupon> Coupons { get; set; }
-            public int DiscountId { get; set; }
-        }
-
-        public class PostCoupon
-        {
-            public string couponCode { get; set; }
-            public int numberAvailable { get; set; }
-        }
-
-        public void PostCouponCodes(PostCouponRequest data)
-        {
-            if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated)
-            {
-                var couponList =
-                    data.Coupons.Select(
-                        item =>
-                            new Coupon
-                            {
-                                DiscountId = data.DiscountId,
-                                CouponCode = item.couponCode,
-                                NumberAvailable = item.numberAvailable
-                            }).Cast<ICoupon>().ToList();
-
-                if (couponList.Any())
-                {
-                    IO.Container.Resolve<ICouponCodeService>().Save(data.DiscountId, couponList);
-                }
-            }
-        }
-
-        public class CustomerGroup : ICustomerGroup
-        {
-            public string Alias { get; set; }
-        }
-
-
-        public class Coupon : ICoupon
-        {
-            public int DiscountId { get; set; }
-            public string CouponCode { get; set; }
-            public int NumberAvailable { get; set; }
-        }
-
-        public class PostStatusRequest
-        {
-            public Guid id { get; set; }
-            public string status { get; set; }
-            public bool emails { get; set; }
-        }
-
-        public string PostOrderStatus(PostStatusRequest data)
-        {
-            if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated)
-            {
-                var order = OrderHelper.GetOrder(data.id);
-
-                OrderStatus status;
-                Enum.TryParse(data.status, out status);
-
-                order.SetStatus(status, data.emails);
-                order.Save();
-
-                return data.status;
-            }
-
-            return null;
-        }
-
-        public string PostOrder(PostOrderRequest data)
-        {
-            if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated)
-            {
-                var order = OrderHelper.GetOrder(data.id);
-
-                OrderStatus status;
-                Enum.TryParse(data.status, out status);
-                
-                order.SetStatus(status, data.emails);
-
-                order.Fulfilled = data.fulfilled;
-                order.Paid = data.paid;
-                
-                order.Save();
-
-                return data.status;
-            }
-
-            return null;
-        }
-
-	    public class PostOrderRequest
-	    {
-            public Guid id { get; set; }
-            public bool paid { get; set; }
-            public bool fulfilled { get; set; }
-            public string status { get; set; }
-            public bool emails { get; set; }
-	    }
-
-        public class PostPaidRequest
-        {
-            public Guid id { get; set; }
-            public bool paid { get; set; }
-        }
-
-        public bool PostPaid(PostPaidRequest data)
-        {
-            if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated)
-            {
-                var order = OrderHelper.GetOrder(data.id);
-
-                order.Paid = data.paid;
-                order.Save();
-
-                return data.paid;
-            }
-
-            return false;
-        }
-
-        public IEnumerable<string> GetDiscountTypes()
-        {
-            return Enum.GetNames(typeof(DiscountType));
-        }
-
-        public IEnumerable<string> GetDiscountOrderConditions()
-        {
-            return Enum.GetNames(typeof(DiscountOrderCondition));
-        }
-
-        public IEnumerable<string> GetPaymentProviderAmountTypes()
-        {
-            return Enum.GetNames(typeof(PaymentProviderAmountType));
-        }
-
-        public IEnumerable<string> GetPaymentProviderTypes()
-        {
-            return Enum.GetNames(typeof(PaymentProviderType));
-        }
-
-        public IEnumerable<string> GetShippingProviderTypes()
-        {
-            return Enum.GetNames(typeof(ShippingProviderType));
-        }
-
-        public IEnumerable<string> GetShippingRangeTypes()
-        {
-            return Enum.GetNames(typeof(ShippingRangeType));
-        }
+		public IEnumerable<IStore> GetAllStores()
+		{
+			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated)
+			{
+				return StoreHelper.GetAllStores();
+			}
+
+			return Enumerable.Empty<IStore>();
+		}
+
+		public IEnumerable<string> GetStoreSpecificStockStoreAliasses()
+		{
+			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated)
+			{
+				return StoreHelper.GetAllStores().Where(x => x.UseStoreSpecificStock).Select(s => s.Alias);
+			}
+
+			return Enumerable.Empty<string>();
+		}
+
+		public BasketOrderInfoAdaptor GetOrderData(string guid)
+		{
+			var order = Orders.GetOrder(guid);
+
+			var membershipUser = Membership.GetUser();
+
+			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || membershipUser != null && membershipUser.UserName == order.Customer.UserName || UwebshopRequest.Current.PaymentProvider != null || OrderHelper.IsCompletedOrderWithinValidLifetime(order))
+			{
+				return order as BasketOrderInfoAdaptor;
+			}
+
+			return null;
+		}
+
+		public IEnumerable<BasketOrderInfoAdaptor> GetAllOrders(string status = "All")
+		{
+			var orders = OrderHelper.GetAllOrders().Select(o => new BasketOrderInfoAdaptor(o)).Where(x => x.Status != OrderStatus.Incomplete);
+
+			if (string.IsNullOrEmpty(status) || status.ToLowerInvariant() == "all" || status.ToLowerInvariant() == "undefined")
+			{
+				return orders;
+			}
+
+			OrderStatus orderStatus;
+			Enum.TryParse(status, out orderStatus);
+
+			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated)
+			{
+				return orders.Where(x => x.Status == orderStatus);
+			}
+
+			return null;
+		}
+		
+		public IEnumerable<string> GetEmailTemplates()
+		{
+			var files = Directory.GetFiles(IOHelper.MapPath(SystemDirectories.Xslt), "*.xslt", SearchOption.AllDirectories).Select(file => file.Replace(IOHelper.MapPath(SystemDirectories.Xslt) + @"\", string.Empty)).ToList();
+
+			files.AddRange(Directory.GetFiles(IOHelper.MapPath(SystemDirectories.MacroScripts), "*.cshtml", SearchOption.AllDirectories).Select(file => file.Replace(IOHelper.MapPath(SystemDirectories.MacroScripts) + @"\", string.Empty)));
+
+			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated)
+			{
+				return files.Where(x => x.ToLowerInvariant().Contains("email") || x.ToLowerInvariant().Contains("mail"));
+			}
+
+			return null;
+		}
+
+		public string GetRenderedTemplate(int nodeId, string template)
+		{
+			return RazorLibraryExtensions.RenderMacro(template, nodeId);
+		}
+		
+		public int GetOrCreateOrderNode(string uniqueOrderId)
+		{
+			Guid orderGuid;
+			Guid.TryParse(uniqueOrderId, out orderGuid);
+
+			var order = OrderHelper.GetOrder(orderGuid);
+
+			if (order != null && IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated)
+			{
+				return IO.Container.Resolve<IUmbracoDocumentTypeInstaller>().GetOrCreateOrderContent(order);
+			}
+			return 0;
+		}
+
+		public IEnumerable<CustomerGroup> GetAllMemberGroups()
+		{
+			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated)
+			{
+				var membershipRoles = Roles.GetAllRoles();
+
+				return membershipRoles.Select(m => new CustomerGroup { Alias = m });
+			}
+
+			return Enumerable.Empty<CustomerGroup>();
+		}
+
+		public BasketOrderInfoAdaptor GetOrder(string uniqueOrderId)
+		{
+			Guid guid;
+			Guid.TryParse(uniqueOrderId, out guid);
+			
+			var order = Orders.GetOrder(guid) as BasketOrderInfoAdaptor;
+
+			var membershipUser = Membership.GetUser();
+
+			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated ||
+				membershipUser != null && membershipUser.UserName == order.Customer.UserName ||
+				UwebshopRequest.Current.PaymentProvider != null ||
+				OrderHelper.IsCompletedOrderWithinValidLifetime(order))
+			{
+				return order;
+			}
+
+			return null;
+		}
+
+
+		public BasketOrderInfoAdaptor GetOrderByNumber(string orderNumber)
+		{
+			var order = Orders.GetAllOrders()
+				.FirstOrDefault(x => x.OrderReference.ToLowerInvariant() == orderNumber.ToLowerInvariant());
+
+			return order != null ? order as BasketOrderInfoAdaptor : null;
+		}
+
+		public IEnumerable<BasketOrderInfoAdaptor> GetOrdersByFirstName(string customerFirstName)
+		{
+			var orders = OrderHelper.GetAllOrders().Where(x => x.CustomerFirstName.ToLowerInvariant() == customerFirstName.ToLowerInvariant());
+
+			return orders.Select(o => new BasketOrderInfoAdaptor(o));
+		}
+
+		public IEnumerable<BasketOrderInfoAdaptor> GetOrdersByLastName(string customerLastName)
+		{
+			var orders = OrderHelper.GetAllOrders().Where(x => x.CustomerLastName.ToLowerInvariant() == customerLastName.ToLowerInvariant());
+
+			return orders.Select(o => new BasketOrderInfoAdaptor(o));
+		}
+
+		public IEnumerable<BasketOrderInfoAdaptor> GetOrdersByEmail(string customerEmail)
+		{
+			var orders = OrderHelper.GetAllOrders().Where(x => x.CustomerEmail.ToLowerInvariant() == customerEmail.ToLowerInvariant());
+
+			return orders.Select(o => new BasketOrderInfoAdaptor(o));
+		}
+
+		public class PostStockRequest
+		{
+			public int id { get; set; }
+			public int stock { get; set; }
+
+			public string storealias { get; set; }
+		}
+
+		public int PostStock(PostStockRequest data)
+		{
+			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated)
+			{
+				string storeAlias = null;
+				if (!string.IsNullOrEmpty(data.storealias) && data.storealias.ToLowerInvariant() != "all stores")
+				{
+					storeAlias = data.storealias;
+				}
+
+				IO.Container.Resolve<IStockService>().ReplaceStock(data.id, data.stock, false, storeAlias);
+
+				return data.stock;
+			}
+
+			return 0;
+		}
+
+		public IEnumerable<Coupon> GetCouponCodes(int discountId)
+		{
+			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated)
+			{
+				var couponCodes = IO.Container.Resolve<ICouponCodeService>().GetAllForDiscount(discountId);
+
+				return
+					couponCodes.Select(
+						coupon =>
+							new Coupon
+							{
+								CouponCode = coupon.CouponCode,
+								DiscountId = discountId,
+								NumberAvailable = coupon.NumberAvailable
+							}).ToList();
+			}
+
+			return null;
+		}
+
+		public class PostCouponRequest
+		{
+			public IEnumerable<PostCoupon> Coupons { get; set; }
+			public int DiscountId { get; set; }
+		}
+
+		public class PostCoupon
+		{
+			public string couponCode { get; set; }
+			public int numberAvailable { get; set; }
+		}
+
+		public void PostCouponCodes(PostCouponRequest data)
+		{
+			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated)
+			{
+				var couponList =
+					data.Coupons.Select(
+						item =>
+							new Coupon
+							{
+								DiscountId = data.DiscountId,
+								CouponCode = item.couponCode,
+								NumberAvailable = item.numberAvailable
+							}).Cast<ICoupon>().ToList();
+
+				if (couponList.Any())
+				{
+					IO.Container.Resolve<ICouponCodeService>().Save(data.DiscountId, couponList);
+				}
+			}
+		}
+
+		public class CustomerGroup : ICustomerGroup
+		{
+			public string Alias { get; set; }
+		}
+
+
+		public class Coupon : ICoupon
+		{
+			public int DiscountId { get; set; }
+			public string CouponCode { get; set; }
+			public int NumberAvailable { get; set; }
+		}
+
+		public class PostStatusRequest
+		{
+			public Guid id { get; set; }
+			public string status { get; set; }
+			public bool emails { get; set; }
+		}
+
+		public string PostOrderStatus(PostStatusRequest data)
+		{
+			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated)
+			{
+				var order = OrderHelper.GetOrder(data.id);
+
+				OrderStatus status;
+				Enum.TryParse(data.status, out status);
+
+				order.SetStatus(status, data.emails);
+				order.Save();
+
+				return data.status;
+			}
+
+			return null;
+		}
+
+		public string PostOrder(PostOrderRequest data)
+		{
+			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated)
+			{
+				var order = OrderHelper.GetOrder(data.id);
+
+				OrderStatus status;
+				Enum.TryParse(data.status, out status);
+				
+				order.SetStatus(status, data.emails);
+
+				order.Fulfilled = data.fulfilled;
+				order.Paid = data.paid;
+				
+				order.Save();
+
+				return data.status;
+			}
+
+			return null;
+		}
+
+		public class PostOrderRequest
+		{
+			public Guid id { get; set; }
+			public bool paid { get; set; }
+			public bool fulfilled { get; set; }
+			public string status { get; set; }
+			public bool emails { get; set; }
+		}
+
+		public class PostPaidRequest
+		{
+			public Guid id { get; set; }
+			public bool paid { get; set; }
+		}
+
+		public bool PostPaid(PostPaidRequest data)
+		{
+			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated)
+			{
+				var order = OrderHelper.GetOrder(data.id);
+
+				order.Paid = data.paid;
+				order.Save();
+
+				return data.paid;
+			}
+
+			return false;
+		}
+
+		public IEnumerable<string> GetDiscountTypes()
+		{
+			return Enum.GetNames(typeof(DiscountType));
+		}
+
+		public IEnumerable<string> GetDiscountOrderConditions()
+		{
+			return Enum.GetNames(typeof(DiscountOrderCondition));
+		}
+
+		public IEnumerable<string> GetPaymentProviderAmountTypes()
+		{
+			return Enum.GetNames(typeof(PaymentProviderAmountType));
+		}
+
+		public IEnumerable<string> GetPaymentProviderTypes()
+		{
+			return Enum.GetNames(typeof(PaymentProviderType));
+		}
+
+		public IEnumerable<string> GetShippingProviderTypes()
+		{
+			return Enum.GetNames(typeof(ShippingProviderType));
+		}
+
+		public IEnumerable<string> GetShippingRangeTypes()
+		{
+			return Enum.GetNames(typeof(ShippingRangeType));
+		}
 
 	}
 
@@ -394,29 +394,29 @@ namespace uWebshop.Umbraco.WebApi
 			return StoreHelper.GetAllCountries().Select(country => new CountryData(country.Name, country.Code));
 		}
 
-        public IEnumerable<Product> GetAllProducts()
-        {
-            return DomainHelper.GetAllProducts().Cast<Product>();
+		public IEnumerable<Product> GetAllProducts()
+		{
+			return DomainHelper.GetAllProducts().Cast<Product>();
 
-        }
+		}
 
-	    public Country GetCountryFromCountryCode(string countryCode, string storeAlias, string currencyCode)
-	    {
-	        var localization = StoreHelper.GetLocalization(storeAlias, currencyCode);
+		public Country GetCountryFromCountryCode(string countryCode, string storeAlias, string currencyCode)
+		{
+			var localization = StoreHelper.GetLocalization(storeAlias, currencyCode);
 
-	        var countries =
-	            IO.Container.Resolve<ICountryRepository>()
-	                .GetAllCountries(localization);
+			var countries =
+				IO.Container.Resolve<ICountryRepository>()
+					.GetAllCountries(localization);
 
-	        if (countries != null)
-	        {
-	            var value = countries.FirstOrDefault(x => x.Code.ToLowerInvariant() == countryCode.ToLowerInvariant());
+			if (countries != null)
+			{
+				var value = countries.FirstOrDefault(x => x.Code.ToLowerInvariant() == countryCode.ToLowerInvariant());
 
-	            return value;
-	        }
+				return value;
+			}
 
-	        return null;
-	    }
+			return null;
+		}
 
 		public IEnumerable<Currency> GetCurrencyDataEditor()
 		{
@@ -434,8 +434,7 @@ namespace uWebshop.Umbraco.WebApi
 
 			return new[] { "EUR", "USD", "GBP", "DKK", "AUD", "NZD", "CHF", "CAD", "JPY" }.Select(c => allRegions[c]);
 		}
-
-
+		
 		public IEnumerable<Language> GetLanguagePicker()
 		{
 			return umbraco.cms.businesslogic.language.Language.GetAllAsList().Select(language =>
@@ -458,20 +457,17 @@ namespace uWebshop.Umbraco.WebApi
 
 		public int GetOrderCount(int id, string storeAlias = null)
 		{
-			// todo: verify alias?
 			return IO.Container.Resolve<IStockService>().GetOrderCount(id, storeAlias);
 		}
 
 		public int GetStock(int id, string storeAlias = null)
 		{
-		    string storeAliasValue = null;
-            if (!string.IsNullOrEmpty(storeAlias) && storeAlias.ToLowerInvariant() != "all stores")
-            {
-                storeAliasValue = storeAlias;
-            }
-
-            return IO.Container.Resolve<IStockService>().GetStockForUwebshopEntityWithId(id, storeAliasValue);
-
+			string storeAliasValue = null;
+			if (!string.IsNullOrEmpty(storeAlias) && storeAlias.ToLowerInvariant() != "all stores")
+			{
+				storeAliasValue = storeAlias;
+			}
+			return IO.Container.Resolve<IStockService>().GetStockForUwebshopEntityWithId(id, storeAliasValue);
 		}
 
 		public IEnumerable<TemplateRequest> GetTemplates(int id)
@@ -481,10 +477,10 @@ namespace uWebshop.Umbraco.WebApi
 			return content.ContentType.AllowedTemplates.Select(template => new TemplateRequest {id = template.Id, name = template.Name, alias = template.Alias}).ToList();
 		}
 
-        public IEnumerable<string> GetOrderStatusses()
-        {
-            return Enum.GetNames(typeof(OrderStatus));
-        }
+		public IEnumerable<string> GetOrderStatusses()
+		{
+			return Enum.GetNames(typeof(OrderStatus));
+		}
 
 		public class TemplateRequest
 		{
@@ -492,10 +488,7 @@ namespace uWebshop.Umbraco.WebApi
 			public string alias { get; set; }
 			public string name { get; set; }
 		}
-
 	}
-
-
 
 	[Serializable]
 	public class Language

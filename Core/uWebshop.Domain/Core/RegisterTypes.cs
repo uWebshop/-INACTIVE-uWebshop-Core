@@ -47,14 +47,22 @@ namespace uWebshop.Domain
 			container.RegisterType<ICategoryCatalogUrlService, CategoryCatalogUrlService>();
 			container.RegisterType<IUrlFormatService, UrlFormatService>();
 			container.RegisterType<IUrlLocalizationService, StoreUrlInFrontBasedOnCurrentNodeUrlLocalizationService>();
-            container.RegisterType<IUrlService, UrlService>();
+			container.RegisterType<IUrlService, UrlService>();
 
-			container.RegisterType<IVatCalculationStrategy, OverSmallestPartsVatCalculationStrategy>(); // default
+			if (System.Web.Configuration.WebConfigurationManager.AppSettings["uWebshopCalculateVatOverTotal"] == "true")
+			{
+				container.RegisterType<IVatCalculationStrategy, OverTotalVatCalculationStrategy>();
+			}
+			else
+			{
+				container.RegisterType<IVatCalculationStrategy, OverSmallestPartsVatCalculationStrategy>(); // default
+			}
+
 			container.RegisterType<IStoreUrlRepository, UmbracoStorePickerStoreUrlRepository>();
 
 			// entity services (more registered in Umbraco part)
 			container.RegisterType<IProductService, ProductService>();
-            container.RegisterType<IProductVariantGroupService, ProductVariantGroupService>();
+			container.RegisterType<IProductVariantGroupService, ProductVariantGroupService>();
 			container.RegisterType<IProductVariantService, ProductVariantService>();
 
 			container.RegisterType<ICategoryService, CategoryService>();

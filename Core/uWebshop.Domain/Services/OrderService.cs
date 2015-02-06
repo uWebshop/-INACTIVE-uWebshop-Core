@@ -137,7 +137,6 @@ namespace uWebshop.Domain.Services
 
 		public List<OrderLine> GetApplicableOrderLines(OrderInfo orderinfo, IEnumerable<int> itemIdsToCheck)
 		{
-			// todo: test
 			var productIds = new List<int>();
 			var productVariantIds = new List<int>();
 

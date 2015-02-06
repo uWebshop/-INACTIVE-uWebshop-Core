@@ -21,7 +21,7 @@ namespace uWebshop.Domain
 	/// Ordered by group
 	/// </summary>
 	[DataContract(Namespace = "", IsReference = true)]
-    [ContentType(ParentContentType = typeof(Catalog), Name = "Product Variant", Description = "#ProductVariantDescription", Alias = "uwbsProductVariant", IconClass = IconClass.link, Icon = ContentIcon.MagnetSmall, Thumbnail = ContentThumbnail.Folder)]
+	[ContentType(ParentContentType = typeof(Catalog), Name = "Product Variant", Description = "#ProductVariantDescription", Alias = "uwbsProductVariant", IconClass = IconClass.link, Icon = ContentIcon.MagnetSmall, Thumbnail = ContentThumbnail.Folder)]
 	public class ProductVariant : uWebshopEntity, IProductVariant //, IProductVariant
 	{
 		/// <summary>
@@ -32,7 +32,7 @@ namespace uWebshop.Domain
 		private IProduct _product;
 		internal ILocalization Localization;
 
-	    #region Helper properties (with/withoutVat and Non-cents)
+		#region Helper properties (with/withoutVat and Non-cents)
 
 		/// <summary>
 		/// Price of the product variant based on the price value
@@ -500,21 +500,20 @@ namespace uWebshop.Domain
 		{
 			get
 			{
-			    if (_product != null)
-			    {
-			        return _product;
-			    }
+				if (_product != null)
+				{
+					return _product;
+				}
 
-                var variantGroup = DomainHelper.GetProductVariantGroupById(ParentId);
-
-			    if (variantGroup != null)
-			    {
-                    return _product = DomainHelper.GetProductById(variantGroup.ParentId);
-			    }
-			    
-                return _product = DomainHelper.GetProductById(ParentId);
+				var variantGroup = DomainHelper.GetProductVariantGroupById(ParentId);
+				if (variantGroup != null)
+				{
+					return _product = DomainHelper.GetProductById(variantGroup.ParentId);
+				}
+				
+				return _product = DomainHelper.GetProductById(ParentId);
 			}
-		    set { _product = value; }
+			set { _product = value; }
 		}
 
 		internal static bool IsAlias(string alias)
@@ -544,16 +543,16 @@ namespace uWebshop.Domain
 		[ContentPropertyType(Alias = "sku", DataType = DataType.String, Tab = ContentTypeTab.Global, Name = "#SKU", Description = "#SKUDescription", SortOrder = 2)]
 		public string SKU { get; set; }
 
-	    /// <summary>
-	    /// Gets or sets the group.
-	    /// </summary>
-	    /// <value>
-	    /// The group.
-	    /// </value>
-	    [DataMember]
-	    public string Group { get; set; }
+		/// <summary>
+		/// Gets or sets the group.
+		/// </summary>
+		/// <value>
+		/// The group.
+		/// </value>
+		[DataMember]
+		public string Group { get; set; }
 
-	    /// <summary>
+		/// <summary>
 		/// Gets or sets a value indicating whether [required variant].
 		/// </summary>
 		/// <value>
@@ -661,12 +660,6 @@ namespace uWebshop.Domain
 			set { }
 		}
 
-		/// <summary>
-		/// Gets the price.
-		/// </summary>
-		/// <value>
-		/// The price.
-		/// </value>
 		public IDiscountedRangedPrice Price
 		{
 			get
@@ -674,9 +667,9 @@ namespace uWebshop.Domain
 				// todo: move?  and test
 				return Businesslogic.Price.CreateDiscountedRanged(OriginalPriceInCents, Ranges, Product.PricesIncludingVat, Vat, 
 					order => order.OrderLines.Where(line => line.ProductInfo.ProductVariants.Any(v => v.Id == Id)).Sum(line => line.ProductInfo.ItemCount.GetValueOrDefault(1)), // todo: move/centralize this
-				                                                  i =>
-					                                                  {
-						                                                  int discounted;
+																  i =>
+																	  {
+																		  int discounted;
 																		  if (Product.IsDiscounted && !Product.Discount.ExcludeVariants && Product.Discount.Type == DiscountType.Percentage)
 																		  {
 																			  discounted = Product.Discount.GetAdjustedPrice(i);
@@ -686,9 +679,7 @@ namespace uWebshop.Domain
 																			  discounted = i;
 																		  }
 																		  return IsDiscounted ? ProductVariantDiscount.GetAdjustedPrice(discounted) : discounted;
-					                                                  },
-			 
-					Localization);
+																	  }, Localization);
 			}
 		}
 

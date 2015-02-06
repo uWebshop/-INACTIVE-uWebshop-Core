@@ -181,7 +181,7 @@ namespace uWebshop.Umbraco.Repositories
 
 			var constructorInfo = typeof (T).GetConstructor(new[] {typeof (SearchResult)});
 
-			try // todo: waarom deze try?
+			try
 			{
 				var examineResults = GetExamineResultsForNodeTypeAlias(nodeTypeAlias);
 				if (examineResults != null && examineResults.Any())

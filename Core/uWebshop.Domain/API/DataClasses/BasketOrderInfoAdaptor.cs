@@ -38,11 +38,11 @@ namespace uWebshop.API
 		[DataMember]
 		public Guid UniqueId { get { return _source.UniqueOrderId; } set { } }
 
-        [DataMember]
-        public string Name { get { return _source.Name; } set { } }
+		[DataMember]
+		public string Name { get { return _source.Name; } set { } }
 
-        [DataMember]
-        public int ContentId { get { return _source.OrderNodeId; } set { } }
+		[DataMember]
+		public int ContentId { get { return _source.OrderNodeId; } set { } }
 
 		IVatPrice IOrderBasketWishlistShared.OrderAmount { get { return OrderAmount; } }
 
@@ -188,8 +188,8 @@ namespace uWebshop.API
 		[JsonProperty]
 		public int Quantity
 		{
-            get { return OrderLines.Sum(x => x.Quantity); }
-		    set { }
+			get { return OrderLines.Sum(x => x.Quantity); }
+			set { }
 		}
 
 		[IgnoreDataMember]
@@ -245,8 +245,8 @@ namespace uWebshop.API
 		public DateTime ConfirmDate { get { return _source.ConfirmDate.GetValueOrDefault(); } set { } }
 		[DataMember]
 		public DateTime PaidDate { get { return _source.PaidDate.GetValueOrDefault(); } set { } }
-        [DataMember]
-        public bool Paid { get { return _source.Paid.GetValueOrDefault(false); } set { } }
+		[DataMember]
+		public bool Paid { get { return _source.Paid.GetValueOrDefault(false); } set { } }
 		[DataMember]
 		public DateTime ShippedDate { get { return default(DateTime); } set { } }
 		[DataMember]

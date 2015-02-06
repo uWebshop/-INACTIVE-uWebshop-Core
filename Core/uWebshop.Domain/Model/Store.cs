@@ -16,7 +16,7 @@ namespace uWebshop.Domain
 	/// <summary>
 	/// Class representing a language in Umbraco
 	/// </summary>
-    [ContentType(ParentContentType = typeof(StoreRepositoryContentType), Name = "Store", Description = "#StoreDescription", Alias = "uwbsStore", IconClass = IconClass.store, Icon = ContentIcon.Store, Thumbnail = ContentThumbnail.Folder)]
+	[ContentType(ParentContentType = typeof(StoreRepositoryContentType), Name = "Store", Description = "#StoreDescription", Alias = "uwbsStore", IconClass = IconClass.store, Icon = ContentIcon.Store, Thumbnail = ContentThumbnail.Folder)]
 	public class Store : uWebshopEntity, IStoreInternal
 	{
 		public Store()
@@ -93,16 +93,16 @@ namespace uWebshop.Domain
 		[ContentPropertyType(Alias = "countryCode", DataType = DataType.Countries, Tab = ContentTypeTab.Global, Name = "#CountryCode", Description = "#CountryCodeDescription")]
 		public string CountryCode { get; set; }
 
-        /// <summary>
-        /// Get the Id's of the nodes that have this store set in the store picker
-        /// </summary>
-        public IEnumerable<int> GetConnectedNodes
-        {
-            get
-            {
-                return IO.Container.Resolve<ICMSEntityRepository>().GetNodesWithStorePicker(Id).Select(result => result != null ? result.Id : 0);
-            }
-        } 
+		/// <summary>
+		/// Get the Id's of the nodes that have this store set in the store picker
+		/// </summary>
+		public IEnumerable<int> GetConnectedNodes
+		{
+			get
+			{
+				return IO.Container.Resolve<ICMSEntityRepository>().GetNodesWithStorePicker(Id).Select(result => result != null ? result.Id : 0);
+			}
+		} 
 
 		/// <summary>
 		/// Gets or sets the default country code.
@@ -157,7 +157,6 @@ namespace uWebshop.Domain
 		/// </value>
 		public CultureInfo DefaultCurrencyCultureInfo
 		{
-			//todo
 			get { return CurrencyCulture != null && !string.IsNullOrEmpty(Culture) ? new CultureInfo(Culture) : new CultureInfo("en-US"); }
 		}
 
@@ -169,7 +168,6 @@ namespace uWebshop.Domain
 		/// </value>
 		public string CurrencyCultureSymbol
 		{
-			// todo weird but API compatibility
 			get { return new RegionInfo(CurrencyCultureInfo.LCID).ISOCurrencySymbol; }
 		}
 
@@ -184,12 +182,7 @@ namespace uWebshop.Domain
 			get
 			{
 				var firstOrDefault = Currencies.FirstOrDefault(x => x.Ratio == 1);
-				if (firstOrDefault != null)
-				{
-					return firstOrDefault.ISOCurrencySymbol;
-				}
-
-				return CurrencyCodes.FirstOrDefault();
+				return firstOrDefault != null ? firstOrDefault.ISOCurrencySymbol : CurrencyCodes.FirstOrDefault();
 			}
 		}
 
