@@ -3,7 +3,6 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using umbraco;
 using umbraco.interfaces;
-using uWebshop.Domain;
 using uWebshop.Domain.Helpers;
 
 namespace uWebshop.Umbraco.DataTypes.StorePicker
@@ -46,11 +45,6 @@ namespace uWebshop.Umbraco.DataTypes.StorePicker
 		{
 			base.OnInit(e);
 
-			//if (!(Page.Request.CurrentExecutionFilePath ?? string.Empty).Contains("editContent.aspx"))
-			//    return;
-
-			
-
 			_dlInstalledStores = new DropDownList();
 
 			var chooseText = library.GetDictionaryItem("Choose");
@@ -76,14 +70,6 @@ namespace uWebshop.Umbraco.DataTypes.StorePicker
 				{
 				}
 			}
-
-			//var user = User.GetCurrent();
-			//var user = Membership.GetUser();
-
-			//if(!user.IsAdmin())
-			//{
-			//    _dlInstalledStores.Enabled = false;
-			//}
 
 			if (ContentTemplateContainer != null) ContentTemplateContainer.Controls.Add(_dlInstalledStores);
 		}

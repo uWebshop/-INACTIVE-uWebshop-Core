@@ -66,9 +66,9 @@
 		EmailAddressNotValid,
 		CustomerUserNameEmpty,
 		CurrentpasswordError,
-	    UserNameInvalid,
-	    NoUserNameInput,
-	    SuccessMemberExists
+		UserNameInvalid,
+		NoUserNameInput,
+		SuccessMemberExists
 	}
 
 	public enum ConfirmOrderResults
@@ -82,7 +82,7 @@
 		Success,
 		Failed
 	}
-	
+
 	public enum OrderStatus
 	{
 		Cancelled,
@@ -137,7 +137,7 @@
 		Custom,
 		ServerPost,
 		WebClient,
-	    Inline
+		Inline
 	}
 
 	public enum ShippingProviderType

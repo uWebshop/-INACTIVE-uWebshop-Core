@@ -39,7 +39,7 @@ namespace uWebshop.Test.Integration.RegressionTests
 			var orderDiscounts = discountRepository.GetAll(orderInfo.Localization);
 			Assert.IsTrue(orderDiscounts.Any());
 
-            var orderLinesAmount = orderInfo.OrderLines.Sum(orderline => orderline.GrandTotalInCents);
+			var orderLinesAmount = orderInfo.OrderLines.Sum(orderline => orderline.GrandTotalInCents);
 			Assert.AreEqual(12990, orderLinesAmount);
 
 			var discount = orderDiscounts.First();

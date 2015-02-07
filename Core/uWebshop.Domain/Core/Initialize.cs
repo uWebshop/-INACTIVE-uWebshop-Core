@@ -58,7 +58,7 @@ namespace uWebshop.Domain.Core
 				InitializeAsFarAsPossible();
 			}
 		}
-		
+
 		private static void InitializeAsFarAsPossible()
 		{
 			if (Interlocked.CompareExchange(ref _currentlyInitializing, 1, 0) > 0)
@@ -90,7 +90,7 @@ namespace uWebshop.Domain.Core
 			// todo: make sure no initialization has the same order ( * 1000 + counter)
 			// these points will weigh more heavily once external plugins are made and used
 			var failedInitializations = new List<Tuple<IUwebshopAddon, IStateInitialization, Exception>>();
-			foreach (var registration in _addons.Value.SelectMany(a => a.GetStateInitializations().Select(dr => new {Addon = a, Initialization = dr})).Where(d => d.Initialization.Order() > FinishedInitializationLevel).OrderBy(d => d.Initialization.Order()))
+			foreach (var registration in _addons.Value.SelectMany(a => a.GetStateInitializations().Select(dr => new { Addon = a, Initialization = dr })).Where(d => d.Initialization.Order() > FinishedInitializationLevel).OrderBy(d => d.Initialization.Order()))
 			{
 				var initializationControl = new InitializationControl();
 				try
@@ -131,7 +131,7 @@ namespace uWebshop.Domain.Core
 			// todo: make sure no registration has the same order ( * 1000 + counter)
 			// these points will weigh more heavily once external plugins are made and used
 			var failedRegistrations = new List<Tuple<IUwebshopAddon, IDependencyRegistration, Exception>>();
-			foreach (var registration in _addons.Value.SelectMany(a => a.GetDependencyRegistrations().Select(dr => new {Addon = a, DependencyRegistration = dr})).Where(d => d.DependencyRegistration.Order() > FinishedRegistrationLevel).OrderBy(d => d.DependencyRegistration.Order()))
+			foreach (var registration in _addons.Value.SelectMany(a => a.GetDependencyRegistrations().Select(dr => new { Addon = a, DependencyRegistration = dr })).Where(d => d.DependencyRegistration.Order() > FinishedRegistrationLevel).OrderBy(d => d.DependencyRegistration.Order()))
 			{
 				var control = new RegistrationControl(_iocContainer);
 				try
@@ -153,7 +153,7 @@ namespace uWebshop.Domain.Core
 			{
 				// possible todo: redo registration without failed addon (at least don't call initialization on that addon)
 
-				Log.Instance.LogError(registration.Item3, "Failed registering addon " +registration.Item1.Name() + " on part " + registration.Item2.Description());
+				Log.Instance.LogError(registration.Item3, "Failed registering addon " + registration.Item1.Name() + " on part " + registration.Item2.Description());
 			}
 			return false;
 		}
@@ -166,7 +166,7 @@ namespace uWebshop.Domain.Core
 			var path = Uri.UnescapeDataString(uri.Path);
 			path = Path.GetDirectoryName(path);
 			//path = AppDomain.CurrentDomain.BaseDirectory + "/bin"; // eventueel als fallback
-				
+
 			var files = Directory.GetFiles(path);
 			var dlls = files.Select(filepath => new FileInfo(filepath)).Where(fileInfo => fileInfo.Name.ToLowerInvariant().StartsWith("uwebshop.") && fileInfo.Name.ToLowerInvariant().EndsWith(".dll")).ToList();
 			if (dlls.Count == 0) throw new Exception("uWebshop dlls not found on location: " + path);
@@ -179,16 +179,16 @@ namespace uWebshop.Domain.Core
 					var assembly = Assembly.LoadFrom(dll.FullName);
 
 					addons.AddRange(GetMatchingTypesInAssembly(assembly, type => targetType.IsAssignableFrom(type) && targetType != type && !type.IsAbstract).Select(type =>
-							                {
-								                try
-								                {
-									                return (IUwebshopAddon) Activator.CreateInstance(type);
-								                }
-								                catch (Exception)
-								                {
-									                return null;
-								                }
-							                }));
+											{
+												try
+												{
+													return (IUwebshopAddon)Activator.CreateInstance(type);
+												}
+												catch (Exception)
+												{
+													return null;
+												}
+											}));
 				}
 				catch (Exception ex) { }
 			}
@@ -205,13 +205,14 @@ namespace uWebshop.Domain.Core
 				return ex.Types.Where(theType =>
 					{
 						try { return (theType != null && predicate(theType) && theType.Assembly == assembly); }
-						catch (BadImageFormatException) { // Type not in this assembly - reference to elsewhere ignored
+						catch (BadImageFormatException)
+						{ // Type not in this assembly - reference to elsewhere ignored
 						}
 						return false;
 					});
 			}
 		}
-	public class InitializationControl : IInitializationControl
+		public class InitializationControl : IInitializationControl
 		{
 			internal bool NotNowCalled = false;
 			public void Done()
@@ -234,7 +235,7 @@ namespace uWebshop.Domain.Core
 
 			}
 		}
-	public class RegistrationControl : InitializationControl, IRegistrationControl
+		public class RegistrationControl : InitializationControl, IRegistrationControl
 		{
 			private readonly IIocContainerConfiguration _container;
 

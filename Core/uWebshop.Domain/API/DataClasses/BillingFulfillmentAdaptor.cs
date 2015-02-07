@@ -8,7 +8,7 @@ using uWebshop.Domain.Interfaces;
 namespace uWebshop.API
 {
 	[KnownType(typeof(BillingMethodFulfillmentAdaptor))]
-	[DataContract(Name="PaymentProvider", Namespace = "")]
+	[DataContract(Name = "PaymentProvider", Namespace = "")]
 	internal class BillingFulfillmentAdaptor : IBillingProvider
 	{
 		private readonly PaymentProvider _paymentProvider;
@@ -18,11 +18,11 @@ namespace uWebshop.API
 			_paymentProvider = paymentProvider;
 			Id = paymentProvider.Id;
 			Title = paymentProvider.Title;
-		    Description = paymentProvider.Description;
+			Description = paymentProvider.Description;
 			Methods = new List<IBillingProviderMethod>(paymentProvider.PaymentProviderMethods.Select(m => new BillingMethodFulfillmentAdaptor(m, pricesIncludingVat, localization)));
 			Type = paymentProvider.Type;
-		    Zones = paymentProvider.Zones;
-		    Disabled = paymentProvider.Disabled;
+			Zones = paymentProvider.Zones;
+			Disabled = paymentProvider.Disabled;
 		}
 
 		[DataMember]
@@ -32,12 +32,12 @@ namespace uWebshop.API
 		[DataMember]
 		public string Title { get; set; }
 
-	    public string Description { get; set; }
-	    public bool Disabled { get; set; }
+		public string Description { get; set; }
+		public bool Disabled { get; set; }
 
-	    public List<Zone> Zones { get; set; }
+		public List<Zone> Zones { get; set; }
 
-	    [IgnoreDataMember]
+		[IgnoreDataMember]
 		public PaymentProviderType Type { get; set; }
 		[DataMember(Name = "Type")]
 		public string TypeText { get { return Type.ToString(); } set { } }

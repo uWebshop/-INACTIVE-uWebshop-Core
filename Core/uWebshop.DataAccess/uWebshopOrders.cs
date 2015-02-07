@@ -83,7 +83,7 @@ namespace uWebshop.DataAccess
 			}
 
 			var sqlHelper = DataLayerHelper.CreateSqlHelper(GlobalSettings.DbDSN);
-			
+
 			using (var reader = sqlHelper.ExecuteReader("SELECT * FROM uWebshopOrders WHERE customerID = @customerID"
 					+ (includeIncomplete ? "" : " and not orderStatus = 'Incomplete' and not orderStatus = 'Wishlist'")
 				, sqlHelper.CreateParameter("@customerID", customerId)))
@@ -113,7 +113,7 @@ namespace uWebshop.DataAccess
 			var sqlHelper = DataLayerHelper.CreateSqlHelper(GlobalSettings.DbDSN);
 
 			using (var reader = sqlHelper.ExecuteReader(
-				"SELECT * FROM uWebshopOrders WHERE customerUsername = @customerUsername" 
+				"SELECT * FROM uWebshopOrders WHERE customerUsername = @customerUsername"
 					+ (includeIncomplete ? "" : " and not orderStatus = 'Incomplete' and not orderStatus = 'Wishlist'"),
 				sqlHelper.CreateParameter("@customerUsername", customerUsername)))
 			{
@@ -129,58 +129,58 @@ namespace uWebshop.DataAccess
 			return orderInfos;
 		}
 
-        public static List<OrderData> GetWishlistsFromCustomer(int customerId)
-        {
-            var orderInfos = new List<OrderData>();
-            if (customerId == 0)
-            {
-                return orderInfos;
-            }
+		public static List<OrderData> GetWishlistsFromCustomer(int customerId)
+		{
+			var orderInfos = new List<OrderData>();
+			if (customerId == 0)
+			{
+				return orderInfos;
+			}
 
-            var sqlHelper = DataLayerHelper.CreateSqlHelper(GlobalSettings.DbDSN);
+			var sqlHelper = DataLayerHelper.CreateSqlHelper(GlobalSettings.DbDSN);
 
-            using (var reader = sqlHelper.ExecuteReader("SELECT * FROM uWebshopOrders WHERE customerID = @customerID and orderStatus = 'Wishlist'",
-                sqlHelper.CreateParameter("@customerID", customerId)))
-            {
-                while (reader.Read())
-                {
-                    var orderInfo = reader.GetString("orderInfo");
-                    if (!string.IsNullOrEmpty(orderInfo))
-                    {
-                        orderInfos.Add(new OrderData(reader));
-                    }
-                }
-            }
+			using (var reader = sqlHelper.ExecuteReader("SELECT * FROM uWebshopOrders WHERE customerID = @customerID and orderStatus = 'Wishlist'",
+				sqlHelper.CreateParameter("@customerID", customerId)))
+			{
+				while (reader.Read())
+				{
+					var orderInfo = reader.GetString("orderInfo");
+					if (!string.IsNullOrEmpty(orderInfo))
+					{
+						orderInfos.Add(new OrderData(reader));
+					}
+				}
+			}
 
-            return orderInfos;
-        }
+			return orderInfos;
+		}
 
-        public static List<OrderData> GetWishlistsFromCustomer(string customerUsername)
-        {
-            var orderInfos = new List<OrderData>();
+		public static List<OrderData> GetWishlistsFromCustomer(string customerUsername)
+		{
+			var orderInfos = new List<OrderData>();
 
-            if (string.IsNullOrEmpty(customerUsername))
-            {
-                return orderInfos;
-            }
+			if (string.IsNullOrEmpty(customerUsername))
+			{
+				return orderInfos;
+			}
 
-            var sqlHelper = DataLayerHelper.CreateSqlHelper(GlobalSettings.DbDSN);
+			var sqlHelper = DataLayerHelper.CreateSqlHelper(GlobalSettings.DbDSN);
 
-            using (var reader = sqlHelper.ExecuteReader(
-                "SELECT * FROM uWebshopOrders WHERE customerUsername = @customerUsername and orderStatus = 'Wishlist'",
-                sqlHelper.CreateParameter("@customerUsername", customerUsername)))
-            {
-                while (reader.Read())
-                {
-                    var orderInfo = reader.GetString("orderInfo");
-                    if (!string.IsNullOrEmpty(orderInfo))
-                    {
-                        orderInfos.Add(new OrderData(reader));
-                    }
-                }
-            }
-            return orderInfos;
-        }
+			using (var reader = sqlHelper.ExecuteReader(
+				"SELECT * FROM uWebshopOrders WHERE customerUsername = @customerUsername and orderStatus = 'Wishlist'",
+				sqlHelper.CreateParameter("@customerUsername", customerUsername)))
+			{
+				while (reader.Read())
+				{
+					var orderInfo = reader.GetString("orderInfo");
+					if (!string.IsNullOrEmpty(orderInfo))
+					{
+						orderInfos.Add(new OrderData(reader));
+					}
+				}
+			}
+			return orderInfos;
+		}
 
 		public static void StoreOrder(OrderData orderData)
 		{
@@ -192,10 +192,6 @@ namespace uWebshop.DataAccess
 			{
 				// SQLCE might get a performance hit (extra query)
 				var orderExists = orderData.DatabaseId > 0 || GetOrderInfo(orderData.UniqueId) != null;
-				//if (orderExists)
-				//    Log.Instance.LogDebug(DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") + " >>>>SQL<<<< UPDATE orderInfo");
-				//else
-				//    Log.Instance.LogDebug(DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") + " >>>>SQL<<<< INSERT orderInfo");
 				sqlHelper.ExecuteNonQuery(orderExists ? @"UPDATE uWebshopOrders set orderInfo = @orderInfo, orderStatus = @orderStatus, updateDate = @updateDate,
 								storeAlias = @storeAlias, customerID = @customerID, customerUsername = @customerUsername,
 								customerEmail = @customerEmail, customerFirstName = @customerFirstName, orderNumber = @orderNumber,
@@ -379,17 +375,17 @@ namespace uWebshop.DataAccess
 			}
 		}
 
-//		public static void InstallOrderNumberTable()
-//		{
-//			var sqlHelper = DataLayerHelper.CreateSqlHelper(GlobalSettings.DbDSN);
+		//		public static void InstallOrderNumberTable()
+		//		{
+		//			var sqlHelper = DataLayerHelper.CreateSqlHelper(GlobalSettings.DbDSN);
 
-//			sqlHelper.ExecuteNonQuery(
-//					@"CREATE TABLE 
-//                    [uWebshopOrderNumber](
-//                    [id] [int] IDENTITY(1,1) PRIMARY KEY NOT NULL,
-//                    [StoreAlias] nvarchar (500) NULL, 
-//					[Counter] int NULL)");
-//		}
+		//			sqlHelper.ExecuteNonQuery(
+		//					@"CREATE TABLE 
+		//                    [uWebshopOrderNumber](
+		//                    [id] [int] IDENTITY(1,1) PRIMARY KEY NOT NULL,
+		//                    [StoreAlias] nvarchar (500) NULL, 
+		//					[Counter] int NULL)");
+		//		}
 
 		public static void SetCustomerInfo(Guid orderId, XElement element)
 		{
@@ -413,20 +409,20 @@ namespace uWebshop.DataAccess
 		}
 		public static void SetCustomerInfo(Guid orderId, string customerEmail, string customerFirstName, string customerLastName)
 		{
-		    if (string.IsNullOrEmpty(customerFirstName))
-		    {
-		        customerFirstName = string.Empty;
-		    }
-            if (string.IsNullOrEmpty(customerLastName))
-            {
-                customerLastName = string.Empty;
-            }
+			if (string.IsNullOrEmpty(customerFirstName))
+			{
+				customerFirstName = string.Empty;
+			}
+			if (string.IsNullOrEmpty(customerLastName))
+			{
+				customerLastName = string.Empty;
+			}
 			var sqlHelper = DataLayerHelper.CreateSqlHelper(GlobalSettings.DbDSN);
-			
+
 			sqlHelper.ExecuteNonQuery("update uWebshopOrders set customerEmail = @customerEmail, " +
-				"customerFirstName = @customerFirstName, customerLastName = @customerLastName, " + 
-				"updateDate = @updateDate where uniqueID = @uniqueID", 
-				sqlHelper.CreateParameter("@uniqueID", orderId), 
+				"customerFirstName = @customerFirstName, customerLastName = @customerLastName, " +
+				"updateDate = @updateDate where uniqueID = @uniqueID",
+				sqlHelper.CreateParameter("@uniqueID", orderId),
 				sqlHelper.CreateParameter("@customerEmail", customerEmail),
 				sqlHelper.CreateParameter("@customerFirstName", customerFirstName),
 				sqlHelper.CreateParameter("@customerLastName", customerLastName),

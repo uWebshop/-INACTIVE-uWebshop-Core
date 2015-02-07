@@ -18,7 +18,7 @@ namespace uWebshop.Domain
 	///     Class representing a category in webshop, containing a group of products
 	/// </summary>
 	[DataContract(Namespace = "", IsReference = true)]
-    [ContentType(ParentContentType = typeof(Catalog), Name = "Category", Description = "#CategoryDescription", Alias = "uwbsCategory", IconClass = IconClass.stacklist, Icon = ContentIcon.Folder, Thumbnail = ContentThumbnail.Folder, AllowedChildTypes = new[] { typeof(Category), typeof(Product) })]
+	[ContentType(ParentContentType = typeof(Catalog), Name = "Category", Description = "#CategoryDescription", Alias = "uwbsCategory", IconClass = IconClass.stacklist, Icon = ContentIcon.Folder, Thumbnail = ContentThumbnail.Folder, AllowedChildTypes = new[] { typeof(Category), typeof(Product) })]
 	public class Category : MultiStoreUwebshopContent, ICategory, Common.Interfaces.ICategory
 	{
 		/// <summary>
@@ -74,9 +74,6 @@ namespace uWebshop.Domain
 		[DataMember]
 		public bool HasCategories { get; set; }
 
-		///// <summary>
-		///// Is this content enabled?
-		///// </summary>
 		public override bool Disabled { get; set; }
 
 		/// <summary>

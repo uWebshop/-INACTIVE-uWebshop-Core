@@ -18,9 +18,9 @@ namespace uWebshop.Domain.Services
 			return productCategoryUrl;
 		}
 
-        public string GetUrlForPath(IEnumerable<ICategory> categoryPath)
-        {
-            return string.Join("/", categoryPath.Select(c => c.UrlName));
-        }
+		public string GetUrlForPath(IEnumerable<ICategory> categoryPath)
+		{
+			return string.Join("/", categoryPath.Select(c => c.UrlName));
+		}
 	}
 }

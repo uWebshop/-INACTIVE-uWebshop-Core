@@ -125,12 +125,12 @@ namespace uWebshop.API
 			get { return _store.StoreURL; }
 		}
 
-        public IEnumerable<int> GetConnectedNodes
-	    {
-            get { return _store.GetConnectedNodes; }
-	    }
+		public IEnumerable<int> GetConnectedNodes
+		{
+			get { return _store.GetConnectedNodes; }
+		}
 
-	    [IgnoreDataMember]
+		[IgnoreDataMember]
 		public bool Disabled
 		{
 			get { return _store.Disabled; }

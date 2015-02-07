@@ -7,8 +7,8 @@
 	{
 	}
 
-    public interface IProductVariantGroupService : IEntityService<ProductVariantGroup>
-    {
+	public interface IProductVariantGroupService : IEntityService<ProductVariantGroup>
+	{
 
-    }
+	}
 }

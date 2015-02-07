@@ -23,7 +23,7 @@ namespace uWebshop.Test.Domain.Businesslogic.UwebshopUrlsRewritingServiceTests
 			IOC.UnitTest();
 			_wrapper = new MockHttpContextWrapper();
 			IOC.HttpContextWrapper.Use(_wrapper);
-			IOC.UwebshopConfiguration.Use(new TestUwebshopConfiguration {PermanentRedirectOldCatalogUrls = true, LegacyCategoryUrlIdentifier = "categoryidentifier", LegacyProductUrlIdentifier = "productidentifier"});
+			IOC.UwebshopConfiguration.Use(new TestUwebshopConfiguration { PermanentRedirectOldCatalogUrls = true, LegacyCategoryUrlIdentifier = "categoryidentifier", LegacyProductUrlIdentifier = "productidentifier" });
 			_urlRewritingService = IOC.UrlRewritingService.Actual().Resolve();
 		}
 
@@ -61,7 +61,7 @@ namespace uWebshop.Test.Domain.Businesslogic.UwebshopUrlsRewritingServiceTests
 		public string ExamineSearcher { get; set; }
 		public string ExamineIndexer { get; set; }
 		public bool ShareBasketBetweenStores { get; set; }
-	    public bool DisableDateFolders { get; set; }
-	    public int OrdersCacheTimeoutMilliseconds { get; set; }
+		public bool DisableDateFolders { get; set; }
+		public int OrdersCacheTimeoutMilliseconds { get; set; }
 	}
 }

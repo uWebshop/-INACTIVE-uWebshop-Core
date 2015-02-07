@@ -22,7 +22,7 @@ namespace uWebshop.Umbraco.Repositories
 		private readonly ISettingsService _settingsService;
 		private readonly IStoreService _storeService;
 		private readonly IProductVariantService _variantService;
-	    private readonly IProductVariantGroupService _variantGroupService;
+		private readonly IProductVariantGroupService _variantGroupService;
 		private readonly IProductAliassesService _aliasses;
 		
 		public UmbracoProductRepository(ISettingsService settingsService, IStoreService storeService, IProductVariantService variantService, IProductVariantGroupService variantGroupService, IProductAliassesService productAliassesService)
@@ -30,7 +30,7 @@ namespace uWebshop.Umbraco.Repositories
 			_settingsService = settingsService;
 			_storeService = storeService;
 			_variantService = variantService;
-		    _variantGroupService = variantGroupService;
+			_variantGroupService = variantGroupService;
 			_aliasses = productAliassesService;
 		}
 
@@ -89,24 +89,24 @@ namespace uWebshop.Umbraco.Repositories
 			product.Length = StoreHelper.GetMultiStoreDoubleValue(_aliasses.length, localization, fields);
 			product.Height = StoreHelper.GetMultiStoreDoubleValue(_aliasses.height, localization, fields);
 
-            var vatProperty = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.vat, localization, fields);
-		    if (!string.IsNullOrEmpty(vatProperty))
-		    {
-                var vat = store.GlobalVat;
+			var vatProperty = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.vat, localization, fields);
+			if (!string.IsNullOrEmpty(vatProperty))
+			{
+				var vat = store.GlobalVat;
 
-		        if (vatProperty.ToLowerInvariant() != "default")
-		        {
-                    vatProperty = vatProperty.Replace(',', '.').Replace("%", string.Empty);
+				if (vatProperty.ToLowerInvariant() != "default")
+				{
+					vatProperty = vatProperty.Replace(',', '.').Replace("%", string.Empty);
 
-		            vat = Convert.ToDecimal(vatProperty, CultureInfo.InvariantCulture);
-		        }
+					vat = Convert.ToDecimal(vatProperty, CultureInfo.InvariantCulture);
+				}
 
-		        product.Vat = vat;
-		    }
-		    else
-            {
-                product.Vat = store.GlobalVat;
-            }
+				product.Vat = vat;
+			}
+			else
+			{
+				product.Vat = store.GlobalVat;
+			}
 
 			var stockStatus = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.stockStatus, localization, fields);
 			if (stockStatus == "default" || stockStatus == string.Empty)
@@ -143,30 +143,30 @@ namespace uWebshop.Umbraco.Repositories
 			product.Ranges = StoreHelper.LocalizeRanges(Range.CreateFromString(rangesString), localization);
 
 
-            product.ProductVariantGroupsFactory = () =>
-            {
-                var productvariantGroups =
-                    IO.Container.Resolve<IProductVariantGroupService>()
-                        .GetAll(localization)
-                        .Where(productvariantgroup => productvariantgroup.ParentId == product.Id)
-                        .Cast<IProductVariantGroup>()
-                        .ToList();
+			product.ProductVariantGroupsFactory = () =>
+			{
+				var productvariantGroups =
+					IO.Container.Resolve<IProductVariantGroupService>()
+						.GetAll(localization)
+						.Where(productvariantgroup => productvariantgroup.ParentId == product.Id)
+						.Cast<IProductVariantGroup>()
+						.ToList();
 
-                if (productvariantGroups.Any())
-                {
+				if (productvariantGroups.Any())
+				{
 					// new situation: actual ProductVariantGroup node
-                    return productvariantGroups;
-                }
+					return productvariantGroups;
+				}
 
-	            // old situation: variant nodes directly under product node
-	            var productVariants = IO.Container.Resolve<IProductVariantService>()
-	                                    .GetAll(localization)
-	                                    .Where(productvariant => productvariant.ParentId == product.Id)
-	                                    .ToList();
+				// old situation: variant nodes directly under product node
+				var productVariants = IO.Container.Resolve<IProductVariantService>()
+										.GetAll(localization)
+										.Where(productvariant => productvariant.ParentId == product.Id)
+										.ToList();
 
-	            var counter = 0;
-	            return productVariants.GroupBy(variant => variant.Group).Select(g => new ProductVariantGroup(g.Key, g, counter++)).Cast<IProductVariantGroup>().ToList();
-            };
+				var counter = 0;
+				return productVariants.GroupBy(variant => variant.Group).Select(g => new ProductVariantGroup(g.Key, g, counter++)).Cast<IProductVariantGroup>().ToList();
+			};
 			product.Disabled = StoreHelper.GetMultiStoreDisableExamine(localization, fields) || product.Categories.Any() && product.Categories.All(category => category.Disabled); // logic is a tiny bit unsure
 		}
 

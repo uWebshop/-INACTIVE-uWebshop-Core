@@ -22,31 +22,31 @@ namespace uWebshop.Domain.NewtonsoftJsonNet
 			{
 				var dictionaryList = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(qs);
 
-			    foreach (var dicItem in dictionaryList)
-			    {
-			        if (dicItem != null)
-			        {
-			            var dicItemFirstKey = dicItem.First();
+				foreach (var dicItem in dictionaryList)
+				{
+					if (dicItem != null)
+					{
+						var dicItemFirstKey = dicItem.First();
 
-			            if (dicItemFirstKey.Key.ToLowerInvariant() != "key")
-			            {
-			                if (!dictionary.ContainsKey(dicItemFirstKey.Key))
-			                {
-			                    dictionary.Add(dicItemFirstKey.Key, dicItemFirstKey.Value);
-			                }
-			            }
-			            else
-			            {
-                            var dicItemSecondKey = dicItem.Last();
+						if (dicItemFirstKey.Key.ToLowerInvariant() != "key")
+						{
+							if (!dictionary.ContainsKey(dicItemFirstKey.Key))
+							{
+								dictionary.Add(dicItemFirstKey.Key, dicItemFirstKey.Value);
+							}
+						}
+						else
+						{
+							var dicItemSecondKey = dicItem.Last();
 
-                            if (!dictionary.ContainsKey(dicItemFirstKey.Key))
-                            {
-                                dictionary.Add(dicItemFirstKey.Value, dicItemSecondKey.Value);
-                            }
-			            }
-			        }
-			    }
-                
+							if (!dictionary.ContainsKey(dicItemFirstKey.Key))
+							{
+								dictionary.Add(dicItemFirstKey.Value, dicItemSecondKey.Value);
+							}
+						}
+					}
+				}
+				
 			}
 
 			var methods = new List<MethodInfo>();
@@ -92,33 +92,33 @@ namespace uWebshop.Domain.NewtonsoftJsonNet
 					{
 						var key = dictionary.Keys.FirstOrDefault(x => x.ToLowerInvariant() == propertyName);
 
-					    if (key != null)
-					    {
-					        var value = dictionary[key];
+						if (key != null)
+						{
+							var value = dictionary[key];
 
-					        if (propertyParameter.ParameterType == typeof (int))
-					        {
-					            int valueAsInt;
-					            Int32.TryParse(value, out valueAsInt);
+							if (propertyParameter.ParameterType == typeof (int))
+							{
+								int valueAsInt;
+								Int32.TryParse(value, out valueAsInt);
 
-					            args.Add(valueAsInt);
-					        }
-					        else if (propertyParameter.ParameterType == typeof (decimal))
-					        {
-					            decimal valueAsDecimal;
-					            Decimal.TryParse(value, out valueAsDecimal);
+								args.Add(valueAsInt);
+							}
+							else if (propertyParameter.ParameterType == typeof (decimal))
+							{
+								decimal valueAsDecimal;
+								Decimal.TryParse(value, out valueAsDecimal);
 
-					            args.Add(valueAsDecimal);
-					        }
-					        else if (propertyParameter.ParameterType == typeof (bool))
-					        {
-					            args.Add(value == "1" || value.ToLowerInvariant() == "true");
-					        }
-					        else
-					        {
-					            args.Add(value);
-					        }
-					    }
+								args.Add(valueAsDecimal);
+							}
+							else if (propertyParameter.ParameterType == typeof (bool))
+							{
+								args.Add(value == "1" || value.ToLowerInvariant() == "true");
+							}
+							else
+							{
+								args.Add(value);
+							}
+						}
 					}
 					else
 					{
@@ -183,10 +183,10 @@ namespace uWebshop.Domain.NewtonsoftJsonNet
 
 			//todo: formatting NONE als umbraco NIET in debug draait
 			var serializeSettings = new JsonSerializerSettings()
-			                        {
-				                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore, 
+									{
+										ReferenceLoopHandling = ReferenceLoopHandling.Ignore, 
 										Formatting = Formatting.Indented
-			                        };
+									};
 
 			if (renderXMLInteadofJSON)
 			{

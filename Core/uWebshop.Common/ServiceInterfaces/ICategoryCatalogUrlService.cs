@@ -5,6 +5,6 @@ namespace uWebshop.Common.Interfaces
 	internal interface ICategoryCatalogUrlService
 	{
 		string GetCanonicalUrl(ICategory category);
-	    string GetUrlForPath(IEnumerable<ICategory> categoryPath);
+		string GetUrlForPath(IEnumerable<ICategory> categoryPath);
 	}
 }

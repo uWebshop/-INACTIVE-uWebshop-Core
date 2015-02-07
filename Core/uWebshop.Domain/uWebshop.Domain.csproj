@@ -432,7 +432,6 @@
     <Compile Include="Interfaces\ISettingsService.cs" />
     <Compile Include="Model\OrderedProduct.cs" />
     <Compile Include="Model\OrderedProductVariant.cs" />
-    <Compile Include="Model\ContentTypes\OrderSection.cs" />
     <Compile Include="Model\OrderValidationError.cs" />
     <Compile Include="Model\Paging.cs" />
     <Compile Include="Model\PaymentProviderMethod.cs" />

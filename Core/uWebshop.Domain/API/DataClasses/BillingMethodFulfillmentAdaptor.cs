@@ -9,7 +9,7 @@ using uWebshop.Newtonsoft.Json;
 
 namespace uWebshop.API
 {
-	[DataContract(Name="PaymentProviderMethod", Namespace = "")]
+	[DataContract(Name = "PaymentProviderMethod", Namespace = "")]
 	internal class BillingMethodFulfillmentAdaptor : IBillingProviderMethod
 	{
 		private readonly PaymentProviderMethod _paymentProviderMethod;
@@ -22,41 +22,35 @@ namespace uWebshop.API
 			_pricesIncludingVat = pricesIncludingVat;
 			_localization = localization;
 			Id = paymentProviderMethod.Id;
-            Title = paymentProviderMethod.Title;
-		    Description = paymentProviderMethod.Description;
-		    Disabled = paymentProviderMethod.Disabled;
-		    //int i;
-		    //if (int.TryParse(Id, out i) && i > 0)
-		    //{
-		    //    Name = paymentProviderMethod.Name;
-		    //}
-		    //          Error Loading Razor Script (file: Checkout) Request for Node but no nodeId    at uWebshop.Domain.BaseClasses.uWebshopEntity.get_Node()
-		    //at uWebshop.Domain.BaseClasses.uWebshopEntity.get_Name()
-		    //at uWebshop.API.BillingMethodFulfillmentAdaptor..ctor(PaymentProviderMethod paymentProviderMethod, Boolean pricesIncludingVat, ILocalization localization)
+			Title = paymentProviderMethod.Title;
+			Description = paymentProviderMethod.Description;
+			Disabled = paymentProviderMethod.Disabled;
 		}
 
 		[DataMember]
-		public int SortOrder { get { return _paymentProviderMethod.NodeId != 0 ? _paymentProviderMethod.SortOrder : 0; } set {} }
+		public int SortOrder { get { return _paymentProviderMethod.NodeId != 0 ? _paymentProviderMethod.SortOrder : 0; } set { } }
 		[DataMember]
 		public string Id { get; set; }
 		[DataMember]
 		public string Title { get; set; }
 
-	    public string Description { get; set; }
-	    public bool Disabled { get; set; }
+		public string Description { get; set; }
+		public bool Disabled { get; set; }
 
-	    public string Name { get
-	    {
-	        try
-	        {
-	            return _paymentProviderMethod.Name;
-	        }
-	        catch (Exception)
-	        {
-	            return "Error";
-	        }
-	    }
-	    set { }
+		public string Name
+		{
+			get
+			{
+				try
+				{
+					return _paymentProviderMethod.Name;
+				}
+				catch (Exception)
+				{
+					return "Error";
+				}
+			}
+			set { }
 		}
 
 		[IgnoreDataMember]

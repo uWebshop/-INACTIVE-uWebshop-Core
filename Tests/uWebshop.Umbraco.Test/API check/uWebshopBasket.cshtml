@@ -79,7 +79,7 @@ uWebshop uses a default html <form> to update the basket. Keep in mind that if y
 								<input type="hidden" name="orderLineId" value="@orderline.OrderLineId"/>
 								<input type="hidden" name="action" value="update"/>
 								<input type="text" name="quantity" value="@orderline.ProductInfo.ItemCount"/>
-                                
+								
 								@foreach (var productVarGroup in orderline.ProductInfo.Product.VariantGroups)
 								{
 									<strong>@productVarGroup.Title</strong>

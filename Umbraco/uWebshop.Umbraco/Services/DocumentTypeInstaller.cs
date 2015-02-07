@@ -217,7 +217,7 @@ namespace uWebshop.Umbraco6
 			_umbracoVersion = umbracoVersion;
 		}
 		partial void InstallGenerated(IUmbracoVersion umbracoVersion);
-	    public void Install()
+		public void Install()
 		{
 			InstallGenerated(_umbracoVersion);
 		}
@@ -264,476 +264,476 @@ namespace uWebshop.Umbraco6
 			return storePickerDataTypeDef;
 		}
 
-        public bool InstallDemoShopContent()
-        {
-            var umbracoVersion = IO.Container.Resolve<IUmbracoVersion>();
+		public bool InstallDemoShopContent()
+		{
+			var umbracoVersion = IO.Container.Resolve<IUmbracoVersion>();
 
-            var contentService = ApplicationContext.Current.Services.ContentService;
+			var contentService = ApplicationContext.Current.Services.ContentService;
 
-            var contentTypeService = ApplicationContext.Current.Services.ContentTypeService;
-            var fileService = ApplicationContext.Current.Services.FileService;
+			var contentTypeService = ApplicationContext.Current.Services.ContentTypeService;
+			var fileService = ApplicationContext.Current.Services.FileService;
 
-            var stringDataTypeDef = umbracoVersion.GetDataTypeDefinition("Umbraco.Textbox", new Guid("0cc0eba1-9960-42c9-bf9b-60e150b429ae"));
-            var richTextDataTypeDef = umbracoVersion.GetDataTypeDefinition("Umbraco.TinyMCEv3", new Guid("ca90c950-0aff-4e72-b976-a30b1ac57dad"));
-            var storePickerDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.StorePicker", new Guid("1e8cdc0b-436e-46f5-bfec-57be45745771"));
-            var trueFalseDataTypeDef = umbracoVersion.GetDataTypeDefinition("Umbraco.TrueFalse", new Guid("92897bc6-a5f3-4ffe-ae27-f2e7e33dda49"));
+			var stringDataTypeDef = umbracoVersion.GetDataTypeDefinition("Umbraco.Textbox", new Guid("0cc0eba1-9960-42c9-bf9b-60e150b429ae"));
+			var richTextDataTypeDef = umbracoVersion.GetDataTypeDefinition("Umbraco.TinyMCEv3", new Guid("ca90c950-0aff-4e72-b976-a30b1ac57dad"));
+			var storePickerDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.StorePicker", new Guid("1e8cdc0b-436e-46f5-bfec-57be45745771"));
+			var trueFalseDataTypeDef = umbracoVersion.GetDataTypeDefinition("Umbraco.TrueFalse", new Guid("92897bc6-a5f3-4ffe-ae27-f2e7e33dda49"));
 
-            var homepageTemplate = fileService.GetTemplate("uwbsHomepage");
-            var basketTemplate = fileService.GetTemplate("uwbsBasket");
-          
-            var chekoutCustomerTemplate = fileService.GetTemplate("uwbsCheckoutCustomer");
-            var chekoutOverviewTemplate = fileService.GetTemplate("uwbsCheckoutOverview");
-            
-            var profileLoginCreateTemplate = fileService.GetTemplate("uwbsProfileLoginCreate");
-            var profileOrdersTemplate = fileService.GetTemplate("uwbsProfileOrders");
-            var profilePasswordForgottenTemplate = fileService.GetTemplate("uwbsProfilePasswordForgotten");
-            var profileProfileWishlistTemplate = fileService.GetTemplate("uwbsProfileWishlist");
-            var textpageTemplate = fileService.GetTemplate("uwbsTextpage");
-            
-            var contentTypeList = new List<IContentType>();
+			var homepageTemplate = fileService.GetTemplate("uwbsHomepage");
+			var basketTemplate = fileService.GetTemplate("uwbsBasket");
+		  
+			var chekoutCustomerTemplate = fileService.GetTemplate("uwbsCheckoutCustomer");
+			var chekoutOverviewTemplate = fileService.GetTemplate("uwbsCheckoutOverview");
+			
+			var profileLoginCreateTemplate = fileService.GetTemplate("uwbsProfileLoginCreate");
+			var profileOrdersTemplate = fileService.GetTemplate("uwbsProfileOrders");
+			var profilePasswordForgottenTemplate = fileService.GetTemplate("uwbsProfilePasswordForgotten");
+			var profileProfileWishlistTemplate = fileService.GetTemplate("uwbsProfileWishlist");
+			var textpageTemplate = fileService.GetTemplate("uwbsTextpage");
+			
+			var contentTypeList = new List<IContentType>();
 
-            #region icons
-            var uwbsDemoMasterIcon = string.Format("icon-uwebshop-{0}", IconClass.uwebshoplogo);
-            if (UmbracoVersion.Current.Major < 7)
-            {
-                uwbsDemoMasterIcon = "bank.png";
-            }
+			#region icons
+			var uwbsDemoMasterIcon = string.Format("icon-uwebshop-{0}", IconClass.uwebshoplogo);
+			if (UmbracoVersion.Current.Major < 7)
+			{
+				uwbsDemoMasterIcon = "bank.png";
+			}
 
-            var uwbsDemoHomePageIcon = "icon-home";
-            if (UmbracoVersion.Current.Major < 7)
-            {
-                uwbsDemoHomePageIcon = "bank.png";
-            }
-         
-            var uwbsDemoTextPageIcon = "icon-document";
-            if (UmbracoVersion.Current.Major < 7)
-            {
-                uwbsDemoTextPageIcon = ".sprTreeDoc";
-            }
+			var uwbsDemoHomePageIcon = "icon-home";
+			if (UmbracoVersion.Current.Major < 7)
+			{
+				uwbsDemoHomePageIcon = "bank.png";
+			}
+		 
+			var uwbsDemoTextPageIcon = "icon-document";
+			if (UmbracoVersion.Current.Major < 7)
+			{
+				uwbsDemoTextPageIcon = ".sprTreeDoc";
+			}
 
-            var uwbsDemoBasketPageIcon = string.Format("icon-uwebshop-{0}", IconClass.shoppingcart);
-            if (UmbracoVersion.Current.Major < 7)
-            {
-                uwbsDemoBasketPageIcon = "wallet.png";
-            }
+			var uwbsDemoBasketPageIcon = string.Format("icon-uwebshop-{0}", IconClass.shoppingcart);
+			if (UmbracoVersion.Current.Major < 7)
+			{
+				uwbsDemoBasketPageIcon = "wallet.png";
+			}
 
-            var uwbsDemoCheckoutCustomerPageIcon = "icon-users";
-            if (UmbracoVersion.Current.Major < 7)
-            {
-                uwbsDemoCheckoutCustomerPageIcon = ".sprTreeUser";
-            }
+			var uwbsDemoCheckoutCustomerPageIcon = "icon-users";
+			if (UmbracoVersion.Current.Major < 7)
+			{
+				uwbsDemoCheckoutCustomerPageIcon = ".sprTreeUser";
+			}
 
-            var uwbsDemoCheckoutPageIcon = string.Format("icon-uwebshop-{0}", IconClass.shoppingcart);
-            if (UmbracoVersion.Current.Major < 7)
-            {
-                uwbsDemoCheckoutPageIcon = "credit-card.png";
-            }
+			var uwbsDemoCheckoutPageIcon = string.Format("icon-uwebshop-{0}", IconClass.shoppingcart);
+			if (UmbracoVersion.Current.Major < 7)
+			{
+				uwbsDemoCheckoutPageIcon = "credit-card.png";
+			}
 
-            var uwbsDemoProfilePageIcon = string.Format("icon-uwebshop-{0}", IconClass.shoppingcart);
-            if (UmbracoVersion.Current.Major < 7)
-            {
-                uwbsDemoProfilePageIcon = ".sprTreeUser";
-            }
+			var uwbsDemoProfilePageIcon = string.Format("icon-uwebshop-{0}", IconClass.shoppingcart);
+			if (UmbracoVersion.Current.Major < 7)
+			{
+				uwbsDemoProfilePageIcon = ".sprTreeUser";
+			}
 
-            var uwbsDemoProfileOrdersIcon = string.Format("icon-uwebshop-{0}", IconClass.dollar);
-            if (UmbracoVersion.Current.Major < 7)
-            {
-                uwbsDemoProfileOrdersIcon = "clipboard-invoice.png";
-            }
+			var uwbsDemoProfileOrdersIcon = string.Format("icon-uwebshop-{0}", IconClass.dollar);
+			if (UmbracoVersion.Current.Major < 7)
+			{
+				uwbsDemoProfileOrdersIcon = "clipboard-invoice.png";
+			}
 
-            var uwbsDemoProfileForgottenIcon = "icon-bell";
-            if (UmbracoVersion.Current.Major < 7)
-            {
-                uwbsDemoProfileForgottenIcon = ".sprTreeUser";
-            }
-            var uwbsDemoProfileWishlistIcon = string.Format("icon-uwebshop-{0}", IconClass.clipboard);
-            if (UmbracoVersion.Current.Major < 7)
-            {
-                uwbsDemoProfileWishlistIcon = "clipboard-invoice.png";
-            }
-            
-            #endregion
-
-
-            // create master
-            var uwbsDemoMaster = contentTypeService.GetContentType("uwbsDemoMaster") ?? new ContentType(-1)
-            {
-                Alias = "uwbsDemoMaster",
-                Name = "uWebshop Demosite Master",
-                Description = "#DemositeMasterDescription",
-                Thumbnail = "Folder.png",
-                Icon = uwbsDemoMasterIcon,
-                SortOrder = 1,
-                AllowedContentTypes = new List<ContentTypeSort>(),
-                AllowedTemplates = new List<ITemplate>(),
-                PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),
-            };
-
-            
-
-            contentTypeList.Add(uwbsDemoMaster);
-            if (uwbsDemoMaster.PropertyTypes.All(p => p.Alias != "bodyText"))
-            {
-                GetOrAddPropertyGroup(uwbsDemoMaster, "Content").PropertyTypes.Add(new PropertyType(richTextDataTypeDef) { Alias = "bodyText", Name = "#BodyText", Description = "#BodyTextDescription", });
-            }
-            if (uwbsDemoMaster.PropertyTypes.All(p => p.Alias != "umbracoNaviHide"))
-            {
-                GetOrAddPropertyGroup(uwbsDemoMaster, "Content").PropertyTypes.Add(new PropertyType(trueFalseDataTypeDef) { Alias = "umbracoNaviHide", Name = "#NaviHide", Description = "#NaviHideDescription", });
-            }
-            
-            var uwbsDemoHomePage = contentTypeService.GetContentType("uwbsDemoHome") ?? new ContentType(-1)
-            {
-                Alias = "uwbsDemoHome",
-                Name = "uWebshop Demosite Home",
-                Description = "#DemositeHomeDescription",
-                Thumbnail = "Folder.png",
-                Icon = uwbsDemoHomePageIcon,
-                SortOrder = 1,
-                AllowedContentTypes = new List<ContentTypeSort>(),
-                AllowedTemplates = new List<ITemplate>() { homepageTemplate },
-                PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),
-            };
-
-            contentTypeList.Add(uwbsDemoHomePage);
-
-            if (uwbsDemoHomePage.PropertyTypes.All(p => p.Alias != "siteName"))
-            {
-                GetOrAddPropertyGroup(uwbsDemoHomePage, "Site").PropertyTypes.Add(new PropertyType(stringDataTypeDef) { Alias = "siteName", Name = "#SiteName", Description = "#SiteNameDescription", });
-            }
-            if (uwbsDemoHomePage.PropertyTypes.All(p => p.Alias != "siteDescription"))
-            {
-                GetOrAddPropertyGroup(uwbsDemoHomePage, "Site").PropertyTypes.Add(new PropertyType(stringDataTypeDef) { Alias = "siteDescription", Name = "#SiteDescription", Description = "#SiteDescriptionDescription", });
-            }
-            if (uwbsDemoHomePage.PropertyTypes.All(p => p.Alias != "uwbsStorePicker"))
-            {
-                GetOrAddPropertyGroup(uwbsDemoHomePage, "Site").PropertyTypes.Add(new PropertyType(storePickerDataTypeDef) { Alias = "uwbsStorePicker", Name = "#StorePicker", Description = "#StorePickerDescription", });
-            }
-
-            var uwbsTextPage = contentTypeService.GetContentType("uwbsTextpage") ?? new ContentType(-1)
-            {
-                Alias = "uwbsTextpage",
-                Name = "uWebshop Demosite Textpage",
-                Description = "#DemositeTextpageDescription",
-                Thumbnail = "Folder.png",
-                Icon = uwbsDemoTextPageIcon,
-                SortOrder = 1,
-                AllowedContentTypes = new List<ContentTypeSort>(),
-                AllowedTemplates = new List<ITemplate>(){ textpageTemplate },
-                PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),
-            };
-            contentTypeList.Add(uwbsTextPage);
-
-            var uwbsBasketPage = contentTypeService.GetContentType("uwbsBasket") ?? new ContentType(-1)
-            {
-                Alias = "uwbsBasket",
-                Name = "uWebshop Demosite Basket",
-                Description = "#DemositeBasketPageDescription",
-                Thumbnail = "Folder.png",
-                Icon = uwbsDemoBasketPageIcon,
-                SortOrder = 1,
-                AllowedContentTypes = new List<ContentTypeSort>(),
-                AllowedTemplates = new List<ITemplate>() { basketTemplate },
-                PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),
-            };
-            contentTypeList.Add(uwbsBasketPage);
-
-            var uwbsCheckoutPage = contentTypeService.GetContentType("uwbsCheckout") ?? new ContentType(-1)
-            {
-                Alias = "uwbsCheckout",
-                Name = "uWebshop Demosite Checkout",
-                Description = "#DemositeCheckoutPageDescription",
-                Thumbnail = "Folder.png",
-                Icon = uwbsDemoCheckoutPageIcon,
-                SortOrder = 1,
-                AllowedContentTypes = new List<ContentTypeSort>(),
-                AllowedTemplates = new List<ITemplate>() { chekoutOverviewTemplate },
-                PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),
-            };
-            contentTypeList.Add(uwbsCheckoutPage);
-
-            var uwbsCustomerCheckoutPage = contentTypeService.GetContentType("uwbsCustomerCheckout") ?? new ContentType(-1)
-            {
-                Alias = "uwbsCustomerCheckout",
-                Name = "uWebshop Demosite Customer Checkout",
-                Description = "#DemositeCustomerCheckoutPageDescription",
-                Thumbnail = "Folder.png",
-                Icon = uwbsDemoCheckoutCustomerPageIcon,
-                SortOrder = 1,
-                AllowedContentTypes = new List<ContentTypeSort>(),
-                AllowedTemplates = new List<ITemplate>() { chekoutCustomerTemplate },
-                PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),
-            };
-            contentTypeList.Add(uwbsCustomerCheckoutPage);
-
-            var uwbsProfile = contentTypeService.GetContentType("uwbsProfile") ?? new ContentType(-1)
-            {
-                Alias = "uwbsProfile",
-                Name = "uWebshop Demosite Profile",
-                Description = "#DemositeProfilePageDescription",
-                Thumbnail = "Folder.png",
-                Icon = uwbsDemoProfilePageIcon,
-                SortOrder = 1,
-                AllowedContentTypes = new List<ContentTypeSort>(),
-                AllowedTemplates = new List<ITemplate>() { profileLoginCreateTemplate },
-                PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),
-            };
-            contentTypeList.Add(uwbsProfile);
-
-            var uwbsProfileOrders = contentTypeService.GetContentType("uwbsProfileOrders") ?? new ContentType(-1)
-            {
-                Alias = "uwbsProfileOrders",
-                Name = "uWebshop Demosite Profile Orders",
-                Description = "#DemositeProfileOrdersPageDescription",
-                Thumbnail = "Folder.png",
-                Icon = uwbsDemoProfileOrdersIcon,
-                SortOrder = 1,
-                AllowedContentTypes = new List<ContentTypeSort>(),
-                AllowedTemplates = new List<ITemplate>() { profileOrdersTemplate },
-                PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),
-            };
-            contentTypeList.Add(uwbsProfileOrders);
-
-            var uwbsProfilePasswordForgotten = contentTypeService.GetContentType("uwbsProfilePasswordForgotten") ?? new ContentType(-1)
-            {
-                Alias = "uwbsProfilePasswordForgotten",
-                Name = "uWebshop Demosite Password Forgotten",
-                Description = "#DemositePasswordForgottenPageDescription",
-                Thumbnail = "Folder.png",
-                Icon = uwbsDemoProfileForgottenIcon,
-                SortOrder = 1,
-                AllowedContentTypes = new List<ContentTypeSort>(),
-                AllowedTemplates = new List<ITemplate>() { profilePasswordForgottenTemplate },
-                PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),
-            };
-            contentTypeList.Add(uwbsProfilePasswordForgotten);
-
-            var uwbsProfileWishlist = contentTypeService.GetContentType("uwbsProfileWishlist") ?? new ContentType(-1)
-            {
-                Alias = "uwbsProfileWishlist",
-                Name = "uWebshop Demosite Profile Wishlist",
-                Description = "#DemositeOrdersWishlistPageDescription",
-                Thumbnail = "Folder.png",
-                Icon = uwbsDemoProfileWishlistIcon,
-                SortOrder = 1,
-                AllowedContentTypes = new List<ContentTypeSort>(),
-                AllowedTemplates = new List<ITemplate>() { profileProfileWishlistTemplate },
-                PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),
-            };
-
-            contentTypeList.Add(uwbsProfileWishlist);
-
-            contentTypeService.Save(contentTypeList);
-
-            uwbsDemoHomePage.SetLazyParentId(new Lazy<int>(() => uwbsDemoMaster.Id));
-            uwbsTextPage.SetLazyParentId(new Lazy<int>(() => uwbsDemoMaster.Id));
-            uwbsBasketPage.SetLazyParentId(new Lazy<int>(() => uwbsTextPage.Id));
-            uwbsCheckoutPage.SetLazyParentId(new Lazy<int>(() => uwbsTextPage.Id));
-            uwbsCustomerCheckoutPage.SetLazyParentId(new Lazy<int>(() => uwbsTextPage.Id));
-            uwbsProfile.SetLazyParentId(new Lazy<int>(() => uwbsTextPage.Id));
-            uwbsProfileOrders.SetLazyParentId(new Lazy<int>(() => uwbsTextPage.Id));
-            uwbsProfilePasswordForgotten.SetLazyParentId(new Lazy<int>(() => uwbsTextPage.Id));
-            uwbsProfileWishlist.SetLazyParentId(new Lazy<int>(() => uwbsTextPage.Id));
-
-            contentTypeService.Save(contentTypeList);
-
-            uwbsDemoHomePage.AddContentType(uwbsDemoMaster);
-            uwbsTextPage.AddContentType(uwbsDemoMaster);
-            uwbsBasketPage.AddContentType(uwbsDemoMaster);
-            uwbsCheckoutPage.AddContentType(uwbsDemoMaster);
-            uwbsCustomerCheckoutPage.AddContentType(uwbsDemoMaster);
-            uwbsProfile.AddContentType(uwbsDemoMaster);
-            uwbsProfileOrders.AddContentType(uwbsDemoMaster);
-            uwbsProfilePasswordForgotten.AddContentType(uwbsDemoMaster);
-            uwbsProfileWishlist.AddContentType(uwbsDemoMaster);
-            
-            contentTypeService.Save(contentTypeList);
-
-            uwbsDemoHomePage.AllowedContentTypes = new List<ContentTypeSort>
-            {
-                new ContentTypeSort { Alias = uwbsBasketPage.Alias, Id = new Lazy<int>(() => uwbsBasketPage.Id) },
-                new ContentTypeSort { Alias = uwbsCheckoutPage.Alias, Id = new Lazy<int>(() => uwbsCheckoutPage.Id) },
-                new ContentTypeSort { Alias = uwbsProfile.Alias, Id = new Lazy<int>(() => uwbsProfile.Id) },
-                new ContentTypeSort { Alias = uwbsTextPage.Alias, Id = new Lazy<int>(() => uwbsTextPage.Id) },
-            };
-            
-            uwbsTextPage.AllowedContentTypes = new List<ContentTypeSort>
-            {
-                new ContentTypeSort { Alias = uwbsBasketPage.Alias, Id = new Lazy<int>(() => uwbsBasketPage.Id) },
-                new ContentTypeSort { Alias = uwbsCheckoutPage.Alias, Id = new Lazy<int>(() => uwbsCheckoutPage.Id) },
-                new ContentTypeSort { Alias = uwbsProfile.Alias, Id = new Lazy<int>(() => uwbsProfile.Id) },
-                new ContentTypeSort { Alias = uwbsTextPage.Alias, Id = new Lazy<int>(() => uwbsTextPage.Id) },
-            };
-
-            uwbsBasketPage.AllowedContentTypes = new List<ContentTypeSort>
-            {
-                new ContentTypeSort { Alias = uwbsCustomerCheckoutPage.Alias, Id = new Lazy<int>(() => uwbsCustomerCheckoutPage.Id) },
-                new ContentTypeSort { Alias = uwbsTextPage.Alias, Id = new Lazy<int>(() => uwbsTextPage.Id) },
-            };
-
-            uwbsCustomerCheckoutPage.AllowedContentTypes = new List<ContentTypeSort>
-            {
-                new ContentTypeSort { Alias = uwbsCheckoutPage.Alias, Id = new Lazy<int>(() => uwbsCheckoutPage.Id) },
-                new ContentTypeSort { Alias = uwbsTextPage.Alias, Id = new Lazy<int>(() => uwbsTextPage.Id) },
-            };
-
-            uwbsCheckoutPage.AllowedContentTypes = new List<ContentTypeSort>
-            {
-                new ContentTypeSort { Alias = uwbsTextPage.Alias, Id = new Lazy<int>(() => uwbsTextPage.Id) },
-            };
-
-            uwbsProfile.AllowedContentTypes = new List<ContentTypeSort>
-            {
-                new ContentTypeSort { Alias = uwbsProfilePasswordForgotten.Alias, Id = new Lazy<int>(() => uwbsProfilePasswordForgotten.Id) },
-                new ContentTypeSort { Alias = uwbsProfileOrders.Alias, Id = new Lazy<int>(() => uwbsProfileOrders.Id) },
-                new ContentTypeSort { Alias = uwbsProfileWishlist.Alias, Id = new Lazy<int>(() => uwbsProfileWishlist.Id) },
-                new ContentTypeSort { Alias = uwbsTextPage.Alias, Id = new Lazy<int>(() => uwbsTextPage.Id) },
-            };
-
-            uwbsProfileOrders.AllowedContentTypes = new List<ContentTypeSort>
-            {
-                new ContentTypeSort { Alias = uwbsTextPage.Alias, Id = new Lazy<int>(() => uwbsTextPage.Id) },
-            };
-
-            uwbsProfileWishlist.AllowedContentTypes = new List<ContentTypeSort>
-            {
-                new ContentTypeSort { Alias = uwbsTextPage.Alias, Id = new Lazy<int>(() => uwbsTextPage.Id) },
-            };
-            uwbsProfilePasswordForgotten.AllowedContentTypes = new List<ContentTypeSort>
-            {
-                new ContentTypeSort { Alias = uwbsTextPage.Alias, Id = new Lazy<int>(() => uwbsTextPage.Id) },
-            };
-
-            contentTypeService.Save(contentTypeList);
+			var uwbsDemoProfileForgottenIcon = "icon-bell";
+			if (UmbracoVersion.Current.Major < 7)
+			{
+				uwbsDemoProfileForgottenIcon = ".sprTreeUser";
+			}
+			var uwbsDemoProfileWishlistIcon = string.Format("icon-uwebshop-{0}", IconClass.clipboard);
+			if (UmbracoVersion.Current.Major < 7)
+			{
+				uwbsDemoProfileWishlistIcon = "clipboard-invoice.png";
+			}
+			
+			#endregion
 
 
-            #region bah vies oude API stuff
-            umbraco.cms.businesslogic.web.DocumentType ctuwbsDemoHomePage = new umbraco.cms.businesslogic.web.DocumentType(uwbsDemoHomePage.Id);
-            ctuwbsDemoHomePage.MasterContentType = uwbsDemoMaster.Id;
-            ctuwbsDemoHomePage.Save();
-            #endregion
+			// create master
+			var uwbsDemoMaster = contentTypeService.GetContentType("uwbsDemoMaster") ?? new ContentType(-1)
+			{
+				Alias = "uwbsDemoMaster",
+				Name = "uWebshop Demosite Master",
+				Description = "#DemositeMasterDescription",
+				Thumbnail = "Folder.png",
+				Icon = uwbsDemoMasterIcon,
+				SortOrder = 1,
+				AllowedContentTypes = new List<ContentTypeSort>(),
+				AllowedTemplates = new List<ITemplate>(),
+				PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),
+			};
+
+			
+
+			contentTypeList.Add(uwbsDemoMaster);
+			if (uwbsDemoMaster.PropertyTypes.All(p => p.Alias != "bodyText"))
+			{
+				GetOrAddPropertyGroup(uwbsDemoMaster, "Content").PropertyTypes.Add(new PropertyType(richTextDataTypeDef) { Alias = "bodyText", Name = "#BodyText", Description = "#BodyTextDescription", });
+			}
+			if (uwbsDemoMaster.PropertyTypes.All(p => p.Alias != "umbracoNaviHide"))
+			{
+				GetOrAddPropertyGroup(uwbsDemoMaster, "Content").PropertyTypes.Add(new PropertyType(trueFalseDataTypeDef) { Alias = "umbracoNaviHide", Name = "#NaviHide", Description = "#NaviHideDescription", });
+			}
+			
+			var uwbsDemoHomePage = contentTypeService.GetContentType("uwbsDemoHome") ?? new ContentType(-1)
+			{
+				Alias = "uwbsDemoHome",
+				Name = "uWebshop Demosite Home",
+				Description = "#DemositeHomeDescription",
+				Thumbnail = "Folder.png",
+				Icon = uwbsDemoHomePageIcon,
+				SortOrder = 1,
+				AllowedContentTypes = new List<ContentTypeSort>(),
+				AllowedTemplates = new List<ITemplate>() { homepageTemplate },
+				PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),
+			};
+
+			contentTypeList.Add(uwbsDemoHomePage);
+
+			if (uwbsDemoHomePage.PropertyTypes.All(p => p.Alias != "siteName"))
+			{
+				GetOrAddPropertyGroup(uwbsDemoHomePage, "Site").PropertyTypes.Add(new PropertyType(stringDataTypeDef) { Alias = "siteName", Name = "#SiteName", Description = "#SiteNameDescription", });
+			}
+			if (uwbsDemoHomePage.PropertyTypes.All(p => p.Alias != "siteDescription"))
+			{
+				GetOrAddPropertyGroup(uwbsDemoHomePage, "Site").PropertyTypes.Add(new PropertyType(stringDataTypeDef) { Alias = "siteDescription", Name = "#SiteDescription", Description = "#SiteDescriptionDescription", });
+			}
+			if (uwbsDemoHomePage.PropertyTypes.All(p => p.Alias != "uwbsStorePicker"))
+			{
+				GetOrAddPropertyGroup(uwbsDemoHomePage, "Site").PropertyTypes.Add(new PropertyType(storePickerDataTypeDef) { Alias = "uwbsStorePicker", Name = "#StorePicker", Description = "#StorePickerDescription", });
+			}
+
+			var uwbsTextPage = contentTypeService.GetContentType("uwbsTextpage") ?? new ContentType(-1)
+			{
+				Alias = "uwbsTextpage",
+				Name = "uWebshop Demosite Textpage",
+				Description = "#DemositeTextpageDescription",
+				Thumbnail = "Folder.png",
+				Icon = uwbsDemoTextPageIcon,
+				SortOrder = 1,
+				AllowedContentTypes = new List<ContentTypeSort>(),
+				AllowedTemplates = new List<ITemplate>(){ textpageTemplate },
+				PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),
+			};
+			contentTypeList.Add(uwbsTextPage);
+
+			var uwbsBasketPage = contentTypeService.GetContentType("uwbsBasket") ?? new ContentType(-1)
+			{
+				Alias = "uwbsBasket",
+				Name = "uWebshop Demosite Basket",
+				Description = "#DemositeBasketPageDescription",
+				Thumbnail = "Folder.png",
+				Icon = uwbsDemoBasketPageIcon,
+				SortOrder = 1,
+				AllowedContentTypes = new List<ContentTypeSort>(),
+				AllowedTemplates = new List<ITemplate>() { basketTemplate },
+				PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),
+			};
+			contentTypeList.Add(uwbsBasketPage);
+
+			var uwbsCheckoutPage = contentTypeService.GetContentType("uwbsCheckout") ?? new ContentType(-1)
+			{
+				Alias = "uwbsCheckout",
+				Name = "uWebshop Demosite Checkout",
+				Description = "#DemositeCheckoutPageDescription",
+				Thumbnail = "Folder.png",
+				Icon = uwbsDemoCheckoutPageIcon,
+				SortOrder = 1,
+				AllowedContentTypes = new List<ContentTypeSort>(),
+				AllowedTemplates = new List<ITemplate>() { chekoutOverviewTemplate },
+				PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),
+			};
+			contentTypeList.Add(uwbsCheckoutPage);
+
+			var uwbsCustomerCheckoutPage = contentTypeService.GetContentType("uwbsCustomerCheckout") ?? new ContentType(-1)
+			{
+				Alias = "uwbsCustomerCheckout",
+				Name = "uWebshop Demosite Customer Checkout",
+				Description = "#DemositeCustomerCheckoutPageDescription",
+				Thumbnail = "Folder.png",
+				Icon = uwbsDemoCheckoutCustomerPageIcon,
+				SortOrder = 1,
+				AllowedContentTypes = new List<ContentTypeSort>(),
+				AllowedTemplates = new List<ITemplate>() { chekoutCustomerTemplate },
+				PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),
+			};
+			contentTypeList.Add(uwbsCustomerCheckoutPage);
+
+			var uwbsProfile = contentTypeService.GetContentType("uwbsProfile") ?? new ContentType(-1)
+			{
+				Alias = "uwbsProfile",
+				Name = "uWebshop Demosite Profile",
+				Description = "#DemositeProfilePageDescription",
+				Thumbnail = "Folder.png",
+				Icon = uwbsDemoProfilePageIcon,
+				SortOrder = 1,
+				AllowedContentTypes = new List<ContentTypeSort>(),
+				AllowedTemplates = new List<ITemplate>() { profileLoginCreateTemplate },
+				PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),
+			};
+			contentTypeList.Add(uwbsProfile);
+
+			var uwbsProfileOrders = contentTypeService.GetContentType("uwbsProfileOrders") ?? new ContentType(-1)
+			{
+				Alias = "uwbsProfileOrders",
+				Name = "uWebshop Demosite Profile Orders",
+				Description = "#DemositeProfileOrdersPageDescription",
+				Thumbnail = "Folder.png",
+				Icon = uwbsDemoProfileOrdersIcon,
+				SortOrder = 1,
+				AllowedContentTypes = new List<ContentTypeSort>(),
+				AllowedTemplates = new List<ITemplate>() { profileOrdersTemplate },
+				PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),
+			};
+			contentTypeList.Add(uwbsProfileOrders);
+
+			var uwbsProfilePasswordForgotten = contentTypeService.GetContentType("uwbsProfilePasswordForgotten") ?? new ContentType(-1)
+			{
+				Alias = "uwbsProfilePasswordForgotten",
+				Name = "uWebshop Demosite Password Forgotten",
+				Description = "#DemositePasswordForgottenPageDescription",
+				Thumbnail = "Folder.png",
+				Icon = uwbsDemoProfileForgottenIcon,
+				SortOrder = 1,
+				AllowedContentTypes = new List<ContentTypeSort>(),
+				AllowedTemplates = new List<ITemplate>() { profilePasswordForgottenTemplate },
+				PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),
+			};
+			contentTypeList.Add(uwbsProfilePasswordForgotten);
+
+			var uwbsProfileWishlist = contentTypeService.GetContentType("uwbsProfileWishlist") ?? new ContentType(-1)
+			{
+				Alias = "uwbsProfileWishlist",
+				Name = "uWebshop Demosite Profile Wishlist",
+				Description = "#DemositeOrdersWishlistPageDescription",
+				Thumbnail = "Folder.png",
+				Icon = uwbsDemoProfileWishlistIcon,
+				SortOrder = 1,
+				AllowedContentTypes = new List<ContentTypeSort>(),
+				AllowedTemplates = new List<ITemplate>() { profileProfileWishlistTemplate },
+				PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),
+			};
+
+			contentTypeList.Add(uwbsProfileWishlist);
+
+			contentTypeService.Save(contentTypeList);
+
+			uwbsDemoHomePage.SetLazyParentId(new Lazy<int>(() => uwbsDemoMaster.Id));
+			uwbsTextPage.SetLazyParentId(new Lazy<int>(() => uwbsDemoMaster.Id));
+			uwbsBasketPage.SetLazyParentId(new Lazy<int>(() => uwbsTextPage.Id));
+			uwbsCheckoutPage.SetLazyParentId(new Lazy<int>(() => uwbsTextPage.Id));
+			uwbsCustomerCheckoutPage.SetLazyParentId(new Lazy<int>(() => uwbsTextPage.Id));
+			uwbsProfile.SetLazyParentId(new Lazy<int>(() => uwbsTextPage.Id));
+			uwbsProfileOrders.SetLazyParentId(new Lazy<int>(() => uwbsTextPage.Id));
+			uwbsProfilePasswordForgotten.SetLazyParentId(new Lazy<int>(() => uwbsTextPage.Id));
+			uwbsProfileWishlist.SetLazyParentId(new Lazy<int>(() => uwbsTextPage.Id));
+
+			contentTypeService.Save(contentTypeList);
+
+			uwbsDemoHomePage.AddContentType(uwbsDemoMaster);
+			uwbsTextPage.AddContentType(uwbsDemoMaster);
+			uwbsBasketPage.AddContentType(uwbsDemoMaster);
+			uwbsCheckoutPage.AddContentType(uwbsDemoMaster);
+			uwbsCustomerCheckoutPage.AddContentType(uwbsDemoMaster);
+			uwbsProfile.AddContentType(uwbsDemoMaster);
+			uwbsProfileOrders.AddContentType(uwbsDemoMaster);
+			uwbsProfilePasswordForgotten.AddContentType(uwbsDemoMaster);
+			uwbsProfileWishlist.AddContentType(uwbsDemoMaster);
+			
+			contentTypeService.Save(contentTypeList);
+
+			uwbsDemoHomePage.AllowedContentTypes = new List<ContentTypeSort>
+			{
+				new ContentTypeSort { Alias = uwbsBasketPage.Alias, Id = new Lazy<int>(() => uwbsBasketPage.Id) },
+				new ContentTypeSort { Alias = uwbsCheckoutPage.Alias, Id = new Lazy<int>(() => uwbsCheckoutPage.Id) },
+				new ContentTypeSort { Alias = uwbsProfile.Alias, Id = new Lazy<int>(() => uwbsProfile.Id) },
+				new ContentTypeSort { Alias = uwbsTextPage.Alias, Id = new Lazy<int>(() => uwbsTextPage.Id) },
+			};
+			
+			uwbsTextPage.AllowedContentTypes = new List<ContentTypeSort>
+			{
+				new ContentTypeSort { Alias = uwbsBasketPage.Alias, Id = new Lazy<int>(() => uwbsBasketPage.Id) },
+				new ContentTypeSort { Alias = uwbsCheckoutPage.Alias, Id = new Lazy<int>(() => uwbsCheckoutPage.Id) },
+				new ContentTypeSort { Alias = uwbsProfile.Alias, Id = new Lazy<int>(() => uwbsProfile.Id) },
+				new ContentTypeSort { Alias = uwbsTextPage.Alias, Id = new Lazy<int>(() => uwbsTextPage.Id) },
+			};
+
+			uwbsBasketPage.AllowedContentTypes = new List<ContentTypeSort>
+			{
+				new ContentTypeSort { Alias = uwbsCustomerCheckoutPage.Alias, Id = new Lazy<int>(() => uwbsCustomerCheckoutPage.Id) },
+				new ContentTypeSort { Alias = uwbsTextPage.Alias, Id = new Lazy<int>(() => uwbsTextPage.Id) },
+			};
+
+			uwbsCustomerCheckoutPage.AllowedContentTypes = new List<ContentTypeSort>
+			{
+				new ContentTypeSort { Alias = uwbsCheckoutPage.Alias, Id = new Lazy<int>(() => uwbsCheckoutPage.Id) },
+				new ContentTypeSort { Alias = uwbsTextPage.Alias, Id = new Lazy<int>(() => uwbsTextPage.Id) },
+			};
+
+			uwbsCheckoutPage.AllowedContentTypes = new List<ContentTypeSort>
+			{
+				new ContentTypeSort { Alias = uwbsTextPage.Alias, Id = new Lazy<int>(() => uwbsTextPage.Id) },
+			};
+
+			uwbsProfile.AllowedContentTypes = new List<ContentTypeSort>
+			{
+				new ContentTypeSort { Alias = uwbsProfilePasswordForgotten.Alias, Id = new Lazy<int>(() => uwbsProfilePasswordForgotten.Id) },
+				new ContentTypeSort { Alias = uwbsProfileOrders.Alias, Id = new Lazy<int>(() => uwbsProfileOrders.Id) },
+				new ContentTypeSort { Alias = uwbsProfileWishlist.Alias, Id = new Lazy<int>(() => uwbsProfileWishlist.Id) },
+				new ContentTypeSort { Alias = uwbsTextPage.Alias, Id = new Lazy<int>(() => uwbsTextPage.Id) },
+			};
+
+			uwbsProfileOrders.AllowedContentTypes = new List<ContentTypeSort>
+			{
+				new ContentTypeSort { Alias = uwbsTextPage.Alias, Id = new Lazy<int>(() => uwbsTextPage.Id) },
+			};
+
+			uwbsProfileWishlist.AllowedContentTypes = new List<ContentTypeSort>
+			{
+				new ContentTypeSort { Alias = uwbsTextPage.Alias, Id = new Lazy<int>(() => uwbsTextPage.Id) },
+			};
+			uwbsProfilePasswordForgotten.AllowedContentTypes = new List<ContentTypeSort>
+			{
+				new ContentTypeSort { Alias = uwbsTextPage.Alias, Id = new Lazy<int>(() => uwbsTextPage.Id) },
+			};
+
+			contentTypeService.Save(contentTypeList);
 
 
-                var contentList = new List<IContent>();
+			#region bah vies oude API stuff
+			umbraco.cms.businesslogic.web.DocumentType ctuwbsDemoHomePage = new umbraco.cms.businesslogic.web.DocumentType(uwbsDemoHomePage.Id);
+			ctuwbsDemoHomePage.MasterContentType = uwbsDemoMaster.Id;
+			ctuwbsDemoHomePage.Save();
+			#endregion
 
-            var homePage = ContentInstaller.GetOrCreateContent(uwbsDemoHomePage, "Home", contentTypeService, contentService, null, contentList);
 
-            if (homePage.PropertyTypes.Any(x => x.Alias == "siteName"))
-            {
-                homePage.SetValue("siteName", "uWebshop Demoshop");
-            }
-            if (homePage.PropertyTypes.Any(x => x.Alias == "siteDescription"))
-            {
-                homePage.SetValue("siteDescription", "uWebshop Demo Starterstore");
-            }
-            if (homePage.PropertyTypes.Any(x => x.Alias == "bodyText"))
-            {
-                homePage.SetValue("bodyText",
-                    @"<p>The uWebshop Demoshop you ready-to-start uWebshop store that introduces you to a set of well-defined conventions for building an uWebshop based webshop!</p>
+				var contentList = new List<IContent>();
+
+			var homePage = ContentInstaller.GetOrCreateContent(uwbsDemoHomePage, "Home", contentTypeService, contentService, null, contentList);
+
+			if (homePage.PropertyTypes.Any(x => x.Alias == "siteName"))
+			{
+				homePage.SetValue("siteName", "uWebshop Demoshop");
+			}
+			if (homePage.PropertyTypes.Any(x => x.Alias == "siteDescription"))
+			{
+				homePage.SetValue("siteDescription", "uWebshop Demo Starterstore");
+			}
+			if (homePage.PropertyTypes.Any(x => x.Alias == "bodyText"))
+			{
+				homePage.SetValue("bodyText",
+					@"<p>The uWebshop Demoshop you ready-to-start uWebshop store that introduces you to a set of well-defined conventions for building an uWebshop based webshop!</p>
 <p>uWebshop can be easily integrated with any existing website or starterkit already available for Umbraco. In a few easy steps explained during installation you will have a fully working webshop without having to learn anything new or make big changes to your current site!</p>
 <p>If you see some errors try to publish the uWebshop Node and all children.</p>");
-            }
+			}
 
-            var basketPage = ContentInstaller.GetOrCreateContent(uwbsBasketPage, "Basket", contentTypeService, contentService, homePage, contentList);
-            
-            var customerDetailsPage = ContentInstaller.GetOrCreateContent(uwbsCustomerCheckoutPage, "Customer Details", contentTypeService, contentService, basketPage, contentList);
+			var basketPage = ContentInstaller.GetOrCreateContent(uwbsBasketPage, "Basket", contentTypeService, contentService, homePage, contentList);
+			
+			var customerDetailsPage = ContentInstaller.GetOrCreateContent(uwbsCustomerCheckoutPage, "Customer Details", contentTypeService, contentService, basketPage, contentList);
 
-            var checkoutPage = ContentInstaller.GetOrCreateContent(uwbsCheckoutPage, "Checkout", contentTypeService, contentService, customerDetailsPage, contentList);
+			var checkoutPage = ContentInstaller.GetOrCreateContent(uwbsCheckoutPage, "Checkout", contentTypeService, contentService, customerDetailsPage, contentList);
 
-            var successPage = ContentInstaller.GetOrCreateContent(uwbsTextPage, "Success", contentTypeService, contentService, checkoutPage, contentList);
-            if (successPage.PropertyTypes.Any(x => x.Alias == "bodyText"))
-            {
-                successPage.SetValue("bodyText", "<p>Successfully placed the order!</p>");
-            }
+			var successPage = ContentInstaller.GetOrCreateContent(uwbsTextPage, "Success", contentTypeService, contentService, checkoutPage, contentList);
+			if (successPage.PropertyTypes.Any(x => x.Alias == "bodyText"))
+			{
+				successPage.SetValue("bodyText", "<p>Successfully placed the order!</p>");
+			}
 
-            var errorPage = ContentInstaller.GetOrCreateContent(uwbsTextPage, "Failed", contentTypeService, contentService, checkoutPage, contentList);
-            if (errorPage.PropertyTypes.Any(x => x.Alias == "bodyText"))
-            {
-                errorPage.SetValue("bodyText", "<p>Failed to confirm the order :(</p>");
-            }
+			var errorPage = ContentInstaller.GetOrCreateContent(uwbsTextPage, "Failed", contentTypeService, contentService, checkoutPage, contentList);
+			if (errorPage.PropertyTypes.Any(x => x.Alias == "bodyText"))
+			{
+				errorPage.SetValue("bodyText", "<p>Failed to confirm the order :(</p>");
+			}
 
-            var profilePage = ContentInstaller.GetOrCreateContent(uwbsProfile, "Profile", contentTypeService, contentService, homePage, contentList);
+			var profilePage = ContentInstaller.GetOrCreateContent(uwbsProfile, "Profile", contentTypeService, contentService, homePage, contentList);
 
-            var passwordForgottenPage = ContentInstaller.GetOrCreateContent(uwbsProfilePasswordForgotten, "Password Forgotten", contentTypeService, contentService, profilePage, contentList);
-            if (passwordForgottenPage.PropertyTypes.Any(x => x.Alias == "bodyText"))
-            {
-                passwordForgottenPage.SetValue("bodyText",
-                    "<p>If you forgot your password you can request a new one to be send to the e-mailaddres in your account, using the form below.</p>");
-            }
-            var wishlistsPage = ContentInstaller.GetOrCreateContent(uwbsProfileWishlist, "Wishlists", contentTypeService, contentService, profilePage, contentList);
+			var passwordForgottenPage = ContentInstaller.GetOrCreateContent(uwbsProfilePasswordForgotten, "Password Forgotten", contentTypeService, contentService, profilePage, contentList);
+			if (passwordForgottenPage.PropertyTypes.Any(x => x.Alias == "bodyText"))
+			{
+				passwordForgottenPage.SetValue("bodyText",
+					"<p>If you forgot your password you can request a new one to be send to the e-mailaddres in your account, using the form below.</p>");
+			}
+			var wishlistsPage = ContentInstaller.GetOrCreateContent(uwbsProfileWishlist, "Wishlists", contentTypeService, contentService, profilePage, contentList);
 
-            var ordersPage = ContentInstaller.GetOrCreateContent(uwbsProfileOrders, "Orders", contentTypeService, contentService, profilePage, contentList);
+			var ordersPage = ContentInstaller.GetOrCreateContent(uwbsProfileOrders, "Orders", contentTypeService, contentService, profilePage, contentList);
 
-            var logoutPage = ContentInstaller.GetOrCreateContent(uwbsTextPage, "Logout", contentTypeService, contentService, profilePage, contentList);
-            if (logoutPage.PropertyTypes.Any(x => x.Alias == "bodyText"))
-            {
-                logoutPage.SetValue("bodyText", "<p>You are now logged-out.</p>");
-            }
-            contentService.Save(contentList);
-            contentService.PublishWithChildren(homePage);
+			var logoutPage = ContentInstaller.GetOrCreateContent(uwbsTextPage, "Logout", contentTypeService, contentService, profilePage, contentList);
+			if (logoutPage.PropertyTypes.Any(x => x.Alias == "bodyText"))
+			{
+				logoutPage.SetValue("bodyText", "<p>You are now logged-out.</p>");
+			}
+			contentService.Save(contentList);
+			contentService.PublishWithChildren(homePage);
 
-	        return true;
-	    }
+			return true;
+		}
 
-	    public bool InstallStarterkit(string starterkit, out bool storePresent)
-	    {
-            InstallDemoShopContent();
+		public bool InstallStarterkit(string starterkit, out bool storePresent)
+		{
+			InstallDemoShopContent();
 
-	        storePresent = false;
-	        var contentService = ApplicationContext.Current.Services.ContentService;
-	        var contentTypeService = ApplicationContext.Current.Services.ContentTypeService;
-	        var fileService = ApplicationContext.Current.Services.FileService;
+			storePresent = false;
+			var contentService = ApplicationContext.Current.Services.ContentService;
+			var contentTypeService = ApplicationContext.Current.Services.ContentTypeService;
+			var fileService = ApplicationContext.Current.Services.FileService;
 
-	        var categoryDocType = contentTypeService.GetContentType(Category.NodeAlias);
-	        var productDocType = contentTypeService.GetContentType(Product.NodeAlias);
-	        var storeDocType = contentTypeService.GetContentType(Store.NodeAlias);
+			var categoryDocType = contentTypeService.GetContentType(Category.NodeAlias);
+			var productDocType = contentTypeService.GetContentType(Product.NodeAlias);
+			var storeDocType = contentTypeService.GetContentType(Store.NodeAlias);
 
-	        if (storeDocType == null || categoryDocType == null || productDocType == null) return false;
+			if (storeDocType == null || categoryDocType == null || productDocType == null) return false;
 
-	        storePresent = contentService.GetContentOfContentType(storeDocType.Id).Any(x => !x.Trashed);
+			storePresent = contentService.GetContentOfContentType(storeDocType.Id).Any(x => !x.Trashed);
 
-	        var categoryTemplate = fileService.GetTemplate(Category.NodeAlias) as Template;
-	        categoryDocType.AllowedTemplates =
-	            categoryDocType.AllowedTemplates.Concat(new List<ITemplate> {categoryTemplate});
-	        categoryDocType.SetDefaultTemplate(categoryTemplate);
+			var categoryTemplate = fileService.GetTemplate(Category.NodeAlias) as Template;
+			categoryDocType.AllowedTemplates =
+				categoryDocType.AllowedTemplates.Concat(new List<ITemplate> {categoryTemplate});
+			categoryDocType.SetDefaultTemplate(categoryTemplate);
 
-	        var productTemplate = fileService.GetTemplate(Product.NodeAlias) as Template;
-	        productDocType.AllowedTemplates = productDocType.AllowedTemplates.Concat(new List<ITemplate> {productTemplate});
-	        productDocType.SetDefaultTemplate(productTemplate);
+			var productTemplate = fileService.GetTemplate(Product.NodeAlias) as Template;
+			productDocType.AllowedTemplates = productDocType.AllowedTemplates.Concat(new List<ITemplate> {productTemplate});
+			productDocType.SetDefaultTemplate(productTemplate);
 
-	        contentTypeService.Save(new[] {categoryDocType, productDocType});
+			contentTypeService.Save(new[] {categoryDocType, productDocType});
 
-	        var contentToSaveAndPublish = new List<IContent>(15);
+			var contentToSaveAndPublish = new List<IContent>(15);
 
-	        if (!storePresent)
-	        {
-	            Umbraco.Helpers.InstallStore("uWebshop");
-	        }
-	        var stores = contentService.GetContentOfContentType(storeDocType.Id);
-	        var store = stores.FirstOrDefault(x => !x.Trashed);
+			if (!storePresent)
+			{
+				Umbraco.Helpers.InstallStore("uWebshop");
+			}
+			var stores = contentService.GetContentOfContentType(storeDocType.Id);
+			var store = stores.FirstOrDefault(x => !x.Trashed);
 
-	        var firstLanguage = Language.GetAllAsList().FirstOrDefault();
+			var firstLanguage = Language.GetAllAsList().FirstOrDefault();
 
-	        if (store != null && (!storePresent || stores.All(s => !s.Published)))
-	        {
-	            var email = string.Format(storePresent ? "starterkitdemo@{0}.com" : "info@{0}.com", store.Name);
+			if (store != null && (!storePresent || stores.All(s => !s.Published)))
+			{
+				var email = string.Format(storePresent ? "starterkitdemo@{0}.com" : "info@{0}.com", store.Name);
 
-	            if (firstLanguage != null) store.SetValue("storeCulture", firstLanguage.id);
-	            store.SetValue("countryCode", "NL");
-	            store.SetValue("currencies", "EUR|1#USD|1.3");
-	            store.SetValue("orderNumberPrefix", store.Name);
-	            store.SetValue("globalVat", "0");
-	            store.SetValue("storeEmailFrom", email);
-	            store.SetValue("storeEmailTo", email);
-	            store.SetValue("storeEmailFromName", "uWebshop Demo");
-	            contentToSaveAndPublish.Add(store);
-	        }
+				if (firstLanguage != null) store.SetValue("storeCulture", firstLanguage.id);
+				store.SetValue("countryCode", "NL");
+				store.SetValue("currencies", "EUR|1#USD|1.3");
+				store.SetValue("orderNumberPrefix", store.Name);
+				store.SetValue("globalVat", "0");
+				store.SetValue("storeEmailFrom", email);
+				store.SetValue("storeEmailTo", email);
+				store.SetValue("storeEmailFromName", "uWebshop Demo");
+				contentToSaveAndPublish.Add(store);
+			}
 
-            var homepagePackageDocType = contentTypeService.GetContentType("uwbsDemoHome");
+			var homepagePackageDocType = contentTypeService.GetContentType("uwbsDemoHome");
 
-	        if (homepagePackageDocType == null)
-	        {
-	            homepagePackageDocType = contentTypeService.GetContentType("uwbsHomepage"); 
-	        }
+			if (homepagePackageDocType == null)
+			{
+				homepagePackageDocType = contentTypeService.GetContentType("uwbsHomepage"); 
+			}
 
 	if (starterkit.ToLowerInvariant() == "sandbox" || string.IsNullOrEmpty(starterkit))
 			{
@@ -771,24 +771,24 @@ namespace uWebshop.Umbraco6
 				var productContent = CreateProductContent(contentService, testCategory, "Your First Product", "PROD001", "10000", 5, "Your First Product", "Your First Product Description", false);
 				contentToSaveAndPublish.Add(productContent);
 
-			    var productContent2 = CreateProductContent(contentService, testCategory, "Your Second Product", "PROD002",
-			        "5000", 10, "Your Second Product", "Your Second Product Description", false);
+				var productContent2 = CreateProductContent(contentService, testCategory, "Your Second Product", "PROD002",
+					"5000", 10, "Your Second Product", "Your Second Product Description", false);
 
-                contentToSaveAndPublish.Add(productContent2);
+				contentToSaveAndPublish.Add(productContent2);
 
-                var variantGroupColor = CreateVariantGroupContent(contentService, productContent2, "Color", true);
-                contentToSaveAndPublish.Add(variantGroupColor);
+				var variantGroupColor = CreateVariantGroupContent(contentService, productContent2, "Color", true);
+				contentToSaveAndPublish.Add(variantGroupColor);
 
-                var variantGroupType = CreateVariantGroupContent(contentService, productContent2, "Type", true);
-                contentToSaveAndPublish.Add(variantGroupType);
+				var variantGroupType = CreateVariantGroupContent(contentService, productContent2, "Type", true);
+				contentToSaveAndPublish.Add(variantGroupType);
 
-                contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupColor, "Orange", "VARCOL001",
+				contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupColor, "Orange", "VARCOL001",
 					"1000", 5, "Your First Color Variant", true));
-                contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupColor, "Blue", "VARCOL002",
+				contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupColor, "Blue", "VARCOL002",
 					"2000", 11, "Your Second Color Variant", true));
-                contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupType, "Manual", "VARTYP001",
+				contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupType, "Manual", "VARTYP001",
 					"500", 14, "Your First Type Variant", true));
-                contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupType, "Automatic", "VARTYP002",
+				contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupType, "Automatic", "VARTYP002",
 					"200", 9, "Your Second Type Variant", true));
 			}
 
@@ -858,24 +858,24 @@ namespace uWebshop.Umbraco6
 				var firstProduct = CreateProductContent(contentService, testCategory, "T-Shirt", "PROD001", "2500", 0, "A nice T-Shirt", lipsumDescription, true, lipsumIntroduction, halffeature);
 				contentToSaveAndPublish.Add(firstProduct);
 
-                var variantGroupSizeColor = CreateVariantGroupContent(contentService, firstProduct, " Size and Color", true);
-                contentToSaveAndPublish.Add(variantGroupSizeColor);
+				var variantGroupSizeColor = CreateVariantGroupContent(contentService, firstProduct, " Size and Color", true);
+				contentToSaveAndPublish.Add(variantGroupSizeColor);
 
-                contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSizeColor, "Small Blue", "VARCOL001", "1000", 8, "Small Blue", true));
-                contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSizeColor, "Medium Blue", "VARCOL002", "1000", 3, "Medium Blue", true));
-                contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSizeColor, "Large Blue", "VARCOL003", "1000", 2, "Large Blue", true));
-                contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSizeColor, "Small Red", "VARCOL004", "1000", 15, "Small Red", true));
-                contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSizeColor, "Medium Red", "VARCOL005", "1000", 4, "Medium Red", true));
-                contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSizeColor, "Large Red", "VARCOL006", "1000", 7, "Large Red", true));
+				contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSizeColor, "Small Blue", "VARCOL001", "1000", 8, "Small Blue", true));
+				contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSizeColor, "Medium Blue", "VARCOL002", "1000", 3, "Medium Blue", true));
+				contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSizeColor, "Large Blue", "VARCOL003", "1000", 2, "Large Blue", true));
+				contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSizeColor, "Small Red", "VARCOL004", "1000", 15, "Small Red", true));
+				contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSizeColor, "Medium Red", "VARCOL005", "1000", 4, "Medium Red", true));
+				contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSizeColor, "Large Red", "VARCOL006", "1000", 7, "Large Red", true));
 
 				var secondProduct = CreateProductContent(contentService, testCategory, "Sweater", "PROD002", "7500", 5, "A beatiful sweater", lipsumDescription2, true, lipsumIntroduction2, halffeature);
 				contentToSaveAndPublish.Add(secondProduct);
-                var variantGroupSize = CreateVariantGroupContent(contentService, secondProduct, "Size", true);
-                contentToSaveAndPublish.Add(variantGroupSize);
+				var variantGroupSize = CreateVariantGroupContent(contentService, secondProduct, "Size", true);
+				contentToSaveAndPublish.Add(variantGroupSize);
 
-                contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSize, "Small", "VARSIZ001", "0", 8, "Small", false));
-                contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSize, "Medium", "VARSIZ002", "0", 3, "Medium", false));
-                contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSize, "Large", "VARSIZ003", "0", 2, "Large", false));
+				contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSize, "Small", "VARSIZ001", "0", 8, "Small", false));
+				contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSize, "Medium", "VARSIZ002", "0", 3, "Medium", false));
+				contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSize, "Large", "VARSIZ003", "0", 2, "Large", false));
 
 				var secondCategory = contentService.CreateContent("Shoes", categoryRepository, Category.NodeAlias);
 				secondCategory.SetValue("title", "Shoes");
@@ -886,28 +886,28 @@ namespace uWebshop.Umbraco6
 				var shoeProduct1 = CreateProductContent(contentService, secondCategory, "Running Shoe", "PROD003", "12000", 0, "Run fast with this amazing running shoe!", lipsumDescription2, true, lipsumIntroduction, fullfeature);
 				contentToSaveAndPublish.Add(shoeProduct1);
 
-                var variantGroupSizeShoe1 = CreateVariantGroupContent(contentService, shoeProduct1, "Size", true);
-                contentToSaveAndPublish.Add(variantGroupSizeShoe1);
+				var variantGroupSizeShoe1 = CreateVariantGroupContent(contentService, shoeProduct1, "Size", true);
+				contentToSaveAndPublish.Add(variantGroupSizeShoe1);
 
-                contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSizeShoe1, "Size 4", "VARSIZ001", "0", 8, "Size 4", true));
-                contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSizeShoe1, "Size 5", "VARSIZ002", "0", 3, "Size 5", true));
-                contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSizeShoe1, "Size 6", "VARSIZ003", "0", 2, "Size 6", true));
-                contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSizeShoe1, "Size 7", "VARSIZ004", "0", 15, "Size 7", true));
-                contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSizeShoe1,"Size 8", "VARSIZ005", "0", 4, "Size 8", true));
-                contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSizeShoe1,"Size 9", "VARSIZ006", "0", 7, "Size 9", true));
+				contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSizeShoe1, "Size 4", "VARSIZ001", "0", 8, "Size 4", true));
+				contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSizeShoe1, "Size 5", "VARSIZ002", "0", 3, "Size 5", true));
+				contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSizeShoe1, "Size 6", "VARSIZ003", "0", 2, "Size 6", true));
+				contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSizeShoe1, "Size 7", "VARSIZ004", "0", 15, "Size 7", true));
+				contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSizeShoe1,"Size 8", "VARSIZ005", "0", 4, "Size 8", true));
+				contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSizeShoe1,"Size 9", "VARSIZ006", "0", 7, "Size 9", true));
 
 				var shoeProduct2 = CreateProductContent(contentService, secondCategory, "Sneaker", "PROD005", "8000", 0, "Very nice sneaker to impress others!", lipsumDescription, true, lipsumIntroduction2, halffeature);
 				contentToSaveAndPublish.Add(shoeProduct2);
 
-                var variantGroupSizeShoe2 = CreateVariantGroupContent(contentService, shoeProduct2, "Size", true);
-                contentToSaveAndPublish.Add(variantGroupSizeShoe2);
+				var variantGroupSizeShoe2 = CreateVariantGroupContent(contentService, shoeProduct2, "Size", true);
+				contentToSaveAndPublish.Add(variantGroupSizeShoe2);
 
-                contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSizeShoe2, "Size 4", "VARSIZ001", "0", 8, "Size 4", true));
-                contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSizeShoe2, "Size 5", "VARSIZ002", "0", 3, "Size 5", true));
-                contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSizeShoe2, "Size 6", "VARSIZ003", "0", 2, "Size 6", true));
-                contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSizeShoe2, "Size 7", "VARSIZ004", "0", 15, "Size 7", true));
-                contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSizeShoe2, "Size 8", "VARSIZ005", "0", 4, "Size 8", true));
-                contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSizeShoe2, "Size 9", "VARSIZ006", "0", 7, "Size 9", true));
+				contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSizeShoe2, "Size 4", "VARSIZ001", "0", 8, "Size 4", true));
+				contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSizeShoe2, "Size 5", "VARSIZ002", "0", 3, "Size 5", true));
+				contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSizeShoe2, "Size 6", "VARSIZ003", "0", 2, "Size 6", true));
+				contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSizeShoe2, "Size 7", "VARSIZ004", "0", 15, "Size 7", true));
+				contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSizeShoe2, "Size 8", "VARSIZ005", "0", 4, "Size 8", true));
+				contentToSaveAndPublish.Add(CreateVariantContent(contentService, variantGroupSizeShoe2, "Size 9", "VARSIZ006", "0", 7, "Size 9", true));
 
 				var thirdCategory = contentService.CreateContent("Electronics", categoryRepository, Category.NodeAlias);
 				thirdCategory.SetValue("title", "Electronics");
@@ -920,10 +920,10 @@ namespace uWebshop.Umbraco6
 
 				var elecProduct2 = CreateProductContent(contentService, thirdCategory, "OLED Television", "PROD007", "650000", 8, "This OLED TV has the most amazing screen available!", lipsumDescription2, false, lipsumIntroduction, fullfeature);
 				contentToSaveAndPublish.Add(elecProduct2);
-			    var variantGroup2 = CreateVariantGroupContent(contentService, elecProduct2, " Installation", false);
-                contentToSaveAndPublish.Add(variantGroup2);
-			    var variant2 = CreateVariantContent(contentService, variantGroup2, "Home Installation", "INST001", "5000", 0, "Home Installation", true);
-                contentToSaveAndPublish.Add(variant2);
+				var variantGroup2 = CreateVariantGroupContent(contentService, elecProduct2, " Installation", false);
+				contentToSaveAndPublish.Add(variantGroup2);
+				var variant2 = CreateVariantContent(contentService, variantGroup2, "Home Installation", "INST001", "5000", 0, "Home Installation", true);
+				contentToSaveAndPublish.Add(variant2);
 
 				var elecProduct3 = CreateProductContent(contentService, thirdCategory, "Tablet Device", "PROD008", "41500", 500, "Big 10inch tablet device, the perfect companion on the couch!", lipsumDescription, false, lipsumIntroduction2, fullfeature);
 				contentToSaveAndPublish.Add(elecProduct3);
@@ -956,7 +956,7 @@ namespace uWebshop.Umbraco6
 			contentService.Save(contentToSaveAndPublish);
 			contentToSaveAndPublish.ForEach(content => contentService.Publish(content));
 
-            
+			
 
 			contentService.RePublishAll();
 
@@ -999,22 +999,22 @@ namespace uWebshop.Umbraco6
 			return product;
 		}
 
-        private static IContent CreateVariantGroupContent(IContentService contentService, IContent testProduct, string variantGroup, bool requiredVariant)
-        {
-            var testProductVariantGroup = contentService.CreateContent(variantGroup, testProduct, ProductVariantGroup.NodeAlias);
-            testProductVariantGroup.SetValue("title", variantGroup);
-            if (requiredVariant)
-            {
-                testProductVariantGroup.SetValue("required", true);
-            }
+		private static IContent CreateVariantGroupContent(IContentService contentService, IContent testProduct, string variantGroup, bool requiredVariant)
+		{
+			var testProductVariantGroup = contentService.CreateContent(variantGroup, testProduct, ProductVariantGroup.NodeAlias);
+			testProductVariantGroup.SetValue("title", variantGroup);
+			if (requiredVariant)
+			{
+				testProductVariantGroup.SetValue("required", true);
+			}
 
 
-            return testProductVariantGroup;
-        }
+			return testProductVariantGroup;
+		}
 
 		private IContent CreateVariantContent(IContentService contentService, IContent testProductVariantGroup, string color, string sku, string price, int stock, string variantName, bool enableBackorders = false)
 		{
-		    var testProductVariant = contentService.CreateContent(variantName, testProductVariantGroup, ProductVariant.NodeAlias);
+			var testProductVariant = contentService.CreateContent(variantName, testProductVariantGroup, ProductVariant.NodeAlias);
 			testProductVariant.SetValue("title", color);
 			testProductVariant.SetValue("sku", sku);
 			testProductVariant.SetValue("price", price);

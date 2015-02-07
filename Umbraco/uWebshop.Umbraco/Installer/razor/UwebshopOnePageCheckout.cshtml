@@ -14,7 +14,7 @@ uWebshop uses a default html <form> to update the basket. Keep in mind that if y
 	if (currentOrder != null)
 	{
 		<form name="customerform" method="post">
-                  
+				  
 			<fieldset class="uWebshop-CustomerFields">
 				<h2>Customer Data</h2>      
 				<p>The customer enters his information here to be added to the order.</p>				
@@ -63,7 +63,7 @@ uWebshop uses a default html <form> to update the basket. Keep in mind that if y
 				<p>Keep in mind that any field here should also be created on the "uWebshop Order" Document Type. Otherwise they won't work.<br/>
 					The alias of the property should match the name/id of the field. All aliasses should start with "shipping". shippingCountry is not mandatory, but can be used to display the shipping providers that will ship to that country.
 				</p>
-           
+		   
 				<label for="shippingFirstName">First Name: </label><br/>
 				<input name="shippingFirstName" id="shippingFirstName" type="text"  value="@currentOrder.Customer.Shipping.FirstName"/>
 				<br/>
@@ -138,7 +138,7 @@ uWebshop uses a default html <form> to update the basket. Keep in mind that if y
 				<p>The customer can choose a Payment Provider of his choice. They should be created in your shop to show here.</p>
 				<p>Payment Providers are connected to "Payment Zones". Only the Payment Providers available tot the customers country are shown.<br/>
 					If you don't know the country of the customer yet, the country of the store itself will be used</p>
-              	
+				
 				@foreach (var paymentProvider in Basket.GetPaymentProviders())
 				{
 					foreach (var paymentProviderMethod in paymentProvider.Methods)
@@ -167,7 +167,7 @@ uWebshop uses a default html <form> to update the basket. Keep in mind that if y
 					}
 				}
 					
-              
+			  
 			</fieldset>
 			<hr/>
 			<fieldset class="uWebshop-ExtraFields">

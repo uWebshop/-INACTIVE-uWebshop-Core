@@ -45,7 +45,7 @@ namespace uWebshop.Domain.Services
 		{
 			if (string.IsNullOrEmpty(categoryUrlName) || categoryUrlName == "/")
 			{
-			    return Enumerable.Empty<ICategory>();
+				return Enumerable.Empty<ICategory>();
 			}
 
 			categoryUrlName = categoryUrlName.TrimEnd('/');

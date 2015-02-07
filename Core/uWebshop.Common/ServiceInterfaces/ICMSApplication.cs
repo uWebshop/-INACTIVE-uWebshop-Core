@@ -186,7 +186,7 @@ namespace uWebshop.Domain.Interfaces
 		/// </summary>
 		/// <returns></returns>
 		List<ICustomerType> GetAllMemberTypes();
-        
+		
 		/// <summary>
 		/// Gets the URL for content with unique identifier.
 		/// </summary>

@@ -39,7 +39,7 @@ namespace uWebshop.Umbraco.Mvc
 	{
 		public void OnApplicationInitialized(UmbracoApplicationBase umbracoApplication, ApplicationContext applicationContext)
 		{
-		
+
 		}
 
 		public void OnApplicationStarting(UmbracoApplicationBase umbracoApplication, ApplicationContext applicationContext)
@@ -47,7 +47,7 @@ namespace uWebshop.Umbraco.Mvc
 			if (InternalHelpers.MvcRenderMode)
 			{
 				PublishedContentRequest.Prepared += PublishedContentRequest_Prepared;
-				
+
 			}
 		}
 
@@ -91,7 +91,7 @@ namespace uWebshop.Umbraco.Mvc
 
 		public void OnApplicationStarted(UmbracoApplicationBase umbracoApplication, ApplicationContext applicationContext)
 		{
-		
+
 		}
 	}
 
@@ -99,16 +99,16 @@ namespace uWebshop.Umbraco.Mvc
 	{
 		public bool TryFindContent(PublishedContentRequest contentRequest)
 		{
-		    var stores = StoreHelper.GetAllStores();
+			var stores = StoreHelper.GetAllStores();
 
-		    if (!stores.Any())
-		    {
-		        return false;
-		    }
+			if (!stores.Any())
+			{
+				return false;
+			}
 
 			var uwebshopRequest = UwebshopRequest.Current;
 			var content = uwebshopRequest.Product ?? uwebshopRequest.Category ?? uwebshopRequest.PaymentProvider ?? // in case ResolveUwebshopEntityUrl was already called from the module
-			              IO.Container.Resolve<IUrlRewritingService>().ResolveUwebshopEntityUrl().Entity;
+						  IO.Container.Resolve<IUrlRewritingService>().ResolveUwebshopEntityUrl().Entity;
 
 			if (content is PaymentProvider)
 			{
@@ -141,7 +141,7 @@ namespace uWebshop.Umbraco.Mvc
 						var altTemplate = HttpContext.Current.Request["altTemplate"];
 						contentRequest.TrySetTemplate(altTemplate);
 
-						SetRequestCulture(contentRequest); 
+						SetRequestCulture(contentRequest);
 						return true;
 					}
 				}
@@ -170,7 +170,7 @@ namespace uWebshop.Umbraco.Mvc
 						var altTemplate = HttpContext.Current.Request["altTemplate"];
 						contentRequest.TrySetTemplate(altTemplate);
 
-						SetRequestCulture(contentRequest); 
+						SetRequestCulture(contentRequest);
 						return true;
 					}
 				}

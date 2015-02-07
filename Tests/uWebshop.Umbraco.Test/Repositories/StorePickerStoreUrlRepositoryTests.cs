@@ -13,7 +13,7 @@ namespace uWebshop.Umbraco.Test.Repositories
 	[TestFixture]
 	public class StorePickerStoreUrlRepositoryTests
 	{
-	    [SetUp]
+		[SetUp]
 		public void Setup()
 		{
 			IOC.UnitTest();

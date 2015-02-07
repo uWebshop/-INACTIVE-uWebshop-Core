@@ -76,7 +76,7 @@ namespace uWebshop.Domain.Interfaces
 	    /// <param name="customerDataType">Type of the customer data.</param>
 	    /// <param name="ingnoreNotAllowed">Ignore if order is not allowed to be written to</param>
 	    /// <returns></returns>
-	    bool AddCustomerFields(OrderInfo orderInfo, Dictionary<string, string> fields, CustomerDatatypes customerDataType, bool ingnoreNotAllowed = false);
+		bool AddCustomerFields(OrderInfo orderInfo, Dictionary<string, string> fields, CustomerDatatypes customerDataType, bool ingnoreNotAllowed = false);
 
 		/// <summary>
 		/// Changes the order automatic incomplete and return false difference not possible.

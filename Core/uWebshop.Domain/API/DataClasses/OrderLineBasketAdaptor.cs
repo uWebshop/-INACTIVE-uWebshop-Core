@@ -27,14 +27,14 @@ namespace uWebshop.API
 		[DataMember]
 		public IOrderedProduct Product { get { return new OrderedProductInfoAdaptor(_line.ProductInfo); } set { } }
 
-	    [IgnoreDataMember]
-	    public IDiscountedRangedPrice Amount
-	    {
-	        get { return _line.Amount; }
-	    }
+		[IgnoreDataMember]
+		public IDiscountedRangedPrice Amount
+		{
+			get { return _line.Amount; }
+		}
 
-        [DataMember(Name = "Amount")]
-        [JsonProperty(PropertyName = "Amount")]
+		[DataMember(Name = "Amount")]
+		[JsonProperty(PropertyName = "Amount")]
 		[Browsable(false)]
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]

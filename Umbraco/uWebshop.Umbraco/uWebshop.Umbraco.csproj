@@ -374,7 +374,9 @@
     <Content Include="Installer\uWebshopDashBoard.ascx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
-    <Content Include="Installer\uWebshopInstaller.ascx" />
+    <Content Include="Installer\uWebshopInstaller.ascx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
     <Content Include="Installer\xml\countries.xml" />
     <Content Include="Installer\xml\regions.xml" />
     <Content Include="Installer\xml\VATcountries.xml" />

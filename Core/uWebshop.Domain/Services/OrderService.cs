@@ -63,7 +63,7 @@ namespace uWebshop.Domain.Services
 				if (currentMember.ProviderUserKey != null)
 				{
 					//uWebshopOrders.SetCustomerId(order.UniqueOrderId, (int)currentMember.ProviderUserKey); heeft toch geen effect (geen row in db)
-					order.CustomerInfo.CustomerId = (int) currentMember.ProviderUserKey;
+					order.CustomerInfo.CustomerId = (int)currentMember.ProviderUserKey;
 				}
 			}
 
@@ -99,15 +99,15 @@ namespace uWebshop.Domain.Services
 			var orderIdCookie = httpContext.Request.Cookies[cookieName];
 
 			if (orderIdCookie != null && !string.IsNullOrEmpty(orderIdCookie.Value))
-		    {
-		        Guid uniqueOrderId;
-		        if (Guid.TryParse(orderIdCookie.Value, out uniqueOrderId))
-		        {
-			        return uniqueOrderId;
-		        }
-		    }
+			{
+				Guid uniqueOrderId;
+				if (Guid.TryParse(orderIdCookie.Value, out uniqueOrderId))
+				{
+					return uniqueOrderId;
+				}
+			}
 
-		    return Guid.Empty;
+			return Guid.Empty;
 		}
 
 		public OrderInfo CreateCopyOfOrder(OrderInfo order)
@@ -220,7 +220,7 @@ namespace uWebshop.Domain.Services
 				//ClientErrorHandling.uWebshopException(dicCustomerEmailEmpty);
 				//Log.Instance.LogDebug( "ORDERVALIDATIONERROR: customerEmail is Empty");
 
-				orderInfo.OrderValidationErrors.Add(new OrderValidationError {Key = "ValidationCustomerEmailEmpty", Value = "CustomerEmail Is Not Set"});
+				orderInfo.OrderValidationErrors.Add(new OrderValidationError { Key = "ValidationCustomerEmailEmpty", Value = "CustomerEmail Is Not Set" });
 			}
 
 			var orderDocumentType = IO.Container.Resolve<ICMSDocumentTypeService>().GetByAlias(Order.NodeAlias);
@@ -374,7 +374,7 @@ namespace uWebshop.Domain.Services
 
 						if (product.Stock < productKey.Value && !product.BackorderStatus)
 						{
-							errors.Add(new OrderValidationError {Id = product.Id, Key = "ValidationProductOutOfStock", Value = "Product " + product.Title + " Is Out Of Stock",});
+							errors.Add(new OrderValidationError { Id = product.Id, Key = "ValidationProductOutOfStock", Value = "Product " + product.Title + " Is Out Of Stock", });
 						}
 						// if usevariantstock is true, do not update product stock
 						//if (product.UseVariantStock)
@@ -390,7 +390,7 @@ namespace uWebshop.Domain.Services
 					// if variant has no stock, but backorder is disabled
 					if (product.Stock <= 0 && !product.BackorderStatus)
 					{
-						errors.Add(new OrderValidationError {Id = product.Id, Key = "ValidationProductOutOfStock", Value = "Product " + product.Title + " Is Out Of Stock",});
+						errors.Add(new OrderValidationError { Id = product.Id, Key = "ValidationProductOutOfStock", Value = "Product " + product.Title + " Is Out Of Stock", });
 					}
 				}
 
@@ -419,7 +419,7 @@ namespace uWebshop.Domain.Services
 							// is the stock less then the itemcount, but backorder is disabled
 							if (variant.Stock < variantkey.Value && !variant.BackorderStatus)
 							{
-								errors.Add(new OrderValidationError {Id = variant.Id, Key = "ValidationProductVariantOutOfStock", Value = "Product " + product.Title + " variant " + variant.Title + " Is Out Of Stock",});
+								errors.Add(new OrderValidationError { Id = variant.Id, Key = "ValidationProductVariantOutOfStock", Value = "Product " + product.Title + " variant " + variant.Title + " Is Out Of Stock", });
 							}
 						}
 						// if variant has no stock, but backorder is enabled
@@ -430,7 +430,7 @@ namespace uWebshop.Domain.Services
 						// if variant has no stock, but backorder is disabled
 						if (variant.Stock <= 0 && !variant.BackorderStatus)
 						{
-							errors.Add(new OrderValidationError {Id = variant.Id, Key = "ValidationProductVariantOutOfStock", Value = "Product " + product.Title + " variant " + variant.Title + " Is Out Of Stock",});
+							errors.Add(new OrderValidationError { Id = variant.Id, Key = "ValidationProductVariantOutOfStock", Value = "Product " + product.Title + " variant " + variant.Title + " Is Out Of Stock", });
 						}
 					}
 
@@ -462,7 +462,7 @@ namespace uWebshop.Domain.Services
 			errors.AddRange(ValidateStock(orderInfo));
 			errors.AddRange(ValidateOrderlines(orderInfo));
 			errors.AddRange(ValidateCustomValidations(orderInfo));
-			
+
 
 			return errors;
 		}
@@ -471,34 +471,34 @@ namespace uWebshop.Domain.Services
 		{
 			var errors = new List<OrderValidationError>();
 			if (orderInfo.ConfirmValidationFailed)
-			{	
+			{
 				if (!orderInfo.TermsAccepted)
 				{
 					Log.Instance.LogWarning("ORDERVALIDATIONERROR: TERMS NOT ACCEPTED");
-					errors.Add(new OrderValidationError {Key = "AcceptTermsError", Value = "Terms Not Accepted"});
+					errors.Add(new OrderValidationError { Key = "AcceptTermsError", Value = "Terms Not Accepted" });
 				}
 
 				var shippingProvidersForOrder = ShippingProviderHelper.GetShippingProvidersForOrder(orderInfo);
 				if (orderInfo.Status == OrderStatus.Confirmed && orderInfo.ShippingCostsMightBeOutdated &&
-				    shippingProvidersForOrder.Count > 0
-				    && shippingProvidersForOrder.All(shipPro => shipPro.Id != orderInfo.ShippingInfo.Id))
+					shippingProvidersForOrder.Count > 0
+					&& shippingProvidersForOrder.All(shipPro => shipPro.Id != orderInfo.ShippingInfo.Id))
 				{
 					Log.Instance.LogWarning("ORDERVALIDATIONERROR: ShippingCostOutdatedError");
 					errors.Add(new OrderValidationError
-					           {
-						           Key = "ShippingCostOutdatedError",
-						           Value = "Shipping Not Updated Since Last Basket Change"
-					           });
+							   {
+								   Key = "ShippingCostOutdatedError",
+								   Value = "Shipping Not Updated Since Last Basket Change"
+							   });
 				}
 
 				if (orderInfo.Status == OrderStatus.Confirmed && orderInfo.StoreInfo.Store == null)
 				{
 					Log.Instance.LogWarning("ORDERVALIDATIONERROR: NoStoreConnectedToThisOrder");
 					errors.Add(new OrderValidationError
-					           {
-						           Key = "NoStoreConnectedToThisOrder",
-						           Value = "There Is No Store Connected To This Order"
-					           });
+							   {
+								   Key = "NoStoreConnectedToThisOrder",
+								   Value = "There Is No Store Connected To This Order"
+							   });
 				}
 			}
 			return errors;
@@ -520,7 +520,7 @@ namespace uWebshop.Domain.Services
 			foreach (var customValidation in orderInfo.CustomOrderValiations.Where(customValidation => !customValidation.Condition(orderInfo)))
 			{
 				Log.Instance.LogWarning("VALIDATECUSTOMER ERROR CustomOrderValiations: " + customValidation.ErrorDictionaryItem);
-				errors.Add(new OrderValidationError {Key = customValidation.ErrorDictionaryItem(orderInfo)});
+				errors.Add(new OrderValidationError { Key = customValidation.ErrorDictionaryItem(orderInfo) });
 			}
 			return errors;
 		}
@@ -543,14 +543,14 @@ namespace uWebshop.Domain.Services
 					{
 						// country code for customer does not match zones for payment provider.
 						Log.Instance.LogWarning("ORDERVALIDATIONERROR: CUSTOMER COUNTRY DOES NOT MATCH PAYMENT PROVIDER");
-						errors.Add(new OrderValidationError {Id = orderInfo.PaymentInfo.Id, Key = "ValidationCustomerCountryPaymentProviderMismatch", Value = "The Customer Country Does Not Match Countries Allowed For The Chosen Payment Provider"});
+						errors.Add(new OrderValidationError { Id = orderInfo.PaymentInfo.Id, Key = "ValidationCustomerCountryPaymentProviderMismatch", Value = "The Customer Country Does Not Match Countries Allowed For The Chosen Payment Provider" });
 					}
 					errors.AddRange(PaymentProviderHelper.GetPaymentValidationResults(orderInfo).Where(e => e.Id == orderInfo.PaymentInfo.Id));
 				}
 				if (orderInfo.ConfirmValidationFailed && (orderInfo.PaymentInfo.Id == 0 && PaymentProviderHelper.GetPaymentProvidersForOrder(orderInfo).Count > 0))
 				{
 					Log.Instance.LogWarning("ORDERVALIDATIONERROR: PAYMENT PROVIDERS AVAILABLE BUT NOT CHOSEN");
-					errors.Add(new OrderValidationError {Id = 0, Key = "ValidationNoPaymentProviderChosen", Value = "No Payment Provider Chosen"});
+					errors.Add(new OrderValidationError { Id = 0, Key = "ValidationNoPaymentProviderChosen", Value = "No Payment Provider Chosen" });
 				}
 				return errors;
 			}
@@ -578,7 +578,7 @@ namespace uWebshop.Domain.Services
 				if (shippingProvider.Type != ShippingProviderType.Pickup && !shippingProvider.Zone.CountryCodes.Contains(shippingCountryCode))
 				{
 					Log.Instance.LogWarning("ORDERVALIDATIONERROR: SHIPPING COUNTRY DOES NOT MATCH SHIPPING PROVIDER");
-					errors.Add(new OrderValidationError {Id = orderInfo.ShippingInfo.Id, Key = "ValidationShippingCountryShippingProviderMismatch", Value = "The Shipping Country Does Not Match Countries Allowed For The Chosen Shipping Provider"});
+					errors.Add(new OrderValidationError { Id = orderInfo.ShippingInfo.Id, Key = "ValidationShippingCountryShippingProviderMismatch", Value = "The Shipping Country Does Not Match Countries Allowed For The Chosen Shipping Provider" });
 				}
 				errors.AddRange(ShippingProviderHelper.GetPaymentValidationResults(orderInfo).Where(e => e.Id == orderInfo.ShippingInfo.Id));
 			}
@@ -586,7 +586,7 @@ namespace uWebshop.Domain.Services
 			if (orderInfo.ConfirmValidationFailed && orderInfo.ShippingInfo.Id == 0 && ShippingProviderHelper.GetShippingProvidersForOrder(orderInfo).Count > 0)
 			{
 				Log.Instance.LogWarning("ORDERVALIDATIONERROR: SHIPPING PROVIDERS AVAILABLE BUT NOT CHOSEN");
-				errors.Add(new OrderValidationError {Id = 0, Key = "ValidationNoShippingProviderChosen", Value = "No Shipping Provider Chosen"});
+				errors.Add(new OrderValidationError { Id = 0, Key = "ValidationNoShippingProviderChosen", Value = "No Shipping Provider Chosen" });
 			}
 			return errors;
 		}
@@ -624,13 +624,13 @@ namespace uWebshop.Domain.Services
 				if (propertyType != null && xmlElement != null && (!string.IsNullOrEmpty(propertyType.ValidationRegularExpression) && !Regex.IsMatch(xmlElement.Value, propertyType.ValidationRegularExpression)))
 				{
 					Log.Instance.LogWarning("VALIDATECUSTOMER ERROR ValidationErrorRegEx: " + propertyType.Alias + " Is Not Correctly Set");
-					errors.Add(new OrderValidationError {Key = "ValidationErrorRegEx", Name = propertyType.Name, Alias = propertyType.Alias, Value = propertyType.Alias + " Is Not Correctly Set",});
+					errors.Add(new OrderValidationError { Key = "ValidationErrorRegEx", Name = propertyType.Name, Alias = propertyType.Alias, Value = propertyType.Alias + " Is Not Correctly Set", });
 				}
 
 				if (propertyType != null && propertyType.Mandatory && (xmlElement == null || string.IsNullOrEmpty(xmlElement.Value)))
 				{
 					Log.Instance.LogWarning("VALIDATECUSTOMER ERROR ValidationErrorMandatory: " + propertyType.Alias + " Is Not Set");
-					errors.Add(new OrderValidationError {Key = "ValidationErrorMandatory", Name = propertyType.Name, Alias = propertyType.Alias, Value = propertyType.Alias + " Is Not Set",});
+					errors.Add(new OrderValidationError { Key = "ValidationErrorMandatory", Name = propertyType.Name, Alias = propertyType.Alias, Value = propertyType.Alias + " Is Not Set", });
 				}
 			}
 			return errors;

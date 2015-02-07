@@ -37,49 +37,49 @@ namespace uWebshop.Domain.Helpers
 			responsehandler.HandlePaymentResponse(paymentProvider, null);
 		}
 
-        /// <summary>
-        /// HandleuWebshopPaymentResponse Used for Inline payment provider
-        /// </summary>
-        /// <param name="paymentProvider"></param>
-        /// <returns></returns>
-        public string HandleuWebshopPaymentResponse(PaymentProvider paymentProvider)
-        {
-            if (paymentProvider.Name == null)
-            {
-                Log.Instance.LogError("HandleuWebshopPaymentRequest paymentProvider.Name == null paymentProviderNodeId: " + paymentProvider.Id);
-                throw new Exception("HandleuWebshopPaymentRequest paymentProvider.Name == null");
-            }
+		/// <summary>
+		/// HandleuWebshopPaymentResponse Used for Inline payment provider
+		/// </summary>
+		/// <param name="paymentProvider"></param>
+		/// <returns></returns>
+		public string HandleuWebshopPaymentResponse(PaymentProvider paymentProvider)
+		{
+			if (paymentProvider.Name == null)
+			{
+				Log.Instance.LogError("HandleuWebshopPaymentRequest paymentProvider.Name == null paymentProviderNodeId: " + paymentProvider.Id);
+				throw new Exception("HandleuWebshopPaymentRequest paymentProvider.Name == null");
+			}
 
-            var responsehandler = PaymentProviderHelper.GetAllPaymentResponseHandlers().FirstOrDefault(paymentResponseHandler => paymentResponseHandler.GetName().ToLower() == paymentProvider.Name.ToLower());
+			var responsehandler = PaymentProviderHelper.GetAllPaymentResponseHandlers().FirstOrDefault(paymentResponseHandler => paymentResponseHandler.GetName().ToLower() == paymentProvider.Name.ToLower());
 
-            if (responsehandler == null)
-            {
-                Log.Instance.LogError("HandleuWebshopPaymentRequest responsehandler == null paymentProvider.Name: " + paymentProvider.Name);
+			if (responsehandler == null)
+			{
+				Log.Instance.LogError("HandleuWebshopPaymentRequest responsehandler == null paymentProvider.Name: " + paymentProvider.Name);
 
-                throw new Exception("HandleuWebshopPaymentRequest responsehandler == null: " + paymentProvider.Name);
-            }
+				throw new Exception("HandleuWebshopPaymentRequest responsehandler == null: " + paymentProvider.Name);
+			}
 
-            return responsehandler.HandlePaymentResponse(paymentProvider, null).OrderNumber;
-        }
+			return responsehandler.HandlePaymentResponse(paymentProvider, null).OrderNumber;
+		}
 
-        public OrderInfo HandleuWebshopPaymentResponse(PaymentProvider paymentProvider, OrderInfo order)
-        {
-            if (paymentProvider.Name == null)
-            {
-                Log.Instance.LogError("HandleuWebshopPaymentRequest paymentProvider.Name == null paymentProviderNodeId: " + paymentProvider.Id);
-                throw new Exception("HandleuWebshopPaymentRequest paymentProvider.Name == null");
-            }
+		public OrderInfo HandleuWebshopPaymentResponse(PaymentProvider paymentProvider, OrderInfo order)
+		{
+			if (paymentProvider.Name == null)
+			{
+				Log.Instance.LogError("HandleuWebshopPaymentRequest paymentProvider.Name == null paymentProviderNodeId: " + paymentProvider.Id);
+				throw new Exception("HandleuWebshopPaymentRequest paymentProvider.Name == null");
+			}
 
-            var responsehandler = PaymentProviderHelper.GetAllPaymentResponseHandlers().FirstOrDefault(paymentResponseHandler => paymentResponseHandler.GetName().ToLower() == paymentProvider.Name.ToLower());
+			var responsehandler = PaymentProviderHelper.GetAllPaymentResponseHandlers().FirstOrDefault(paymentResponseHandler => paymentResponseHandler.GetName().ToLower() == paymentProvider.Name.ToLower());
 
-            if (responsehandler == null)
-            {
-                Log.Instance.LogError("HandleuWebshopPaymentRequest responsehandler == null paymentProvider.Name: " + paymentProvider.Name);
+			if (responsehandler == null)
+			{
+				Log.Instance.LogError("HandleuWebshopPaymentRequest responsehandler == null paymentProvider.Name: " + paymentProvider.Name);
 
-                throw new Exception("HandleuWebshopPaymentRequest responsehandler == null: " + paymentProvider.Name);
-            }
+				throw new Exception("HandleuWebshopPaymentRequest responsehandler == null: " + paymentProvider.Name);
+			}
 
-            return responsehandler.HandlePaymentResponse(paymentProvider, order);
-        }
+			return responsehandler.HandlePaymentResponse(paymentProvider, order);
+		}
 	}
 }

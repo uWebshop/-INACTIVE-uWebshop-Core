@@ -73,16 +73,15 @@ namespace uWebshop.Domain.Repositories
 			return uWebshopOrders.GetOrdersFromCustomer(customerUsername, includeIncomplete).Select(OrderInfo.CreateOrderInfoFromOrderData);
 		}
 
-        public IEnumerable<OrderInfo> GetWishlistsFromCustomer(int customerId, string storeAlias = null)
-        {
-            return uWebshopOrders.GetWishlistsFromCustomer(customerId).Select(OrderInfo.CreateOrderInfoFromOrderData);
-        }
+		public IEnumerable<OrderInfo> GetWishlistsFromCustomer(int customerId, string storeAlias = null)
+		{
+			return uWebshopOrders.GetWishlistsFromCustomer(customerId).Select(OrderInfo.CreateOrderInfoFromOrderData);
+		}
 
-        public IEnumerable<OrderInfo> GetWishlistsFromCustomer(string customerUsername, string storeAlias = null)
-        {
-            return uWebshopOrders.GetWishlistsFromCustomer(customerUsername).Select(OrderInfo.CreateOrderInfoFromOrderData);
-        }
-
+		public IEnumerable<OrderInfo> GetWishlistsFromCustomer(string customerUsername, string storeAlias = null)
+		{
+			return uWebshopOrders.GetWishlistsFromCustomer(customerUsername).Select(OrderInfo.CreateOrderInfoFromOrderData);
+		}
 
 		public void SetOrderNumber(Guid uniqueOrderId, string orderNumber, string alias, int id)
 		{

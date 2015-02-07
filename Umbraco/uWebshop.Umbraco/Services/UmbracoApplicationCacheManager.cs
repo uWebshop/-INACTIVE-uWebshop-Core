@@ -21,8 +21,8 @@ namespace uWebshop.Umbraco.Services
 		private readonly IProductDiscountService _productDiscountService;
 		private readonly IProductRepository _productRepository;
 		private readonly ICategoryRepository _categoryRepository;
-	    private readonly IProductVariantGroupRepository _productVariantGroupRepository;
-	    private readonly IProductVariantRepository _productVariantRepository;
+		private readonly IProductVariantGroupRepository _productVariantGroupRepository;
+		private readonly IProductVariantRepository _productVariantRepository;
 		private readonly IStoreService _storeService;
 		private readonly IApplicationCacheService _applicationCacheService;
 
@@ -35,7 +35,7 @@ namespace uWebshop.Umbraco.Services
 
 		public UmbracoApplicationCacheManagingService(IProductService productService, IProductVariantService productVariantService, ICategoryService categoryService, 
 			IOrderDiscountService orderDiscountService, IProductDiscountService productDiscountService,
-            IProductRepository productRepository, ICategoryRepository categoryRepository, IProductVariantGroupRepository productVariantGroupRepository, IProductVariantRepository productVariantRepository,
+			IProductRepository productRepository, ICategoryRepository categoryRepository, IProductVariantGroupRepository productVariantGroupRepository, IProductVariantRepository productVariantRepository,
 			IStoreService storeService, IApplicationCacheService applicationCacheService)//, IShippingProviderService shippingProviderService, IPaymentProviderService paymentProviderService)
 		{
 			_productService = productService;
@@ -45,8 +45,8 @@ namespace uWebshop.Umbraco.Services
 			_productDiscountService = productDiscountService;
 			_productRepository = productRepository;
 			_categoryRepository = categoryRepository;
-		    _productVariantGroupRepository = productVariantGroupRepository;
-		    _productVariantRepository = productVariantRepository;
+			_productVariantGroupRepository = productVariantGroupRepository;
+			_productVariantRepository = productVariantRepository;
 			_storeService = storeService;
 			_applicationCacheService = applicationCacheService;
 

@@ -29,7 +29,7 @@
 					   
 			This uWebshop package is compatible with Umbraco 6.0, 6.1 and up.
 			For Umbraco 4.8, 4.9, 4.10, 4.11 please download the v4 package
-								   			
+											
 			Some icons by Yusuke Kamiyamane (http://p.yusukekamiyamane.com/). All rights reserved. Licensed under a Creative Commons Attribution 3.0 License.            
 			]]>
 		</readme>
@@ -67,11 +67,11 @@
 			<orgPath>/bin</orgPath>
 			<orgName>uWebshop.Domain.dll</orgName>
 		</file>
-    <file>
-      <guid>uWebshop.Services.dll</guid>
-      <orgPath>/bin</orgPath>
-      <orgName>uWebshop.Services.dll</orgName>
-    </file>
+		<file>
+			<guid>uWebshop.Services.dll</guid>
+			<orgPath>/bin</orgPath>
+			<orgName>uWebshop.Services.dll</orgName>
+		</file>
 		<file>
 			<guid>uWebshop.Umbraco.dll</guid>
 			<orgPath>/bin</orgPath>

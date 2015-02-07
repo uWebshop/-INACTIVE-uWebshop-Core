@@ -154,21 +154,6 @@ namespace uWebshop.Domain
 			set { Profile.VATNumber = value; }
 		}
 
-		///// <summary>
-		///// Gets or sets the password of the customer
-		///// </summary>
-		//public string Password
-		//{
-		//    get
-		//    {
-		//        return Member.Password;
-		//    }
-		//    set
-		//    {
-		//        Member.Password = value;
-		//    }
-		//}
-
 		/// <summary>
 		///     Gets a list of orders related to the customer
 		/// </summary>

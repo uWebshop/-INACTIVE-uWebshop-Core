@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
-using System.Web.Security;
 using System.Xml;
 using umbraco;
 using uWebshop.Domain.BaseClasses;
 using umbraco.IO;
 using Umbraco.Core;
-using Umbraco.Core.Configuration;
-using uWebshop.Common;
 using uWebshop.Common.Interfaces;
 using uWebshop.Domain;
 using uWebshop.Domain.Helpers;
@@ -37,18 +32,18 @@ namespace uWebshop.Umbraco
 
 		public bool RequestIsInCMSBackend(HttpContext context)
 		{
-		    var value = false;
-            // return context.Request.Path.ToLower().IndexOf(IOHelper.ResolveUrl(SystemDirectories.Umbraco).ToLower()) > -1;
-		    var path = context.Request.Path.ToLower();
-            // MVC request go through /umbraco/rendermvc, which is not  checked in the RequestIsInUmbracoApplication.
-            // if /umbraco/rendermvc is not used, then check for RequestIsInUmbracoApplication (because not in backend), otherwise do the default Umbraco check.
-		    if (!path.Contains("/umbraco/rendermvc"))
-		    {
-		        value = GlobalSettings.RequestIsInUmbracoApplication(context);
-		    }
+			var value = false;
+			// return context.Request.Path.ToLower().IndexOf(IOHelper.ResolveUrl(SystemDirectories.Umbraco).ToLower()) > -1;
+			var path = context.Request.Path.ToLower();
+			// MVC request go through /umbraco/rendermvc, which is not  checked in the RequestIsInUmbracoApplication.
+			// if /umbraco/rendermvc is not used, then check for RequestIsInUmbracoApplication (because not in backend), otherwise do the default Umbraco check.
+			if (!path.Contains("/umbraco/rendermvc"))
+			{
+				value = GlobalSettings.RequestIsInUmbracoApplication(context);
+			}
 
-		    Log.Instance.LogDebug("RequestIsInCMSBackend: " + value);
-		    return value;
+			Log.Instance.LogDebug("RequestIsInCMSBackend: " + value);
+			return value;
 		}
 
 		public bool IsReservedPathOrUrl(string path)
@@ -260,7 +255,7 @@ namespace uWebshop.Umbraco
 		}
 
 	 
-	    public string GetUrlForContentWithId(int id)
+		public string GetUrlForContentWithId(int id)
 		{
 			return library.NiceUrl(id);
 		}
@@ -294,77 +289,77 @@ namespace uWebshop.Umbraco
 		{
 			if (HttpContext.Current.Items[UrlReplacementsHackCacheKey] != null) return (Dictionary<string, string>) HttpContext.Current.Items[UrlReplacementsHackCacheKey];
 			var replacements = new Dictionary<string, string>();
-            
-            // first check if there are settings (by default empty in v7)
-            var replaceChars = UmbracoSettings.UrlReplaceCharacters;
-		    if (replaceChars != null)
-		    {
-		        var xmlNodeList = replaceChars.SelectNodes("char");
-		        if (xmlNodeList != null)
-		            foreach (XmlNode n in xmlNodeList)
-		            {
-		                if (n.Attributes != null && (n.Attributes.GetNamedItem("org") != null && n.Attributes.GetNamedItem("org").Value != ""))
-		                    replacements.Add(n.Attributes.GetNamedItem("org").Value, XmlHelper.GetNodeValue(n));
-		            }
-		    }
-		    else
-		    {
-                // if nothting defined fallback to defaults as are set in umbraco v7 codebase
-		        foreach (var replacement in GetDefaultCharReplacements())
-		        {
-		            replacements.Add(replacement.Key, replacement.Value);
-		        }
-		    }
+			
+			// first check if there are settings (by default empty in v7)
+			var replaceChars = UmbracoSettings.UrlReplaceCharacters;
+			if (replaceChars != null)
+			{
+				var xmlNodeList = replaceChars.SelectNodes("char");
+				if (xmlNodeList != null)
+					foreach (XmlNode n in xmlNodeList)
+					{
+						if (n.Attributes != null && (n.Attributes.GetNamedItem("org") != null && n.Attributes.GetNamedItem("org").Value != ""))
+							replacements.Add(n.Attributes.GetNamedItem("org").Value, XmlHelper.GetNodeValue(n));
+					}
+			}
+			else
+			{
+				// if nothting defined fallback to defaults as are set in umbraco v7 codebase
+				foreach (var replacement in GetDefaultCharReplacements())
+				{
+					replacements.Add(replacement.Key, replacement.Value);
+				}
+			}
 
-            HttpContext.Current.Items[UrlReplacementsHackCacheKey] = replacements;
+			HttpContext.Current.Items[UrlReplacementsHackCacheKey] = replacements;
 
-		    return replacements;
+			return replacements;
 		}
-        
-        // code below is COPIED from Umbraco source SINCE it was only internally available..
-        internal static Dictionary<string, string> GetDefaultCharReplacements()
-        {
-            var dictionary = new Dictionary<char, string>()
-                        {
-                            {' ',"-"},
-                            {'\"',""},
-                            {'\'',""},
-                            {'%',""},
-                            {'.',""},
-                            {';',""},
-                            {'/',""},
-                            {'\\',""},
-                            {':',""},
-                            {'#',""},
-                            {'+',"plus"},
-                            {'*',"star"},
-                            {'&',""},
-                            {'?',""},
-                            {'æ',"ae"},
-                            {'ø',"oe"},
-                            {'å',"aa"},
-                            {'ä',"ae"},
-                            {'ö',"oe"},
-                            {'ü',"ue"},
-                            {'ß',"ss"},
-                            {'Ä',"ae"},
-                            {'Ö',"oe"},
-                            {'|',"-"},
-                            {'<',""},
-                            {'>',""}
-                        };
+		
+		// code below is COPIED from Umbraco source SINCE it was only internally available..
+		internal static Dictionary<string, string> GetDefaultCharReplacements()
+		{
+			var dictionary = new Dictionary<char, string>()
+						{
+							{' ',"-"},
+							{'\"',""},
+							{'\'',""},
+							{'%',""},
+							{'.',""},
+							{';',""},
+							{'/',""},
+							{'\\',""},
+							{':',""},
+							{'#',""},
+							{'+',"plus"},
+							{'*',"star"},
+							{'&',""},
+							{'?',""},
+							{'æ',"ae"},
+							{'ø',"oe"},
+							{'å',"aa"},
+							{'ä',"ae"},
+							{'ö',"oe"},
+							{'ü',"ue"},
+							{'ß',"ss"},
+							{'Ä',"ae"},
+							{'Ö',"oe"},
+							{'|',"-"},
+							{'<',""},
+							{'>',""}
+						};
 
-            //const string chars = @" ,"",',%,.,;,/,\,:,#,+,*,&,?,æ,ø,å,ä,ö,ü,ß,Ä,Ö,|,<,>";
+			//const string chars = @" ,"",',%,.,;,/,\,:,#,+,*,&,?,æ,ø,å,ä,ö,ü,ß,Ä,Ö,|,<,>";
 
-            var collection = new Dictionary<string, string>();
-            foreach (var c in dictionary)
-            {
-                collection.Add(c.Key.ToString(CultureInfo.InvariantCulture),
-                    c.Value.ToString(CultureInfo.InvariantCulture));
-            }
+			var collection = new Dictionary<string, string>();
+			foreach (var c in dictionary)
+			{
+				collection.Add(c.Key.ToString(CultureInfo.InvariantCulture),
+					c.Value.ToString(CultureInfo.InvariantCulture));
+			}
 
-            return collection;
-        }
+			return collection;
+		}
 
 
 		public IEnumerable<string> GetDomainsForNodeId(int id)

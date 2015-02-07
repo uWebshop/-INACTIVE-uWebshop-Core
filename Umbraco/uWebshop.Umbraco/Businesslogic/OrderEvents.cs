@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Web;
+﻿using System.Linq;
 using uWebshop.Common;
-using uWebshop.DataAccess;
 using uWebshop.Domain;
 using uWebshop.Domain.Helpers;
-using umbraco;
 using uWebshop.Domain.Interfaces;
 
 namespace uWebshop.Umbraco.Businesslogic
@@ -112,17 +106,16 @@ namespace uWebshop.Umbraco.Businesslogic
 					// if online payment set status to waiting for payment
 					if (orderInfo.PaymentInfo.PaymentType == PaymentProviderType.OnlinePayment)
 					{
+						orderInfo.Status = OrderStatus.WaitingForPayment;
 
-					    orderInfo.Status = OrderStatus.WaitingForPayment;
+						if (orderInfo.PaymentInfo.TransactionMethod == PaymentTransactionMethod.Inline)
+						{
+							var paymentProvider =
+								PaymentProviderHelper.GetAllPaymentProviders()
+									.FirstOrDefault(x => x.Id == orderInfo.PaymentInfo.Id);
 
-                        if (orderInfo.PaymentInfo.TransactionMethod == PaymentTransactionMethod.Inline)
-                        {
-                            var paymentProvider =
-                                PaymentProviderHelper.GetAllPaymentProviders()
-                                    .FirstOrDefault(x => x.Id == orderInfo.PaymentInfo.Id);
-
-                            orderInfo = new PaymentRequestHandler().HandleuWebshopPaymentResponse(paymentProvider, orderInfo);
-                        }
+							orderInfo = new PaymentRequestHandler().HandleuWebshopPaymentResponse(paymentProvider, orderInfo);
+						}
 					}
 
 					orderInfo.Save();
@@ -363,9 +356,9 @@ namespace uWebshop.Umbraco.Businesslogic
 					break;
 				case OrderStatus.WaitingForPayment:
 
-			        
-			        
-			        break;
+					
+					
+					break;
 				case OrderStatus.Returned:
 
 					// return stock

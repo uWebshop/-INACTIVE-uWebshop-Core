@@ -12,17 +12,17 @@ This snippet helps you to create a meta description & title listing for your pag
 
 	if (currentProduct != null)
 	{
-		<title>@currentProduct.Title</title>
-		<meta name="description" content="@currentProduct.MetaDescription" />
-		<meta name="keywords" content="@foreach (var tag in currentProduct.Tags)
-		                               {
+	<title>@currentProduct.Title</title>
+	<meta name="description" content="@currentProduct.MetaDescription" />
+	<meta name="keywords" content="@foreach (var tag in currentProduct.Tags)
+								{
 			                               @tag
 
-			                               if (tag != currentProduct.Tags.Last())
-			                               {
+									if (tag != currentProduct.Tags.Last())
+									{
 				                               @Html.Raw(",")
-			                               }
-		                               }"/>
+									}
+								}"/>
 	}
 
 
@@ -30,22 +30,22 @@ This snippet helps you to create a meta description & title listing for your pag
 
 	if (currentProduct == null && currentCategory != null)
 	{
-		<title>@currentCategory.Title</title>
-		<meta name="description" content="@currentCategory.MetaDescription" />
-		<meta name="keywords" content="@foreach (var tag in currentCategory.Tags)
-		                               {
+	<title>@currentCategory.Title</title>
+	<meta name="description" content="@currentCategory.MetaDescription" />
+	<meta name="keywords" content="@foreach (var tag in currentCategory.Tags)
+								{
 			                               @tag
 
-			                               if (tag != currentCategory.Tags.Last())
-			                               {
+									if (tag != currentCategory.Tags.Last())
+									{
 				                               @Html.Raw(",")
-			                               }
-		                               }"/>
+									}
+								}"/>
 	}
 
 	if (currentProduct == null && currentCategory == null)
 	{
-		<title>@Model.Name</title>
-		<meta name="description" content="" />
+	<title>@Model.Name</title>
+	<meta name="description" content="" />
 	}
 }

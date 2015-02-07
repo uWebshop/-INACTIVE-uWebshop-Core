@@ -902,7 +902,7 @@ namespace uWebshop.Domain
 				}
 
 				// create custom discount for backwards compatibility
-				var discounts = new List<Interfaces.IOrderDiscount>();
+				var discounts = new List<IOrderDiscount>();
 				if (orderInfo.DiscountAmountInCents != 0 || orderInfo._discountAmount != null)
 				{
 					var discount = orderInfo.DiscountAmountInCents > 0 ? orderInfo.DiscountAmountInCents : (int)(orderInfo._discountAmount.GetValueOrDefault() * 100);
@@ -963,7 +963,9 @@ namespace uWebshop.Domain
 			var cmsApplication = IO.Container.Resolve<ICMSApplication>();
 
 			if (orderData == null || string.IsNullOrEmpty(orderData.OrderXML))
+			{
 				throw new Exception("Trying to load order without data (xml), id: " + (orderData == null ? "no data!" : orderData.DatabaseId.ToString()) + ", ordernumber: " + (orderData == null ? "no data!" : orderData.OrderReferenceNumber));
+			}
 
 			OrderInfo orderInfo;
 			try
@@ -991,7 +993,7 @@ namespace uWebshop.Domain
 			orderInfo.StoreOrderReferenceId = orderData.StoreOrderReferenceId;
 			orderInfo.OrderNumber = orderData.OrderReferenceNumber;
 
-			if (!IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated && HttpContext.Current != null || UwebshopRequest.Current.PaymentProvider != null)
+			if (HttpContext.Current != null && (!IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || UwebshopRequest.Current.PaymentProvider != null))
 			{
 				var currentUserIp = HttpContext.Current.Request.UserHostAddress;
 				if (orderInfo.CustomerInfo.CustomerIPAddress != currentUserIp)
@@ -1035,7 +1037,7 @@ namespace uWebshop.Domain
 				{
 					if (orderInfo.ReValidateSaveAction == ValidateSaveAction.Order)
 					{
-						orderService.ValidateOrder(orderInfo, false); // tricky (recursiveness because of GetStore() -> GetOrderInfo())
+						orderService.ValidateOrder(orderInfo); // tricky (recursiveness because of GetStore() -> GetOrderInfo())
 					}
 					if (orderInfo.ReValidateSaveAction == ValidateSaveAction.Customer)
 					{
@@ -1106,15 +1108,15 @@ namespace uWebshop.Domain
 		/// <summary>
 		/// Sets the vat number.
 		/// </summary>
-		/// <param name="VATNumber">The vat number.</param>
-		public void SetVATNumber(string VATNumber)
+		/// <param name="vatNumber">The vat number.</param>
+		public void SetVATNumber(string vatNumber)
 		{
-			if (CustomerInfo.VATNumber != VATNumber)
+			if (CustomerInfo.VATNumber != vatNumber)
 			{
 				_vatCharged = null;
 				VATCheckService = IO.Container.Resolve<IVATCheckService>();
 			}
-			CustomerInfo.VATNumber = VATNumber;
+			CustomerInfo.VATNumber = vatNumber;
 		}
 
 		/// <summary>
@@ -1843,8 +1845,7 @@ namespace uWebshop.Domain
 			}
 			set { }
 		}
-
-
+		
 		private void ApplyDiscounts()
 		{
 			// todo: this function and the way it's used needs refactoring

@@ -24,7 +24,7 @@ namespace uWebshop.Domain
 			ExamineIndexer = ConfigurationManager.AppSettings["uwbsExamineIndexer"] ?? "ExternalIndexer";
 			ShareBasketBetweenStores = ConfigurationManager.AppSettings["uwbsShareBasketBetweenStores"] == "true";
 			OrdersCacheTimeoutMilliseconds = Common.Helpers.ParseInt(ConfigurationManager.AppSettings["uwbsOrdersCacheTimeoutMilliseconds"], 2000);
-            DisableDateFolders = ConfigurationManager.AppSettings["uwbsDisableDateFolders"] == "true";
+			DisableDateFolders = ConfigurationManager.AppSettings["uwbsDisableDateFolders"] == "true";
 		}
 
 		/// <summary>
@@ -59,13 +59,13 @@ namespace uWebshop.Domain
 		/// </value>
 		public bool PermanentRedirectOldCatalogUrls { get; private set; }
 
-        /// <summary>
-        /// Gets a value indicating whether opening orders in the backend should create datefolder structure
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if [permanent redirect old catalog urls]; otherwise, <c>false</c>.
-        /// </value>
-        public bool DisableDateFolders { get; private set; }
+		/// <summary>
+		/// Gets a value indicating whether opening orders in the backend should create datefolder structure
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if [permanent redirect old catalog urls]; otherwise, <c>false</c>.
+		/// </value>
+		public bool DisableDateFolders { get; private set; }
 
 		/// <summary>
 		/// Gets the legacy category URL identifier.

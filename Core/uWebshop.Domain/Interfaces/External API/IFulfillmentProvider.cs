@@ -29,21 +29,21 @@ namespace uWebshop.Domain.Interfaces
 		/// The title.
 		/// </value>
 		string Title { get; }
-        /// <summary>
-        /// Gets the description.
-        /// </summary>
-        /// <value>
-        /// The title.
-        /// </value>
-        string Description { get; }
+		/// <summary>
+		/// Gets the description.
+		/// </summary>
+		/// <value>
+		/// The title.
+		/// </value>
+		string Description { get; }
 
-        /// <summary>
-        /// Disabled?.
-        /// </summary>
-        /// <value>
-        /// The title.
-        /// </value>
-        bool Disabled { get; }
+		/// <summary>
+		/// Disabled?.
+		/// </summary>
+		/// <value>
+		/// The title.
+		/// </value>
+		bool Disabled { get; }
 		/// <summary>
 		/// Gets the methods.
 		/// </summary>
@@ -52,14 +52,14 @@ namespace uWebshop.Domain.Interfaces
 		/// </value>
 		IEnumerable<IFulfillmentProviderMethod> Methods { get; }
 
-        /// <summary>
-        /// Gets the Zones.
-        /// </summary>
-        /// <value>
-        /// The methods.
-        /// </value>
-        List<Zone> Zones { get; }
-        
+		/// <summary>
+		/// Gets the Zones.
+		/// </summary>
+		/// <value>
+		/// The methods.
+		/// </value>
+		List<Zone> Zones { get; }
+		
 		/// <summary>
 		/// Gets the type of the fulfillment provider.
 		/// </summary>

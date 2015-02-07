@@ -38,7 +38,7 @@ namespace uWebshop.Umbraco6
 			var productsRepo = GetOrCreateContent(Catalog.ProductRepositoryNodeAlias, "Products", contentTypeService, contentService, catalog, contentList);
 
 			var orders = GetOrCreateContent(Order.OrderRepositoryNodeAlias, "Orders", contentTypeService, contentService, uWebshop, contentList);
-            
+			
 			var discountRep = GetOrCreateContent(DiscountOrder.RepositoryNodeAlias, "Discounts", contentTypeService, contentService, uWebshop, contentList);
 
 			var discountProductSection = GetOrCreateContent(DiscountProduct.SectionNodeAlias, "Product Discounts", contentTypeService, contentService, discountRep, contentList);
@@ -85,30 +85,30 @@ namespace uWebshop.Umbraco6
 			//umbraco.cms.businesslogic.web.Document.RegeneratePreviews();
 		}
 
-        internal static IContent GetOrCreateContent(string alias, string contentName, IContentTypeService contentTypeService, IContentService contentService, IContent parentContent, List<IContent> contentList)
+		internal static IContent GetOrCreateContent(string alias, string contentName, IContentTypeService contentTypeService, IContentService contentService, IContent parentContent, List<IContent> contentList)
 		{
 			var contentType = contentTypeService.GetContentType(alias);
 
-            return GetOrCreateContent(contentType, contentName, contentTypeService, contentService, parentContent, contentList);
+			return GetOrCreateContent(contentType, contentName, contentTypeService, contentService, parentContent, contentList);
 		}
 
-        internal static IContent GetOrCreateContent(IContentType contentType, string contentName, IContentTypeService contentTypeService, IContentService contentService, IContent parentContent, List<IContent> contentList)
-        {   
-            var content = contentService.GetContentOfContentType(contentType.Id).FirstOrDefault(x => !x.Trashed);
-            if (content == null)
-            {
-                if (parentContent == null)
-                {
-                    content = contentService.CreateContent(contentName, -1, contentType.Alias);
-                }
-                else
-                {
-                    content = contentService.CreateContent(contentName, parentContent, contentType.Alias);
-                }
-                contentList.Add(content);
-            }
-            return content;
-        }
+		internal static IContent GetOrCreateContent(IContentType contentType, string contentName, IContentTypeService contentTypeService, IContentService contentService, IContent parentContent, List<IContent> contentList)
+		{   
+			var content = contentService.GetContentOfContentType(contentType.Id).FirstOrDefault(x => !x.Trashed);
+			if (content == null)
+			{
+				if (parentContent == null)
+				{
+					content = contentService.CreateContent(contentName, -1, contentType.Alias);
+				}
+				else
+				{
+					content = contentService.CreateContent(contentName, parentContent, contentType.Alias);
+				}
+				contentList.Add(content);
+			}
+			return content;
+		}
 
 		private static string MakeOrderSectionValue(OrderStatus orderStatus)
 		{

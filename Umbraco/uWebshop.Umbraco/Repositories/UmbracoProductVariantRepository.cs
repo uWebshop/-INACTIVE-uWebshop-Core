@@ -59,7 +59,7 @@ namespace uWebshop.Umbraco.Repositories
 
 			variant.Group = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary("group", localization, fields);
 
-            var value = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary("requiredVariant", localization, fields);
+			var value = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary("requiredVariant", localization, fields);
 			variant.Required = value == "1" || value == "true";
 
 			var rangesString = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.ranges, localization, fields);

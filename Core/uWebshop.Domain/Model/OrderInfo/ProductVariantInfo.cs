@@ -118,24 +118,24 @@ namespace uWebshop.Domain
 			Title = productVariant.Title;
 			SKU = productVariant.SKU;
 
-		    var groupname = string.Empty;
-		    if (string.IsNullOrEmpty(productVariant.Group))
-		    {
-                var productVariantGroup = DomainHelper.GetProductVariantGroupById(productVariant.ParentId);
+			var groupname = string.Empty;
+			if (string.IsNullOrEmpty(productVariant.Group))
+			{
+				var productVariantGroup = DomainHelper.GetProductVariantGroupById(productVariant.ParentId);
 
-		        if (productVariantGroup != null)
-		        {
-		            groupname = productVariantGroup.Title;
-		        }
-		    }
-		    else
-		    {
-		        groupname = productVariant.Group;
-		    }
+				if (productVariantGroup != null)
+				{
+					groupname = productVariantGroup.Title;
+				}
+			}
+			else
+			{
+				groupname = productVariant.Group;
+			}
 
-		    Group = groupname;
+			Group = groupname;
 
-		    Weight = productVariant.Weight;
+			Weight = productVariant.Weight;
 			Length = productVariant.Length;
 			Height = productVariant.Height;
 			Width = productVariant.Width;

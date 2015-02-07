@@ -12,7 +12,7 @@
 	/// <summary>
 	/// 
 	/// </summary>
-    [ContentType(ParentContentType = typeof(EmailRepositoryContentType), Name = "Email Template Store Section", Description = "#EmailTemplateStoreSectionDescription", Alias = "uwbsEmailTemplateStoreSection", IconClass = IconClass.folder, Icon = ContentIcon.MailAir, Thumbnail = ContentThumbnail.Folder, AllowedChildTypes = new[] { typeof(EmailStore) })]
+	[ContentType(ParentContentType = typeof(EmailRepositoryContentType), Name = "Email Template Store Section", Description = "#EmailTemplateStoreSectionDescription", Alias = "uwbsEmailTemplateStoreSection", IconClass = IconClass.folder, Icon = ContentIcon.MailAir, Thumbnail = ContentThumbnail.Folder, AllowedChildTypes = new[] { typeof(EmailStore) })]
 	public class EmailStoreSectionContentType
 	{
 		internal static string NodeAlias;
@@ -21,7 +21,7 @@
 	/// <summary>
 	/// 
 	/// </summary>
-    [ContentType(ParentContentType = typeof(EmailRepositoryContentType), Name = "Email Template Customer Section", Description = "#EmailTemplateCustomerSectionDescription", Alias = "uwbsEmailTemplateCustomerSection", IconClass = IconClass.folder, Icon = ContentIcon.MailAir, Thumbnail = ContentThumbnail.Folder, AllowedChildTypes = new[] { typeof(EmailCustomer) })]
+	[ContentType(ParentContentType = typeof(EmailRepositoryContentType), Name = "Email Template Customer Section", Description = "#EmailTemplateCustomerSectionDescription", Alias = "uwbsEmailTemplateCustomerSection", IconClass = IconClass.folder, Icon = ContentIcon.MailAir, Thumbnail = ContentThumbnail.Folder, AllowedChildTypes = new[] { typeof(EmailCustomer) })]
 	public class EmailCustomerSectionContentType
 	{
 		internal static string NodeAlias;

@@ -58,22 +58,22 @@ namespace uWebshop.Domain.Services
 		}
 
 		public string GetUrlUsingCategoryPathOrCanonical(IProduct product, IEnumerable<ICategory> categoryPath)
-        {
-            var category = categoryPath.LastOrDefault();
+		{
+			var category = categoryPath.LastOrDefault();
 			if (category != null && product.Categories.Any(c => c.Id == category.Id))
-	        {
-		        return _categoryCatalogUrlService.GetUrlForPath(categoryPath) + "/" + product.UrlName;
-	        }
-	        
+			{
+				return _categoryCatalogUrlService.GetUrlForPath(categoryPath) + "/" + product.UrlName;
+			}
+			
 			category = product.Categories.FirstOrDefault();
 
-	        // todo: products can get their own url using storeUrl/productUrlName, but resolving and name conflicts need to be fixed
-            if (category == null)
-            {
-                return product.UrlName;
-            }
+			// todo: products can get their own url using storeUrl/productUrlName, but resolving and name conflicts need to be fixed
+			if (category == null)
+			{
+				return product.UrlName;
+			}
 
-            return _categoryCatalogUrlService.GetCanonicalUrl(category) + "/" + product.UrlName;
-        }
+			return _categoryCatalogUrlService.GetCanonicalUrl(category) + "/" + product.UrlName;
+		}
 	}
 }

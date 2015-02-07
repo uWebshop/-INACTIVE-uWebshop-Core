@@ -59,8 +59,8 @@ namespace uWebshop.Umbraco.Repositories
 				entity.DLLName = !dllName.EndsWith(".dll") ? string.Format("{0}.dll", dllName) : dllName;
 			}
 
-		    entity.Disabled = StoreHelper.GetMultiStoreDisableExamine(localization, fields);
-            
+			entity.Disabled = StoreHelper.GetMultiStoreDisableExamine(localization, fields);
+			
 			entity.RangeFrom = StoreHelper.GetMultiStoreDecimalValue(_aliasses.rangeStart, localization, fields);
 			entity.RangeTo = StoreHelper.GetMultiStoreDecimalValue(_aliasses.rangeEnd, localization, fields);
 			if (entity.RangeTo == 0) entity.RangeTo = decimal.MaxValue;

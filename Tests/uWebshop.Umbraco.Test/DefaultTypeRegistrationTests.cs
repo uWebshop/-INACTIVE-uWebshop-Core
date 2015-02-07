@@ -18,7 +18,7 @@ namespace uWebshop.Test.Domain.IoCContainerTests
 		{
 			Initialize.Reboot();
 			(IO.Container as IoCContainer).RegisterType<ILoggingService, StubLoggingService>();
-			
+
 			Console.WriteLine(Initialize.FinishedRegistrationLevel);
 			Console.WriteLine(Initialize.FinishedInitializationLevel);
 			IO.Container.Resolve<IUrlRewritingService>();
@@ -59,11 +59,11 @@ namespace uWebshop.Test.Domain.IoCContainerTests
 			{
 				if (dependency.Value.Any())
 				{
-				    Console.WriteLine("" + dependency.Key.Name + " directly depends on " + string.Join(", ", dependency.Value.Select(p => p.Name)));
+					Console.WriteLine("" + dependency.Key.Name + " directly depends on " + string.Join(", ", dependency.Value.Select(p => p.Name)));
 				}
 				else
 				{
-				    Console.WriteLine(dependency.Key.Name + " has no dependencies");
+					Console.WriteLine(dependency.Key.Name + " has no dependencies");
 				}
 			}
 			IO.Container = new IoCContainer();
@@ -75,7 +75,7 @@ namespace uWebshop.Test.Domain.IoCContainerTests
 
 			public void RegisterType<T, T1>() where T1 : T
 			{
-				TypeMap.Add(typeof (T), typeof (T1));
+				TypeMap.Add(typeof(T), typeof(T1));
 			}
 
 			public T Resolve<T>() where T : class

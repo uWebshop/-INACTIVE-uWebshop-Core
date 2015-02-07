@@ -15,6 +15,6 @@ namespace uWebshop.Domain.ContentTypes
 		public string Name;
 		public int SortOrder;
 		public ContentTypeTab Tab;
-        public bool Umbraco6Only;
+		public bool Umbraco6Only;
 	}
 }

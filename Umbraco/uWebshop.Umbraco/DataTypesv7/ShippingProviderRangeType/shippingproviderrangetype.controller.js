@@ -1,22 +1,22 @@
 angular.module("umbraco").controller("uWebshop.ShippingProviderRangeType", function ($scope, assetsService, $routeParams, $http, editorState) {
 
-    $scope.ItemArray = [];
+	$scope.ItemArray = [];
 
-    $http.get('/Umbraco/uWebshop/StoreApi/GetShippingRangeTypes').then(function (res) {
+	$http.get('/Umbraco/uWebshop/StoreApi/GetShippingRangeTypes').then(function (res) {
 
-        $scope.ItemArray = res.data;
+		$scope.ItemArray = res.data;
 
-        $scope.selectedOption = $scope.ItemArray[0];
+		$scope.selectedOption = $scope.ItemArray[0];
 
-        for (i = 0; $scope.ItemArray.length > i; i += 1) {
-            if ($scope.ItemArray[i] == $scope.model.value) {
-                $scope.selectedOption = $scope.ItemArray[i];
-            }
-        }
+		for (i = 0; $scope.ItemArray.length > i; i += 1) {
+			if ($scope.ItemArray[i] == $scope.model.value) {
+				$scope.selectedOption = $scope.ItemArray[i];
+			}
+		}
 
-        $scope.update = function () {
-            $scope.model.value = $scope.selectedOption;
-        };
+		$scope.update = function () {
+			$scope.model.value = $scope.selectedOption;
+		};
 
-    });
+	});
 });

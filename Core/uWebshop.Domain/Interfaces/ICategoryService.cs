@@ -15,6 +15,6 @@ namespace uWebshop.Domain.Interfaces
 		/// <returns></returns>
 		List<Category> GetAllRootCategories(ILocalization localization);
 
-	    ICategory Localize(ICategory category, ILocalization localization);
+		ICategory Localize(ICategory category, ILocalization localization);
 	}
 }

@@ -272,10 +272,10 @@ if (typeof Store === 'undefined') {
 		return uWebshopService.callBase('Providers.GetPaymentProvidersForOrder', dataArray, success, error);
 	};
 
-    /* Get Shipping/Fulfillment providers available for the given country*/
+	/* Get Shipping/Fulfillment providers available for the given country*/
 	Providers.GetPaymentProvidersForCountry = function (countryCode, storeAlias, currencyCode, success, error) {
-	    var dataArray = [{ key: "countryCode", value: countryCode }, { key: "storeAlias", value: storeAlias }, { key: "currencyCode", value: currencyCode }];
-	    return uWebshopService.callBase('Providers.GetPaymentProvidersForCountry', dataArray, success, error);
+		var dataArray = [{ key: "countryCode", value: countryCode }, { key: "storeAlias", value: storeAlias }, { key: "currencyCode", value: currencyCode }];
+		return uWebshopService.callBase('Providers.GetPaymentProvidersForCountry', dataArray, success, error);
 	};
 	
 	/* Get All Shipping/Fulfillment Providers */
@@ -290,10 +290,10 @@ if (typeof Store === 'undefined') {
 		return uWebshopService.callBase('Providers.GetFulfillmentProvidersForOrder', dataArray, success, error);
 	};
 
-    /* Get Shipping/Fulfillment providers available for the given country*/
+	/* Get Shipping/Fulfillment providers available for the given country*/
 	Providers.GetFulfillmentProvidersForCountry = function (countryCode, storeAlias, currencyCode, success, error) {
-	    var dataArray = [{ key: "countryCode", value: countryCode }, { key: "storeAlias", value: storeAlias }, { key: "currencyCode", value: currencyCode }];
-	    return uWebshopService.callBase('Providers.GetFulfillmentProvidersForCountry', dataArray, success, error);
+		var dataArray = [{ key: "countryCode", value: countryCode }, { key: "storeAlias", value: storeAlias }, { key: "currencyCode", value: currencyCode }];
+		return uWebshopService.callBase('Providers.GetFulfillmentProvidersForCountry', dataArray, success, error);
 	};
 	
 	// Store API

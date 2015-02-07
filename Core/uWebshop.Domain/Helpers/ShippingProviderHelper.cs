@@ -165,7 +165,7 @@ namespace uWebshop.Domain.Helpers
 				return new List<ShippingProvider>();
 			}
 
-            var shippingProviders = GetAllShippingProviders(storeAlias, currencyCode).Where(shippingProvider => shippingProvider.IsApplicableToOrder(orderInfo)).ToList();
+			var shippingProviders = GetAllShippingProviders(storeAlias, currencyCode).Where(shippingProvider => shippingProvider.IsApplicableToOrder(orderInfo)).ToList();
 
 			if (useCountry)
 			{

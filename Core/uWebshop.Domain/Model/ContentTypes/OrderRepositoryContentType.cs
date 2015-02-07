@@ -13,12 +13,12 @@ namespace uWebshop.Domain.ContentTypes
 	{
 		internal static string NodeAlias;
 
-        /// <summary>
+		/// <summary>
 		/// Initializes a new instance of the <see cref="OrderSection"/> class.
 		/// </summary>
 		/// <param name="id">NodeId of the document</param>
-        public OrderRepositoryContentType(int id)
-            : base(id)
+		public OrderRepositoryContentType(int id)
+			: base(id)
 		{
 		}
 

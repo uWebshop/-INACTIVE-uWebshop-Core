@@ -34,8 +34,8 @@ namespace uWebshop.API
 		{
 			Guid guidFromString;
 			Guid.TryParse(guid, out guidFromString);
-            
-		    return guidFromString != Guid.Empty ? GetOrder(guidFromString) : null;
+			
+			return guidFromString != Guid.Empty ? GetOrder(guidFromString) : null;
 		}
 
 		/// <summary>
@@ -48,11 +48,11 @@ namespace uWebshop.API
 			var order = OrderHelper.GetOrder(guid);
 
 			var membershipUser = Membership.GetUser();
-          
-		     if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || membershipUser != null && membershipUser.UserName == order.CustomerInfo.LoginName || UwebshopRequest.Current.PaymentProvider != null || OrderHelper.IsCompletedOrderWithinValidLifetime(order))
-            {
-                return CreateBasketFromOrderInfo(order);
-            }
+		  
+			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || membershipUser != null && membershipUser.UserName == order.CustomerInfo.LoginName || UwebshopRequest.Current.PaymentProvider != null || OrderHelper.IsCompletedOrderWithinValidLifetime(order))
+			{
+				return CreateBasketFromOrderInfo(order);
+			}
 
 			return null;
 		}
@@ -68,7 +68,7 @@ namespace uWebshop.API
 
 			var membershipUser = Membership.GetUser();
 
-            if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || membershipUser != null && membershipUser.UserName == order.CustomerInfo.LoginName || UwebshopRequest.Current.PaymentProvider != null || OrderHelper.IsCompletedOrderWithinValidLifetime(order))
+			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || membershipUser != null && membershipUser.UserName == order.CustomerInfo.LoginName || UwebshopRequest.Current.PaymentProvider != null || OrderHelper.IsCompletedOrderWithinValidLifetime(order))
 			{
 				return CreateBasketFromOrderInfo(order);
 			}
@@ -83,7 +83,7 @@ namespace uWebshop.API
 		/// <returns></returns>
 		public static IEnumerable<IOrder> GetAllOrders(string storeAlias = null)
 		{
-            if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || UwebshopRequest.Current.PaymentProvider != null)
+			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || UwebshopRequest.Current.PaymentProvider != null)
 			{
 				return OrderHelper.GetAllOrders(storeAlias).Select(CreateBasketFromOrderInfo);
 			}
@@ -99,7 +99,7 @@ namespace uWebshop.API
 		/// <returns></returns>
 		public static IEnumerable<IOrder> GetOrders(OrderStatus status, string storeAlias = null)
 		{
-            if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || UwebshopRequest.Current.PaymentProvider != null)
+			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || UwebshopRequest.Current.PaymentProvider != null)
 			{
 				return OrderHelper.GetAllOrders(storeAlias).Where(o => o.Status == status).Select(CreateBasketFromOrderInfo);
 			}
@@ -115,7 +115,7 @@ namespace uWebshop.API
 		/// <returns></returns>
 		public static IEnumerable<IOrder> GetOrders(int days, string storeAlias = null)
 		{
-            if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || UwebshopRequest.Current.PaymentProvider != null)
+			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || UwebshopRequest.Current.PaymentProvider != null)
 			{
 				return GetOrders(DateTime.Now.AddDays(-days), DateTime.Now, storeAlias);
 			}
@@ -132,7 +132,7 @@ namespace uWebshop.API
 		/// <returns></returns>
 		public static IEnumerable<IOrder> GetOrders(DateTime startDate, DateTime endDate, string storeAlias = null)
 		{
-            if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || UwebshopRequest.Current.PaymentProvider != null)
+			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || UwebshopRequest.Current.PaymentProvider != null)
 			{
 				return GetAllOrders(storeAlias).Where(o => o.ConfirmDate >= startDate && o.ConfirmDate <= endDate);
 			}
@@ -149,7 +149,7 @@ namespace uWebshop.API
 		public static IEnumerable<IOrder> GetOrdersForCustomer(int customerId, string storeAlias = null)
 		{
 			var membershipUser = Membership.GetUser();
-            if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || membershipUser != null && membershipUser.ProviderUserKey == customerId.ToString() || UwebshopRequest.Current.PaymentProvider != null)
+			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || membershipUser != null && membershipUser.ProviderUserKey == customerId.ToString() || UwebshopRequest.Current.PaymentProvider != null)
 			{
 				return OrderHelper.GetOrdersForCustomer(customerId, storeAlias).Select(CreateBasketFromOrderInfo);
 			}
@@ -167,7 +167,7 @@ namespace uWebshop.API
 		public static IEnumerable<IOrder> GetOrdersForCustomer(string userName, string storeAlias = null)
 		{
 			var membershipUser = Membership.GetUser();
-            if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || membershipUser != null && membershipUser.UserName == userName || UwebshopRequest.Current.PaymentProvider != null)
+			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || membershipUser != null && membershipUser.UserName == userName || UwebshopRequest.Current.PaymentProvider != null)
 			{
 				return OrderHelper.GetOrdersForCustomer(userName, storeAlias).Select(CreateBasketFromOrderInfo);
 			}

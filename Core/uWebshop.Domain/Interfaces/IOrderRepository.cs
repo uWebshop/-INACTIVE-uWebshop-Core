@@ -56,16 +56,16 @@ namespace uWebshop.Domain.Interfaces
 		/// <returns></returns>
 		IEnumerable<OrderInfo> GetOrdersFromCustomer(int customerId, string storeAlias = null, bool includeIncomplete = false);
 
-        /// <summary>
-        /// Gets the wishlists from customer.
-        /// </summary>
-        /// <param name="customerId">The customer unique identifier.</param>
-        /// <param name="storeAlias">The store alias.</param>
-        /// <returns></returns>
-        IEnumerable<OrderInfo> GetWishlistsFromCustomer(int customerId, string storeAlias = null);
+		/// <summary>
+		/// Gets the wishlists from customer.
+		/// </summary>
+		/// <param name="customerId">The customer unique identifier.</param>
+		/// <param name="storeAlias">The store alias.</param>
+		/// <returns></returns>
+		IEnumerable<OrderInfo> GetWishlistsFromCustomer(int customerId, string storeAlias = null);
 
 		/// <summary>
-        /// Get the orders based on the customer username
+		/// Get the orders based on the customer username
 		/// </summary>
 		/// <param name="customerUsername">The customer username.</param>
 		/// <param name="storeAlias">The store alias.</param>
@@ -74,16 +74,16 @@ namespace uWebshop.Domain.Interfaces
 		/// </returns>
 		IEnumerable<OrderInfo> GetOrdersFromCustomer(string customerUsername, string storeAlias = null, bool includeIncomplete = false);
 
-        /// <summary>
-        /// Get the wishlists based on the customer username
-        /// </summary>
-        /// <param name="customerUsername">The customer username.</param>
-        /// <param name="storeAlias">The store alias.</param>
-        /// <returns>
-        /// All the orders for the customer
-        /// </returns>
-        IEnumerable<OrderInfo> GetWishlistsFromCustomer(string customerUsername, string storeAlias = null);
-        
+		/// <summary>
+		/// Get the wishlists based on the customer username
+		/// </summary>
+		/// <param name="customerUsername">The customer username.</param>
+		/// <param name="storeAlias">The store alias.</param>
+		/// <returns>
+		/// All the orders for the customer
+		/// </returns>
+		IEnumerable<OrderInfo> GetWishlistsFromCustomer(string customerUsername, string storeAlias = null);
+		
 		/// <summary>
 		/// Sets the order number.
 		/// </summary>

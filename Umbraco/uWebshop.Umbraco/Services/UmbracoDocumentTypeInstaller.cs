@@ -90,215 +90,215 @@ namespace uWebshop.Umbraco6
 			library.RefreshContent();
 		}
 
-	    public IContent CreateOrderContent(OrderInfo orderInfo)
-	    {
-	        var contentTypeService = _contentTypeService; //ApplicationContext.Current.Services.ContentTypeService;
-	        var contentService = _contentService; // ApplicationContext.Current.Services.ContentService;
+		public IContent CreateOrderContent(OrderInfo orderInfo)
+		{
+			var contentTypeService = _contentTypeService; //ApplicationContext.Current.Services.ContentTypeService;
+			var contentService = _contentService; // ApplicationContext.Current.Services.ContentService;
 
-	        if (OpenOrderIfAlreadyExisting(orderInfo)) return null;
+			if (OpenOrderIfAlreadyExisting(orderInfo)) return null;
 
-	        var orderRepositoryType = contentTypeService.GetContentType(Order.OrderRepositoryNodeAlias);
-	        if (orderRepositoryType == null) return null;
-	        var orderRepository =
-	            contentService.GetContentOfContentType(orderRepositoryType.Id).FirstOrDefault(x => !x.Trashed);
-	        if (orderRepository == null)
-	            return null;
+			var orderRepositoryType = contentTypeService.GetContentType(Order.OrderRepositoryNodeAlias);
+			if (orderRepositoryType == null) return null;
+			var orderRepository =
+				contentService.GetContentOfContentType(orderRepositoryType.Id).FirstOrDefault(x => !x.Trashed);
+			if (orderRepository == null)
+				return null;
 
-	        var contentToSaveAndPublish = new List<IContent>();
+			var contentToSaveAndPublish = new List<IContent>();
 
-	        var storeFolderAliasDic = IO.Container.Resolve<ICMSApplication>().GetDictionaryItem("SharedStoreFoldername");
+			var storeFolderAliasDic = IO.Container.Resolve<ICMSApplication>().GetDictionaryItem("SharedStoreFoldername");
 
-	        if (string.IsNullOrEmpty(storeFolderAliasDic))
-	        {
-	            storeFolderAliasDic = "Orders";
-	        }
+			if (string.IsNullOrEmpty(storeFolderAliasDic))
+			{
+				storeFolderAliasDic = "Orders";
+			}
 
-	        var storeFolderName = UwebshopConfiguration.Current.ShareBasketBetweenStores
-	            ? storeFolderAliasDic
-	            : orderInfo.StoreInfo.Alias;
-	        var storeFolder = GetOrCreateChildContentWithName(orderRepository, storeFolderName, contentToSaveAndPublish,
-	            OrderStoreFolder.NodeAlias);
+			var storeFolderName = UwebshopConfiguration.Current.ShareBasketBetweenStores
+				? storeFolderAliasDic
+				: orderInfo.StoreInfo.Alias;
+			var storeFolder = GetOrCreateChildContentWithName(orderRepository, storeFolderName, contentToSaveAndPublish,
+				OrderStoreFolder.NodeAlias);
 
-	        var disableDateFolders = UwebshopConfiguration.Current.DisableDateFolders;
-	        var orderParent = storeFolder;
-	        IContent yearNode = null;
-            IContent monthNode = null;
-            IContent dayNode = null;
+			var disableDateFolders = UwebshopConfiguration.Current.DisableDateFolders;
+			var orderParent = storeFolder;
+			IContent yearNode = null;
+			IContent monthNode = null;
+			IContent dayNode = null;
 
-	        if (!disableDateFolders)
-	        {
-	            Log.Instance.LogDebug("CreateOrderDocument STEP 7");
-	            var year = orderInfo.ConfirmDate.GetValueOrDefault().ToString("yyyy");
-	            var month = orderInfo.ConfirmDate.GetValueOrDefault().ToString("MM");
-	            var day = orderInfo.ConfirmDate.GetValueOrDefault().ToString("dd");
+			if (!disableDateFolders)
+			{
+				Log.Instance.LogDebug("CreateOrderDocument STEP 7");
+				var year = orderInfo.ConfirmDate.GetValueOrDefault().ToString("yyyy");
+				var month = orderInfo.ConfirmDate.GetValueOrDefault().ToString("MM");
+				var day = orderInfo.ConfirmDate.GetValueOrDefault().ToString("dd");
 
-	            Log.Instance.LogDebug("CreateOrderDocument STEP 8");
-	            yearNode = GetOrCreateChildContentWithName(storeFolder, year, contentToSaveAndPublish,
-	                DateFolder.NodeAlias);
+				Log.Instance.LogDebug("CreateOrderDocument STEP 8");
+				yearNode = GetOrCreateChildContentWithName(storeFolder, year, contentToSaveAndPublish,
+					DateFolder.NodeAlias);
 
-	            Log.Instance.LogDebug("CreateOrderDocument STEP 9");
-	            monthNode = GetOrCreateChildContentWithName(yearNode, month, contentToSaveAndPublish,
-	                DateFolder.NodeAlias);
+				Log.Instance.LogDebug("CreateOrderDocument STEP 9");
+				monthNode = GetOrCreateChildContentWithName(yearNode, month, contentToSaveAndPublish,
+					DateFolder.NodeAlias);
 
-	            Log.Instance.LogDebug("CreateOrderDocument STEP 10");
-                dayNode = GetOrCreateChildContentWithName(monthNode, day, contentToSaveAndPublish, DateFolder.NodeAlias);
-                Log.Instance.LogDebug("CreateOrderDocument STEP 11");
-                orderParent = dayNode;
-	        }
+				Log.Instance.LogDebug("CreateOrderDocument STEP 10");
+				dayNode = GetOrCreateChildContentWithName(monthNode, day, contentToSaveAndPublish, DateFolder.NodeAlias);
+				Log.Instance.LogDebug("CreateOrderDocument STEP 11");
+				orderParent = dayNode;
+			}
 
-            var orderDoc = GetOrCreateChildContentWithName(orderParent, orderInfo.OrderNumber, contentToSaveAndPublish,
-	            Order.NodeAlias);
+			var orderDoc = GetOrCreateChildContentWithName(orderParent, orderInfo.OrderNumber, contentToSaveAndPublish,
+				Order.NodeAlias);
 
-	        if (orderDoc.HasProperty("orderGuid"))
-	            orderDoc.SetValue("orderGuid", orderInfo.UniqueOrderId.ToString());
-            if (orderDoc.HasProperty("orderDetails"))
-                orderDoc.SetValue("orderDetails", orderInfo.UniqueOrderId.ToString());
-	        if (orderDoc.HasProperty("orderPaid"))
-	            orderDoc.SetValue("orderPaid", orderInfo.Paid);
+			if (orderDoc.HasProperty("orderGuid"))
+				orderDoc.SetValue("orderGuid", orderInfo.UniqueOrderId.ToString());
+			if (orderDoc.HasProperty("orderDetails"))
+				orderDoc.SetValue("orderDetails", orderInfo.UniqueOrderId.ToString());
+			if (orderDoc.HasProperty("orderPaid"))
+				orderDoc.SetValue("orderPaid", orderInfo.Paid);
 
-	        SetCustomProperties(orderInfo.CustomerInfo.CustomerInformation, orderDoc, "customer");
-	        SetCustomProperties(orderInfo.CustomerInfo.ShippingInformation, orderDoc, "shipping");
-	        SetCustomProperties(orderInfo.CustomerInfo.ExtraInformation, orderDoc, "extra");
+			SetCustomProperties(orderInfo.CustomerInfo.CustomerInformation, orderDoc, "customer");
+			SetCustomProperties(orderInfo.CustomerInfo.ShippingInformation, orderDoc, "shipping");
+			SetCustomProperties(orderInfo.CustomerInfo.ExtraInformation, orderDoc, "extra");
 
-	        foreach (var orderline in orderInfo.OrderLines)
-	        {
-	            var productInfo = orderline.ProductInfo;
-	            var contentTypeAlias =
-	                contentTypeService.GetAllContentTypes()
-	                    .Select(ct => ct.Alias)
-	                    .FirstOrDefault(
-	                        alias =>
-	                            productInfo.DocTypeAlias != null &&
-	                            alias == productInfo.DocTypeAlias.Replace(Product.NodeAlias, OrderedProduct.NodeAlias)) ??
-	                OrderedProduct.NodeAlias;
-	            var orderedProductDoc = contentService.CreateContent(productInfo.Title, orderDoc, contentTypeAlias);
-	            contentToSaveAndPublish.Add(orderedProductDoc);
+			foreach (var orderline in orderInfo.OrderLines)
+			{
+				var productInfo = orderline.ProductInfo;
+				var contentTypeAlias =
+					contentTypeService.GetAllContentTypes()
+						.Select(ct => ct.Alias)
+						.FirstOrDefault(
+							alias =>
+								productInfo.DocTypeAlias != null &&
+								alias == productInfo.DocTypeAlias.Replace(Product.NodeAlias, OrderedProduct.NodeAlias)) ??
+					OrderedProduct.NodeAlias;
+				var orderedProductDoc = contentService.CreateContent(productInfo.Title, orderDoc, contentTypeAlias);
+				contentToSaveAndPublish.Add(orderedProductDoc);
 
-	            SetProperty(orderedProductDoc, "productId", productInfo.Id);
-	            SetProperty(orderedProductDoc, "title", productInfo.Title);
-	            SetProperty(orderedProductDoc, "sku", productInfo.SKU);
-	            SetProperty(orderedProductDoc, "weight", productInfo.Weight.ToString());
-	            SetProperty(orderedProductDoc, "length", productInfo.Length.ToString());
-	            SetProperty(orderedProductDoc, "height", productInfo.Height.ToString());
-	            SetProperty(orderedProductDoc, "width", productInfo.Width.ToString());
-	            SetProperty(orderedProductDoc, "orderedProductDiscountPercentage",
-	                productInfo.DiscountPercentage.ToString());
-	            SetProperty(orderedProductDoc, "orderedProductDiscountAmount", productInfo.DiscountAmountInCents.ToString());
-	            SetProperty(orderedProductDoc, "vat", productInfo.Vat.ToString());
-	            SetProperty(orderedProductDoc, "price", productInfo.OriginalPriceInCents.ToString());
-	            SetProperty(orderedProductDoc, "ranges", productInfo.RangesString ?? string.Empty);
-	            SetProperty(orderedProductDoc, "itemCount", productInfo.ItemCount.GetValueOrDefault(1).ToString());
+				SetProperty(orderedProductDoc, "productId", productInfo.Id);
+				SetProperty(orderedProductDoc, "title", productInfo.Title);
+				SetProperty(orderedProductDoc, "sku", productInfo.SKU);
+				SetProperty(orderedProductDoc, "weight", productInfo.Weight.ToString());
+				SetProperty(orderedProductDoc, "length", productInfo.Length.ToString());
+				SetProperty(orderedProductDoc, "height", productInfo.Height.ToString());
+				SetProperty(orderedProductDoc, "width", productInfo.Width.ToString());
+				SetProperty(orderedProductDoc, "orderedProductDiscountPercentage",
+					productInfo.DiscountPercentage.ToString());
+				SetProperty(orderedProductDoc, "orderedProductDiscountAmount", productInfo.DiscountAmountInCents.ToString());
+				SetProperty(orderedProductDoc, "vat", productInfo.Vat.ToString());
+				SetProperty(orderedProductDoc, "price", productInfo.OriginalPriceInCents.ToString());
+				SetProperty(orderedProductDoc, "ranges", productInfo.RangesString ?? string.Empty);
+				SetProperty(orderedProductDoc, "itemCount", productInfo.ItemCount.GetValueOrDefault(1).ToString());
 
-	            SetCustomProperties(orderline.CustomData, orderedProductDoc, null);
+				SetCustomProperties(orderline.CustomData, orderedProductDoc, null);
 
-	            foreach (var variant in orderline.ProductInfo.ProductVariants)
-	            {
-	                var variantContentTypeAlias =
-	                    contentTypeService.GetAllContentTypes()
-	                        .Select(ct => ct.Alias)
-	                        .FirstOrDefault(
-	                            alias =>
-	                                variant.DocTypeAlias != null &&
-	                                alias == variant.DocTypeAlias.Replace(Product.NodeAlias, OrderedProduct.NodeAlias)) ??
-	                    OrderedProductVariant.NodeAlias;
+				foreach (var variant in orderline.ProductInfo.ProductVariants)
+				{
+					var variantContentTypeAlias =
+						contentTypeService.GetAllContentTypes()
+							.Select(ct => ct.Alias)
+							.FirstOrDefault(
+								alias =>
+									variant.DocTypeAlias != null &&
+									alias == variant.DocTypeAlias.Replace(Product.NodeAlias, OrderedProduct.NodeAlias)) ??
+						OrderedProductVariant.NodeAlias;
 
-	                var variantDoc = contentService.CreateContent(variant.Title, orderedProductDoc, variantContentTypeAlias);
-	                contentToSaveAndPublish.Add(variantDoc);
+					var variantDoc = contentService.CreateContent(variant.Title, orderedProductDoc, variantContentTypeAlias);
+					contentToSaveAndPublish.Add(variantDoc);
 
-	                SetProperty(variantDoc, "variantId", variant.Id.ToString());
-	                SetProperty(variantDoc, "title", variant.Title);
-	                SetProperty(variantDoc, "group", variant.Group);
-	                SetProperty(variantDoc, "sku", variant.SKU);
-	                SetProperty(variantDoc, "weight", variant.Weight.ToString());
-	                SetProperty(variantDoc, "price", variant.PriceInCents.ToString());
-	                SetProperty(variantDoc, "ranges", variant.RangesString ?? string.Empty);
-	                SetProperty(variantDoc, "discountPercentage", variant.DiscountPercentage.ToString());
-	                SetProperty(variantDoc, "discountAmount", variant.DiscountAmountInCents.ToString());
-	            }
-	        }
+					SetProperty(variantDoc, "variantId", variant.Id.ToString());
+					SetProperty(variantDoc, "title", variant.Title);
+					SetProperty(variantDoc, "group", variant.Group);
+					SetProperty(variantDoc, "sku", variant.SKU);
+					SetProperty(variantDoc, "weight", variant.Weight.ToString());
+					SetProperty(variantDoc, "price", variant.PriceInCents.ToString());
+					SetProperty(variantDoc, "ranges", variant.RangesString ?? string.Empty);
+					SetProperty(variantDoc, "discountPercentage", variant.DiscountPercentage.ToString());
+					SetProperty(variantDoc, "discountAmount", variant.DiscountAmountInCents.ToString());
+				}
+			}
 
-	        contentService.Save(contentToSaveAndPublish);
-            contentService.Publish(storeFolder);
+			contentService.Save(contentToSaveAndPublish);
+			contentService.Publish(storeFolder);
 
-	        if (!disableDateFolders)
-	        {
-	            if (yearNode != null)
-	            {
-	                contentService.Publish(yearNode);
+			if (!disableDateFolders)
+			{
+				if (yearNode != null)
+				{
+					contentService.Publish(yearNode);
 
-	                if (monthNode != null)
-	                {
-	                    contentService.Publish(monthNode);
+					if (monthNode != null)
+					{
+						contentService.Publish(monthNode);
 
-	                    if (dayNode != null)
-	                    {
-	                        contentService.Publish(dayNode);
-	                    }
-	                }
-	            }
-	        }
+						if (dayNode != null)
+						{
+							contentService.Publish(dayNode);
+						}
+					}
+				}
+			}
 
-	        orderInfo.OrderNodeId = orderDoc.Id;
-	        orderInfo.Save();
+			orderInfo.OrderNodeId = orderDoc.Id;
+			orderInfo.Save();
 
-	        return orderDoc;
-	    }
+			return orderDoc;
+		}
 
-	    public int GetOrCreateOrderContent(OrderInfo orderInfo)
-	    {
-	        var contentService = _contentService;
+		public int GetOrCreateOrderContent(OrderInfo orderInfo)
+		{
+			var contentService = _contentService;
 
-	        if (orderInfo != null)
-	        {
-	            if (orderInfo.OrderNodeId == 0)
-	            {
-	                
-	                var orderDoc = CreateOrderContent(orderInfo);
+			if (orderInfo != null)
+			{
+				if (orderInfo.OrderNodeId == 0)
+				{
+					
+					var orderDoc = CreateOrderContent(orderInfo);
 
-	                if (orderDoc != null)
-	                {
-	                    return orderDoc.Id;
-	                }
-	            }
-	            else
-	            {
-                    var content = contentService.GetById(orderInfo.OrderNodeId);
+					if (orderDoc != null)
+					{
+						return orderDoc.Id;
+					}
+				}
+				else
+				{
+					var content = contentService.GetById(orderInfo.OrderNodeId);
 
-	                if (content.Trashed || content.Name != orderInfo.OrderNumber)
-	                {
-	                    var orderDoc = CreateOrderContent(orderInfo);
+					if (content.Trashed || content.Name != orderInfo.OrderNumber)
+					{
+						var orderDoc = CreateOrderContent(orderInfo);
 
-	                    if (orderDoc != null)
-	                    {
-	                        return orderDoc.Id;
-	                    }
-	                }
+						if (orderDoc != null)
+						{
+							return orderDoc.Id;
+						}
+					}
 
-	                return orderInfo.OrderNodeId;
-	            }
-	        }
+					return orderInfo.OrderNodeId;
+				}
+			}
 
-	        return 0;
-	    }
+			return 0;
+		}
 
-	    // untested internally used functionality, keep as small as possible
+		// untested internally used functionality, keep as small as possible
 		/// <summary>
 		/// Creates the order document.
 		/// </summary>
 		/// <param name="orderInfo">The order information.</param>
 		public void CreateOrderDocument(OrderInfo orderInfo)
 		{
-            var orderDoc = CreateOrderContent(orderInfo);
+			var orderDoc = CreateOrderContent(orderInfo);
 
-		    if (orderDoc != null && !string.IsNullOrEmpty(orderDoc.Path))
-		    {
-		        if (BasePage.Current != null && orderInfo.OrderNodeId != 0)
-		        {
-		            BasePage.Current.ClientTools.SyncTree(orderDoc.Path, true);
-		            BasePage.Current.ClientTools.ChangeContentFrameUrl(string.Concat("editContent.aspx?id=",
-		                orderInfo.OrderNodeId));
-		        }
-		    }
+			if (orderDoc != null && !string.IsNullOrEmpty(orderDoc.Path))
+			{
+				if (BasePage.Current != null && orderInfo.OrderNodeId != 0)
+				{
+					BasePage.Current.ClientTools.SyncTree(orderDoc.Path, true);
+					BasePage.Current.ClientTools.ChangeContentFrameUrl(string.Concat("editContent.aspx?id=",
+						orderInfo.OrderNodeId));
+				}
+			}
 		}
 
 		private static void SetCustomProperties(XElement customerInformation, IContent orderDoc, string propertyAliasStart)

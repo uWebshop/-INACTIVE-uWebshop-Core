@@ -19,15 +19,15 @@ namespace uWebshop.Domain.Interfaces
 		string Alias { get; }
 	}
 
-    public interface ICustomerGroup
-    {
-        /// <summary>
-        /// Gets the alias.
-        /// </summary>
-        /// <value>
-        /// The alias.
-        /// </value>
-        string Alias { get; }
-    }
+	public interface ICustomerGroup
+	{
+		/// <summary>
+		/// Gets the alias.
+		/// </summary>
+		/// <value>
+		/// The alias.
+		/// </value>
+		string Alias { get; }
+	}
 
 }

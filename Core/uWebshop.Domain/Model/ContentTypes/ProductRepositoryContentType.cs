@@ -3,7 +3,7 @@
 	/// <summary>
 	/// 
 	/// </summary>
-    [ContentType(ParentContentType = typeof(Catalog), Name = "Product Repository", Description = "#ProductRepositoryDescription", Alias = "uwbsProductRepository", IconClass = IconClass.barcode, Icon = ContentIcon.BoxSearchResults, Thumbnail = ContentThumbnail.Folder, AllowedChildTypes = new[] { typeof(Product), typeof(ProductVariant) })]
+	[ContentType(ParentContentType = typeof(Catalog), Name = "Product Repository", Description = "#ProductRepositoryDescription", Alias = "uwbsProductRepository", IconClass = IconClass.barcode, Icon = ContentIcon.BoxSearchResults, Thumbnail = ContentThumbnail.Folder, AllowedChildTypes = new[] { typeof(Product), typeof(ProductVariant) })]
 	public class ProductRepositoryContentType
 	{
 		internal static string NodeAlias;

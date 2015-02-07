@@ -27,28 +27,28 @@ namespace uWebshop.Umbraco.Repositories
 
 			discount.Items = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.products, localization, fields).Split(',').Select(id => Common.Helpers.ParseInt(id)).Distinct().Where(id => id > 0).ToList();
 
-		    var categories = discount.Items.Select(id => DomainHelper.GetCategoryById(id)).Where(x => x != null).ToList();
-            var products = discount.Items.Select(id => DomainHelper.GetProductById(id)).Where(x => x != null).ToList();
+			var categories = discount.Items.Select(id => DomainHelper.GetCategoryById(id)).Where(x => x != null).ToList();
+			var products = discount.Items.Select(id => DomainHelper.GetProductById(id)).Where(x => x != null).ToList();
 
-            var discountProducts = new List<IProduct>();
+			var discountProducts = new List<IProduct>();
 
-		    foreach (var category in categories)
-		    {
-		        foreach (var catProduct in category.Products)
-		        {
-                    if (discountProducts.All(x => x.Id != catProduct.Id))
-		            {
-		                discountProducts.Add(catProduct);
-		            }
-		        }
-		    }
+			foreach (var category in categories)
+			{
+				foreach (var catProduct in category.Products)
+				{
+					if (discountProducts.All(x => x.Id != catProduct.Id))
+					{
+						discountProducts.Add(catProduct);
+					}
+				}
+			}
 
-		    foreach (var product in products.Where(product => discountProducts.All(x => product != null && x.Id != product.Id)))
-		    {
-		        discountProducts.Add(product);
-		    }
-            
-		    discount.Products = discountProducts;
+			foreach (var product in products.Where(product => discountProducts.All(x => product != null && x.Id != product.Id)))
+			{
+				discountProducts.Add(product);
+			}
+			
+			discount.Products = discountProducts;
 
 			discount.ProductVariants = discount.Items.Select(id => DomainHelper.GetProductVariantById(id)).Where(variant => variant != null);
 

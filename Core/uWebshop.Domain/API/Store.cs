@@ -15,7 +15,7 @@ namespace uWebshop.API
 	/// </summary>
 	public static class Store
 	{
-		private static ConcurrentDictionary<string, string> _isoCurrencySymbolMapping = new ConcurrentDictionary<string, string>();
+		private static readonly ConcurrentDictionary<string, string> _isoCurrencySymbolMapping = new ConcurrentDictionary<string, string>();
 
 		/// <summary>
 		/// Gets the store.
@@ -56,11 +56,9 @@ namespace uWebshop.API
 		/// <returns></returns>
 		public static IEnumerable<Country> GetAllCountries(string storeAlias = null, string currencyCode = null)
 		{
-			return
-				IO.Container.Resolve<ICountryRepository>()
+			return IO.Container.Resolve<ICountryRepository>()
 					.GetAllCountries(StoreHelper.GetLocalizationOrCurrent(storeAlias, currencyCode));
 		}
-
 
 		/// <summary>
 		/// Get the full country name based on the country code country.xml or country_storealias.xml
@@ -69,21 +67,21 @@ namespace uWebshop.API
 		/// <returns></returns>
 		public static string GetCountryNameFromCountryCode(string countryCode)
 		{
-            var localisation = GetCurrentLocalization();
+			var localisation = GetCurrentLocalization();
 
-            if (localisation != null)
-            {
-                var localCountries = IO.Container.Resolve<ICountryRepository>().GetAllCountries(localisation);
+			if (localisation != null)
+			{
+				var localCountries = IO.Container.Resolve<ICountryRepository>().GetAllCountries(localisation);
 
-                if (localCountries != null)
-                {
-                    var country = localCountries.FirstOrDefault(x => x.Code == countryCode);
-            
-                    return country != null ? country.Name : countryCode;
-                }
-            }
+				if (localCountries != null)
+				{
+					var country = localCountries.FirstOrDefault(x => x.Code == countryCode);
+			
+					return country != null ? country.Name : countryCode;
+				}
+			}
 
-            return null;
+			return null;
 		}
 
 		/// <summary>
@@ -106,7 +104,6 @@ namespace uWebshop.API
 				}).Where(ri => ri != null && ri.ISOCurrencySymbol == ISOCurrencySymbol).Select(ri => ri.CurrencySymbol).FirstOrDefault() ?? string.Empty);
 		}
 
-
 		/// <summary>
 		/// Create a basic IPrice object
 		/// </summary>
@@ -119,6 +116,5 @@ namespace uWebshop.API
 			var localization = StoreHelper.GetLocalizationOrCurrent(storeAlias, currencyCode);
 			return Price.CreateBasicPrice(price, localization);
 		}
-
 	}
 }

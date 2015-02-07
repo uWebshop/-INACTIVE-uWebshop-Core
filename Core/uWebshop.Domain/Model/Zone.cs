@@ -7,19 +7,18 @@ using uWebshop.Domain.Helpers;
 
 namespace uWebshop.Domain
 {
-    [ContentType(ParentContentType = typeof(PaymentProviderZoneSectionContentType), SortOrder = 99, Name = "Payment Provider Zone", Description = "#PaymentProviderZoneDescription", Alias = "uwbsPaymentProviderZone", Icon = ContentIcon.MapPin, Thumbnail = ContentThumbnail.Folder)]
+	[ContentType(ParentContentType = typeof(PaymentProviderZoneSectionContentType), SortOrder = 99, Name = "Payment Provider Zone", Description = "#PaymentProviderZoneDescription", Alias = "uwbsPaymentProviderZone", Icon = ContentIcon.MapPin, Thumbnail = ContentThumbnail.Folder)]
 	internal class PaymentProviderZone : Zone
 	{
 		public static string NodeAlias;
 	}
 
-    [ContentType(ParentContentType = typeof(ShippingProviderZoneSectionContentType), SortOrder = 99, Name = "Shipping Provider Zone", Description = "#ShippingProviderZoneDescription", Alias = "uwbsShippingProviderZone", Icon = ContentIcon.MapPin, Thumbnail = ContentThumbnail.Folder)]
+	[ContentType(ParentContentType = typeof(ShippingProviderZoneSectionContentType), SortOrder = 99, Name = "Shipping Provider Zone", Description = "#ShippingProviderZoneDescription", Alias = "uwbsShippingProviderZone", Icon = ContentIcon.MapPin, Thumbnail = ContentThumbnail.Folder)]
 	internal class ShippingProviderZone : Zone
 	{
 		public static string NodeAlias;
 	}
-
-
+	
 	/// <summary>
 	/// 
 	/// </summary>
