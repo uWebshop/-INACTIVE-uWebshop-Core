@@ -58,7 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assembly.cs" />
-    <Compile Include="OrderDinges.cs" />
+    <Compile Include="PetaPocoSpike.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Umbraco6Addon.cs" />
     <Compile Include="UmbracoVersion.cs" />

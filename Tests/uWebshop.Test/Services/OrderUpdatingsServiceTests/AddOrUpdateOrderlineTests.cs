@@ -14,13 +14,12 @@ namespace uWebshop.Test.Services.OrderUpdatingsServiceTests
 	public class AddOrUpdateOrderlineTests
 	{
 		[Test]
-		public void asf()
+		public void TestAddOrUpdateOrderLine()
 		{
 			IOC.UnitTest();
 
 			var productDiscount = DefaultFactoriesAndSharedFunctionality.CreateProductDiscountPercentage(36);
 			productDiscount.RangesString = new List<Range> {new Range {From = 1, To = 20, PriceInCents = 10000}}.ToRangesString();
-			//productDiscount.Ranges.Add(new Range{From = 1, To = 20, PriceInCents = 1000});
 			var product = DefaultFactoriesAndSharedFunctionality.CreateProductInfo(5000, 5, productDiscount);
 			var order = DefaultFactoriesAndSharedFunctionality.CreateIncompleteOrderInfo(product);
 

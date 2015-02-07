@@ -49,7 +49,7 @@ namespace uWebshop.Test
 			orderInfo.Status = OrderStatus.Incomplete;
 			orderInfo.OrderDiscountsFactory = () =>
 			{
-				Console.WriteLine("Factory called");
+				//Console.WriteLine("Factory called");
 				return IOC.OrderDiscountService.Resolve().GetApplicableDiscountsForOrder(orderInfo, orderInfo.Localization).ToList();
 			};
 			//orderInfo.VATChecker = hmm  => mock if needed

@@ -15,14 +15,14 @@ namespace uWebshop.Domain.Services
 	internal class OrderService : IOrderService
 	{
 		private readonly IOrderRepository _orderRepository;
-		private readonly IVatCalculationStrategy _defaultVatCalculationStrategy;
+		private readonly IVatCalculationStrategy _newOrdersDefaultVatCalculationStrategy;
 		private readonly IStoreService _storeService;
 
-		public OrderService(IStoreService storeService, IOrderRepository orderRepository, IVatCalculationStrategy defaultVatCalculationStrategy)
+		public OrderService(IStoreService storeService, IOrderRepository orderRepository, IVatCalculationStrategy newOrdersDefaultVatCalculationStrategy)
 		{
 			_storeService = storeService;
 			_orderRepository = orderRepository;
-			_defaultVatCalculationStrategy = defaultVatCalculationStrategy;
+			_newOrdersDefaultVatCalculationStrategy = newOrdersDefaultVatCalculationStrategy;
 		}
 
 		public OrderInfo CreateOrder()
@@ -517,10 +517,10 @@ namespace uWebshop.Domain.Services
 		public List<OrderValidationError> ValidateCustomValidations(OrderInfo orderInfo)
 		{
 			var errors = new List<OrderValidationError>();
-			foreach (var customValidation in orderInfo.CustomOrderValiations.Where(customValidation => !customValidation.condition(orderInfo)))
+			foreach (var customValidation in orderInfo.CustomOrderValiations.Where(customValidation => !customValidation.Condition(orderInfo)))
 			{
-				Log.Instance.LogWarning("VALIDATECUSTOMER ERROR CustomOrderValiations: " + customValidation.errorDictionaryItem);
-				errors.Add(new OrderValidationError {Key = customValidation.errorDictionaryItem(orderInfo)});
+				Log.Instance.LogWarning("VALIDATECUSTOMER ERROR CustomOrderValiations: " + customValidation.ErrorDictionaryItem);
+				errors.Add(new OrderValidationError {Key = customValidation.ErrorDictionaryItem(orderInfo)});
 			}
 			return errors;
 		}
@@ -598,7 +598,7 @@ namespace uWebshop.Domain.Services
 			order.StoreOrderReferenceId = null;
 			order.DatabaseId = 0;
 
-			order.VatCalculationStrategy = _defaultVatCalculationStrategy;
+			order.VatCalculationStrategy = _newOrdersDefaultVatCalculationStrategy;
 			//order.EventsOn = false;
 			order.Paid = false;
 			order.Status = OrderStatus.Incomplete;

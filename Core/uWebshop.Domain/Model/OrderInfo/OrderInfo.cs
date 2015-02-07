@@ -121,7 +121,7 @@ namespace uWebshop.Domain
 		/// <param name="orderInfo">The order information.</param>
 		/// <param name="e">The <see cref="OrderFulfilledChangedEventArgs"/> instance containing the event data.</param>
 		public delegate void OrderFulfilledChangedEventHandler(OrderInfo orderInfo, OrderFulfillChangedEventArgs e);
-		
+
 		/// <summary>
 		/// Occurs when [before order updated].
 		/// </summary>
@@ -196,13 +196,17 @@ namespace uWebshop.Domain
 		/// <summary>
 		/// The coupon codes data
 		/// </summary>
-		[Browsable(false)] [EditorBrowsable(EditorBrowsableState.Never)] [DebuggerBrowsable(DebuggerBrowsableState.Never)] [XmlArray("CouponCodes")] //[XmlArrayItem("CouponCode")]
+		[Browsable(false)]
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		[XmlArray("CouponCodes")] //[XmlArrayItem("CouponCode")]
 		public List<string> CouponCodesData = new List<string>();
-
+		
 		/// <summary>
 		/// The customer information
 		/// </summary>
-		[DataMember] public CustomerInfo CustomerInfo;
+		[DataMember]
+		public CustomerInfo CustomerInfo;
 
 		internal bool EventsOn = false;
 		internal bool LegacyDataReadBackMode = false;
@@ -211,29 +215,38 @@ namespace uWebshop.Domain
 		/// [Obsolete!! Use ConfirmDate] Gets the unique orderdate for the order
 		/// </summary>
 		//[Obsolete("Use ConfirmDate")] can't use [Obsolete] because of serialization
-		[Browsable(false)] [EditorBrowsable(EditorBrowsableState.Never)] [DebuggerBrowsable(DebuggerBrowsableState.Never)] [DataMember] public string OrderDate;
+		[Browsable(false)]
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		[DataMember]
+		public string OrderDate;
 
 		internal Func<List<IOrderDiscount>> OrderDiscountsFactory;
-		
+
 		/// <summary>
 		/// Gets the vat calculation strategy.
 		/// </summary>
 		/// <value>
 		/// The vat calculation strategy.
 		/// </value>
-		[Browsable(false)][EditorBrowsable(EditorBrowsableState.Never)][DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		[IgnoreDataMember][XmlIgnore]
+		[Browsable(false)]
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		[IgnoreDataMember]
+		[XmlIgnore]
 		public IVatCalculationStrategy VatCalculationStrategy { get; set; }
 
 		/// <summary>
 		/// Gets the unique ordernumber for the order
 		/// </summary>
-		[DataMember] public string OrderNumber;
+		[DataMember]
+		public string OrderNumber;
 
 		/// <summary>
 		/// The payment information
 		/// </summary>
-		[DataMember] public PaymentInfo PaymentInfo;
+		[DataMember]
+		public PaymentInfo PaymentInfo;
 
 		/// <summary>
 		/// Gets the payment provider costs of the order
@@ -248,7 +261,7 @@ namespace uWebshop.Domain
 			{
 				if (PaymentProviderOrderPercentage > 0)
 				{
-					return OrderTotalWithoutPaymentInCents*PaymentProviderOrderPercentage/10000;
+					return OrderTotalWithoutPaymentInCents * PaymentProviderOrderPercentage / 10000;
 				}
 				return PaymentProviderAmount;
 			}
@@ -261,22 +274,30 @@ namespace uWebshop.Domain
 		/// <summary>
 		/// The preference validate save action
 		/// </summary>
-		[Browsable(false)] [EditorBrowsable(EditorBrowsableState.Never)] [DebuggerBrowsable(DebuggerBrowsableState.Never)] public ValidateSaveAction ReValidateSaveAction; // version 2.1 hack
+		[Browsable(false)]
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		public ValidateSaveAction ReValidateSaveAction; // version 2.1 hack
 
 		/// <summary>
 		/// The revalidate order configuration load
 		/// </summary>
-		[Browsable(false)] [EditorBrowsable(EditorBrowsableState.Never)] [DebuggerBrowsable(DebuggerBrowsableState.Never)] public bool? RevalidateOrderOnLoad; // version 2.1 hack
+		[Browsable(false)]
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		public bool? RevalidateOrderOnLoad; // version 2.1 hack
 
 		/// <summary>
 		/// The shipping information
 		/// </summary>
-		[DataMember] public ShippingInfo ShippingInfo;
+		[DataMember]
+		public ShippingInfo ShippingInfo;
 
 		/// <summary>
 		/// Gets the shipping costs of the order
 		/// </summary>
-		[DataMember] public int ShippingProviderAmountInCents;
+		[DataMember]
+		public int ShippingProviderAmountInCents;
 
 		/// <summary>
 		/// The store information
@@ -298,13 +319,15 @@ namespace uWebshop.Domain
 		/// <summary>
 		/// The unique per store id for the order
 		/// </summary>
-		[DataMember] public int? StoreOrderReferenceId;
+		[DataMember]
+		public int? StoreOrderReferenceId;
 
 		/// <summary>
 		/// Unique Order Id
 		/// </summary>
-		[DataMember] public Guid UniqueOrderId;
-		
+		[DataMember]
+		public Guid UniqueOrderId;
+
 		/// <summary>
 		/// Gets the name given to this order.
 		/// </summary>
@@ -347,7 +370,7 @@ namespace uWebshop.Domain
 			//Log.Instance.LogDebug("SetStatus Start SetStatus :" + newStatus);
 			if (EventsOn && BeforeStatusChanged != null)
 			{
-				BeforeStatusChanged(this, new BeforeOrderStatusChangedEventArgs {OrderInfo = this, OrderStatus = _status});
+				BeforeStatusChanged(this, new BeforeOrderStatusChangedEventArgs { OrderInfo = this, OrderStatus = _status });
 			}
 			//Log.Instance.LogDebug("SetStatus After BeforeStatusChanged :" + newStatus);
 
@@ -365,7 +388,7 @@ namespace uWebshop.Domain
 			//Log.Instance.LogDebug("SetStatus Start AfterStatusChanged :" + newStatus);
 			if (EventsOn && AfterStatusChanged != null)
 			{
-				AfterStatusChanged(this, new AfterOrderStatusChangedEventArgs {OrderInfo = this, OrderStatus = _status, SendEmails = sendEmails});
+				AfterStatusChanged(this, new AfterOrderStatusChangedEventArgs { OrderInfo = this, OrderStatus = _status, SendEmails = sendEmails });
 			}
 			//Log.Instance.LogDebug("SetStatus End  :" + newStatus);
 		}
@@ -382,7 +405,7 @@ namespace uWebshop.Domain
 			ShippingInfo = new ShippingInfo();
 			PaymentInfo = new PaymentInfo();
 			StoreInfo = new StoreInfo();
-			
+
 			ResetDiscounts();
 
 			if (OrderLoaded != null)
@@ -393,14 +416,14 @@ namespace uWebshop.Domain
 		}
 
 		/// <summary>
-		///     Returns the ID of the order document node when it is created
-		///     if not this is 0
+		/// Returns the ID of the order document node when it is created
+		/// if not this is 0
 		/// </summary>
 		[DataMember]
 		public int OrderNodeId { get; set; }
 
 		/// <summary>
-		///     Gets the unique orderdate for the order
+		/// Gets the unique orderdate for the order
 		/// </summary>
 		[DataMember]
 		public DateTime? ConfirmDate
@@ -414,11 +437,8 @@ namespace uWebshop.Domain
 		}
 
 		/// <summary>
-		/// Gets or sets the paid.
+		/// Gets or sets whether this order is paid.
 		/// </summary>
-		/// <value>
-		/// The paid.
-		/// </value>
 		[DataMember(IsRequired = false)]
 		public bool? Paid
 		{
@@ -429,23 +449,17 @@ namespace uWebshop.Domain
 				{
 					try
 					{
-						OrderPaidChanged(this, new OrderPaidChangedEventArgs {OrderInfo = this, Paid = value.GetValueOrDefault()});
+						OrderPaidChanged(this, new OrderPaidChangedEventArgs { OrderInfo = this, Paid = value.GetValueOrDefault() });
 					}
 					catch
 					{
 						Log.Instance.LogError("OrderPaidChanged Event Failed for Order: " + UniqueOrderId);
 					}
 				}
-				PaidDate = value.GetValueOrDefault() ? (DateTime?) DateTime.Now : null;
+				PaidDate = value.GetValueOrDefault() ? (DateTime?)DateTime.Now : null;
 			}
 		}
 
-		/// <summary>
-		/// Gets or sets the paid.
-		/// </summary>
-		/// <value>
-		/// The paid.
-		/// </value>
 		[DataMember(IsRequired = false)]
 		public bool? Fulfilled
 		{
@@ -477,7 +491,7 @@ namespace uWebshop.Domain
 		public bool TermsAccepted { get; set; }
 
 		/// <summary>
-		///     Is the stock updated for this order?
+		/// Is the stock updated for this order?
 		/// </summary>
 		[DataMember(IsRequired = false)]
 		public bool StockUpdated { get; set; }
@@ -604,8 +618,6 @@ namespace uWebshop.Domain
 			{
 				if (OrderDiscountsFactory == null) return new List<Interfaces.IOrderDiscount>(); // is this correct? (needed for deserialization process of legacy orderinfo xml)
 				return OrderDiscountsFactory();
-				//return _orderDiscounts.Value;
-				//return DiscountService.GetApplicableDiscountsForOrder(this).ToList();
 			}
 		}
 
@@ -616,7 +628,7 @@ namespace uWebshop.Domain
 		}
 
 		/// <summary>
-		///     Is this order discounted?
+		/// Is this order discounted?
 		/// </summary>
 		[DataMember]
 		public string IsDiscounted
@@ -654,7 +666,7 @@ namespace uWebshop.Domain
 				if (!vatCountryCodes.Contains(CustomerInfo.CountryCode))
 				{
 					//Log.Instance.LogDebug("VATCharged FALSE: !vatCountryCodes.Contains(CustomerInfo.CountryCode)");
-					return (bool) (_vatCharged = false);
+					return (bool)(_vatCharged = false);
 				}
 
 				// If customer is from different country then the shop, and the country is in the vat country list
@@ -662,23 +674,23 @@ namespace uWebshop.Domain
 				// if there is no vat number on the order, there does not have to be a vat check done and VAT shoudl be paid
 				if (string.IsNullOrEmpty(CustomerInfo.VATNumber))
 				{
-					return (bool) (_vatCharged = true);
+					return (bool)(_vatCharged = true);
 				}
-				
+
 				// check if member has vat al valid set to profile
 				var cmsApplication = IO.Container.Resolve<ICMSApplication>();
 				if (cmsApplication.MemberLoggedIn())
 				{
 					if (cmsApplication.CurrentMemberInfo().VATNumberCheckedAsValid)
 					{
-						bool value = StoreInfo.CountryCode == CustomerInfo.CountryCode;
+						var value = StoreInfo.CountryCode == CustomerInfo.CountryCode;
 						Log.Instance.LogDebug("VATCharged " + value + ": Member VATNumberCheckedAsValid");
-						return (bool) (_vatCharged = value);
+						return (bool)(_vatCharged = value);
 					}
 				}
 
 				// do a vat check to the EU vat service
-				return (bool) (_vatCharged = !VATCheckService.VATNumberValid(CustomerInfo.VATNumber, this));
+				return (bool)(_vatCharged = !VATCheckService.VATNumberValid(CustomerInfo.VATNumber, this));
 			}
 			set { }
 		}
@@ -778,21 +790,7 @@ namespace uWebshop.Domain
 		[IgnoreDataMember]
 		public int OrderTotalWithoutPaymentInCents
 		{
-			get
-			{
-				return GetAmount(true, true, true) - PaymentProviderCostsWithVatInCents;
-
-				var totalInCents = OrderLineTotalInCents;
-
-				totalInCents -= DiscountAmountInCents; // substract order discount
-
-				if (!FreeShipping)
-				{
-					totalInCents += ShippingProviderAmountInCents;
-				}
-
-				return totalInCents;
-			}
+			get { return GetAmount(true, true, true) - PaymentProviderCostsWithVatInCents; }
 		}
 
 		/// <summary>
@@ -883,7 +881,7 @@ namespace uWebshop.Domain
 		/// <param name="errorDictionaryItem">The error dictionary item.</param>
 		public void RegisterCustomOrderValidation(Predicate<OrderInfo> condition, Func<OrderInfo, string> errorDictionaryItem)
 		{
-			_customValidations.Add(new CustomOrderValidation {condition = condition, errorDictionaryItem = errorDictionaryItem});
+			_customValidations.Add(new CustomOrderValidation { Condition = condition, ErrorDictionaryItem = errorDictionaryItem });
 		}
 
 		internal static OrderInfo CreateOrderInfoFromLegacyXmlString(string orderInfoXml, int databaseId = 0, string orderReferenceNumber = "")
@@ -907,8 +905,8 @@ namespace uWebshop.Domain
 				var discounts = new List<Interfaces.IOrderDiscount>();
 				if (orderInfo.DiscountAmountInCents != 0 || orderInfo._discountAmount != null)
 				{
-					var discount = orderInfo.DiscountAmountInCents > 0 ? orderInfo.DiscountAmountInCents : (int) (orderInfo._discountAmount.GetValueOrDefault()*100);
-					discounts.Add(new OrderDTO.OrderDiscount(orderInfo.Localization) {DiscountType = DiscountType.Amount, DiscountValue = discount, RequiredItemIds = new List<int>(), AffectedOrderlines = new List<int>(), MemberGroups = new List<string>()});
+					var discount = orderInfo.DiscountAmountInCents > 0 ? orderInfo.DiscountAmountInCents : (int)(orderInfo._discountAmount.GetValueOrDefault() * 100);
+					discounts.Add(new OrderDTO.OrderDiscount(orderInfo.Localization) { DiscountType = DiscountType.Amount, DiscountValue = discount, RequiredItemIds = new List<int>(), AffectedOrderlines = new List<int>(), MemberGroups = new List<string>() });
 				}
 
 				IO.Container.Resolve<IOrderService>().UseStoredDiscounts(orderInfo, discounts);
@@ -970,8 +968,8 @@ namespace uWebshop.Domain
 			OrderInfo orderInfo;
 			try
 			{
-				orderInfo = orderData.OrderXML.Contains("<OrderInfo ") 
-					? CreateOrderInfoFromLegacyXmlString(orderData.OrderXML) 
+				orderInfo = orderData.OrderXML.Contains("<OrderInfo ")
+					? CreateOrderInfoFromLegacyXmlString(orderData.OrderXML)
 					: CreateOrderInfoFromOrderDataObject<OrderDTO.Order>(orderData.OrderXML);
 			}
 			catch (Exception ex)
@@ -989,7 +987,7 @@ namespace uWebshop.Domain
 			orderInfo.DatabaseId = orderData.DatabaseId;
 			orderInfo.UniqueOrderId = orderData.UniqueId;
 
-			orderInfo.StoreInfo.Alias = orderData.StoreAlias; // todo: check if correct
+			orderInfo.StoreInfo.Alias = orderData.StoreAlias; // todo: create a fallback for when a store has been deleted or renamed
 			orderInfo.StoreOrderReferenceId = orderData.StoreOrderReferenceId;
 			orderInfo.OrderNumber = orderData.OrderReferenceNumber;
 
@@ -1019,7 +1017,7 @@ namespace uWebshop.Domain
 				{
 					orderUpdatingService.ChangeLocalization(orderInfo, StoreHelper.CurrentLocalization);
 				}
-					// todo: might not be the correct place to do this
+				// todo: might not be the correct place to do this
 				else if (orderInfo.Localization.CurrencyCode != StoreHelper.CurrentLocalization.CurrencyCode)
 				{
 					orderUpdatingService.ChangeLocalization(orderInfo, Model.Localization.CreateLocalization(orderInfo.Localization.Store, StoreHelper.CurrentLocalization.CurrencyCode));
@@ -1135,7 +1133,9 @@ namespace uWebshop.Domain
 			}
 
 			if (IO.Container.Resolve<IOrderUpdatingService>().ChangeOrderToIncompleteAndReturnTrueIfNotAllowed(this))
+			{
 				return false;
+			}
 
 			var documentTypeAlias = orderline.ProductInfo.CatalogProduct.NodeTypeAlias().Replace(Product.NodeAlias, OrderedProduct.NodeAlias);
 
@@ -1366,7 +1366,7 @@ namespace uWebshop.Domain
 		[DataMember]
 		public decimal Grandtotal
 		{
-			get { return GrandtotalInCents/100m; }
+			get { return GrandtotalInCents / 100m; }
 			set { }
 		}
 
@@ -1389,7 +1389,7 @@ namespace uWebshop.Domain
 		[DataMember]
 		public decimal OrderLineTotalWithVat
 		{
-			get { return OrderLineTotalWithVatInCents/100m; }
+			get { return OrderLineTotalWithVatInCents / 100m; }
 			set { }
 		}
 
@@ -1399,7 +1399,7 @@ namespace uWebshop.Domain
 		[DataMember]
 		public decimal OrderLineTotalWithoutVat
 		{
-			get { return OrderLineTotalWithoutVatInCents/100m; }
+			get { return OrderLineTotalWithoutVatInCents / 100m; }
 			set { }
 		}
 
@@ -1409,7 +1409,7 @@ namespace uWebshop.Domain
 		[DataMember]
 		public decimal TotalVat
 		{
-			get { return TotalVatInCents/100m; }
+			get { return TotalVatInCents / 100m; }
 			set { }
 		}
 
@@ -1419,7 +1419,7 @@ namespace uWebshop.Domain
 		[DataMember]
 		public decimal ShippingProviderVatAmount
 		{
-			get { return ShippingProviderVatAmountInCents/100m; }
+			get { return ShippingProviderVatAmountInCents / 100m; }
 			set { }
 		}
 
@@ -1429,7 +1429,7 @@ namespace uWebshop.Domain
 		[DataMember]
 		public decimal ShippingProviderCostsWithoutVat
 		{
-			get { return ShippingProviderCostsWithoutVatInCents/100m; }
+			get { return ShippingProviderCostsWithoutVatInCents / 100m; }
 			set { }
 		}
 
@@ -1439,7 +1439,7 @@ namespace uWebshop.Domain
 		[DataMember]
 		public decimal ShippingProviderCostsWithVat
 		{
-			get { return ShippingProviderCostsWithVatInCents/100m; }
+			get { return ShippingProviderCostsWithVatInCents / 100m; }
 			set { }
 		}
 
@@ -1449,7 +1449,7 @@ namespace uWebshop.Domain
 		[DataMember]
 		public decimal PaymentProviderVatAmount
 		{
-			get { return PaymentProviderVatAmountInCents/100m; }
+			get { return PaymentProviderVatAmountInCents / 100m; }
 			set { }
 		}
 
@@ -1459,7 +1459,7 @@ namespace uWebshop.Domain
 		[DataMember]
 		public decimal PaymentProviderCostsWithoutVat
 		{
-			get { return PaymentProviderCostsWithoutVatInCents/100m; }
+			get { return PaymentProviderCostsWithoutVatInCents / 100m; }
 			set { }
 		}
 
@@ -1469,7 +1469,7 @@ namespace uWebshop.Domain
 		[DataMember]
 		public decimal PaymentProviderCostsWithVat
 		{
-			get { return PaymentProviderCostsWithVatInCents/100m; }
+			get { return PaymentProviderCostsWithVatInCents / 100m; }
 			set { }
 		}
 
@@ -1482,7 +1482,7 @@ namespace uWebshop.Domain
 		[DataMember]
 		public decimal DiscountAmount
 		{
-			get { return _discountAmount ?? DiscountAmountInCents/100m; }
+			get { return _discountAmount ?? DiscountAmountInCents / 100m; }
 			set { _discountAmount = value; }
 		}
 
@@ -1495,7 +1495,7 @@ namespace uWebshop.Domain
 		[DataMember]
 		public decimal DiscountAmountWithVat
 		{
-			get { return DiscountAmountWithVatInCents/100m; }
+			get { return DiscountAmountWithVatInCents / 100m; }
 			set { }
 		}
 
@@ -1508,7 +1508,7 @@ namespace uWebshop.Domain
 		[DataMember]
 		public decimal DiscountAmountWithoutVat
 		{
-			get { return DiscountAmountWithoutVatInCents/100m; }
+			get { return DiscountAmountWithoutVatInCents / 100m; }
 			set { }
 		}
 
@@ -1518,7 +1518,7 @@ namespace uWebshop.Domain
 		[DataMember]
 		public decimal RegionalVat
 		{
-			get { return RegionalVatInCents/100m; }
+			get { return RegionalVatInCents / 100m; }
 			set { }
 		}
 
@@ -1528,7 +1528,7 @@ namespace uWebshop.Domain
 		[DataMember]
 		public decimal Subtotal
 		{
-			get { return SubtotalInCents/100m; }
+			get { return SubtotalInCents / 100m; }
 			set { }
 		}
 
@@ -1541,7 +1541,7 @@ namespace uWebshop.Domain
 		[DataMember]
 		public decimal ChargedAmount
 		{
-			get { return ChargedAmountInCents/100m; }
+			get { return ChargedAmountInCents / 100m; }
 			set { }
 		}
 
@@ -1636,7 +1636,7 @@ namespace uWebshop.Domain
 			BeforeOrderLineUpdatedEventArgs beforeUpdatedEventArgs = null;
 			if (BeforeOrderLineUpdated != null)
 			{
-				beforeUpdatedEventArgs = new BeforeOrderLineUpdatedEventArgs {OrderLine = orderLine};
+				beforeUpdatedEventArgs = new BeforeOrderLineUpdatedEventArgs { OrderLine = orderLine };
 				BeforeOrderLineUpdated(this, beforeUpdatedEventArgs);
 			}
 			return beforeUpdatedEventArgs;
@@ -1646,7 +1646,7 @@ namespace uWebshop.Domain
 		{
 			if (BeforeOrderLineCreated != null)
 			{
-				var afterCreatedEventArgs = new BeforeOrderLineCreatedEventArgs {OrderLine = null};
+				var afterCreatedEventArgs = new BeforeOrderLineCreatedEventArgs { OrderLine = null };
 
 				BeforeOrderLineCreated(this, afterCreatedEventArgs);
 			}
@@ -1656,7 +1656,7 @@ namespace uWebshop.Domain
 		{
 			if (AfterOrderLineCreated != null)
 			{
-				var afterCreatedEventArgs = new AfterOrderLineCreatedEventArgs {OrderLine = orderLine};
+				var afterCreatedEventArgs = new AfterOrderLineCreatedEventArgs { OrderLine = orderLine };
 
 				AfterOrderLineCreated(this, afterCreatedEventArgs);
 			}
@@ -1666,7 +1666,7 @@ namespace uWebshop.Domain
 		{
 			if (AfterOrderLineUpdated != null)
 			{
-				AfterOrderLineUpdated(this, new AfterOrderLineUpdatedEventArgs {OrderLine = orderLine});
+				AfterOrderLineUpdated(this, new AfterOrderLineUpdatedEventArgs { OrderLine = orderLine });
 			}
 		}
 
@@ -1675,7 +1675,7 @@ namespace uWebshop.Domain
 			BeforeOrderLineDeletedEventArgs beforeDeletedEventArgs = null;
 			if (BeforeOrderLineDeleted != null)
 			{
-				beforeDeletedEventArgs = new BeforeOrderLineDeletedEventArgs {OrderLine = orderLine};
+				beforeDeletedEventArgs = new BeforeOrderLineDeletedEventArgs { OrderLine = orderLine };
 				BeforeOrderLineDeleted(this, beforeDeletedEventArgs);
 			}
 			return beforeDeletedEventArgs;
@@ -1695,7 +1695,7 @@ namespace uWebshop.Domain
 		{
 			if (BeforeOrderUpdated != null)
 			{
-				BeforeOrderUpdated(this, new BeforeOrderUpdatedEventArgs {OrderInfo = this});
+				BeforeOrderUpdated(this, new BeforeOrderUpdatedEventArgs { OrderInfo = this });
 			}
 		}
 
@@ -1703,7 +1703,7 @@ namespace uWebshop.Domain
 		{
 			if (AfterOrderUpdated != null)
 			{
-				AfterOrderUpdated(this, new AfterOrderUpdatedEventArgs {OrderInfo = this});
+				AfterOrderUpdated(this, new AfterOrderUpdatedEventArgs { OrderInfo = this });
 			}
 		}
 
@@ -1728,6 +1728,7 @@ namespace uWebshop.Domain
 
 			var discountedTotal = discounted ? OrderDiscountEffects.GetDiscountedPrice(total, originalTotal) : total;
 			discountedTotal = Math.Max(0, discountedTotal);
+
 			discountedTotal += (inclVat ? PaymentProviderCostsWithVatInCents : PaymentProviderCostsWithoutVatInCents);
 			if (!FreeShipping)
 			{
@@ -1772,7 +1773,7 @@ namespace uWebshop.Domain
 				if (OrderLineTotalInCents != 0)
 				{
 					var totalPrice = GetOrderLineTotalAmount(true, false, true);
-					return OrderLines.Sum(line => line.Vat*line.SellableUnits.Sum(su => su.GetAmount(true, false, true))/totalPrice);
+					return OrderLines.Sum(line => line.Vat * line.SellableUnits.Sum(su => su.GetAmount(true, false, true)) / totalPrice);
 				}
 
 				return 0;
@@ -1803,9 +1804,9 @@ namespace uWebshop.Domain
 		public int DiscountAmountInCents
 		{
 			get { return DiscountAmountWithVatInCents; } //PricesAreIncludingVAT ? DiscountAmountWithVatInCents : DiscountAmountWithoutVatInCents; }
-			set { } 
+			set { }
 		}
-		
+
 		/// <summary>
 		/// Gets or sets the discount amount with vat in cents.
 		/// </summary>
@@ -1862,12 +1863,12 @@ namespace uWebshop.Domain
 			/// <summary>
 			/// The condition
 			/// </summary>
-			public Predicate<OrderInfo> condition;
+			public Predicate<OrderInfo> Condition;
 
 			/// <summary>
 			/// The error dictionary item
 			/// </summary>
-			public Func<OrderInfo, string> errorDictionaryItem;
+			public Func<OrderInfo, string> ErrorDictionaryItem;
 		}
 
 		internal void ResetDiscounts()
@@ -1908,7 +1909,7 @@ namespace uWebshop.Domain
 					var o = HttpContext.Current.Session["ConfirmFailed"];
 					if (o != null)
 					{
-						return (bool) o;
+						return (bool)o;
 					}
 				}
 
@@ -1935,9 +1936,10 @@ namespace uWebshop.Domain
 			set { if (HttpContext.Current != null && HttpContext.Current.Session != null) HttpContext.Current.Session["CustomerFailed"] = value; }
 		}
 
-		[IgnoreDataMember][XmlIgnore]
+		[IgnoreDataMember]
+		[XmlIgnore]
 		internal DiscountEffects OrderDiscountEffects;
-		
+
 		internal void ResetCachedValues()
 		{
 			_confirmDate = null;
@@ -1993,7 +1995,7 @@ namespace uWebshop.Domain
 		/// </value>
 		public bool Fulfilled { get; set; }
 	}
-	
+
 
 	/// <summary>
 	/// 

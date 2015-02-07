@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using NUnit.Framework;
 using uWebshop.Domain;
-using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
 using uWebshop.Test.Repositories;
 

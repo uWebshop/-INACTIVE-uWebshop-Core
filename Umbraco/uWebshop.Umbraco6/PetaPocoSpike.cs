@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Xml.Linq;
 using Umbraco.Core;
 using Umbraco.Core.Persistence;
 using Umbraco.Core.Persistence.DatabaseAnnotations;
 using uWebshop.Common;
-using uWebshop.Common.Interfaces;
-using uWebshop.DataAccess;
 
 namespace uWebshop.Umbraco6
 {
-	internal class OrderDinges
+	internal class PetaPocoSpike
 	{
 		public static List<OrderData> GetAllOrderInfos()
 		{
