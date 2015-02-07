@@ -1729,6 +1729,9 @@ namespace uWebshop.Domain
 			var discountedTotal = discounted ? OrderDiscountEffects.GetDiscountedPrice(total, originalTotal) : total;
 			discountedTotal = Math.Max(0, discountedTotal);
 
+			discountedTotal = inclVat ? VatCalculationStrategy.WithVat(PricesAreIncludingVAT, originalTotal, AverageOrderVatPercentage, discountedTotal) 
+				: VatCalculationStrategy.WithoutVat(PricesAreIncludingVAT, originalTotal, AverageOrderVatPercentage, discountedTotal);
+
 			discountedTotal += (inclVat ? PaymentProviderCostsWithVatInCents : PaymentProviderCostsWithoutVatInCents);
 			if (!FreeShipping)
 			{
