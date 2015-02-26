@@ -16,6 +16,7 @@ namespace uWebshop.Umbraco.Services
 	{
 		private readonly IProductService _productService;
 		private readonly IProductVariantService _productVariantService;
+		private readonly IProductVariantGroupService _productVariantGroupService;
 		private readonly ICategoryService _categoryService;
 		private readonly IOrderDiscountService _orderDiscountService;
 		private readonly IProductDiscountService _productDiscountService;
@@ -33,13 +34,14 @@ namespace uWebshop.Umbraco.Services
 
 		private readonly bool _manageUmbracoXMLCacheWhenLoadBalanced;
 
-		public UmbracoApplicationCacheManagingService(IProductService productService, IProductVariantService productVariantService, ICategoryService categoryService, 
+		public UmbracoApplicationCacheManagingService(IProductService productService, IProductVariantService productVariantService, IProductVariantGroupService productVariantGroupService, ICategoryService categoryService, 
 			IOrderDiscountService orderDiscountService, IProductDiscountService productDiscountService,
 			IProductRepository productRepository, ICategoryRepository categoryRepository, IProductVariantGroupRepository productVariantGroupRepository, IProductVariantRepository productVariantRepository,
 			IStoreService storeService, IApplicationCacheService applicationCacheService)//, IShippingProviderService shippingProviderService, IPaymentProviderService paymentProviderService)
 		{
 			_productService = productService;
 			_productVariantService = productVariantService;
+			_productVariantGroupService = productVariantGroupService;
 			_categoryService = categoryService;
 			_orderDiscountService = orderDiscountService;
 			_productDiscountService = productDiscountService;
@@ -198,6 +200,7 @@ namespace uWebshop.Umbraco.Services
 		{
 			_productService.FullResetCache();
 			_productVariantService.FullResetCache();
+			_productVariantGroupService.FullResetCache();
 			_categoryService.FullResetCache();
 			_orderDiscountService.FullResetCache();
 			_productDiscountService.FullResetCache();
