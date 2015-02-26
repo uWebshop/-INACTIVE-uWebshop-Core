@@ -93,8 +93,7 @@ namespace uWebshop.Domain.Services
 			{
 				return Guid.Empty;
 			}
-			var uwebshopConfiguration = UwebshopConfiguration.Current;
-			var cookieName = "OrderId" + (uwebshopConfiguration == null || uwebshopConfiguration.ShareBasketBetweenStores ? string.Empty : StoreHelper.GetCurrentStore().Alias);
+			var cookieName = OrderHelper.GetOrderCookieName();
 
 			var orderIdCookie = httpContext.Request.Cookies[cookieName];
 
