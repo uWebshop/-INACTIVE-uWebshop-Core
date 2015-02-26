@@ -49,7 +49,7 @@ namespace uWebshop.API
 
 			var membershipUser = Membership.GetUser();
 		  
-			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || (membershipUser != null && membershipUser.UserName == order.CustomerInfo.LoginName || UwebshopRequest.Current.PaymentProvider != null || OrderHelper.IsCompletedOrderWithinValidLifetime(order)) || (membershipUser == null && order.Status == OrderStatus.Wishlist))
+			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || (membershipUser != null && membershipUser.UserName == order.CustomerInfo.LoginName || UwebshopRequest.Current.PaymentProvider != null || OrderHelper.IsCompletedOrderWithinValidLifetime(order)) || order.Status == OrderStatus.Wishlist)
 			{
 				return CreateBasketFromOrderInfo(order);
 			}
