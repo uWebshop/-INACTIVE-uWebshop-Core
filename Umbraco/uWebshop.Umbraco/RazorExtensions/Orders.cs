@@ -163,7 +163,7 @@ namespace uWebshop.RazorExtensions
 		/// <returns></returns>
 		public static OrderInfo GetCompletedOrderForCurrentCustomer()
 		{
-			var cookieName = "CompletedOrderId" + (UwebshopConfiguration.Current.ShareBasketBetweenStores ? string.Empty : StoreHelper.GetCurrentStore().Alias);
+			var cookieName = OrderHelper.GetOrderCookieName(true);
 
 			var orderIdCookie = HttpContext.Current.Request.Cookies[cookieName];
 

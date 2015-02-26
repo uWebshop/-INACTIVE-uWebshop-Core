@@ -37,12 +37,23 @@ namespace uWebshop.Domain.Helpers
 		}
 
 		/// <summary>
+		/// Generates the Order cookie name
+		/// </summary>
+		/// <param name="isOrderComplete">Whether the order is complete or not</param>
+		public static string GetOrderCookieName(bool isOrderComplete = false)
+		{
+			var uwebshopConfiguration = UwebshopConfiguration.Current;
+			string cookiePrefix = (isOrderComplete ? "CompletedOrderId" : "OrderId");
+			return cookiePrefix + (uwebshopConfiguration == null || uwebshopConfiguration.ShareBasketBetweenStores ? string.Empty : StoreHelper.GetCurrentStore().UrlName);
+		}
+
+		/// <summary>
 		/// Sets the order cookie.
 		/// </summary>
 		/// <param name="orderInfo">The order information.</param>
 		public static void SetOrderCookie(OrderInfo orderInfo)
 		{
-			var cookieName = "OrderId" + (UwebshopConfiguration.Current.ShareBasketBetweenStores ? string.Empty : StoreHelper.GetCurrentStore().Alias);
+			var cookieName = GetOrderCookieName();
 
 			var minutesToAdd = 360;
 
@@ -69,7 +80,7 @@ namespace uWebshop.Domain.Helpers
 		public static string GetCompletedOrderCookie()
 		{
 			// todo: use UwebshopRequest for cache
-			var cookieName = "CompletedOrderId" + (UwebshopConfiguration.Current.ShareBasketBetweenStores ? string.Empty : StoreHelper.GetCurrentStore().Alias);
+			var cookieName = GetOrderCookieName(true);
 
 			var orderIdCookie = HttpContext.Current.Request.Cookies[cookieName];
 
@@ -82,7 +93,7 @@ namespace uWebshop.Domain.Helpers
 		/// <param name="orderInfo">The order information.</param>
 		public static void SetCompletedOrderCookie(OrderInfo orderInfo)
 		{
-			var cookieName = "CompletedOrderId" + (UwebshopConfiguration.Current.ShareBasketBetweenStores ? string.Empty : StoreHelper.GetCurrentStore().Alias);
+			var cookieName = GetOrderCookieName(true);
 
 			var cookie = new HttpCookie(cookieName, orderInfo.UniqueOrderId.ToString()) {Expires = DateTime.Now.AddMinutes(10)};
 
@@ -95,7 +106,7 @@ namespace uWebshop.Domain.Helpers
 		/// <param name="orderInfo">The order information.</param>
 		public static void RemoveOrderCookie(OrderInfo orderInfo)
 		{
-			var cookieName = "OrderId" + (UwebshopConfiguration.Current.ShareBasketBetweenStores ? string.Empty : StoreHelper.GetCurrentStore().Alias);
+			var cookieName = GetOrderCookieName();
 
 			var cookie = new HttpCookie(cookieName, string.Empty) {Expires = DateTime.Now.AddMinutes(-1)};
 
