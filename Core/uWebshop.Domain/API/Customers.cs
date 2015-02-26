@@ -219,7 +219,7 @@ namespace uWebshop.API
 				{
 					var wishlist = Orders.GetOrder(wishGuid);
 
-					if (wishlist.Status == OrderStatus.Wishlist)
+					if (wishlist != null && wishlist.Status == OrderStatus.Wishlist)
 					{
 						return (IWishlist)wishlist;
 					}
