@@ -50,14 +50,21 @@ namespace uWebshop.Umbraco.DataTypes.PaymentProviderAmountType
 				paymentProviderAmountTypeAmountText = "Amount";
 			}
 
-			var paymentProviderAmountTypeOrderPercentageText = library.GetDictionaryItem("PaymentProviderAmountTypeOrderPercentage");
-			if (string.IsNullOrEmpty(paymentProviderAmountTypeOrderPercentageText))
-			{
-				paymentProviderAmountTypeOrderPercentageText = "Percentage of order total";
-			}
+            var paymentProviderAmountTypeOrderPercentageText = library.GetDictionaryItem("PaymentProviderAmountTypeOrderPercentage");
+            if (string.IsNullOrEmpty(paymentProviderAmountTypeOrderPercentageText))
+            {
+                paymentProviderAmountTypeOrderPercentageText = "Percentage of order total";
+            }
 
-			_dlPaymentProviderTypes.Items.Add(new ListItem(paymentProviderAmountTypeAmountText, Common.PaymentProviderAmountType.Amount.ToString()));
-			_dlPaymentProviderTypes.Items.Add(new ListItem(paymentProviderAmountTypeOrderPercentageText, Common.PaymentProviderAmountType.OrderPercentage.ToString()));
+            var paymentProviderAmountTypeAmountAndOrderPercentageText = library.GetDictionaryItem("PaymentProviderAmountTypeAmountAndOrderPercentage");
+            if (string.IsNullOrEmpty(paymentProviderAmountTypeAmountAndOrderPercentageText))
+            {
+                paymentProviderAmountTypeOrderPercentageText = "Base amount plus Percentage of order total";
+            }
+
+            _dlPaymentProviderTypes.Items.Add(new ListItem(paymentProviderAmountTypeAmountText, Common.PaymentProviderAmountType.Amount.ToString()));
+            _dlPaymentProviderTypes.Items.Add(new ListItem(paymentProviderAmountTypeOrderPercentageText, Common.PaymentProviderAmountType.OrderPercentage.ToString()));
+            _dlPaymentProviderTypes.Items.Add(new ListItem(paymentProviderAmountTypeAmountAndOrderPercentageText, Common.PaymentProviderAmountType.AmountAndOrderPercentage.ToString()));
 
 			_dlPaymentProviderTypes.SelectedValue = _data.Value.ToString();
 

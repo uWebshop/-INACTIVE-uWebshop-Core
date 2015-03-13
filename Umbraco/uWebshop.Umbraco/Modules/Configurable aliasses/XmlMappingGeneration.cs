@@ -768,7 +768,8 @@ internal interface IPaymentProviderMethodAliassesService
 	string image { get; }
 	string price { get; }
 	string vat { get; }
-	string amountType { get; }
+    string amountType { get; }
+    string percentage { get; }
 }
 
 
@@ -789,7 +790,8 @@ public string image { get { return _xml.image ?? "image"; } }
 public string price { get { return _xml.price ?? "price"; } }
 public string vat { get { return _xml.vat ?? "vat"; } }
 public string amountType { get { return _xml.amountType ?? "amountType"; } }
-}
+public string percentage { get { return _xml.percentage ?? "percentage"; } }
+    }
 
 [XmlRoot(ElementName = "PaymentProviderMethod")]
 public struct PaymentProviderMethodAliassesXML {
@@ -802,6 +804,7 @@ public string ContentTypeAlias;
 	public string price;
 	public string vat;
 	public string amountType;
+    public string percentage;
 }
 
 internal interface IPaymentProviderRepositoryAliassesService
