@@ -259,21 +259,15 @@ namespace uWebshop.Domain
 		{
 			get
 			{
-                //if (PaymentProviderOrderPercentage > 0)
-                //{
-                //    return Convert.ToInt32(OrderTotalWithoutPaymentInCents * PaymentProviderOrderPercentage / 10000);
-                //}
-                //return PaymentProviderAmount;
-
-                if (PaymentProviderAmount > 0 && PaymentProviderOrderPercentage > 0)
-                {
-                    return Convert.ToInt32(PaymentProviderAmount + OrderTotalWithoutPaymentInCents * PaymentProviderOrderPercentage / 100);
-                }
-                if (PaymentProviderOrderPercentage > 0)
-                {
-                    return Convert.ToInt32(OrderTotalWithoutPaymentInCents * PaymentProviderOrderPercentage / 100);
-                }
-                return PaymentProviderAmount;
+		                if (PaymentProviderAmount > 0 && PaymentProviderOrderPercentage > 0)
+		                {
+		                    return Convert.ToInt32(PaymentProviderAmount + OrderTotalWithoutPaymentInCents * PaymentProviderOrderPercentage / 100);
+		                }
+		                if (PaymentProviderOrderPercentage > 0)
+		                {
+		                    return Convert.ToInt32(OrderTotalWithoutPaymentInCents * PaymentProviderOrderPercentage / 100);
+		                }
+		                return PaymentProviderAmount;
 			}
 			set { }
 		}
