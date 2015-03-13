@@ -175,6 +175,7 @@
 	{
 		Amount,
 		OrderPercentage,
+        AmountAndOrderPercentage
 	}
 
 	public enum DiscountOrderCondition

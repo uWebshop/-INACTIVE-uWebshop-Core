@@ -44,7 +44,7 @@ namespace uWebshop.Domain.OrderDTO
 	    public DateTime? FulfillDate;
 		public PaymentInfo PaymentInfo;
 		public int PaymentProviderPrice;
-		public int? PaymentProviderOrderPercentage;
+		public decimal? PaymentProviderOrderPercentage;
 		public ValidateSaveAction ReValidateSaveAction;
 		public int RegionalVatAmount;
 		public bool? RevalidateOrderOnLoad;

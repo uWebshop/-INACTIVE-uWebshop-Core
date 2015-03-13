@@ -259,17 +259,27 @@ namespace uWebshop.Domain
 		{
 			get
 			{
-				if (PaymentProviderOrderPercentage > 0)
-				{
-					return OrderTotalWithoutPaymentInCents * PaymentProviderOrderPercentage / 10000;
-				}
-				return PaymentProviderAmount;
+                //if (PaymentProviderOrderPercentage > 0)
+                //{
+                //    return Convert.ToInt32(OrderTotalWithoutPaymentInCents * PaymentProviderOrderPercentage / 10000);
+                //}
+                //return PaymentProviderAmount;
+
+                if (PaymentProviderAmount > 0 && PaymentProviderOrderPercentage > 0)
+                {
+                    return Convert.ToInt32(PaymentProviderAmount + OrderTotalWithoutPaymentInCents * PaymentProviderOrderPercentage / 100);
+                }
+                if (PaymentProviderOrderPercentage > 0)
+                {
+                    return Convert.ToInt32(OrderTotalWithoutPaymentInCents * PaymentProviderOrderPercentage / 100);
+                }
+                return PaymentProviderAmount;
 			}
 			set { }
 		}
 
 		internal int PaymentProviderAmount;
-		internal int PaymentProviderOrderPercentage;
+		internal decimal PaymentProviderOrderPercentage;
 
 		/// <summary>
 		/// The preference validate save action
@@ -790,7 +800,7 @@ namespace uWebshop.Domain
 		[IgnoreDataMember]
 		public int OrderTotalWithoutPaymentInCents
 		{
-			get { return GetAmount(true, true, true) - PaymentProviderCostsWithVatInCents; }
+            get { return GetAmount(true, true, true, false); }
 		}
 
 		/// <summary>
@@ -1718,8 +1728,14 @@ namespace uWebshop.Domain
 			return OrderLines.Sum(su => su.GetAmount(inclVat, discounted, ranged));
 		}
 
-		// todo: test
-		public int GetAmount(bool inclVat, bool discounted, bool ranged)
+        public int GetAmount(bool inclVat, bool discounted, bool ranged)
+        {
+            return GetAmount(inclVat,discounted,ranged,true);
+        }
+
+		// Mark 2014/2: todo: test
+        // this is Mark's method, Thom has added the includePaymentProvider attr to prevent a SO, the IAmountUnit interface requires the /\ above method.
+		public int GetAmount(bool inclVat, bool discounted, bool ranged, bool includePaymentProvider = true)
 		{
 			if (discounted)
 			{
@@ -1734,8 +1750,10 @@ namespace uWebshop.Domain
 			discountedTotal = inclVat ? VatCalculationStrategy.WithVat(PricesAreIncludingVAT, originalTotal, AverageOrderVatPercentage, discountedTotal) 
 				: VatCalculationStrategy.WithoutVat(PricesAreIncludingVAT, originalTotal, AverageOrderVatPercentage, discountedTotal);
 
-			discountedTotal += (inclVat ? PaymentProviderCostsWithVatInCents : PaymentProviderCostsWithoutVatInCents);
-			if (!FreeShipping)
+            if(includePaymentProvider)
+			    discountedTotal += (inclVat ? PaymentProviderCostsWithVatInCents : PaymentProviderCostsWithoutVatInCents);
+			
+            if (!FreeShipping)
 			{
 				discountedTotal += (inclVat ? ShippingProviderCostsWithVatInCents : ShippingProviderCostsWithoutVatInCents);
 			}

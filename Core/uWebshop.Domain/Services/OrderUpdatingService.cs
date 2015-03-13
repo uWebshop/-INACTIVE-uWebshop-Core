@@ -629,9 +629,18 @@ namespace uWebshop.Domain.Services
 			order.PaymentInfo.MethodTitle = paymentMethod.Title;
 
 			if (paymentMethod.AmountType == PaymentProviderAmountType.Amount)
+            {
 				order.PaymentProviderAmount = paymentMethod.PriceInCents;
-			else
-				order.PaymentProviderOrderPercentage = paymentMethod.PriceInCents;
+                order.PaymentProviderOrderPercentage = 0;
+            }
+			else if(paymentMethod.AmountType == PaymentProviderAmountType.OrderPercentage) {
+                order.PaymentProviderAmount = 0;
+				order.PaymentProviderOrderPercentage = paymentMethod.Percentage;
+            }
+            else if(paymentMethod.AmountType == PaymentProviderAmountType.AmountAndOrderPercentage) { 
+				order.PaymentProviderAmount = paymentMethod.PriceInCents;
+				order.PaymentProviderOrderPercentage = paymentMethod.Percentage;
+            }
 
 			order.ResetDiscounts();
 
