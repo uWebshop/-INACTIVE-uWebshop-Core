@@ -522,10 +522,10 @@ namespace uWebshop.Domain.Helpers
 							if (succesNodeId != 0)
 							{
 								var urlToReturn = IO.Container.Resolve<ICMSApplication>().GetUrlForContentWithId(succesNodeId);
-                                if(!urlToReturn.ToString().ToLower().StartsWith("http"))
-                                {
-                                    urlToReturn = string.Format("//{0}{1}", currentDomain, urlToReturn);
-                                }								
+								if(!urlToReturn.ToString().ToLower().StartsWith("http"))
+								{
+									urlToReturn = string.Format("//{0}{1}", currentDomain, urlToReturn);
+								}								
 								Log.Instance.LogDebug("HandlePaymentRequest SuccesNodeId: " + urlToReturn);
 
 								return urlToReturn;

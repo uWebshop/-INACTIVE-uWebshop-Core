@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="IOC.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Umbraco\ApplicationCacheManagingServiceTests.cs" />
     <Compile Include="Umbraco\DocumentTypeInstallerTests\CreateOrderDocument\OrderLineDocTypeTests.cs" />
   </ItemGroup>
   <ItemGroup>
