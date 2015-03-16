@@ -8,6 +8,7 @@ using uWebshop.ActionHandlers;
 using uWebshop.Domain;
 using uWebshop.Domain.Interfaces;
 using uWebshop.Umbraco.Businesslogic;
+using Umbraco.Core.Configuration;
 using Log = uWebshop.Domain.Log;
 
 //[assembly: PreApplicationStartMethod(typeof (UwebshopUmbracoStartup), "Startup")]
@@ -49,7 +50,7 @@ namespace uWebshop.ActionHandlers
 			}
 			try
 			{
-				NoRewriting = (InternalHelpers.MvcRenderMode && (GlobalSettings.VersionMajor > 6 || GlobalSettings.VersionMajor == 6 && GlobalSettings.VersionMinor >= 1));
+				NoRewriting = (InternalHelpers.MvcRenderMode && (UmbracoVersion.Current.Major > 6 || UmbracoVersion.Current.Major == 6 && UmbracoVersion.Current.Minor >= 1));
 			}
 			catch (Exception)
 			{

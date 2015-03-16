@@ -12,7 +12,10 @@ using uWebshop.Domain;
 using uWebshop.Domain.Businesslogic;
 using uWebshop.Domain.Interfaces;
 using uWebshop.Umbraco.Businesslogic;
+using Umbraco.Core.Models;
+using File = uWebshop.Domain.File;
 using Log = uWebshop.Domain.Log;
+using Property = Umbraco.Core.Models.Property;
 
 namespace uWebshop.Umbraco.Services
 {
@@ -97,80 +100,81 @@ namespace uWebshop.Umbraco.Services
 
 		private class DocumentBasedContent : IUwebshopContent
 		{
-			private readonly Document _document;
+			private readonly Content _content;
 
 			public DocumentBasedContent(int id) : this(new Document(id))
 			{
 			}
 
-			public DocumentBasedContent(Document document)
+			public DocumentBasedContent(Content document)
 			{
-				_document = document;
+				_content = document;
 			}
 
 			public string Path
 			{
-				get { return _document.Path; }
+				get { return _content.Path; }
 			}
 
 			public DateTime CreateDate
 			{
-				get { return _document.CreateDateTime; }
+				get { return _content.CreateDate; }
 			}
 
 			public DateTime UpdateDate
 			{
-				get { return _document.UpdateDate; }
+				get { return _content.UpdateDate; }
 			}
 
 			public int SortOrder
 			{
-				get { return _document.sortOrder; }
+				get { return _content.SortOrder; }
 			}
 
+			// todo: needed?
 			public string UrlName
 			{
-				get { return _document.Text; }
+				get { return _content.Name; }
 			}
 
 			IUwebshopReadonlyContent IUwebshopReadonlyContent.Parent
 			{
-				get { return new NodeBasedContent(_document.ParentId); }
+				get { return new NodeBasedContent(_content.ParentId); }
 			}
 
 			public IUwebshopContent Parent
 			{
-				get { return new DocumentBasedContent(_document.ParentId); }
+				get { return new DocumentBasedContent(_content.ParentId); }
 			}
 
 			public int Id
 			{
-				get { return _document.Id; }
+				get { return _content.Id; }
 			}
 
 			public string NodeTypeAlias
 			{
-				get { return _document.ContentType.Alias; }
+				get { return _content.ContentType.Alias; }
 			}
 
 			public string Name
 			{
-				get { return _document.Text; }
+				get { return _content.Name; }
 			}
 
 			public int template
 			{
-				get { return _document.Template; }
+				get { return _content.Template.Id; }
 			}
 
 			public ICMSProperty GetProperty(string propertyAlias)
 			{
-				return new DocProperty(_document.getProperty(propertyAlias));
+				return new DocProperty(_content.Properties.FirstOrDefault(x => x.Alias == propertyAlias));
 			}
 
 			public ICMSProperty GetMultiStoreItem(string propertyAlias)
 			{
-				return new DocProperty(_document.GetMultiStoreItem(propertyAlias));
+				return new DocProperty(_content.GetMultiStoreItem(propertyAlias));
 			}
 
 			public string Url
@@ -185,30 +189,31 @@ namespace uWebshop.Umbraco.Services
 
 			public T1 GetProperty<T1>(string propertyAlias)
 			{
-				return _document.GetProperty<T1>(propertyAlias);
+				return _content.GetProperty<T1>(propertyAlias);
 			}
 
 			public void SetProperty(string propertyAlias, object value)
 			{
-				_document.SetProperty(propertyAlias, value);
+				_content.SetProperty(propertyAlias, value);
 			}
 
 			public void Publish(int userId = 0)
 			{
-				_document.Publish(User.GetUser(userId));
+				_content.Publish(User.GetUser(userId));
 			}
 
 			public ICMSProperty getProperty(string propertyAlias)
 			{
-				return new DocProperty(_document.getProperty(propertyAlias));
+				return new DocProperty(_content.Properties.FirstOrDefault(x => x.Alias == propertyAlias));
 			}
 		}
 
 		private class DocProperty : ICMSProperty
 		{
-			private readonly umbraco.cms.businesslogic.property.Property _property;
 
-			public DocProperty(umbraco.cms.businesslogic.property.Property property)
+			private readonly Umbraco.Core.Models.Property _property;
+
+			public DocProperty(Umbraco.Core.Models.Property property)
 			{
 				this._property = property;
 			}
@@ -218,7 +223,7 @@ namespace uWebshop.Umbraco.Services
 				get
 				{
 					if (_property != null && _property.Value != null)
-						return _property.Value.ToString();
+						return _property.Value;
 					return string.Empty;
 				}
 			}

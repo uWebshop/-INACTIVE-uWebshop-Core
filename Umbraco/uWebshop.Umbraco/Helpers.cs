@@ -7,32 +7,33 @@ using System.Xml.XPath;
 using Examine;
 using Examine.Providers;
 using Examine.SearchCriteria;
+using umbraco;
 using umbraco.BusinessLogic;
-using umbraco.cms.businesslogic.language;
-using umbraco.cms.businesslogic.template;
 using umbraco.cms.businesslogic.web;
+using umbraco.interfaces;
 using uWebshop.Domain;
 using uWebshop.Domain.BaseClasses;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
-using umbraco;
-using umbraco.NodeFactory;
-using umbraco.interfaces;
-using umbraco.presentation;
 using uWebshop.Umbraco.Businesslogic;
+using Umbraco.Core;
+using Umbraco.Core.Models;
+using Umbraco.Web;
+using Language = umbraco.cms.businesslogic.language.Language;
 using Log = uWebshop.Domain.Log;
+using Template = umbraco.cms.businesslogic.template.Template;
 
 namespace uWebshop.Umbraco
 {
 	// part of public API
 	public class Helpers
 	{
-		internal static void LoadUwebshopEntityPropertiesFromNode(uWebshopEntity entity, Node node)
+		internal static void LoadUwebshopEntityPropertiesFromNode(uWebshopEntity entity, IPublishedContent node)
 		{
 			if (entity.Id == 0) entity.Id = node.Id;
 			entity.ParentId = node.Parent != null ? node.Parent.Id : -1;
 			entity.SortOrder = node.SortOrder;
-			entity.NodeTypeAlias = node.NodeTypeAlias;
+			entity.NodeTypeAlias = node.DocumentTypeAlias;
 			entity.Name = node.Name;
 			entity.Path = node.Path;
 			entity.CreateDate = node.CreateDate;
@@ -87,6 +88,8 @@ namespace uWebshop.Umbraco
 				return text;
 			}
 
+			var umbHelper = new UmbracoHelper(UmbracoContext.Current);
+
 			//var niceUrlsProvider = UmbracoContext.Current.NiceUrlProvider;
 
 			// Parse internal links
@@ -95,7 +98,7 @@ namespace uWebshop.Umbraco
 				if (tag.Groups.Count > 0)
 				{
 					var id = tag.Groups[1].Value; //.Remove(tag.Groups[1].Value.Length - 1, 1);
-					var newLink = library.NiceUrlWithDomain(int.Parse(id));
+					var newLink = umbHelper.NiceUrlWithDomain(int.Parse(id));
 					text = text.Replace(tag.Value, "href=\"" + newLink);
 				}
 			return text;
@@ -175,7 +178,7 @@ namespace uWebshop.Umbraco
 		/// <param name="storeDocument">the document of the store</param>
 		/// <param name="cultureCode"> </param>
 		/// <param name="preFillRequiredItems"></param>
-		internal static void InstallStore(string storeAlias, Document storeDocument, string cultureCode = null, bool preFillRequiredItems = false)
+		internal static void InstallStore(string storeAlias, IContent storeDocument, string cultureCode = null, bool preFillRequiredItems = false)
 		{
 			var reg = new Regex(@"\s*");
 			storeAlias = reg.Replace(storeAlias, "");
@@ -205,29 +208,29 @@ namespace uWebshop.Umbraco
 				}
 			}
 
-			var admin = new User(0);
+			var ctService = ApplicationContext.Current.Services.ContentTypeService;
+			var contentService = ApplicationContext.Current.Services.ContentService;
 
-			var uwbsStoreDt = DocumentType.GetByAlias(Store.NodeAlias);
-			var uwbsStoreRepositoryDt = DocumentType.GetByAlias(Store.StoreRepositoryNodeAlias);
-			var uwbsStoreRepository = Document.GetDocumentsOfDocumentType(uwbsStoreRepositoryDt.Id).FirstOrDefault(x => !x.IsTrashed);
+			var uwbsStoreDt = ctService.GetContentType(Store.NodeAlias);
+			var uwbsStoreRepositoryDt = ctService.GetContentType(Store.StoreRepositoryNodeAlias);
+			var uwbsStoreRepository =  contentService.GetContentOfContentType(uwbsStoreRepositoryDt.Id).FirstOrDefault(x => !x.Trashed);
 
 			if (storeDocument == null)
 			{
 				if (uwbsStoreRepository != null)
 					if (uwbsStoreDt != null)
 					{
-						storeDocument = Document.MakeNew(storeAlias, uwbsStoreDt, admin, uwbsStoreRepository.Id);
+						storeDocument = contentService.CreateContent(storeAlias, uwbsStoreRepository.Id,Store.NodeAlias);
 						if (storeDocument != null && preFillRequiredItems)
 						{
-							storeDocument.SetProperty("orderNumberPrefix", storeAlias);
-							storeDocument.SetProperty("globalVat", "0");
-							storeDocument.SetProperty("countryCode", "DK");
-							storeDocument.SetProperty("storeEmailFrom", string.Format("info@{0}.com", storeAlias));
-							storeDocument.SetProperty("storeEmailTo", string.Format("info@{0}.com", storeAlias));
-							storeDocument.SetProperty("storeEmailFromName", storeAlias);
+							storeDocument.SetValue("orderNumberPrefix", storeAlias);
+							storeDocument.SetValue("globalVat", "0");
+							storeDocument.SetValue("countryCode", "DK");
+							storeDocument.SetValue("storeEmailFrom", string.Format("info@{0}.com", storeAlias));
+							storeDocument.SetValue("storeEmailTo", string.Format("info@{0}.com", storeAlias));
+							storeDocument.SetValue("storeEmailFromName", storeAlias);
 
-							storeDocument.Save();
-							storeDocument.Publish(new User(0));
+							contentService.SaveAndPublish(storeDocument);
 						}
 					}
 			}
@@ -238,8 +241,8 @@ namespace uWebshop.Umbraco
 			{
 				return;
 			}
-			if (language != null) storeDocument.SetProperty("currencyCulture", language.id.ToString());
-			storeDocument.Save();
+			if (language != null) storeDocument.SetValue("currencyCulture", language.id.ToString());
+			contentService.Save(storeDocument);
 
 			//InstallProductUrlRewritingRules(storeAlias);
 		}

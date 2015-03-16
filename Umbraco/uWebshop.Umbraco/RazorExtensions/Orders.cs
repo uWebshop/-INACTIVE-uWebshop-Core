@@ -11,10 +11,10 @@ using uWebshop.Domain;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
 using umbraco.cms.businesslogic.member;
-using umbraco.cms.businesslogic.propertytype;
-using umbraco.cms.businesslogic.web;
 using uWebshop.Common;
+using Umbraco.Core;
 using Log = uWebshop.Domain.Log;
+using PropertyType = Umbraco.Core.Models.PropertyType;
 
 namespace uWebshop.RazorExtensions
 {
@@ -92,13 +92,14 @@ namespace uWebshop.RazorExtensions
 		/// Get the customer property types of the order document type.
 		/// </summary>
 		/// <returns></returns>
-		public static List<PropertyType> CustomerPropertyTypes()
+		public static List<Umbraco.Core.Models.PropertyType> CustomerPropertyTypes()
 		{
-			var orderDocType = DocumentType.GetByAlias(Order.NodeAlias);
+			var ctSerivce = ApplicationContext.Current.Services.ContentTypeService;
+			var orderDocType = ctSerivce.GetContentType(Order.NodeAlias);
 
-			var customerTab = orderDocType.getVirtualTabs.FirstOrDefault(x => x.Caption == "Customer");
+			var customerTab = orderDocType.PropertyGroups.FirstOrDefault(x => x.Name == "Customer");
 
-			return DocumentType.GetByAlias(Order.NodeAlias).PropertyTypes.Where(x => customerTab != null && x.TabId == customerTab.Id).ToList();
+			return customerTab.PropertyTypes.ToList();
 		}
 
 		/// <summary>

@@ -9,13 +9,13 @@ using umbraco.cms.businesslogic.language;
 using umbraco.cms.businesslogic.web;
 using umbraco.cms.presentation.create.controls;
 using umbraco.NodeFactory;
-using uWebshop.Common;
 using uWebshop.Common.Interfaces;
 using uWebshop.DataAccess;
 using uWebshop.Domain;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
-using Document = umbraco.cms.businesslogic.web.Document;
+using Umbraco.Core;
+using Constants = uWebshop.Common.Constants;
 
 namespace uWebshop.Umbraco.Repositories
 {
@@ -107,6 +107,7 @@ namespace uWebshop.Umbraco.Repositories
 		{
 			public override void LoadDataFromPropertiesDictionary(Store store, IPropertyProvider fields, ILocalization localization)
 			{
+				var ctService = ApplicationContext.Current.Services.ContentTypeService;
 				// note: it's impossible to use StoreHelper.GetMultiStoreItemExamine here (or any multi store)
 
 				if (fields.ContainsKey("incompleteOrderLifetime"))
@@ -200,7 +201,7 @@ namespace uWebshop.Umbraco.Repositories
 					// "EUR|1.1#USD|0.7#JPY|1"
 					var currenciesfromfield =  fields.GetStringValue("currencies").Split('#').Select(x => new Currency(x)).ToList();
 					
-					if (!currenciesfromfield.Any(c => c.ISOCurrencySymbol == cultureCurrency))
+					if (currenciesfromfield.All(c => c.ISOCurrencySymbol != cultureCurrency))
 					{
 						currenciesfromfield.Add(new Currency { ISOCurrencySymbol = cultureCurrency, Ratio = 1, CurrencySymbol = currencyRegion.CurrencySymbol });
 					}
@@ -243,6 +244,8 @@ namespace uWebshop.Umbraco.Repositories
 					var enableCountdownValue = fields.GetStringValue("defaultCountdownEnabled");
 					store.UseCountdown = enableCountdownValue == "enable" || enableCountdownValue == "1" || enableCountdownValue == "true";
 				}
+
+				
 				
 				if (fields.ContainsKey("storeStock"))
 				{
@@ -250,8 +253,8 @@ namespace uWebshop.Umbraco.Repositories
 					var value = storeStockValue == "enable" || storeStockValue == "1" || storeStockValue == "true";
 					if (value)
 					{
-						var productDt = DocumentType.GetByAlias(Product.NodeAlias);
-						if (!productDt.PropertyTypes.Any(x => x.Alias.ToLower() == "stock_" + store.Alias.ToLower()))
+						var productDt = ctService.GetContentType(Product.NodeAlias);
+						if (productDt.PropertyTypes.All(x => x.Alias.ToLower() != "stock_" + store.Alias.ToLower()))
 						{
 							value = false;
 						}

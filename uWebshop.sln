@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PaymentProviders", "PaymentProviders", "{98F14DF2-95FD-4487-8D77-059784BF9FB2}"
 EndProject
@@ -293,7 +293,6 @@ Global
 		{774724E6-7D0A-4A21-9A21-436872928932}.Release (4.0)|Any CPU.ActiveCfg = Release|Any CPU
 		{774724E6-7D0A-4A21-9A21-436872928932}.Release (4.0)|Any CPU.Build.0 = Release|Any CPU
 		{774724E6-7D0A-4A21-9A21-436872928932}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{774724E6-7D0A-4A21-9A21-436872928932}.Release|Any CPU.Build.0 = Release|Any CPU
 		{774724E6-7D0A-4A21-9A21-436872928932}.V35|Any CPU.ActiveCfg = Release|Any CPU
 		{774724E6-7D0A-4A21-9A21-436872928932}.V35|Any CPU.Build.0 = Release|Any CPU
 		{774724E6-7D0A-4A21-9A21-436872928932}.V4|Any CPU.ActiveCfg = Release|Any CPU

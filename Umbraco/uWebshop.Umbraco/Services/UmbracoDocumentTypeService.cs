@@ -3,6 +3,8 @@ using System.Linq;
 using uWebshop.Domain.Businesslogic;
 using uWebshop.Domain.Interfaces;
 using umbraco.cms.businesslogic.web;
+using Umbraco.Core;
+using Umbraco.Core.Models;
 
 namespace uWebshop.Umbraco.Services
 {
@@ -10,26 +12,28 @@ namespace uWebshop.Umbraco.Services
 	{
 		public IDocumentTypeInfo GetByAlias(string alias)
 		{
-			var documentType = DocumentType.GetByAlias(alias);
+			var ctService = ApplicationContext.Current.Services.ContentTypeService;
+
+			var documentType = ctService.GetContentType(alias);
 			return documentType != null ? new UmbracoDocument(documentType) : null;
 		}
 	}
 
 	public class UmbracoDocument : IDocumentTypeInfo
 	{
-		private readonly DocumentType _documentType;
+		private readonly IContentType _contentType;
 
-		public UmbracoDocument(DocumentType documentType)
+		public UmbracoDocument(IContentType contentType)
 		{
-			_documentType = documentType;
+			_contentType = contentType;
 		}
 
 		public IEnumerable<IDocumentProperty> Properties
 		{
 			get
 			{
-				if (_documentType != null && _documentType.PropertyTypes != null)
-					return _documentType.PropertyTypes.Select(property => new DocumentProperty {Alias = property.Alias, Name = property.Name, ValidationRegularExpression = property.ValidationRegExp, Mandatory = property.Mandatory,});
+				if (_contentType != null && _contentType.PropertyTypes != null)
+					return _contentType.PropertyTypes.Select(property => new DocumentProperty {Alias = property.Alias, Name = property.Name, ValidationRegularExpression = property.ValidationRegExp, Mandatory = property.Mandatory,});
 
 				return Enumerable.Empty<IDocumentProperty>();
 			}

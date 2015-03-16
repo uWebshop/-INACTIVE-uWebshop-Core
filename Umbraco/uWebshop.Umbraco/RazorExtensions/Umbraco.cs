@@ -14,6 +14,7 @@ using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
 using uWebshop.Umbraco;
 using uWebshop.Umbraco.Interfaces;
+using Umbraco.Core;
 
 namespace uWebshop.API
 {
@@ -33,8 +34,9 @@ namespace uWebshop.API
 		/// <returns></returns>
 		public static IOrder GetOrderFromCurrentDocument()
 		{
+			var ctService = ApplicationContext.Current.Services.ContentService;
 			var documentId = int.Parse(HttpContext.Current.Request.QueryString["id"]);
-			var orderDoc = new Document(documentId);
+			var orderDoc = ctService.GetById(documentId);
 			return GetOrderByDocumentId(orderDoc.Id);
 		}
 
@@ -46,14 +48,16 @@ namespace uWebshop.API
 		/// <returns></returns>
 		public static IOrder GetOrderByDocumentId(int documentId)
 		{
-			var orderDoc = new Document(documentId);
+			var ctService = ApplicationContext.Current.Services.ContentService;
 
-			if (orderDoc.getProperty("orderGuid") != null)
+			var orderDoc = ctService.GetById(documentId);
+
+			if (orderDoc.HasProperty("orderGuid"))
 			{
-				var orderGuidValue = orderDoc.getProperty("orderGuid").Value;
+				var orderGuidValue = orderDoc.Properties.FirstOrDefault(x => x.Alias == "orderGuid").Value;
 				if (orderGuidValue != null && !string.IsNullOrEmpty(orderGuidValue.ToString()))
 				{
-					var orderGuid = Guid.Parse(orderDoc.getProperty("orderGuid").Value.ToString());
+					var orderGuid = Guid.Parse(orderGuidValue.ToString());
 					
 					return Orders.CreateBasketFromOrderInfo(OrderHelper.GetOrder(orderGuid));
 				}

@@ -11,6 +11,8 @@ using uWebshop.Common.Interfaces;
 using uWebshop.Domain;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
+using Umbraco.Core;
+using Umbraco.Core.Models;
 
 namespace uWebshop.Umbraco.Services
 {
@@ -249,35 +251,34 @@ namespace uWebshop.Umbraco.Services
 
 		public void RenameStore(string oldStoreAlias, string newStoreAlias)
 		{
+			var ctService = ApplicationContext.Current.Services.ContentTypeService;
+
 			if (string.IsNullOrEmpty(oldStoreAlias) || string.IsNullOrEmpty(newStoreAlias)) return;
 
-			var docTypeList = new List<DocumentType>();
+			var contentTypeList = new List<IContentType>();
 
 			// get all documenttypes that startswith the store specific doctypes
 			foreach (var storeDependantAlias in StoreHelper.StoreDependantDocumentTypeAliasList)
 			{
-				docTypeList.AddRange(DocumentType.GetAllAsList().Where(x => x.Alias.StartsWith(storeDependantAlias)));
+				
+				contentTypeList.AddRange(ctService.GetAllContentTypes().Where(x => x.Alias.StartsWith(storeDependantAlias)));
 			}
 
-			foreach (var dt in docTypeList)
+			foreach (var ct in contentTypeList)
 			{
 				// rename properties
-				foreach (var property in dt.PropertyTypes)
+				foreach (var property in ct.PropertyTypes)
 				{
 					property.Alias = property.Alias.Replace("_" + oldStoreAlias, "_" + newStoreAlias);
-					property.Save();
 				}
 
 				// rename tabs + move properties to new tab
-				foreach (var tab in dt.getVirtualTabs)
+				foreach (var tab in ct.PropertyGroups.Where(tab => tab.Name == oldStoreAlias))
 				{
-					if (tab.Caption == oldStoreAlias)
-					{
-						dt.SetTabName(tab.Id, newStoreAlias);
-					}
+					tab.Name = newStoreAlias;
 				}
 
-				dt.Save();
+				ctService.Save(ct);
 			}
 
 			library.RefreshContent();
