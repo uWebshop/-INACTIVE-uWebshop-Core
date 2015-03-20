@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using uWebshop.Common.Interfaces;
-using uWebshop.Domain.Interfaces;
-using uWebshop.Domain.Model;
 using umbraco;
 using umbraco.BusinessLogic;
 using umbraco.DataLayer;
+using uWebshop.Common.Interfaces;
+using uWebshop.Domain.Interfaces;
+using uWebshop.Domain.Model;
+using Umbraco.Core;
 
 namespace uWebshop.DataAccess
 {
@@ -15,6 +16,7 @@ namespace uWebshop.DataAccess
 		public IEnumerable<ICoupon> GetAll()
 		{
 			var coupons = new List<Coupon>();
+
 			var sqlHelper = DataLayerHelper.CreateSqlHelper(GlobalSettings.DbDSN);
 
 			using (var reader = sqlHelper.ExecuteReader("SELECT * FROM uWebshopCoupons " + null))

@@ -14,14 +14,20 @@ using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
 using uWebshop.Umbraco;
 using uWebshop.Umbraco.Interfaces;
+using Umbraco.Core;
+using Umbraco.Core.Services;
+using Umbraco.Web;
 
 namespace uWebshop.API
 {
 	public static class CMS
 	{
+		public static IContentService ContentService = ApplicationContext.Current.Services.ContentService;
+
 		public static string GetProperty(this IUwebshopUmbracoEntity content, string propertyAlias)
 		{
-			var property = new Node(content.Id).GetMultiStoreItem(propertyAlias);
+			var umbHelper = new UmbracoHelper(UmbracoContext.Current);
+			var property = umbHelper.Content(content.Id).GetMultiStoreItem(propertyAlias);
 			if (property == null) return string.Empty;
 			return property.Value;
 		}
@@ -34,7 +40,7 @@ namespace uWebshop.API
 		public static IOrder GetOrderFromCurrentDocument()
 		{
 			var documentId = int.Parse(HttpContext.Current.Request.QueryString["id"]);
-			var orderDoc = new Document(documentId);
+			var orderDoc = ContentService.GetById(documentId);
 			return GetOrderByDocumentId(orderDoc.Id);
 		}
 
@@ -46,14 +52,14 @@ namespace uWebshop.API
 		/// <returns></returns>
 		public static IOrder GetOrderByDocumentId(int documentId)
 		{
-			var orderDoc = new Document(documentId);
+			var orderDoc = ContentService.GetById(documentId);
 
-			if (orderDoc.getProperty("orderGuid") != null)
+			if (orderDoc.HasProperty("orderGuid"))
 			{
-				var orderGuidValue = orderDoc.getProperty("orderGuid").Value;
+				var orderGuidValue = orderDoc.GetValue("orderGuid");
 				if (orderGuidValue != null && !string.IsNullOrEmpty(orderGuidValue.ToString()))
 				{
-					var orderGuid = Guid.Parse(orderDoc.getProperty("orderGuid").Value.ToString());
+					var orderGuid = orderDoc.GetValue<Guid>("orderGuid");
 					
 					return Orders.CreateBasketFromOrderInfo(OrderHelper.GetOrder(orderGuid));
 				}
@@ -116,7 +122,7 @@ namespace uWebshop.API
 
 		public static void OpenNode(int nodeId)
 		{
-			var doc = new Document(nodeId);
+			var doc = ContentService.GetById(nodeId);
 
 			if (!string.IsNullOrEmpty(doc.Path) && BasePage.Current != null)
 			{

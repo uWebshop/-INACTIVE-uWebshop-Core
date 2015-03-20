@@ -37,7 +37,7 @@ namespace uWebshop.Domain.Helpers
 		public static IEnumerable<API.IOrderDiscount> GetOrderDiscounts(Guid uniqueOrderId)
 		{
 			// todo: bugged, no ranges, is this used by external code?
-			var orderinfo = OrderHelper.GetOrderInfo(uniqueOrderId);
+			var orderinfo = OrderHelper.GetOrder(uniqueOrderId);
 
 			var orderDiscounts = IO.Container.Resolve<IOrderDiscountService>().GetAll(orderinfo.Localization);
 

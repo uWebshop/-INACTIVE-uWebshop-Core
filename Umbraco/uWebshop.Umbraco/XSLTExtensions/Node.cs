@@ -1,6 +1,7 @@
 ﻿using uWebshop.Domain.Businesslogic;
 using umbraco;
 using uWebshop.Umbraco;
+using Umbraco.Web;
 
 namespace uWebshop.XSLTExtensions
 {
@@ -11,7 +12,8 @@ namespace uWebshop.XSLTExtensions
 		{
 			try
 			{
-				return new umbraco.NodeFactory.Node(nodeId).GetMultiStoreItem(alias).Value;
+				var umbHelper = new UmbracoHelper(UmbracoContext.Current);
+				return umbHelper.Content(nodeId).GetMultiStoreItem(alias).Value;
 			}
 			catch
 			{

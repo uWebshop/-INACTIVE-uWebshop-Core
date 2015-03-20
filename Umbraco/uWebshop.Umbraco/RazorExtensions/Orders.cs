@@ -14,12 +14,17 @@ using umbraco.cms.businesslogic.member;
 using umbraco.cms.businesslogic.propertytype;
 using umbraco.cms.businesslogic.web;
 using uWebshop.Common;
+using Umbraco.Core;
+using Umbraco.Core.Services;
 using Log = uWebshop.Domain.Log;
+using PropertyType = Umbraco.Core.Models.PropertyType;
 
 namespace uWebshop.RazorExtensions
 {
 	public static class Orders
 	{
+		public static IContentTypeService ContentTypeService = ApplicationContext.Current.Services.ContentTypeService;
+
 		/// <summary>
 		/// Return the Order from a given unique order Id as GUID
 		/// </summary>
@@ -94,11 +99,11 @@ namespace uWebshop.RazorExtensions
 		/// <returns></returns>
 		public static List<PropertyType> CustomerPropertyTypes()
 		{
-			var orderDocType = DocumentType.GetByAlias(Order.NodeAlias);
+			var orderDocType = ContentTypeService.GetContentType(Order.NodeAlias);
 
-			var customerTab = orderDocType.getVirtualTabs.FirstOrDefault(x => x.Caption == "Customer");
+			var customerTab = orderDocType.PropertyGroups.FirstOrDefault(x => x.Name == "Customer");
 
-			return DocumentType.GetByAlias(Order.NodeAlias).PropertyTypes.Where(x => customerTab != null && x.TabId == customerTab.Id).ToList();
+			return customerTab != null ? customerTab.PropertyTypes.ToList() : new List<PropertyType>();
 		}
 
 		/// <summary>
@@ -109,7 +114,7 @@ namespace uWebshop.RazorExtensions
 		public static OrderInfo GetOrderFromUniqueOrderId(Guid uniqueOrderId)
 		{
 			//Log.Instance.LogDebug(DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") + " RazorExtensions.Orders.GetOrderFromUniqueOrderId >>>>SQL<<<< SELECT orderInfo");
-			return OrderHelper.GetOrderInfo(uniqueOrderId);
+			return OrderHelper.GetOrder(uniqueOrderId);
 		}
 
 		

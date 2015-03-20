@@ -42,7 +42,7 @@ namespace uWebshop.XSLTExtensions
 			{
 				//Log.Instance.LogDebug(DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") + " XSLTExtensions.GetOrder >>>>SQL<<<< SELECT orderInfo");
 
-				var orderInfo = OrderHelper.GetOrderInfo(Guid.Parse(uniqueOrderId));
+				var orderInfo = OrderHelper.GetOrder(Guid.Parse(uniqueOrderId));
 
 				var currentCulture = Thread.CurrentThread.CurrentCulture;
 				var currentUICulture = Thread.CurrentThread.CurrentUICulture;

@@ -8,8 +8,6 @@ using Examine;
 using Examine.Providers;
 using Examine.SearchCriteria;
 using umbraco.BusinessLogic;
-using umbraco.cms.businesslogic.language;
-using umbraco.cms.businesslogic.template;
 using umbraco.cms.businesslogic.web;
 using uWebshop.Domain;
 using uWebshop.Domain.BaseClasses;
@@ -20,13 +18,21 @@ using umbraco.NodeFactory;
 using umbraco.interfaces;
 using umbraco.presentation;
 using uWebshop.Umbraco.Businesslogic;
+using Umbraco.Core;
+using Umbraco.Core.Models;
+using Umbraco.Core.Services;
+using Language = umbraco.cms.businesslogic.language.Language;
 using Log = uWebshop.Domain.Log;
+using Template = umbraco.cms.businesslogic.template.Template;
 
 namespace uWebshop.Umbraco
 {
 	// part of public API
 	public class Helpers
 	{
+		public static readonly IContentService ContentService = ApplicationContext.Current.Services.ContentService;
+		public static readonly IContentTypeService ContentTypeService = ApplicationContext.Current.Services.ContentTypeService;
+
 		internal static void LoadUwebshopEntityPropertiesFromNode(uWebshopEntity entity, Node node)
 		{
 			if (entity.Id == 0) entity.Id = node.Id;
@@ -113,15 +119,12 @@ namespace uWebshop.Umbraco
 			try
 			{
 				var examineprovider = ExamineManager.Instance.SearchProviderCollection[UwebshopConfiguration.Current.ExamineSearcher];
-				if (examineprovider != null)
+				var searcher = examineprovider != null ? examineprovider.CreateSearchCriteria() : null;
+				if (searcher != null)
 				{
-					var searcher = examineprovider.CreateSearchCriteria();
-					if (searcher != null)
-					{
-						IBooleanOperation query = searcher.Field("__NodeTypeAlias", nodeTypeAlias.ToLower());
-						var searchResults = examineprovider.Search(query.Compile());
-						return searchResults.Where(examineNode => examineNode.Fields["__NodeId"] != null);
-					}
+					var query = searcher.Field("__NodeTypeAlias", nodeTypeAlias.ToLower());
+					var searchResults = examineprovider.Search(query.Compile());
+					return searchResults.Where(examineNode => examineNode.Fields["__NodeId"] != null);
 				}
 			}
 			catch (Exception ex)
@@ -177,7 +180,7 @@ namespace uWebshop.Umbraco
 		/// <param name="storeDocument">the document of the store</param>
 		/// <param name="cultureCode"> </param>
 		/// <param name="preFillRequiredItems"></param>
-		internal static void InstallStore(string storeAlias, Document storeDocument, string cultureCode = null, bool preFillRequiredItems = false)
+		internal static void InstallStore(string storeAlias, IContent storeDocument, string cultureCode = null, bool preFillRequiredItems = false)
 		{
 			var reg = new Regex(@"\s*");
 			storeAlias = reg.Replace(storeAlias, "");
@@ -207,29 +210,26 @@ namespace uWebshop.Umbraco
 				}
 			}
 
-			var admin = new User(0);
-
-			var uwbsStoreDt = DocumentType.GetByAlias(Store.NodeAlias);
-			var uwbsStoreRepositoryDt = DocumentType.GetByAlias(Store.StoreRepositoryNodeAlias);
-			var uwbsStoreRepository = Document.GetDocumentsOfDocumentType(uwbsStoreRepositoryDt.Id).FirstOrDefault(x => !x.IsTrashed);
+			var uwbsStoreDt = ContentTypeService.GetContentType(Store.NodeAlias);
+			var uwbsStoreRepositoryDt = ContentTypeService.GetContentType(Store.StoreRepositoryNodeAlias);
+			var uwbsStoreRepository = ContentService.GetContentOfContentType(uwbsStoreRepositoryDt.Id).FirstOrDefault(x => !x.Trashed);
 
 			if (storeDocument == null)
 			{
 				if (uwbsStoreRepository != null)
 					if (uwbsStoreDt != null)
 					{
-						storeDocument = Document.MakeNew(storeAlias, uwbsStoreDt, admin, uwbsStoreRepository.Id);
+						storeDocument = ContentService.CreateContent(storeAlias, uwbsStoreRepository, uwbsStoreDt.Alias);
 						if (storeDocument != null && preFillRequiredItems)
 						{
-							storeDocument.SetProperty("orderNumberPrefix", storeAlias);
-							storeDocument.SetProperty("globalVat", "0");
-							storeDocument.SetProperty("countryCode", "DK");
-							storeDocument.SetProperty("storeEmailFrom", string.Format("info@{0}.com", storeAlias));
-							storeDocument.SetProperty("storeEmailTo", string.Format("info@{0}.com", storeAlias));
-							storeDocument.SetProperty("storeEmailFromName", storeAlias);
+							storeDocument.SetValue("orderNumberPrefix", storeAlias);
+							storeDocument.SetValue("globalVat", "0");
+							storeDocument.SetValue("countryCode", "DK");
+							storeDocument.SetValue("storeEmailFrom", string.Format("info@{0}.com", storeAlias));
+							storeDocument.SetValue("storeEmailTo", string.Format("info@{0}.com", storeAlias));
+							storeDocument.SetValue("storeEmailFromName", storeAlias);
 
-							storeDocument.Save();
-							storeDocument.Publish(new User(0));
+							ContentService.Publish(storeDocument);
 						}
 					}
 			}
@@ -240,8 +240,8 @@ namespace uWebshop.Umbraco
 			{
 				return;
 			}
-			if (language != null) storeDocument.SetProperty("currencyCulture", language.id.ToString());
-			storeDocument.Save();
+			if (language != null) storeDocument.SetValue("currencyCulture", language.id.ToString());
+			ContentService.Save(storeDocument);
 
 			//InstallProductUrlRewritingRules(storeAlias);
 		}

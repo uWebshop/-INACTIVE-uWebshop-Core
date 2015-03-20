@@ -607,9 +607,11 @@ namespace uWebshop.Umbraco6
 
 
             #region bah vies oude API stuff
-            umbraco.cms.businesslogic.web.DocumentType ctuwbsDemoHomePage = new umbraco.cms.businesslogic.web.DocumentType(uwbsDemoHomePage.Id);
-            ctuwbsDemoHomePage.MasterContentType = uwbsDemoMaster.Id;
-            ctuwbsDemoHomePage.Save();
+
+			var ctuwbsDemoHomePage = contentTypeService.GetContentType(uwbsDemoHomePage.Id);
+			ctuwbsDemoHomePage.ParentId = uwbsDemoMaster.Id;
+			contentTypeService.Save(ctuwbsDemoHomePage);
+
             #endregion
 
 

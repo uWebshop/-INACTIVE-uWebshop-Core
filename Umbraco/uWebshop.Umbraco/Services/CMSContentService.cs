@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Web;
 using umbraco;
-using umbraco.BusinessLogic;
-using umbraco.cms.businesslogic.web;
 using umbraco.interfaces;
 using umbraco.NodeFactory;
 using uWebshop.Domain;
-using uWebshop.Domain.Businesslogic;
 using uWebshop.Domain.Interfaces;
 using uWebshop.Umbraco.Businesslogic;
+using Umbraco.Core;
+using Umbraco.Core.Models;
+using Umbraco.Web;
+using File = uWebshop.Domain.File;
 using Log = uWebshop.Domain.Log;
 
 namespace uWebshop.Umbraco.Services
@@ -97,13 +97,14 @@ namespace uWebshop.Umbraco.Services
 
 		private class DocumentBasedContent : IUwebshopContent
 		{
-			private readonly Document _document;
+			private readonly IContent _document;
 
-			public DocumentBasedContent(int id) : this(new Document(id))
+			public DocumentBasedContent(int id)
+				: this(ApplicationContext.Current.Services.ContentService.GetById(id))
 			{
 			}
 
-			public DocumentBasedContent(Document document)
+			public DocumentBasedContent(IContent document)
 			{
 				_document = document;
 			}
@@ -115,7 +116,7 @@ namespace uWebshop.Umbraco.Services
 
 			public DateTime CreateDate
 			{
-				get { return _document.CreateDateTime; }
+				get { return _document.CreateDate; }
 			}
 
 			public DateTime UpdateDate
@@ -125,12 +126,12 @@ namespace uWebshop.Umbraco.Services
 
 			public int SortOrder
 			{
-				get { return _document.sortOrder; }
+				get { return _document.SortOrder; }
 			}
 
 			public string UrlName
 			{
-				get { return _document.Text; }
+				get { return _document.Name; }
 			}
 
 			IUwebshopReadonlyContent IUwebshopReadonlyContent.Parent
@@ -155,17 +156,20 @@ namespace uWebshop.Umbraco.Services
 
 			public string Name
 			{
-				get { return _document.Text; }
+				get { return _document.Name; }
 			}
 
 			public int template
 			{
-				get { return _document.Template; }
+				get
+				{
+					return _document.Template != null ? _document.Template.Id : 0;
+				}
 			}
 
 			public ICMSProperty GetProperty(string propertyAlias)
 			{
-				return new DocProperty(_document.getProperty(propertyAlias));
+				return new DocProperty(_document.Properties.FirstOrDefault(x => x.Alias == propertyAlias));
 			}
 
 			public ICMSProperty GetMultiStoreItem(string propertyAlias)
@@ -185,30 +189,31 @@ namespace uWebshop.Umbraco.Services
 
 			public T1 GetProperty<T1>(string propertyAlias)
 			{
-				return _document.GetProperty<T1>(propertyAlias);
+				return _document.GetValue<T1>(propertyAlias);
 			}
 
 			public void SetProperty(string propertyAlias, object value)
 			{
-				_document.SetProperty(propertyAlias, value);
+				_document.SetValue(propertyAlias, value);
 			}
 
 			public void Publish(int userId = 0)
 			{
-				_document.Publish(User.GetUser(userId));
+				var contentService = ApplicationContext.Current.Services.ContentService;
+				contentService.Publish(_document);
 			}
 
 			public ICMSProperty getProperty(string propertyAlias)
 			{
-				return new DocProperty(_document.getProperty(propertyAlias));
+				return new DocProperty(_document.Properties.FirstOrDefault(x => x.Alias == propertyAlias));
 			}
 		}
 
 		private class DocProperty : ICMSProperty
 		{
-			private readonly umbraco.cms.businesslogic.property.Property _property;
+			private readonly global::Umbraco.Core.Models.Property _property;
 
-			public DocProperty(umbraco.cms.businesslogic.property.Property property)
+			public DocProperty(global::Umbraco.Core.Models.Property property)
 			{
 				this._property = property;
 			}
@@ -226,9 +231,9 @@ namespace uWebshop.Umbraco.Services
 
 		private class NodeProperty : ICMSProperty
 		{
-			private readonly IProperty _property;
+			private readonly IPublishedContentProperty _property;
 
-			public NodeProperty(IProperty property)
+			public NodeProperty(IPublishedContentProperty property)
 			{
 				this._property = property;
 			}
@@ -237,21 +242,22 @@ namespace uWebshop.Umbraco.Services
 			{
 				get
 				{
-					return _property != null ? _property.Value : string.Empty;
+					return _property != null ? _property.Value.ToString() : string.Empty;
 				}
 			}
 		}
 
 		private class NodeBasedContent : IUwebshopReadonlyContent
 		{
-			private readonly INode _node;
+			private readonly IPublishedContent _node;
 
 			public NodeBasedContent(int id)
 			{
-				_node = new Node(id);
+				var umbHelper = new UmbracoHelper(UmbracoContext.Current);
+				_node = umbHelper.Content(id);
 			}
 
-			private NodeBasedContent(INode node)
+			private NodeBasedContent(IPublishedContent node)
 			{
 				_node = node;
 			}
@@ -297,7 +303,7 @@ namespace uWebshop.Umbraco.Services
 
 			public string NodeTypeAlias
 			{
-				get { return _node.NodeTypeAlias; }
+				get { return _node.DocumentTypeAlias; }
 			}
 
 			public string Name
@@ -307,12 +313,12 @@ namespace uWebshop.Umbraco.Services
 
 			public int template
 			{
-				get { return _node.template; }
+				get { return _node.TemplateId; }
 			}
 
 			public ICMSProperty GetProperty(string propertyAlias)
 			{
-				return new NodeProperty(_node.GetProperty(propertyAlias));
+				return new NodeProperty(_node.Properties.FirstOrDefault(x => x.Alias == propertyAlias));
 			}
 
 			public ICMSProperty GetMultiStoreItem(string propertyAlias)
@@ -328,7 +334,7 @@ namespace uWebshop.Umbraco.Services
 
 			public List<IUwebshopReadonlyContent> ChildrenAsList
 			{
-				get { return _node.ChildrenAsList.Select(n => (IUwebshopReadonlyContent) new NodeBasedContent(n)).ToList(); }
+				get { return _node.Children.Select(n => (IUwebshopReadonlyContent) new NodeBasedContent(n)).ToList(); }
 			}
 		}
 	}

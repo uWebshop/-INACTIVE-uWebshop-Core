@@ -3,23 +3,27 @@ using System.Linq;
 using uWebshop.Domain.Businesslogic;
 using uWebshop.Domain.Interfaces;
 using umbraco.cms.businesslogic.web;
+using Umbraco.Core;
+using Umbraco.Core.Models;
+using Umbraco.Core.Services;
 
 namespace uWebshop.Umbraco.Services
 {
 	internal class UmbracoDocumentTypeService : ICMSDocumentTypeService
 	{
+		public static IContentTypeService ContentTypeService = ApplicationContext.Current.Services.ContentTypeService;
 		public IDocumentTypeInfo GetByAlias(string alias)
 		{
-			var documentType = DocumentType.GetByAlias(alias);
+			var documentType = ContentTypeService.GetContentType(alias);
 			return documentType != null ? new UmbracoDocument(documentType) : null;
 		}
 	}
 
 	public class UmbracoDocument : IDocumentTypeInfo
 	{
-		private readonly DocumentType _documentType;
+		private readonly IContentType _documentType;
 
-		public UmbracoDocument(DocumentType documentType)
+		public UmbracoDocument(IContentType documentType)
 		{
 			_documentType = documentType;
 		}

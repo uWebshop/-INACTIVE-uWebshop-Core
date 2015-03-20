@@ -10,6 +10,9 @@ using uWebshop.Domain;
 using uWebshop.Domain.BaseClasses;
 using uWebshop.Domain.Businesslogic;
 using uWebshop.Domain.Helpers;
+using Umbraco.Core;
+using Umbraco.Core.Models;
+using Umbraco.Web;
 
 namespace uWebshop.Umbraco
 {
@@ -23,8 +26,9 @@ namespace uWebshop.Umbraco
 			return IO.Container.Resolve<ICMSEntityRepository>().GetByGlobalId(entity.Id).Path;
 		}
 
-		public static umbraco.cms.businesslogic.property.Property GetMultiStoreItem(this Document document, string alias)
+		public static global::Umbraco.Core.Models.Property GetMultiStoreItem(this IContent content, string alias)
 		{
+			var contentService = ApplicationContext.Current.Services.ContentService;
 			var originalAlias = alias;
 
 			#region frontend
@@ -39,7 +43,7 @@ namespace uWebshop.Umbraco
 					var sAlias = StoreHelper.GetCurrentStore();
 					alias = StoreHelper.CreateMultiStorePropertyAlias(alias, sAlias.Alias);
 				}
-				return document.getProperty(alias);
+				return content.Properties.FirstOrDefault(x => x.Alias == alias);
 			}
 
 			#endregion
@@ -49,24 +53,24 @@ namespace uWebshop.Umbraco
 			//var nodeId = int.Parse(library.Request("id"));
 			//var orderNode = new Order(nodeId);
 
-			var typeAlias = document.ContentType.Alias;
-			var orderDoc = document;
+			var typeAlias = content.ContentType.Alias;
+			var orderDoc = content;
 			if (OrderedProduct.IsAlias(orderDoc.ContentType.Alias) && !OrderedProductVariant.IsAlias(orderDoc.ContentType.Alias))
-				orderDoc = new Document(orderDoc.ParentId);
+				orderDoc = contentService.GetById(orderDoc.ParentId);
 
 			if (typeAlias == Order.NodeAlias || OrderedProduct.IsAlias(typeAlias) && !OrderedProductVariant.IsAlias(typeAlias))
 			{
-				var orderInfoDoc = OrderHelper.GetOrderInfo(Guid.Parse(orderDoc.getProperty("orderGuid").Value.ToString()));
+				var orderInfoDoc = OrderHelper.GetOrder(orderDoc.GetValue<Guid>("orderGuid"));
 				var store = StoreHelper.GetByAlias(orderInfoDoc.StoreInfo.Alias);
 
 				if (store != null) alias = StoreHelper.CreateMultiStorePropertyAlias(alias, store.Alias);
 			}
 
-			var property = document.getProperty(alias);
+			var property = content.Properties.FirstOrDefault(x => x.Alias == alias);
 
 			if (property == null || property.Value == null)
 			{
-				property = document.getProperty(originalAlias);
+				property = content.Properties.FirstOrDefault(x => x.Alias == originalAlias);
 			}
 
 			return property;
@@ -91,16 +95,18 @@ namespace uWebshop.Umbraco
 
 		public static string GetProperty(this IProductVariant variant, string propertyAlias)
 		{
-			var property = new Node(variant.Id).GetMultiStoreItem(propertyAlias);
+			var umbHelper = new UmbracoHelper(UmbracoContext.Current);
+			var property = umbHelper.Content(variant.Id).GetMultiStoreItem(propertyAlias);
 			if (property == null) return string.Empty;
 			return property.Value;
 		}
 
 		public static string GetProperty(this MultiStoreUwebshopContent content, string propertyAlias)
 		{
+			var umbHelper = new UmbracoHelper(UmbracoContext.Current);
 			if (propertyAlias != null && content != null)
 			{
-				var property = new Node(content.Id).GetMultiStoreItem(propertyAlias);
+				var property = umbHelper.Content(content.Id).GetMultiStoreItem(propertyAlias);
 
 				if (property != null && property.Value != null)
 				{
@@ -118,7 +124,7 @@ namespace uWebshop.Umbraco
 		/// <param name="alias">The alias.</param>
 		/// <param name="storeAlias">The store alias.</param>
 		/// <returns></returns>
-		public static IProperty GetMultiStoreItem(this INode node, string alias, string storeAlias = null)
+		public static IPublishedContentProperty GetMultiStoreItem(this IPublishedContent node, string alias, string storeAlias = null)
 		{
 			var originalAlias = alias;
 			if (node == null) return null;
@@ -129,7 +135,7 @@ namespace uWebshop.Umbraco
 			int id;
 			if (!string.IsNullOrEmpty(library.Request("id")) && int.TryParse(library.Request("id"), out id))
 			{
-				var typeAlias = node.NodeTypeAlias;
+				var typeAlias = node.DocumentTypeAlias;
 
 				var orderNode = node;
 				if (OrderedProduct.IsAlias(typeAlias) && !OrderedProductVariant.IsAlias(typeAlias))
@@ -137,17 +143,17 @@ namespace uWebshop.Umbraco
 
 				if (typeAlias == Order.NodeAlias || OrderedProduct.IsAlias(typeAlias) && !OrderedProductVariant.IsAlias(typeAlias))
 				{
-					var orderInfoDoc = OrderHelper.GetOrder(Guid.Parse(orderNode.GetProperty("orderGuid").Value));
+					var orderInfoDoc = OrderHelper.GetOrder(orderNode.GetPropertyValue<Guid>("orderGuid"));
 					alias = StoreHelper.CreateMultiStorePropertyAlias(alias, orderInfoDoc.StoreInfo.Alias);
 
-					var propertyDoc = node.GetProperty(alias);
-
-					if (propertyDoc == null || string.IsNullOrEmpty(propertyDoc.Value))
+					if (node.HasProperty(alias))
 					{
-						propertyDoc = node.GetProperty(originalAlias);
+						if (node.HasValue(alias))
+						{
+							return node.Properties.FirstOrDefault(x => x.Alias == originalAlias);
+						}
 					}
 
-					return propertyDoc;
 				}
 			}
 
@@ -155,7 +161,7 @@ namespace uWebshop.Umbraco
 
 			#region frontend
 
-			// dit gebeurt duizenden keren
+			// todo: dit gebeurt duizenden keren!
 			if (storeAlias == null)
 			{
 				storeAlias = StoreHelper.GetCurrentStore().Alias;
@@ -163,14 +169,13 @@ namespace uWebshop.Umbraco
 			if (storeAlias != null)
 				alias = StoreHelper.CreateMultiStorePropertyAlias(alias, storeAlias);
 
-			var property = node.GetProperty(alias);
-
-			if (property == null || string.IsNullOrEmpty(property.Value))
+			if (node.HasProperty(alias) && node.HasValue(alias))
 			{
-				property = node.GetProperty(originalAlias);
+
+				return node.Properties.FirstOrDefault(x => x.Alias == originalAlias);
 			}
 
-			return property;
+			return null;
 
 			#endregion
 		}

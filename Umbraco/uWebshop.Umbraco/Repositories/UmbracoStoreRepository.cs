@@ -3,19 +3,13 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Web;
-using System.Web.Services.Description;
-using Lucene.Net.Documents;
 using umbraco.cms.businesslogic.language;
 using umbraco.cms.businesslogic.web;
-using umbraco.cms.presentation.create.controls;
 using umbraco.NodeFactory;
 using uWebshop.Common;
-using uWebshop.Common.Interfaces;
-using uWebshop.DataAccess;
 using uWebshop.Domain;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
-using Document = umbraco.cms.businesslogic.web.Document;
 
 namespace uWebshop.Umbraco.Repositories
 {
@@ -262,14 +256,14 @@ namespace uWebshop.Umbraco.Repositories
 
 				if (fields.ContainsKey("useBackorders"))
 				{
-					string useBackorders = fields.GetStringValue("useBackorders");
+					var useBackorders = fields.GetStringValue("useBackorders");
 
 					store.UseBackorders = useBackorders == "enable" || useBackorders == "1" || useBackorders == "true";
 				}
 
 				if (fields.ContainsKey("enableTestmode"))
 				{
-					string enableTestmode = fields.GetStringValue("enableTestmode");
+					var enableTestmode = fields.GetStringValue("enableTestmode");
 
 					store.EnableTestmode = enableTestmode == "enable" || enableTestmode == "1" || enableTestmode == "true";
 				}

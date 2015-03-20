@@ -7,16 +7,19 @@ using System.Web;
 using System.Web.UI;
 using System.Xml.Linq;
 using Examine;
-using uWebshop.Common;
 using uWebshop.Domain;
 using uWebshop.Domain.Interfaces;
 using umbraco;
 using umbraco.BasePages;
 using umbraco.BusinessLogic;
-using umbraco.cms.businesslogic.datatype;
 using umbraco.cms.businesslogic.web;
 using umbraco.controls;
 using uWebshop.Umbraco.DataTypes.StorePicker;
+using Umbraco.Core;
+using Umbraco.Core.Models;
+using Umbraco.Core.Services;
+using Constants = uWebshop.Common.Constants;
+using DataTypeDefinition = umbraco.cms.businesslogic.datatype.DataTypeDefinition;
 using Log = uWebshop.Domain.Log;
 
 namespace uWebshop.Package.Installer
@@ -27,6 +30,9 @@ namespace uWebshop.Package.Installer
 		{
 			base.OnInit(e);
 		}
+
+		public static IContentTypeService ContentTypeService = ApplicationContext.Current.Services.ContentTypeService;
+		public static IContentService ContentService = ApplicationContext.Current.Services.ContentService;
 
 		protected void Page_Load(object sender, EventArgs e)
 		{
@@ -346,18 +352,13 @@ namespace uWebshop.Package.Installer
 
 		protected ContentPicker NodePickerStore = new ContentPicker {ID = "nodePickerStore", AppAlias = "content", ClientIDMode = ClientIDMode.Static};
 
-		public static List<DocumentType> DocumentTypeListWithoutuWebshopDocuments
+		public static List<IContentType> DocumentTypeListWithoutuWebshopDocuments
 		{
 			get
 			{
-				var docTypeList = DocumentType.GetAllAsList();
+				var docTypeList = ContentTypeService.GetAllContentTypes();
 
-				foreach (var docType in docTypeList.ToList().Where(docType => DocumentTypeAliasList.List.Contains(docType.Alias)))
-				{
-					docTypeList.Remove(docType);
-				}
-
-				return docTypeList;
+				return docTypeList.Where(docType => DocumentTypeAliasList.List.Contains(docType.Alias)).ToList();
 			}
 		}
 

@@ -1,27 +1,30 @@
 ﻿using System;
-using System.Linq;
+
 using System.Web;
 using System.Xml;
 using umbraco.BasePages;
 using umbraco.cms.businesslogic.web;
-using umbraco.interfaces;
-using umbraco.NodeFactory;
+
 using uWebshop.Common;
 using uWebshop.DataAccess;
 using uWebshop.Domain;
-using uWebshop.Domain.Businesslogic;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
-using uWebshop.Umbraco;
 using uWebshop.Umbraco.Interfaces;
+using Umbraco.Core;
+using Umbraco.Core.Services;
+using Umbraco.Web;
 
 namespace uWebshop.RazorExtensions
 {
 	public static class CMS
 	{
+		public static IContentService ContentService = ApplicationContext.Current.Services.ContentService;
+
 		public static string GetProperty(this IUwebshopUmbracoEntity content, string propertyAlias)
 		{
-			IProperty property = new Node(content.Id).GetMultiStoreItem(propertyAlias);
+			var umbHelper = new UmbracoHelper(UmbracoContext.Current);
+			var property = umbHelper.Content(content.Id).GetMultiStoreItem(propertyAlias);
 			if (property == null) return string.Empty;
 			return property.Value;
 		}
@@ -34,7 +37,7 @@ namespace uWebshop.RazorExtensions
 		public static OrderInfo GetOrderFromCurrentDocument()
 		{
 			var documentId = int.Parse(HttpContext.Current.Request.QueryString["id"]);
-			var orderDoc = new Document(documentId);
+			var orderDoc = ContentService.GetById(documentId);
 			return GetOrderByDocumentId(orderDoc.Id);
 		}
 
@@ -46,17 +49,17 @@ namespace uWebshop.RazorExtensions
 		/// <returns></returns>
 		public static OrderInfo GetOrderByDocumentId(int documentId)
 		{
-			var orderDoc = new Document(documentId);
+			
 
-			if (orderDoc.getProperty("orderGuid") != null)
+			var orderDoc = ContentService.GetById(documentId);
+
+			if (orderDoc.HasProperty("orderGuid"))
 			{
-				var orderGuidValue = orderDoc.getProperty("orderGuid").Value;
-				if (orderGuidValue != null && !string.IsNullOrEmpty(orderGuidValue.ToString()))
-				{
-					var orderGuid = Guid.Parse(orderDoc.getProperty("orderGuid").Value.ToString());
 
-					return OrderHelper.GetOrderInfo(orderGuid);
-				}
+				var orderGuid = orderDoc.GetValue<Guid>("orderGuid");
+
+				return OrderHelper.GetOrder(orderGuid);
+
 			}
 
 			return null;
@@ -123,7 +126,7 @@ namespace uWebshop.RazorExtensions
 
 		public static void OpenNode(int nodeId)
 		{
-			var doc = new Document(nodeId);
+			var doc = ContentService.GetById(nodeId);
 
 			if (!string.IsNullOrEmpty(doc.Path) && BasePage.Current != null)
 			{
@@ -145,7 +148,7 @@ namespace uWebshop.RazorExtensions
 
 				if (nodeId != 0)
 				{
-					bool publish = false;
+					var publish = false;
 
 					//var contentService = ApplicationContext.Current.Services.ContentService;
 

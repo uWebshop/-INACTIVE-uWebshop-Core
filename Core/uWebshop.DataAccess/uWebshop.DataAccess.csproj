@@ -42,6 +42,9 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="Umbraco.Core">
+      <HintPath>..\..\Binary Dependencies umbraco6.1\Umbraco.Core.dll</HintPath>
+    </Reference>
     <Reference Include="umbraco.DataLayer">
       <HintPath>..\..\Binary Dependencies umbraco6\umbraco.DataLayer.dll</HintPath>
     </Reference>
