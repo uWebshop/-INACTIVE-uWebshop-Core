@@ -4,7 +4,7 @@
 	<info>
 		<package>
 			<name>uWebshop2</name>
-			<version>2.6.5.0</version>
+			<version>2.7.0.0</version>
 			<license url="http://uwebshop.com/terms-conditions">uWebshop License Agreement</license>
 			<url>http://uWebshop.com</url>
 			<requirements>
@@ -18,7 +18,7 @@
 			<website>http://uWebshop.com</website>
 		</author>
 		<readme>
-			<![CDATA[uWebshop 2.6.5.0 Foundation Package
+			<![CDATA[uWebshop 2.7.0.0 Foundation Package
 					   
 			uWebshop is a powerful, easy to manage, fully featured e-commerce package for Umbraco.
 			

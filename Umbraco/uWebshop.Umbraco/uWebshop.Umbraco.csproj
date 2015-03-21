@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>uWebshop.Umbraco</RootNamespace>
     <AssemblyName>uWebshop.Umbraco</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -212,9 +212,9 @@
     <Compile Include="Services\CMSContentService.cs" />
     <Compile Include="Services\ContentInstaller.cs" />
     <Compile Include="Services\DataTypeAndContentTypesInstaller.cs">
-      <DependentUpon>DataTypeAndContentTypesInstaller.tt</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
+      <DependentUpon>DataTypeAndContentTypesInstaller.tt</DependentUpon>
     </Compile>
     <Compile Include="Services\DocumentTypeInstaller.cs" />
     <Compile Include="Services\ExamineRebuildIndicesService.cs" />

@@ -28,7 +28,7 @@ namespace uWebshop.Umbraco.Businesslogic
 {
 	internal class InternalHelpers
 	{
-		public static IMediaService MediaService = ApplicationContext.Current.Services.MediaService;
+		
 
 		internal static string[] ParseTagsString(string property)
 		{
@@ -232,6 +232,7 @@ namespace uWebshop.Umbraco.Businesslogic
 		{
 			try
 			{
+				var MediaService = ApplicationContext.Current.Services.MediaService;
 				var media = MediaService.GetById(id);
 				var file = new File();
 				LoadMediaBase(file, media);
@@ -249,6 +250,7 @@ namespace uWebshop.Umbraco.Businesslogic
 		{
 			try
 			{
+				var MediaService = ApplicationContext.Current.Services.MediaService;
 				var media = MediaService.GetById(id);
 				var image = new Image();
 				LoadMediaBase(image, media);

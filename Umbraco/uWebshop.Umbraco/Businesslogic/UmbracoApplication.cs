@@ -23,8 +23,7 @@ using Umbraco.Core.IO;
 namespace uWebshop.Umbraco
 {
 	internal class UmbracoApplication : ICMSApplication
-	{
-		public static string ConnectionString = ApplicationContext.Current.DatabaseContext.ConnectionString;
+	{	
 
 		private readonly IHttpContextWrapper _httpContextWrapper;
 
@@ -117,12 +116,14 @@ namespace uWebshop.Umbraco
 
 		public bool UsesSQLCEDatabase()
 		{
-			return DataLayerHelper.IsEmbeddedDatabase(ConnectionString);
+			var connectionString = ApplicationContext.Current.DatabaseContext.ConnectionString;
+			return DataLayerHelper.IsEmbeddedDatabase(connectionString);
 		}
 
 		public bool UsesMySQLDatabase()
 		{
-			return ConnectionString.ToLower().Contains("mysql");
+			var connectionString = ApplicationContext.Current.DatabaseContext.ConnectionString;
+			return connectionString.ToLower().Contains("mysql");
 		}
 
 		public bool HideTopLevelNodeFromPath
