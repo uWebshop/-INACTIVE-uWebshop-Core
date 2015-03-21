@@ -6,10 +6,11 @@ using System.Web;
 using umbraco.cms.businesslogic.language;
 using umbraco.cms.businesslogic.web;
 using umbraco.NodeFactory;
-using uWebshop.Common;
 using uWebshop.Domain;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
+using Umbraco.Core;
+using Constants = uWebshop.Common.Constants;
 
 namespace uWebshop.Umbraco.Repositories
 {
@@ -102,6 +103,8 @@ namespace uWebshop.Umbraco.Repositories
 		{
 			public override void LoadDataFromPropertiesDictionary(Store store, IPropertyProvider fields, ILocalization localization)
 			{
+				var contentTypeService = ApplicationContext.Current.Services.ContentTypeService;
+	
 				// note: it's impossible to use StoreHelper.GetMultiStoreItemExamine here (or any multi store)
 
 				if (fields.ContainsKey("incompleteOrderLifetime"))
@@ -245,7 +248,7 @@ namespace uWebshop.Umbraco.Repositories
 					var value = storeStockValue == "enable" || storeStockValue == "1" || storeStockValue == "true";
 					if (value)
 					{
-						var productDt = DocumentType.GetByAlias(Product.NodeAlias);
+						var productDt = contentTypeService.GetContentType(Product.NodeAlias);
 						if (!productDt.PropertyTypes.Any(x => x.Alias.ToLower() == "stock_" + store.Alias.ToLower()))
 						{
 							value = false;

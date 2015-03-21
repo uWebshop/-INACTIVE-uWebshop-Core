@@ -13,6 +13,7 @@ using System.Web.Profile;
 using System.Web.Security;
 using System.Web.SessionState;
 using System.Xml;
+using System.Xml.Linq;
 using uWebshop.API;
 using uWebshop.Common;
 using uWebshop.Domain.Helpers;
@@ -176,9 +177,22 @@ namespace uWebshop.Domain.Businesslogic
 			{
 				var keyValue = requestParameters[cleanOrderLinesCollection.First()];
 				if (keyValue.ToLower() == "true" || keyValue.ToLower() == "clearbasket" || keyValue.ToLower() == "on" ||
-				    keyValue == "1")
+					keyValue == "1")
 				{
 					var result = ClearBasket(requestParameters, rawRequestUrl);
+					handleObjectList.Add(result);
+				}
+			}
+
+			List<string> cleanOrderCollection = requestParameters.AllKeys.Where(x => x != null && x.ToLower() == "clearorder").ToList();
+
+			if (cleanOrderCollection.Any())
+			{
+				var keyValue = requestParameters[cleanOrderCollection.First()];
+				if (keyValue.ToLower() == "true" || keyValue.ToLower() == "clearorder" || keyValue.ToLower() == "on" ||
+					keyValue == "1")
+				{
+					var result = ClearOrder(requestParameters, rawRequestUrl);
 					handleObjectList.Add(result);
 				}
 			}
@@ -245,18 +259,18 @@ namespace uWebshop.Domain.Businesslogic
 				handleObjectList.Add(result);
 			}
 
-            List<string> createAccountQueryStringCollection = requestParameters.AllKeys.Where(x => x != null && x.ToLower() == "createaccount").ToList();
+			List<string> createAccountQueryStringCollection = requestParameters.AllKeys.Where(x => x != null && x.ToLower() == "createaccount").ToList();
 
-            if (createAccountQueryStringCollection.Any())
-            {
-                var keyValue = requestParameters[createAccountQueryStringCollection.First()];
-                if (keyValue.ToLower() == "true" || keyValue.ToLower() == "createaccount" || keyValue.ToLower() == "on" ||
-                    keyValue == "1")
-                {
-                    var result = AccountCreate(requestParameters, rawRequestUrl);
-                    handleObjectList.Add(result);
-                }
-            }
+			if (createAccountQueryStringCollection.Any())
+			{
+				var keyValue = requestParameters[createAccountQueryStringCollection.First()];
+				if (keyValue.ToLower() == "true" || keyValue.ToLower() == "createaccount" || keyValue.ToLower() == "on" ||
+					keyValue == "1")
+				{
+					var result = AccountCreate(requestParameters, rawRequestUrl);
+					handleObjectList.Add(result);
+				}
+			}
 
 			List<string> updateAccountQueryStringCollection = requestParameters.AllKeys.Where(x => x != null && x.ToLower() == "updateaccount").ToList();
 
@@ -264,7 +278,7 @@ namespace uWebshop.Domain.Businesslogic
 			{
 				var keyValue = requestParameters[updateAccountQueryStringCollection.First()];
 				if (keyValue.ToLower() == "true" || keyValue.ToLower() == "updateaccount" || keyValue.ToLower() == "on" ||
-				    keyValue == "1")
+					keyValue == "1")
 				{
 					var result = AccountUpdate(requestParameters, rawRequestUrl);
 					handleObjectList.Add(result);
@@ -277,7 +291,7 @@ namespace uWebshop.Domain.Businesslogic
 			{
 				var keyValue = requestParameters[accountChangePaswordQueryStringCollection.First()];
 				if (keyValue.ToLower() == "true" || keyValue.ToLower() == "changepassword" || keyValue.ToLower() == "on" ||
-				    keyValue == "1")
+					keyValue == "1")
 				{
 
 					var result = AccountChangePassword(requestParameters, rawRequestUrl);
@@ -291,7 +305,7 @@ namespace uWebshop.Domain.Businesslogic
 			{
 				var keyValue = requestParameters[accountSignOutQueryStringCollection.First()];
 				if (keyValue.ToLower() == "true" || keyValue.ToLower() == "accountsignout" || keyValue.ToLower() == "on" ||
-				    keyValue == "1")
+					keyValue == "1")
 				{
 					var result = AccountSignOut(requestParameters, rawRequestUrl);
 					handleObjectList.Add(result);
@@ -305,7 +319,7 @@ namespace uWebshop.Domain.Businesslogic
 			{
 				var keyValue = requestParameters[accountSignInQueryStringCollection.First()];
 				if (keyValue.ToLower() == "true" || keyValue.ToLower() == "accountsignin" || keyValue.ToLower() == "on" ||
-				    keyValue == "1")
+					keyValue == "1")
 				{
 					var result = AccountSignIn(requestParameters, rawRequestUrl);
 					handleObjectList.Add(result);
@@ -318,7 +332,7 @@ namespace uWebshop.Domain.Businesslogic
 			{
 				var keyValue = requestParameters[wishlistCreateQueryStringCollection.First()];
 				if (keyValue.ToLower() == "true" || keyValue.ToLower() == "createwishlist" || keyValue.ToLower() == "on" ||
-				    keyValue == "1")
+					keyValue == "1")
 				{
 					var result = WishlistCreate(requestParameters, rawRequestUrl);
 					handleObjectList.Add(result);
@@ -331,7 +345,7 @@ namespace uWebshop.Domain.Businesslogic
 			{
 				var keyValue = requestParameters[wishlistRenameQueryStringCollection.First()];
 				if (keyValue.ToLower() == "true" || keyValue.ToLower() == "renamewishlist" || keyValue.ToLower() == "on" ||
-				    keyValue == "1")
+					keyValue == "1")
 				{
 					var result = WishlistRename(requestParameters, rawRequestUrl);
 					handleObjectList.Add(result);
@@ -344,7 +358,7 @@ namespace uWebshop.Domain.Businesslogic
 			{
 				var keyValue = requestParameters[wishlistToBasketQueryStringCollection.First()];
 				if (keyValue.ToLower() == "true" || keyValue.ToLower() == "wishlisttobasket" || keyValue.ToLower() == "on" ||
-				    keyValue == "1")
+					keyValue == "1")
 				{
 					var result = WishlistToBasket(requestParameters, rawRequestUrl);
 					handleObjectList.Add(result);
@@ -357,25 +371,25 @@ namespace uWebshop.Domain.Businesslogic
 			{
 				var keyValue = requestParameters[wishlistRemoveQueryStringCollection.First()];
 				if (keyValue.ToLower() == "true" || keyValue.ToLower() == "removewishlist" || keyValue.ToLower() == "on" ||
-				    keyValue == "1")
+					keyValue == "1")
 				{
 					var result = WishlistRemove(requestParameters, rawRequestUrl);
 					handleObjectList.Add(result);
 				}
 			}
 
-            List<string> accountRequestPaswordQueryStringCollection = requestParameters.AllKeys.Where(x => x != null && x.ToLower() == "requestpassword").ToList();
+			List<string> accountRequestPaswordQueryStringCollection = requestParameters.AllKeys.Where(x => x != null && x.ToLower() == "requestpassword").ToList();
 
-            if (accountRequestPaswordQueryStringCollection.Any())
-            {
-                var keyValue = requestParameters[accountRequestPaswordQueryStringCollection.First()];
-                if (keyValue.ToLower() == "true" || keyValue.ToLower() == "requestpassword" || keyValue.ToLower() == "on" ||
-                    keyValue == "1")
-                {
-                    var result = AccountRequestPassword(requestParameters, rawRequestUrl);
-                    handleObjectList.Add(result);
-                }
-            }
+			if (accountRequestPaswordQueryStringCollection.Any())
+			{
+				var keyValue = requestParameters[accountRequestPaswordQueryStringCollection.First()];
+				if (keyValue.ToLower() == "true" || keyValue.ToLower() == "requestpassword" || keyValue.ToLower() == "on" ||
+					keyValue == "1")
+				{
+					var result = AccountRequestPassword(requestParameters, rawRequestUrl);
+					handleObjectList.Add(result);
+				}
+			}
 
 			List<string> validateQueryStringCollection = requestParameters.AllKeys.Where(x => x != null && x.ToLower() == "validate").ToList();
 
@@ -383,7 +397,7 @@ namespace uWebshop.Domain.Businesslogic
 			{
 				var keyValue = requestParameters[validateQueryStringCollection.First()];
 				if (keyValue.ToLower() == "true" || keyValue.ToLower() == "validate" || keyValue.ToLower() == "on" ||
-				    keyValue == "1")
+					keyValue == "1")
 				{
 					var result = ValidateOrder(requestParameters, rawRequestUrl);
 					handleObjectList.Add(result);
@@ -396,7 +410,7 @@ namespace uWebshop.Domain.Businesslogic
 			{
 				var keyValue = requestParameters[validateCustomerQueryStringCollection.First()];
 				if (keyValue.ToLower() == "true" || keyValue.ToLower() == "validatecustomer" || keyValue.ToLower() == "on" ||
-				    keyValue == "1")
+					keyValue == "1")
 				{
 					var result = ValidateCustomer(requestParameters, rawRequestUrl);
 					handleObjectList.Add(result);
@@ -409,7 +423,7 @@ namespace uWebshop.Domain.Businesslogic
 			{
 				var keyValue = requestParameters[validateCustomQueryStringCollection.First()];
 				if (keyValue.ToLower() == "true" || keyValue.ToLower() == "validatecustom" || keyValue.ToLower() == "on" ||
-				    keyValue == "1")
+					keyValue == "1")
 				{
 					var result = ValidateCustomValidation(requestParameters, rawRequestUrl);
 					handleObjectList.Add(result);
@@ -422,7 +436,7 @@ namespace uWebshop.Domain.Businesslogic
 			{
 				var keyValue = requestParameters[validateStockQueryStringCollection.First()];
 				if (keyValue.ToLower() == "true" || keyValue.ToLower() == "validatestock" || keyValue.ToLower() == "on" ||
-				    keyValue == "1")
+					keyValue == "1")
 				{
 					var result = ValidateStock(requestParameters, rawRequestUrl);
 					handleObjectList.Add(result);
@@ -435,7 +449,7 @@ namespace uWebshop.Domain.Businesslogic
 			{
 				var keyValue = requestParameters[validateOrderlinesQueryStringCollection.First()];
 				if (keyValue.ToLower() == "true" || keyValue.ToLower() == "validateorderlines" || keyValue.ToLower() == "on" ||
-				    keyValue == "1")
+					keyValue == "1")
 				{
 					var result = ValidateOrderlines(requestParameters, rawRequestUrl);
 					handleObjectList.Add(result);
@@ -736,7 +750,7 @@ namespace uWebshop.Domain.Businesslogic
 			}
 			order.Save(true, ValidateSaveAction.CustomValidation);
 			// todo: does this create the incomplete order in the order overview?
-            SetBasket(handleObject, order);
+			SetBasket(handleObject, order);
 			handleObject.Validated = false;
 
 			Uri redirect = null;
@@ -756,9 +770,9 @@ namespace uWebshop.Domain.Businesslogic
 
 		private static void SetBasket(HandleObject handleObject, OrderInfo order)
 		{
-		    var orderInfo = OrderHelper.GetOrder(order.UniqueOrderId);
+			var orderInfo = OrderHelper.GetOrder(order.UniqueOrderId);
 
-            handleObject.Item = Basket.CreateBasketFromOrderInfo(orderInfo);
+			handleObject.Item = Basket.CreateBasketFromOrderInfo(orderInfo);
 		}
 
 		private HandleObject ValidateStock(NameValueCollection requestParameters, Uri urlReferrer)
@@ -860,9 +874,11 @@ namespace uWebshop.Domain.Businesslogic
 				result.Add(Constants.BasketActionResult, BasketActionResult.Failed.ToString());
 				return handleObject;
 			}
+
 			order.OrderLines.Clear();
 
 			order.Save();
+
 			Session.Add(Constants.BasketActionResult, BasketActionResult.Success);
 			result.Add(Constants.BasketActionResult, BasketActionResult.Success.ToString());
 			SetBasket(handleObject, order);
@@ -870,6 +886,34 @@ namespace uWebshop.Domain.Businesslogic
 			handleObject.Success = true;
 			return handleObject;
 		}
+
+		private HandleObject ClearOrder(NameValueCollection requestParameters, Uri urlReferrer)
+		{
+			var handleObject = new HandleObject { Action = "ClearOrder", Url = urlReferrer };
+			var result = new Dictionary<string, string>();
+
+			var order = OrderHelper.GetOrder();
+
+			if (order == null)
+			{
+				handleObject.Success = false;
+				handleObject.Messages = result;
+				Session.Add(Constants.BasketActionResult, BasketActionResult.Failed);
+
+				result.Add(Constants.BasketActionResult, BasketActionResult.Failed.ToString());
+				return handleObject;
+			}
+
+			order = OrderHelper.CreateOrder();
+
+			Session.Add(Constants.BasketActionResult, BasketActionResult.Success);
+			result.Add(Constants.BasketActionResult, BasketActionResult.Success.ToString());
+			SetBasket(handleObject, order);
+			handleObject.Messages = result;
+			handleObject.Success = true;
+			return handleObject;
+		}
+
 
 		private HandleObject AccountSignOut(NameValueCollection requestParameters, Uri urlReferrer)
 		{
@@ -933,367 +977,368 @@ namespace uWebshop.Domain.Businesslogic
 			return handleObject;
 		}
 
-        private HandleObject AccountCreate(NameValueCollection requestParameters, Uri urlReferrer)
-        {
-            var handleObject = new HandleObject { Action = "CreateAccount", Url = urlReferrer };
+		private HandleObject AccountCreate(NameValueCollection requestParameters, Uri urlReferrer)
+		{
+			var handleObject = new HandleObject { Action = "CreateAccount", Url = urlReferrer };
 
-            var userKey = requestParameters.AllKeys.FirstOrDefault(x => x.ToLower() == "username") ?? requestParameters.AllKeys.FirstOrDefault(x => x.ToLower() == "customeremail");
+			var userKey = requestParameters.AllKeys.FirstOrDefault(x => x.ToLower() == "username") ?? requestParameters.AllKeys.FirstOrDefault(x => x.ToLower() == "customeremail");
 
-            var passwordKey = requestParameters.AllKeys.FirstOrDefault(x => x.ToLower() == "password");
+			var passwordKey = requestParameters.AllKeys.FirstOrDefault(x => x.ToLower() == "password");
 
-            var validatePasswordKey = requestParameters.AllKeys.FirstOrDefault(x => x.ToLower() == "validatepassword");
+			var validatePasswordKey = requestParameters.AllKeys.FirstOrDefault(x => x.ToLower() == "validatepassword");
 
-            var generatePasswordKey = requestParameters.AllKeys.FirstOrDefault(x => x.ToLower() == "generatepassword");
+			var generatePasswordKey = requestParameters.AllKeys.FirstOrDefault(x => x.ToLower() == "generatepassword");
 
-            // when doing a one-page checkout, you might not want to cancel the confirmation when the member already exists
-            var ignoreMemberexistsError = requestParameters.AllKeys.FirstOrDefault(x => x.ToLower() == "ignorememberexistserror");
+			// when doing a one-page checkout, you might not want to cancel the confirmation when the member already exists
+			var ignoreMemberexistsError = requestParameters.AllKeys.FirstOrDefault(x => x.ToLower() == "ignorememberexistserror");
 
-            var ignoreMemberexistsValue = requestParameters[ignoreMemberexistsError];
+			var ignoreMemberexistsValue = requestParameters[ignoreMemberexistsError];
 
-            var ignoreMemberexists = ignoreMemberexistsValue != null && (ignoreMemberexistsValue.ToLower() == "true" ||
-                                                                         ignoreMemberexistsValue.ToLower() == "ignorememberexistserror" ||
-                                                                         ignoreMemberexistsValue.ToLower() == "on" ||
-                                                                         ignoreMemberexistsValue == "1") || Membership.GetUser() != null;
+			var ignoreMemberexists = ignoreMemberexistsValue != null && (ignoreMemberexistsValue.ToLower() == "true" ||
+																		 ignoreMemberexistsValue.ToLower() == "ignorememberexistserror" ||
+																		 ignoreMemberexistsValue.ToLower() == "on" ||
+																		 ignoreMemberexistsValue == "1") || Membership.GetUser() != null;
 
-            var userName = requestParameters[userKey];
+			var userName = requestParameters[userKey];
 
-            if (userName == null)
-            {
-                var order = OrderHelper.GetOrder();
+			if (userName == null)
+			{
+				var order = OrderHelper.GetOrder();
 
-                if (order != null)
-                {
-                    userName = order.CustomerEmail;
-                }
-            }
+				if (order != null)
+				{
+					userName = order.CustomerEmail;
+				}
+			}
 
-            var result = new Dictionary<string, string>();
+			var result = new Dictionary<string, string>();
 
-            if (userName == null)
-            {
-                Session.Add(Constants.CreateMemberSessionKey, AccountActionResult.NoUserNameInput);
-                result.Add(Constants.CreateMemberSessionKey, AccountActionResult.NoUserNameInput.ToString());
-                handleObject.Success = false;
-                handleObject.Validated = false;
-                handleObject.Messages = result;
-                return handleObject;
-            }
+			if (userName == null)
+			{
+				Session.Add(Constants.CreateMemberSessionKey, AccountActionResult.NoUserNameInput);
+				result.Add(Constants.CreateMemberSessionKey, AccountActionResult.NoUserNameInput.ToString());
+				handleObject.Success = false;
+				handleObject.Validated = false;
+				handleObject.Messages = result;
+				return handleObject;
+			}
 
-            if (!Regex.IsMatch(userName, "\\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}\\b", RegexOptions.IgnoreCase))
-            {
-                Session.Add(Constants.CreateMemberSessionKey, AccountActionResult.UserNameInvalid);
-                result.Add(Constants.CreateMemberSessionKey, AccountActionResult.UserNameInvalid.ToString());
-                handleObject.Success = false;
-                handleObject.Validated = false;
-                handleObject.Messages = result;
-                return handleObject;
-            }
+			if (!Regex.IsMatch(userName, "\\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}\\b", RegexOptions.IgnoreCase))
+			{
+				Session.Add(Constants.CreateMemberSessionKey, AccountActionResult.UserNameInvalid);
+				result.Add(Constants.CreateMemberSessionKey, AccountActionResult.UserNameInvalid.ToString());
+				handleObject.Success = false;
+				handleObject.Validated = false;
+				handleObject.Messages = result;
+				return handleObject;
+			}
 
-            string passwordValue = requestParameters[passwordKey];
-            string validatePasswordValue = requestParameters[validatePasswordKey];
-            string generatePasswordValue = requestParameters[generatePasswordKey];
+			string passwordValue = requestParameters[passwordKey];
+			string validatePasswordValue = requestParameters[validatePasswordKey];
+			string generatePasswordValue = requestParameters[generatePasswordKey];
 
-            if (string.IsNullOrEmpty(generatePasswordValue) && !string.IsNullOrEmpty(passwordValue))
-            {
-                if (passwordValue == validatePasswordValue)
-                {
-                    if (Membership.MinRequiredPasswordLength > 0)
-                    {
-                        if (passwordValue.Length < Membership.MinRequiredPasswordLength)
-                        {
-                            Session.Add(Constants.CreateMemberSessionKey, AccountActionResult.MinRequiredPasswordLengthError);
-                            Log.Instance.LogDebug("MinRequiredPasswordLengthError");
-                            result.Add(Constants.CreateMemberSessionKey,
-                                AccountActionResult.MinRequiredPasswordLengthError.ToString());
-                            handleObject.Success = false;
-                            handleObject.Validated = false;
-                            handleObject.Messages = result;
-                            return handleObject;
-                        }
-                    }
+			if (string.IsNullOrEmpty(generatePasswordValue) && !string.IsNullOrEmpty(passwordValue))
+			{
+				if (passwordValue == validatePasswordValue)
+				{
+					if (Membership.MinRequiredPasswordLength > 0)
+					{
+						if (passwordValue.Length < Membership.MinRequiredPasswordLength)
+						{
+							Session.Add(Constants.CreateMemberSessionKey, AccountActionResult.MinRequiredPasswordLengthError);
+							Log.Instance.LogDebug("MinRequiredPasswordLengthError");
+							result.Add(Constants.CreateMemberSessionKey,
+								AccountActionResult.MinRequiredPasswordLengthError.ToString());
+							handleObject.Success = false;
+							handleObject.Validated = false;
+							handleObject.Messages = result;
+							return handleObject;
+						}
+					}
 
-                    if (!string.IsNullOrEmpty(Membership.PasswordStrengthRegularExpression))
-                    {
-                        if (!Regex.IsMatch(passwordValue, Membership.PasswordStrengthRegularExpression))
-                        {
-                            Session.Add(Constants.CreateMemberSessionKey, AccountActionResult.PasswordStrengthRegularExpressionError);
-                            Log.Instance.LogDebug("PasswordStrengthRegularExpression");
-                            result.Add(Constants.CreateMemberSessionKey,
-                                AccountActionResult.PasswordStrengthRegularExpressionError.ToString());
-                            handleObject.Success = false;
-                            handleObject.Validated = false;
-                            handleObject.Messages = result;
-                            return handleObject;
-                        }
-                    }
+					if (!string.IsNullOrEmpty(Membership.PasswordStrengthRegularExpression))
+					{
+						if (!Regex.IsMatch(passwordValue, Membership.PasswordStrengthRegularExpression))
+						{
+							Session.Add(Constants.CreateMemberSessionKey, AccountActionResult.PasswordStrengthRegularExpressionError);
+							Log.Instance.LogDebug("PasswordStrengthRegularExpression");
+							result.Add(Constants.CreateMemberSessionKey,
+								AccountActionResult.PasswordStrengthRegularExpressionError.ToString());
+							handleObject.Success = false;
+							handleObject.Validated = false;
+							handleObject.Messages = result;
+							return handleObject;
+						}
+					}
 
-                    if (Membership.MinRequiredNonAlphanumericCharacters > 0)
-                    {
-                        int num = passwordValue.Where((t, i) => !char.IsLetterOrDigit(passwordValue, i)).Count();
+					if (Membership.MinRequiredNonAlphanumericCharacters > 0)
+					{
+						int num = passwordValue.Where((t, i) => !char.IsLetterOrDigit(passwordValue, i)).Count();
 
-                        if (num < Membership.MinRequiredNonAlphanumericCharacters)
-                        {
-                            Session.Add(Constants.CreateMemberSessionKey, AccountActionResult.MinRequiredNonAlphanumericCharactersError);
-                            Log.Instance.LogDebug("MinRequiredNonAlphanumericCharacters");
-                            result.Add(Constants.CreateMemberSessionKey,
-                                AccountActionResult.MinRequiredNonAlphanumericCharactersError.ToString());
-                            handleObject.Success = false;
-                            handleObject.Validated = false;
-                            handleObject.Messages = result;
-                            return handleObject;
-                        }
-                    }
-                }
-                else
-                {
-                    Session.Add(Constants.CreateMemberSessionKey, AccountActionResult.PasswordMismatch);
-                    Log.Instance.LogDebug("PasswordMismatch");
-                    result.Add(Constants.CreateMemberSessionKey, AccountActionResult.PasswordMismatch.ToString());
-                    handleObject.Success = false;
-                    handleObject.Validated = false;
-                    handleObject.Messages = result;
-                    return handleObject;
-                }
-            }
-            else
-            {
-                passwordValue = Membership.GeneratePassword(Membership.MinRequiredPasswordLength, Membership.MinRequiredNonAlphanumericCharacters);
-            }
+						if (num < Membership.MinRequiredNonAlphanumericCharacters)
+						{
+							Session.Add(Constants.CreateMemberSessionKey, AccountActionResult.MinRequiredNonAlphanumericCharactersError);
+							Log.Instance.LogDebug("MinRequiredNonAlphanumericCharacters");
+							result.Add(Constants.CreateMemberSessionKey,
+								AccountActionResult.MinRequiredNonAlphanumericCharactersError.ToString());
+							handleObject.Success = false;
+							handleObject.Validated = false;
+							handleObject.Messages = result;
+							return handleObject;
+						}
+					}
+				}
+				else
+				{
+					Session.Add(Constants.CreateMemberSessionKey, AccountActionResult.PasswordMismatch);
+					Log.Instance.LogDebug("PasswordMismatch");
+					result.Add(Constants.CreateMemberSessionKey, AccountActionResult.PasswordMismatch.ToString());
+					handleObject.Success = false;
+					handleObject.Validated = false;
+					handleObject.Messages = result;
+					return handleObject;
+				}
+			}
+			else
+			{
+				passwordValue = Membership.GeneratePassword(Membership.MinRequiredPasswordLength, Membership.MinRequiredNonAlphanumericCharacters);
+			}
 
-            var webConfig = new XmlDocument();
-            webConfig.Load(HttpContext.Current.Server.MapPath("~/web.config"));
+			var webConfig = new XmlDocument();
+			webConfig.Load(HttpContext.Current.Server.MapPath("~/web.config"));
 
-            var umbracoDefaultMemberTypeAlias = webConfig.SelectSingleNode("//add[@defaultMemberTypeAlias]");
+			var umbracoDefaultMemberTypeAlias = webConfig.SelectSingleNode("//add[@defaultMemberTypeAlias]");
 
-            var memberTypes = IO.Container.Resolve<ICMSApplication>().GetAllMemberTypes();
+			var memberTypes = IO.Container.Resolve<ICMSApplication>().GetAllMemberTypes();
 
-            if (umbracoDefaultMemberTypeAlias == null || umbracoDefaultMemberTypeAlias.Attributes == null)
-            {
-                Session.Add(Constants.CreateMemberSessionKey, AccountActionResult.DefaultMemberTypeAliasError);
-                Log.Instance.LogError("AccountCreate: DefaultMemberTypeAliasError");
-                result.Add(Constants.CreateMemberSessionKey,
-                    AccountActionResult.DefaultMemberTypeAliasError.ToString());
-                handleObject.Success = false;
-                handleObject.Validated = false;
-                handleObject.Messages = result;
-                return handleObject;
-            }
-            string memberTypevalue = umbracoDefaultMemberTypeAlias.Attributes["defaultMemberTypeAlias"].Value;
+			if (umbracoDefaultMemberTypeAlias == null || umbracoDefaultMemberTypeAlias.Attributes == null)
+			{
+				Session.Add(Constants.CreateMemberSessionKey, AccountActionResult.DefaultMemberTypeAliasError);
+				Log.Instance.LogError("AccountCreate: DefaultMemberTypeAliasError");
+				result.Add(Constants.CreateMemberSessionKey,
+					AccountActionResult.DefaultMemberTypeAliasError.ToString());
+				handleObject.Success = false;
+				handleObject.Validated = false;
+				handleObject.Messages = result;
+				return handleObject;
+			}
+			string memberTypevalue = umbracoDefaultMemberTypeAlias.Attributes["defaultMemberTypeAlias"].Value;
 
-            if (memberTypes.All(x => x.Alias != memberTypevalue))
-            {
-                Session.Add(Constants.CreateMemberSessionKey, AccountActionResult.DefaultMemberTypeAliasNonExistingError);
-                Log.Instance.LogError("AccountCreate: DefaultMemberTypeAliasNonExistingError");
-                result.Add(Constants.CreateMemberSessionKey, AccountActionResult.DefaultMemberTypeAliasNonExistingError.ToString());
-                handleObject.Success = false;
-                handleObject.Validated = false;
-                handleObject.Messages = result;
-                return handleObject;
-            }
-            if (string.IsNullOrEmpty(userName))
-            {
-                Session.Add(Constants.CreateMemberSessionKey, AccountActionResult.CustomerEmailEmpty);
-                Log.Instance.LogError("AccountCreate: Username empty");
-                result.Add(Constants.CreateMemberSessionKey, AccountActionResult.CustomerEmailEmpty.ToString());
-                handleObject.Success = false;
-                handleObject.Validated = false;
-                handleObject.Messages = result;
-                return handleObject;
-            }
+			if (memberTypes.All(x => x.Alias != memberTypevalue))
+			{
+				Session.Add(Constants.CreateMemberSessionKey, AccountActionResult.DefaultMemberTypeAliasNonExistingError);
+				Log.Instance.LogError("AccountCreate: DefaultMemberTypeAliasNonExistingError");
+				result.Add(Constants.CreateMemberSessionKey, AccountActionResult.DefaultMemberTypeAliasNonExistingError.ToString());
+				handleObject.Success = false;
+				handleObject.Validated = false;
+				handleObject.Messages = result;
+				return handleObject;
+			}
+			if (string.IsNullOrEmpty(userName))
+			{
+				Session.Add(Constants.CreateMemberSessionKey, AccountActionResult.CustomerEmailEmpty);
+				Log.Instance.LogError("AccountCreate: Username empty");
+				result.Add(Constants.CreateMemberSessionKey, AccountActionResult.CustomerEmailEmpty.ToString());
+				handleObject.Success = false;
+				handleObject.Validated = false;
+				handleObject.Messages = result;
+				return handleObject;
+			}
 
-            var member = Membership.GetUser(userName);
+			var member = Membership.GetUser(userName);
 
-            if (member != null && !ignoreMemberexists)
-            {
-                Session.Add(Constants.CreateMemberSessionKey, AccountActionResult.MemberExists);
-                Log.Instance.LogError("AccountCreate: MemberExists username: " + userName);
-                result.Add(Constants.CreateMemberSessionKey, AccountActionResult.MemberExists.ToString());
-                handleObject.Success = false;
-                handleObject.Validated = false;
-                handleObject.Messages = result;
-                return handleObject;
-            }
+			if (member != null && !ignoreMemberexists)
+			{
+				Session.Add(Constants.CreateMemberSessionKey, AccountActionResult.MemberExists);
+				Log.Instance.LogError("AccountCreate: MemberExists username: " + userName);
+				result.Add(Constants.CreateMemberSessionKey, AccountActionResult.MemberExists.ToString());
+				handleObject.Success = false;
+				handleObject.Validated = false;
+				handleObject.Messages = result;
+				return handleObject;
+			}
 
-            // do nothing, but also don't stop the confirmation of the order (most likely situation for this usage)
-            if (ignoreMemberexists)
-            {
-                Log.Instance.LogError("AccountCreate: MemberExists username: " + userName + " BUT Ignore Member Exists");
-                handleObject.Success = true;
-                handleObject.Validated = true;
-                Session.Add(Constants.CreateMemberSessionKey, AccountActionResult.SuccessMemberExists);
-                result.Add(Constants.CreateMemberSessionKey, AccountActionResult.SuccessMemberExists.ToString());
-            }
+			// do nothing, but also don't stop the confirmation of the order (most likely situation for this usage)
+			if (ignoreMemberexists)
+			{
+				Log.Instance.LogError("AccountCreate: MemberExists username: " + userName + " BUT Ignore Member Exists");
+				handleObject.Success = true;
+				handleObject.Validated = true;
+				Session.Add(Constants.CreateMemberSessionKey, AccountActionResult.SuccessMemberExists);
+				result.Add(Constants.CreateMemberSessionKey, AccountActionResult.SuccessMemberExists.ToString());
+			}
 
-            if (member == null)
-            {
-                var membershipUser = Membership.CreateUser(userName, passwordValue, userName);
+			if (member == null)
+			{
+				var membershipUser = Membership.CreateUser(userName, passwordValue, userName);
 
-                string roleKey = requestParameters.AllKeys.FirstOrDefault(x => x.ToLower() == "membergroup");
-                string roleValue = requestParameters[roleKey];
+				string roleKey = requestParameters.AllKeys.FirstOrDefault(x => x.ToLower() == "membergroup");
+				string roleValue = requestParameters[roleKey];
 
-                if (!string.IsNullOrEmpty(roleValue))
-                {
-                    if (Roles.RoleExists(roleValue))
-                    {
-                        Roles.AddUserToRole(membershipUser.UserName, roleValue);
-                    }
-                    else
-                    {
-                        Roles.CreateRole(roleValue);
+				if (!string.IsNullOrEmpty(roleValue))
+				{
+					if (Roles.RoleExists(roleValue))
+					{
+						Roles.AddUserToRole(membershipUser.UserName, roleValue);
+					}
+					else
+					{
+						Roles.CreateRole(roleValue);
 
-                        Roles.AddUserToRole(membershipUser.UserName, roleValue);
-                    }
-                }
-                else
-                {
-                    if (!Roles.GetAllRoles().Any())
-                    {
-                        const string customersRole = "Customers";
+						Roles.AddUserToRole(membershipUser.UserName, roleValue);
+					}
+				}
+				else
+				{
+					if (!Roles.GetAllRoles().Any())
+					{
+						const string customersRole = "Customers";
 
-                        Roles.CreateRole(customersRole);
+						Roles.CreateRole(customersRole);
 
-                        Roles.AddUserToRole(membershipUser.UserName, customersRole);
-                    }
-                    else
-                    {
-                        Roles.AddUserToRole(membershipUser.UserName, Roles.GetAllRoles().First());
-                    }
-                }
+						Roles.AddUserToRole(membershipUser.UserName, customersRole);
+					}
+					else
+					{
+						Roles.AddUserToRole(membershipUser.UserName, Roles.GetAllRoles().First());
+					}
+				}
 
-                var profile = ProfileBase.Create(userName);
+				var profile = ProfileBase.Create(userName);
 
-                foreach (var prop in ProfileBase.Properties)
-                {
-                    try
-                    {
-                        var settingsProperty = (SettingsProperty)prop;
+				foreach (var prop in ProfileBase.Properties)
+				{
+					try
+					{
+						var settingsProperty = (SettingsProperty)prop;
 
-                        string settingsPropertyName = settingsProperty.Name;
+						string settingsPropertyName = settingsProperty.Name;
 
-                        if (!string.IsNullOrEmpty(requestParameters[settingsPropertyName]))
-                        {
-                            profile[settingsPropertyName] = requestParameters[settingsPropertyName];
-                        }
-                    }
-                    catch
-                    {
-                        var settingsProperty = (SettingsProperty)prop;
+						if (!string.IsNullOrEmpty(requestParameters[settingsPropertyName]))
+						{
+							profile[settingsPropertyName] = requestParameters[settingsPropertyName];
+						}
+					}
+					catch
+					{
+						var settingsProperty = (SettingsProperty)prop;
 
-                        Log.Instance.LogDebug(
-                            string.Format("UpdateAccount Failed for Request Property: {0}, currentNodeId: {1}",
-                                settingsProperty.Name, IO.Container.Resolve<ICMSApplication>().CurrentNodeId()));
-                    }
-                }
+						Log.Instance.LogDebug(
+							string.Format("UpdateAccount Failed for Request Property: {0}, currentNodeId: {1}",
+								settingsProperty.Name, IO.Container.Resolve<ICMSApplication>().CurrentNodeId()));
+					}
+				}
 
-                profile.Save();
-                handleObject.Item = profile;
-                FormsAuthentication.SetAuthCookie(userName, true);
+				profile.Save();
+				handleObject.Item = profile;
+				FormsAuthentication.SetAuthCookie(userName, true);
 
-                var currentStore = StoreHelper.GetById(StoreHelper.GetCurrentStore().Id);
+				var currentStore = StoreHelper.GetById(StoreHelper.GetCurrentStore().Id);
 
-                if (string.IsNullOrEmpty(currentStore.AccountCreatedEmail))
-                {
-                    Log.Instance.LogError("CreateAccount: AccountCreatedEmail not set: No email send to customer");
-                    handleObject.Messages = result;
+				if (string.IsNullOrEmpty(currentStore.AccountCreatedEmail))
+				{
+					Log.Instance.LogError("CreateAccount: AccountCreatedEmail not set: No email send to customer");
+					handleObject.Messages = result;
 
-                    handleObject.Success = true;
-                    handleObject.Validated = true;
-                }
-                else
-                {
-                    var emailNodeId = Convert.ToInt32(currentStore.AccountCreatedEmail);
-                    EmailHelper.SendMemberEmailCustomer(emailNodeId, currentStore, userName, passwordValue);
+					handleObject.Success = true;
+					handleObject.Validated = true;
+				}
+				else
+				{
+					var emailNodeId = Convert.ToInt32(currentStore.AccountCreatedEmail);
+					EmailHelper.SendMemberEmailCustomer(emailNodeId, currentStore, userName, passwordValue);
 
-                    handleObject.Success = true;
-                    handleObject.Validated = true;
-                }
+					handleObject.Success = true;
+					handleObject.Validated = true;
+				}
 
-                if (Session[Constants.CreateMemberSessionKey] == null)
-                {
-                    Session.Add(Constants.CreateMemberSessionKey, AccountActionResult.Success);
-                }
-                if (!result.ContainsKey(Constants.CreateMemberSessionKey))
-                {
-                    result.Add(Constants.CreateMemberSessionKey, AccountActionResult.Success.ToString());
-                }
-            }
+				if (Session[Constants.CreateMemberSessionKey] == null)
+				{
+					Session.Add(Constants.CreateMemberSessionKey, AccountActionResult.Success);
+				}
+				if (!result.ContainsKey(Constants.CreateMemberSessionKey))
+				{
+					result.Add(Constants.CreateMemberSessionKey, AccountActionResult.Success.ToString());
+				}
+			}
 
-            handleObject.Messages = result;
-            return handleObject;
-        }
+			handleObject.Messages = result;
+			return handleObject;
+		}
 
-        private HandleObject AccountRequestPassword(NameValueCollection requestParameters, Uri urlReferrer)
-        {
-            var handleObject = new HandleObject { Action = "RequestPassword", Url = urlReferrer };
+		private HandleObject AccountRequestPassword(NameValueCollection requestParameters, Uri urlReferrer)
+		{
+			var handleObject = new HandleObject { Action = "RequestPassword", Url = urlReferrer };
 
-            string userNameKey = requestParameters.AllKeys.FirstOrDefault(x => x.ToLower() == "username") ?? requestParameters.AllKeys.FirstOrDefault(x => x.ToLower() == "customeremail"); //requestParameters["customerEmail"];
-            string userNameValue = requestParameters[userNameKey];
+			string userNameKey = requestParameters.AllKeys.FirstOrDefault(x => x.ToLower() == "username") ?? requestParameters.AllKeys.FirstOrDefault(x => x.ToLower() == "customeremail"); //requestParameters["customerEmail"];
+			string userNameValue = requestParameters[userNameKey];
 
-            var result = new Dictionary<string, string>();
+			var result = new Dictionary<string, string>();
 
-            if (string.IsNullOrEmpty(userNameValue))
-            {
-                Session.Add(Constants.RequestPasswordSessionKey, AccountActionResult.CustomerUserNameEmpty);
-                result.Add(Constants.RequestPasswordSessionKey, AccountActionResult.CustomerUserNameEmpty.ToString());
-                handleObject.Messages = result;
-                handleObject.Success = false;
-                return handleObject;
-            }
+			if (string.IsNullOrEmpty(userNameValue))
+			{
+				Session.Add(Constants.RequestPasswordSessionKey, AccountActionResult.CustomerUserNameEmpty);
+				result.Add(Constants.RequestPasswordSessionKey, AccountActionResult.CustomerUserNameEmpty.ToString());
+				handleObject.Messages = result;
+				handleObject.Success = false;
+				return handleObject;
+			}
 
-            var currentStore = StoreHelper.GetById(StoreHelper.GetCurrentStore().Id);
+			var currentStore = StoreHelper.GetById(StoreHelper.GetCurrentStore().Id);
 
-            if (string.IsNullOrEmpty(currentStore.AccountForgotPasswordEmail))
-            {
-                Session.Add(Constants.RequestPasswordSessionKey, AccountActionResult.AccountForgotPasswordEmailNotConfigured);
-                result.Add(Constants.RequestPasswordSessionKey, AccountActionResult.AccountForgotPasswordEmailNotConfigured.ToString());
-                handleObject.Messages = result;
-                handleObject.Success = false;
-                return handleObject;
-            }
-            int emailNodeId = Convert.ToInt32(currentStore.AccountForgotPasswordEmail);
+			if (string.IsNullOrEmpty(currentStore.AccountForgotPasswordEmail))
+			{
+				Session.Add(Constants.RequestPasswordSessionKey, AccountActionResult.AccountForgotPasswordEmailNotConfigured);
+				result.Add(Constants.RequestPasswordSessionKey, AccountActionResult.AccountForgotPasswordEmailNotConfigured.ToString());
+				handleObject.Messages = result;
+				handleObject.Success = false;
+				return handleObject;
+			}
+			int emailNodeId = Convert.ToInt32(currentStore.AccountForgotPasswordEmail);
 
-            MembershipUser user = Membership.GetUser(userNameValue);
-
-
-            if (user == null)
-            {
-                Session.Add(Constants.RequestPasswordSessionKey, AccountActionResult.MemberNotExists);
-                result.Add(Constants.RequestPasswordSessionKey, AccountActionResult.MemberNotExists.ToString());
-                handleObject.Success = false;
-                handleObject.Messages = result;
-                return handleObject;
-            }
+			MembershipUser user = Membership.GetUser(userNameValue);
 
 
-            if (!Membership.EnablePasswordReset)
-            {
-                Session.Add(Constants.RequestPasswordSessionKey, AccountActionResult.EnablePasswordResetDisabled);
-                result.Add(Constants.RequestPasswordSessionKey, AccountActionResult.EnablePasswordResetDisabled.ToString());
-                handleObject.Success = false;
-                handleObject.Messages = result;
-                return handleObject;
-            }
+			if (user == null)
+			{
+				Session.Add(Constants.RequestPasswordSessionKey, AccountActionResult.MemberNotExists);
+				result.Add(Constants.RequestPasswordSessionKey, AccountActionResult.MemberNotExists.ToString());
+				handleObject.Success = false;
+				handleObject.Messages = result;
+				return handleObject;
+			}
 
-            string resetPassword = user.ResetPassword();
 
-            string newPassword = Membership.GeneratePassword(Membership.MinRequiredPasswordLength, Membership.MinRequiredNonAlphanumericCharacters);
+			if (!Membership.EnablePasswordReset)
+			{
+				Session.Add(Constants.RequestPasswordSessionKey, AccountActionResult.EnablePasswordResetDisabled);
+				result.Add(Constants.RequestPasswordSessionKey, AccountActionResult.EnablePasswordResetDisabled.ToString());
+				handleObject.Success = false;
+				handleObject.Messages = result;
+				return handleObject;
+			}
 
-            if (user.ChangePassword(resetPassword, newPassword))
-            {
-                EmailHelper.SendMemberEmailCustomer(emailNodeId, currentStore, userNameValue, newPassword);
-                Session.Add(Constants.RequestPasswordSessionKey, AccountActionResult.Success);
-                result.Add(Constants.RequestPasswordSessionKey, AccountActionResult.Success.ToString());
-                handleObject.Success = true;
-                handleObject.Messages = result;
-                return handleObject;
-            }
+			string resetPassword = user.ResetPassword();
 
-            Session.Add(Constants.RequestPasswordSessionKey, AccountActionResult.ChangePasswordError);
-            result.Add(Constants.RequestPasswordSessionKey, AccountActionResult.ChangePasswordError.ToString());
-            handleObject.Success = false;
-            handleObject.Messages = result;
-            return handleObject;
-        }
+			string newPassword = Membership.GeneratePassword(Membership.MinRequiredPasswordLength, Membership.MinRequiredNonAlphanumericCharacters);
+
+			if (user.ChangePassword(resetPassword, newPassword))
+			{
+				EmailHelper.SendMemberEmailCustomer(emailNodeId, currentStore, userNameValue, newPassword);
+				Session.Add(Constants.RequestPasswordSessionKey, AccountActionResult.Success);
+				result.Add(Constants.RequestPasswordSessionKey, AccountActionResult.Success.ToString());
+				handleObject.Success = true;
+				handleObject.Messages = result;
+				handleObject.Validated = true;
+				return handleObject;
+			}
+
+			Session.Add(Constants.RequestPasswordSessionKey, AccountActionResult.ChangePasswordError);
+			result.Add(Constants.RequestPasswordSessionKey, AccountActionResult.ChangePasswordError.ToString());
+			handleObject.Success = false;
+			handleObject.Messages = result;
+			return handleObject;
+		}
 
 		private HandleObject AccountChangePassword(NameValueCollection requestParameters, Uri urlReferrer)
 		{
@@ -1394,6 +1439,7 @@ namespace uWebshop.Domain.Businesslogic
 
 					handleObject.Success = true;
 					handleObject.Messages = result;
+					handleObject.Validated = true;
 					return handleObject;
 				}
 
@@ -1486,6 +1532,7 @@ namespace uWebshop.Domain.Businesslogic
 			result.Add(Constants.UpdateMemberSessionKey, AccountActionResult.Success.ToString());
 			handleObject.Success = true;
 			handleObject.Messages = result;
+			handleObject.Validated = true;
 			return handleObject;
 		}
 
@@ -1785,11 +1832,11 @@ namespace uWebshop.Domain.Businesslogic
 					return handleObject;
 				}
 
-                var shippingproviderSplit =  shippingProviderValue.Split('-');
+				var shippingproviderSplit =  shippingProviderValue.Split('-');
 
 				int shippingProviderId = 0;
-                int.TryParse(shippingproviderSplit[0], out shippingProviderId);
-                string shippingProviderMethodId = shippingProviderValue.Replace(shippingproviderSplit[0] + "-", "");
+				int.TryParse(shippingproviderSplit[0], out shippingProviderId);
+				string shippingProviderMethodId = shippingProviderValue.Replace(shippingproviderSplit[0] + "-", "");
 
 
 				if (shippingProviderId == 0)
@@ -1886,11 +1933,11 @@ namespace uWebshop.Domain.Businesslogic
 				return handleObject;
 			}
 
-		    var paymentProviderSplit = paymentProviderValue.Split('-');
+			var paymentProviderSplit = paymentProviderValue.Split('-');
 
 			int paymentProviderId;
-            int.TryParse(paymentProviderSplit[0], out paymentProviderId);
-            var paymentProviderMethodId = paymentProviderValue.Replace(paymentProviderSplit[0] + "-", "");
+			int.TryParse(paymentProviderSplit[0], out paymentProviderId);
+			var paymentProviderMethodId = paymentProviderValue.Replace(paymentProviderSplit[0] + "-", "");
 
 			if (paymentProviderId == 0)
 			{

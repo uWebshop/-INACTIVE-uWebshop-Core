@@ -9,7 +9,7 @@ using uWebshop.Domain.ContentTypes;
 namespace uWebshop.Domain.Model.ContentTypes
 {
 
-    [ContentType(ParentContentType = typeof(DiscountOrderSectionContentType), Name = "Basic Order Discount", Description = "#DiscountOrderBasicDescription", Alias = "uwbsDiscountOrderBasic", IconClass = IconClass.cut, Icon = ContentIcon.Scissors, Thumbnail = ContentThumbnail.Folder, InstallerOnly = true)]
+	[ContentType(ParentContentType = typeof(DiscountOrderSectionContentType), Name = "Basic Order Discount", Description = "#DiscountOrderBasicDescription", Alias = "uwbsDiscountOrderBasic", IconClass = IconClass.cut, Icon = ContentIcon.Scissors, Thumbnail = ContentThumbnail.Folder, InstallerOnly = true)]
 	public class DiscountBasicContentType
 	{
 		[ContentPropertyType(Alias = "title", DataType = DataType.String, Tab = ContentTypeTab.Global, Name = "#Title", Description = "#TitleDescription", Mandatory = true, SortOrder = 1)]
@@ -28,7 +28,7 @@ namespace uWebshop.Domain.Model.ContentTypes
 		public int DiscountValue { get; set; }
 	}
 
-    [ContentType(ParentContentType = typeof(DiscountOrderSectionContentType), Name = "Countdown Order Discount", Description = "#DiscountOrderCountdownDescription", Alias = "uwbsDiscountOrderCountdown", IconClass = IconClass.cut, Icon = ContentIcon.Scissors, Thumbnail = ContentThumbnail.Folder, InstallerOnly = true)]
+	[ContentType(ParentContentType = typeof(DiscountOrderSectionContentType), Name = "Countdown Order Discount", Description = "#DiscountOrderCountdownDescription", Alias = "uwbsDiscountOrderCountdown", IconClass = IconClass.cut, Icon = ContentIcon.Scissors, Thumbnail = ContentThumbnail.Folder, InstallerOnly = true)]
 	public class DiscountCounterContentType
 	{
 		[ContentPropertyType(Alias = "title", DataType = DataType.String, Tab = ContentTypeTab.Global, Name = "#Title", Description = "#TitleDescription", Mandatory = true, SortOrder = 1)]
@@ -53,7 +53,7 @@ namespace uWebshop.Domain.Model.ContentTypes
 		public int Counter { get; set; }
 	}
 
-    [ContentType(ParentContentType = typeof(DiscountOrderSectionContentType), Name = "Coupon Order Discount", Description = "#DiscountOrderCouponDescription", Alias = "uwbsDiscountOrderCoupon", IconClass = IconClass.cut, Icon = ContentIcon.Scissors, Thumbnail = ContentThumbnail.Folder, InstallerOnly = true)]
+	[ContentType(ParentContentType = typeof(DiscountOrderSectionContentType), Name = "Coupon Order Discount", Description = "#DiscountOrderCouponDescription", Alias = "uwbsDiscountOrderCoupon", IconClass = IconClass.cut, Icon = ContentIcon.Scissors, Thumbnail = ContentThumbnail.Folder, InstallerOnly = true)]
 	public class DiscountCouponContentType
 	{
 		[ContentPropertyType(Alias = "title", DataType = DataType.String, Tab = ContentTypeTab.Global, Name = "#Title", Description = "#TitleDescription", Mandatory = true, SortOrder = 1)]
@@ -75,7 +75,7 @@ namespace uWebshop.Domain.Model.ContentTypes
 		public string CouponCodes { get; set; }
 	}
 
-    [ContentType(ParentContentType = typeof(DiscountOrderSectionContentType), Name = "Ranged Order Discount", Description = "#DiscountOrderRangedDescription", Alias = "uwbsDiscountOrderRanged", IconClass = IconClass.cut, Icon = ContentIcon.Scissors, Thumbnail = ContentThumbnail.Folder, InstallerOnly = true)]
+	[ContentType(ParentContentType = typeof(DiscountOrderSectionContentType), Name = "Ranged Order Discount", Description = "#DiscountOrderRangedDescription", Alias = "uwbsDiscountOrderRanged", IconClass = IconClass.cut, Icon = ContentIcon.Scissors, Thumbnail = ContentThumbnail.Folder, InstallerOnly = true)]
 	public class DiscountRangedContentType
 	{
 		[ContentPropertyType(Alias = "title", DataType = DataType.String, Tab = ContentTypeTab.Global, Name = "#Title", Description = "#TitleDescription", Mandatory = true, SortOrder = 1)]
@@ -97,7 +97,7 @@ namespace uWebshop.Domain.Model.ContentTypes
 		public string RangesString { get; set; }
 	}
 
-    [ContentType(ParentContentType = typeof(DiscountOrderSectionContentType), Name = "Membergroup Order Discount", Description = "#DiscountOrderMemberGroupDescription", Alias = "uwbsDiscountOrderMembergroup", IconClass = IconClass.cut, Icon = ContentIcon.Scissors, Thumbnail = ContentThumbnail.Folder, InstallerOnly = true)]
+	[ContentType(ParentContentType = typeof(DiscountOrderSectionContentType), Name = "Membergroup Order Discount", Description = "#DiscountOrderMemberGroupDescription", Alias = "uwbsDiscountOrderMembergroup", IconClass = IconClass.cut, Icon = ContentIcon.Scissors, Thumbnail = ContentThumbnail.Folder, InstallerOnly = true)]
 	public class DiscountMemberGroupContentType
 	{
 		[ContentPropertyType(Alias = "title", DataType = DataType.String, Tab = ContentTypeTab.Global, Name = "#Title", Description = "#TitleDescription", Mandatory = true, SortOrder = 1)]

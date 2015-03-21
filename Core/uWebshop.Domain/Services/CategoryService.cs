@@ -32,10 +32,15 @@ namespace uWebshop.Domain.Services
 			return localization.StoreAlias + localization.CurrencyCode;
 		}
 
-	    public ICategory Localize(ICategory category, ILocalization localization)
-	    {
-		    if (category == null) return null;
-	        return GetById(category.Id, localization);
-	    }
+		public ICategory Localize(ICategory category, ILocalization localization)
+		{
+			if (category == null) return null;
+			return GetById(category.Id, localization);
+		}
+
+		public new void FullResetCache()
+		{
+			_rootCategoriesCache.Clear();
+		}
 	}
 }

@@ -56,14 +56,10 @@ namespace uWebshop.Starterkits.Sandbox
 			return false;
 		}
 
+		[Obsolete("Umbraco now updates cache after publish ")]
 		public static void UpdateDocumentCache(Document doc)
 		{
-			library.UpdateDocumentCache(doc.Id);
-
-			foreach (var dc in doc.Children.ToList())
-			{
-				library.UpdateDocumentCache(dc.Id);
-			}
+			
 		}
 	}
 

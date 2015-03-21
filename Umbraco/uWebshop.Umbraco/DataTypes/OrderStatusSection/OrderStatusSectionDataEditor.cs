@@ -47,7 +47,7 @@ namespace uWebshop.Umbraco.DataTypes.OrderStatusSection
 				};
 			if (int.TryParse(HttpContext.Current.Request["id"], out _containingDocumentId))
 			{
-				// !Page.IsPostBack &&  werkt niet
+				// !Page.IsPostBack && werkt niet
 				//var orderSection = string.Empty;
 				//var property = new Document(_containingDocumentId).getProperty("orderSection");
 				//if (property != null)

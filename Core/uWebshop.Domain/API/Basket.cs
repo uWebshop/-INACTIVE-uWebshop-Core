@@ -2,12 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Web;
 using System.Xml.Linq;
-using System.Xml.Serialization;
-using uWebshop.Domain.Model;
-using uWebshop.Domain.OrderDTO;
 using uWebshop.Common;
 using uWebshop.Domain;
 using uWebshop.Domain.Helpers;
@@ -15,9 +11,6 @@ using uWebshop.Domain.Interfaces;
 
 namespace uWebshop.API
 {
-	/// <summary>
-	/// 
-	/// </summary>
 	public static class Basket
 	{
 		/// <summary>
@@ -27,16 +20,20 @@ namespace uWebshop.API
 		public static IBasket GetBasket()
 		{
 			OrderHelper.LogThis("ENTRY GetBasket()");
-		    var order = OrderHelper.GetOrder();
-		    
-            return CreateBasketFromOrderInfo(order);
+			var order = OrderHelper.GetOrder();
+
+			if (order == null)
+			{
+				order = OrderHelper.CreateOrder();
+			}
+			
+			return CreateBasketFromOrderInfo(order);
 		}
 
 		/// <summary>
 		/// Gets the feedback message.
 		/// </summary>
 		/// <param name="feedbackKey">The feedback key.</param>
-		/// <returns></returns>
 		public static string GetFeedbackMessage(string feedbackKey)
 		{
 			// todo: remove session at some point

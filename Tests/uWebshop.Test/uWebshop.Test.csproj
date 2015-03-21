@@ -98,7 +98,6 @@
     <Compile Include="Repositories\TestStoreRepository.cs" />
     <Compile Include="Services\CatalogUrlTests\CategoryCatalogUrlServiceTests.cs" />
     <Compile Include="Services\CatalogUrlTests\ProductUrlServiceTests.cs" />
-    <Compile Include="Services\CatalogUrlTests\UrlServiceTests.cs" />
     <Compile Include="Services\OrderNumberService\ThreadSafetyTests.cs" />
     <Compile Include="Services\OrderUpdatingsServiceTests\AddOrUpdateOrderlineTests.cs" />
     <Compile Include="Services\PaymentProviderServiceTests.cs" />

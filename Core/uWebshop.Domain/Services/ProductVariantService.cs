@@ -10,11 +10,11 @@ namespace uWebshop.Domain.Services
 		}
 	}
 
-    internal class ProductVariantGroupService : EntityService<ProductVariantGroup>, IProductVariantGroupService
-    {
-        public ProductVariantGroupService(IProductVariantGroupRepository productVariantGroupRepository)
-            : base(productVariantGroupRepository)
-        {
-        }
-    }
+	internal class ProductVariantGroupService : EntityService<ProductVariantGroup>, IProductVariantGroupService
+	{
+		public ProductVariantGroupService(IProductVariantGroupRepository productVariantGroupRepository)
+			: base(productVariantGroupRepository)
+		{
+		}
+	}
 }

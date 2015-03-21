@@ -33,10 +33,10 @@ namespace uWebshop.Umbraco.Mvc
 				return CurrentUmbracoPage();
 			}
 
-		    foreach (var result in redirectAfterHandle)
-		    {
-                Log.Instance.LogDebug("Handle Result: " + result.Action + "result.Success: " + result.Success + "result.Validated: " + result.Validated + "result.PostConfirmUrl: " + result.PostConfirmUrl);
-		    }
+			foreach (var result in redirectAfterHandle)
+			{
+				Log.Instance.LogDebug("Handle Result: " + result.Action + "result.Success: " + result.Success + "result.Validated: " + result.Validated + "result.PostConfirmUrl: " + result.PostConfirmUrl);
+			}
 			
 			var redirectUrl = HttpContext.Request.RawUrl;
 
@@ -63,7 +63,7 @@ namespace uWebshop.Umbraco.Mvc
 				}
 			}
 
-            Log.Instance.LogDebug("Handle Result redirectUrl: " + redirectUrl);
+			Log.Instance.LogDebug("Handle Result redirectUrl: " + redirectUrl);
 
 			return Redirect(redirectUrl);
 
@@ -262,7 +262,7 @@ namespace uWebshop.Umbraco.Mvc
 
 		public ActionResult AddPaymentProvider(int paymentProviderId, string paymentProviderMethodId)
 		{
-			var orderInfo = OrderHelper.GetOrderInfo() ?? OrderHelper.CreateOrder();
+			var orderInfo = OrderHelper.GetOrCreateOrder();
 
 
 			if (paymentProviderId == 0 || string.IsNullOrEmpty(paymentProviderMethodId))
@@ -284,7 +284,7 @@ namespace uWebshop.Umbraco.Mvc
 		[HttpPost]
 		public ActionResult RemoveCoupon(string couponCode)
 		{
-			var orderInfo = OrderHelper.GetOrderInfo();
+			var orderInfo = OrderHelper.GetOrder();
 
 			var saveOrder = true;
 
@@ -387,7 +387,7 @@ namespace uWebshop.Umbraco.Mvc
 
 			var umbracoDefaultMemberTypeAlias = webConfig.SelectSingleNode("//add[@defaultMemberTypeAlias]");
 
-			// todo: is this possible without Umbraco API? MemerType seems to be a problem?
+			// todo: is this possible without Umbraco API? MemberType seems to be a problem?
 			var memberTypes = MemberType.GetAll;
 
 			if (umbracoDefaultMemberTypeAlias == null || umbracoDefaultMemberTypeAlias.Attributes == null)

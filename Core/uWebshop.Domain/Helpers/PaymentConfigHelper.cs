@@ -38,75 +38,75 @@ namespace uWebshop.Domain
 			Settings = new ConfigSettings(Provider);
 		}
 
-	    /// <summary>
-	    /// Get the payment config file
-	    /// </summary>
-	    /// <returns></returns>
-	    public static string GetPaymentProviderConfig()
-	    {
-	        var path = "~/App_Plugins/uWebshop/config/PaymentProviders.config";
-	        var configFile = HttpContext.Current.Request.MapPath(path);
+		/// <summary>
+		/// Get the payment config file
+		/// </summary>
+		/// <returns></returns>
+		public static string GetPaymentProviderConfig()
+		{
+			var path = "~/App_Plugins/uWebshop/config/PaymentProviders.config";
+			var configFile = HttpContext.Current.Request.MapPath(path);
 
-	        if (configFile != null)
-	        {
-	            var configFileExists = System.IO.File.Exists(configFile);
+			if (configFile != null)
+			{
+				var configFileExists = System.IO.File.Exists(configFile);
 
-	            if (configFileExists)
-	            {
-	                return path;
-	            }
-	        }
+				if (configFileExists)
+				{
+					return path;
+				}
+			}
 
-            // backup for location of pre uWebshop 2.4 configpath: 
-	        path = "~/config/uWebshop/PaymentProviders.config";
-	        configFile = HttpContext.Current.Request.MapPath(path);
+			// backup for location of pre uWebshop 2.4 configpath: 
+			path = "~/config/uWebshop/PaymentProviders.config";
+			configFile = HttpContext.Current.Request.MapPath(path);
 
-	        if (configFile != null)
-	        {
-                var configFileExists = System.IO.File.Exists(configFile);
+			if (configFile != null)
+			{
+				var configFileExists = System.IO.File.Exists(configFile);
 
-                if (configFileExists)
-	            {
-	                return path;
-	            }
-	        }
-            
-	        Log.Instance.LogError("GetPaymentProviderConfig: Could not find PaymentProviders.config file!");
-		    return null;
+				if (configFileExists)
+				{
+					return path;
+				}
+			}
+			
+			Log.Instance.LogError("GetPaymentProviderConfig: Could not find PaymentProviders.config file!");
+			return null;
 		}
 
-        public static XDocument GetPaymentProviderConfigXml()
-        {
-            var path = "~/App_Plugins/uWebshop/config/PaymentProviders.config";
-            var configFile = HttpContext.Current.Request.MapPath(path);
+		public static XDocument GetPaymentProviderConfigXml()
+		{
+			var path = "~/App_Plugins/uWebshop/config/PaymentProviders.config";
+			var configFile = HttpContext.Current.Request.MapPath(path);
 
-            if (configFile != null)
-            {
-                var configFileExists = System.IO.File.Exists(configFile);
+			if (configFile != null)
+			{
+				var configFileExists = System.IO.File.Exists(configFile);
 
-                if (configFileExists)
-                {
-                   return XDocument.Load(configFile);
-                }
-            }
+				if (configFileExists)
+				{
+				   return XDocument.Load(configFile);
+				}
+			}
 
-            // backup for location of pre uWebshop 2.4 configpath: 
-            path = "~/config/uWebshop/PaymentProviders.config";
-            configFile = HttpContext.Current.Request.MapPath(path);
+			// backup for location of pre uWebshop 2.4 configpath: 
+			path = "~/config/uWebshop/PaymentProviders.config";
+			configFile = HttpContext.Current.Request.MapPath(path);
 
-            if (configFile != null)
-            {
-                var configFileExists = System.IO.File.Exists(configFile);
+			if (configFile != null)
+			{
+				var configFileExists = System.IO.File.Exists(configFile);
 
-                if (configFileExists)
-                {
-                    return XDocument.Load(configFile);
-                }
-            }
+				if (configFileExists)
+				{
+					return XDocument.Load(configFile);
+				}
+			}
 
-            Log.Instance.LogError("GetPaymentProviderConfig: Could not find PaymentProviders.config file!");
-            return null;
-        }
+			Log.Instance.LogError("GetPaymentProviderConfig: Could not find PaymentProviders.config file!");
+			return null;
+		}
 
 		/// <summary>
 		/// 
@@ -129,47 +129,47 @@ namespace uWebshop.Domain
 
 				if (string.IsNullOrEmpty(configFile))
 				{
-                    Log.Instance.LogError("LoadProviderSettingsXML: configFile == null");
+					Log.Instance.LogError("LoadProviderSettingsXML: configFile == null");
 					return null;
 				}
 
 				var configFilePath = HttpContext.Current.Server.MapPath(configFile);
 
-			    if (configFilePath != null)
-			    {
-			        var doc = XDocument.Load(configFilePath);
+				if (configFilePath != null)
+				{
+					var doc = XDocument.Load(configFilePath);
 
-			        if (doc.Descendants("provider").Any())
-			        {
-			            var providerNodes = doc.Descendants("provider").ToList();
-                        
-                        var matchedTitleProvider = providerNodes.FirstOrDefault(x =>
-                        {
-                            var value = x.Attribute("title").Value;
-                            return !string.IsNullOrEmpty(value) && value.ToLowerInvariant() == _provider.Name.ToLowerInvariant();
-                        });
+					if (doc.Descendants("provider").Any())
+					{
+						var providerNodes = doc.Descendants("provider").ToList();
+						
+						var matchedTitleProvider = providerNodes.FirstOrDefault(x =>
+						{
+							var value = x.Attribute("title").Value;
+							return !string.IsNullOrEmpty(value) && value.ToLowerInvariant() == _provider.Name.ToLowerInvariant();
+						});
 
-			            if (matchedTitleProvider == null)
-			            {
-                            matchedTitleProvider = providerNodes.FirstOrDefault(x =>
-                            {
-                                var value = x.Attribute("name").Value;
-                                return !string.IsNullOrEmpty(value) && value.ToLowerInvariant() == _provider.Name.ToLowerInvariant();
-                            });
-			            }
+						if (matchedTitleProvider == null)
+						{
+							matchedTitleProvider = providerNodes.FirstOrDefault(x =>
+							{
+								var value = x.Attribute("name").Value;
+								return !string.IsNullOrEmpty(value) && value.ToLowerInvariant() == _provider.Name.ToLowerInvariant();
+							});
+						}
 
-                        if (matchedTitleProvider != null && matchedTitleProvider.DescendantNodes().Any())
-			            {
-                            return matchedTitleProvider;
-			            }
-			        }
+						if (matchedTitleProvider != null && matchedTitleProvider.DescendantNodes().Any())
+						{
+							return matchedTitleProvider;
+						}
+					}
 
-                    Log.Instance.LogError(string.Format("LoadProviderSettingsXML: Could not find provider with title: {0} in PaymentProviders.config", _provider.Name));
-			    }
-			    
-			    
-                Log.Instance.LogError(string.Format("LoadProviderSettingsXML: Could not find PaymentProviders.config at location: {0}", configFile));
-			    
+					Log.Instance.LogError(string.Format("LoadProviderSettingsXML: Could not find provider with title: {0} in PaymentProviders.config", _provider.Name));
+				}
+				
+				
+				Log.Instance.LogError(string.Format("LoadProviderSettingsXML: Could not find PaymentProviders.config at location: {0}", configFile));
+				
 
 				return null;
 			}

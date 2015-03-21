@@ -24,6 +24,7 @@ using umbraco.DataLayer;
 using umbraco.IO;
 using umbraco.NodeFactory;
 using umbraco.presentation.templateControls;
+using Umbraco.Core;
 using Macro = umbraco.cms.businesslogic.macro.Macro;
 
 namespace uWebshop.Domain.Helpers
@@ -171,7 +172,7 @@ namespace uWebshop.Domain.Helpers
 		{
 			if (Model.Id > 0)
 			{
-				umbraco.cms.businesslogic.cache.Cache.ClearCacheItem(GetCacheKey(Model.Alias));
+				ApplicationContext.Current.ApplicationCache.ClearCacheItem(GetCacheKey(Model.Alias));
 			}
 			return false;
 		}
@@ -333,12 +334,11 @@ namespace uWebshop.Domain.Helpers
 
 								_macroCache.Insert("macroHtml_" + Model.CacheIdentifier, outputCacheString, null, DateTime.Now.AddSeconds(Model.CacheDuration), TimeSpan.Zero, CacheItemPriority.NotRemovable, //FlorisRobbemont: issue #27610 -> Macro output cache should not be removable
 
-								                   null);
+												   null);
 
 
 								_macroCache.Insert("macroHtml_DateAdded_" + Model.CacheIdentifier, DateTime.Now, null, DateTime.Now.AddSeconds(Model.CacheDuration), TimeSpan.Zero, CacheItemPriority.NotRemovable, //FlorisRobbemont: issue #27610 -> Macro output cache should not be removable
-
-								                   null);
+												   null);
 
 								// zb-00003 #29470 : replace by text if not already text
 								// otherwise it is rendered twice
@@ -351,13 +351,11 @@ namespace uWebshop.Domain.Helpers
 							else
 							{
 								_macroCache.Insert("macroControl_" + Model.CacheIdentifier, new MacroCacheContent(macroControl, macroControl.ID), null, DateTime.Now.AddSeconds(Model.CacheDuration), TimeSpan.Zero, CacheItemPriority.NotRemovable, //FlorisRobbemont: issue #27610 -> Macro output cache should not be removable
-
-								                   null);
+												   null);
 
 
 								_macroCache.Insert("macroControl_DateAdded_" + Model.CacheIdentifier, DateTime.Now, null, DateTime.Now.AddSeconds(Model.CacheDuration), TimeSpan.Zero, CacheItemPriority.NotRemovable, //FlorisRobbemont: issue #27610 -> Macro output cache should not be removable
-
-								                   null);
+												   null);
 
 								TraceInfo("renderMacro", string.Format("Macro Control saved to cache '{0}'.", Model.CacheIdentifier));
 							}
@@ -372,7 +370,6 @@ namespace uWebshop.Domain.Helpers
 			
 			return macroControl;
 		}
-
 
 		public Control loadMacroXSLT(uWebshopMacro macro, MacroModel model, Hashtable pageElements)
 		{
@@ -394,38 +391,35 @@ namespace uWebshop.Domain.Helpers
 				{
 					return new LiteralControl("<div style=\"border: 2px solid green; padding: 5px;\"><b>Debug from " + macro.Name + "</b><br/><p>" + HttpContext.Current.Server.HtmlEncode(macroXML.OuterXml) + "</p></div>");
 				}
-				else
+				try
 				{
+					XslCompiledTransform xsltFile = umbraco.macro.getXslt(XsltFile);
+
 					try
 					{
-						XslCompiledTransform xsltFile = umbraco.macro.getXslt(XsltFile);
+						Control result = CreateControlsFromText(umbraco.macro.GetXsltTransformResult(macroXML, xsltFile));
 
-						try
-						{
-							Control result = CreateControlsFromText(umbraco.macro.GetXsltTransformResult(macroXML, xsltFile));
+						TraceInfo("umbracoMacro", "After performing transformation");
 
-							TraceInfo("umbracoMacro", "After performing transformation");
-
-							return result;
-						}
-						catch (Exception e)
-						{
-							Exceptions.Add(e);
-							// inner exception code by Daniel Lindstr?m from SBBS.se
-							Exception ie = e;
-							while (ie != null)
-							{
-								TraceWarn("umbracoMacro InnerException", ie.Message, ie);
-								ie = ie.InnerException;
-							}
-							return new LiteralControl("Error parsing XSLT file: \\xslt\\" + XsltFile);
-						}
+						return result;
 					}
 					catch (Exception e)
 					{
 						Exceptions.Add(e);
-						return new LiteralControl("Error reading XSLT file: \\xslt\\" + XsltFile);
+						// inner exception code by Daniel Lindstr?m from SBBS.se
+						Exception ie = e;
+						while (ie != null)
+						{
+							TraceWarn("umbracoMacro InnerException", ie.Message, ie);
+							ie = ie.InnerException;
+						}
+						return new LiteralControl("Error parsing XSLT file: \\xslt\\" + XsltFile);
 					}
+				}
+				catch (Exception e)
+				{
+					Exceptions.Add(e);
+					return new LiteralControl("Error reading XSLT file: \\xslt\\" + XsltFile);
 				}
 			}
 			TraceWarn("macro", "Xslt is empty");
@@ -465,7 +459,6 @@ namespace uWebshop.Domain.Helpers
 					}
 					catch
 					{
-						break;
 					}
 					break;
 				case "contentCurrent":
@@ -531,22 +524,17 @@ namespace uWebshop.Domain.Helpers
 			}
 			macroXML.FirstChild.AppendChild(macroXmlNode);
 		}
-
-
+		
 		private string transformMacroXML(XmlDocument xmlSource, string xslt_File)
 		{
 			var sb = new StringBuilder();
 			var sw = new StringWriter(sb);
 
 			XslCompiledTransform result = macro.getXslt(xslt_File);
-			//XmlDocument xslDoc = new XmlDocument();
 
 			result.Transform(xmlSource.CreateNavigator(), null, sw);
 
-			if (sw.ToString() != string.Empty)
-				return sw.ToString();
-			else
-				return string.Empty;
+			return sw.ToString() != string.Empty ? sw.ToString() : string.Empty;
 		}
 
 		/// <summary>
@@ -554,7 +542,6 @@ namespace uWebshop.Domain.Helpers
 		/// </summary>
 		/// <param name="model">The model.</param>
 		/// <param name="dateAddedKey">The date added key.</param>
-		/// <returns></returns>
 		private bool MacroNeedsToBeClearedFromCache(MacroModel model, string dateAddedKey)
 		{
 			if (MacroIsFileBased(model))
@@ -597,8 +584,7 @@ namespace uWebshop.Domain.Helpers
 		{
 			return model.MacroType == MacroTypes.Script;
 		}
-
-
+		
 		public void UpdateMacroModel(Hashtable attributes)
 		{
 			foreach (var mp in Model.Properties)
@@ -719,7 +705,7 @@ namespace uWebshop.Domain.Helpers
 
 				if (!macro.ScriptName.StartsWith("~"))
 				{
-					path = SystemDirectories.MacroScripts.TrimEnd('/') + "/" + macro.ScriptName.TrimStart('/');
+					path = global::Umbraco.Core.IO.SystemDirectories.MacroScripts.TrimEnd('/') + "/" + macro.ScriptName.TrimStart('/');
 				}
 				
 				Log.Instance.LogDebug("LoadMacroScript path: " + path);
@@ -842,7 +828,7 @@ namespace uWebshop.Domain.Helpers
 
 			if (exceptions.Any())
 			{
-                Log.Instance.LogError("GetMacroControl Error in Razor: " + aliasOrPath + " Exception: " + exceptions.First().StackTrace);
+				Log.Instance.LogError("GetMacroControl Error in Razor: " + aliasOrPath + " Exception: " + exceptions.First().StackTrace);
 				throw new Exception(exceptions.First().StackTrace);
 			}
 
@@ -860,13 +846,13 @@ namespace uWebshop.Domain.Helpers
 				}
 			}
 
-		    if (HttpContext.Current.Session != null)
-		    {
-		        HttpContext.Current.Session.Add("RazorFields", keyValueDictionary);
-		    }
+			if (HttpContext.Current.Session != null)
+			{
+				HttpContext.Current.Session.Add("RazorFields", keyValueDictionary);
+			}
 
 
-		    return result;
+			return result;
 		}
 
 		internal static HttpSessionState Session

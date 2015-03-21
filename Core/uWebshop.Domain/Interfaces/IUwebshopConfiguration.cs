@@ -69,13 +69,13 @@
 		/// </value>
 		bool ShareBasketBetweenStores { get; }
 
-        /// <summary>
-        /// Gets the setting indicating whether datefolders should be created when opening orders in the backend
-        /// </summary>
-        /// <value>
-        /// The setting indicating whether the basket is shared between all stores.
-        /// </value>
-        bool DisableDateFolders { get; }
+		/// <summary>
+		/// Gets the setting indicating whether datefolders should be created when opening orders in the backend
+		/// </summary>
+		/// <value>
+		/// The setting indicating whether the basket is shared between all stores.
+		/// </value>
+		bool DisableDateFolders { get; }
 
 		/// <summary>
 		/// Gets the orders cache timeout in milliseconds.

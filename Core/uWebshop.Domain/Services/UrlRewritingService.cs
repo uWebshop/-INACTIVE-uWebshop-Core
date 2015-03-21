@@ -41,12 +41,12 @@ namespace uWebshop.Domain.Services
 			var result = default(ResolveUwebshopEntityUrlResult);
 			//var absolutePath = _httpContextWrapper.AbsolutePath.ToLowerInvariant();
 
-            if (absolutePath.ToLowerInvariant().StartsWith("/umbraco") || absolutePath.ToLowerInvariant().StartsWith("/base/") || absolutePath.ToLowerInvariant() == "/umbraco/webservices/legacyajaxcalls.asmx/getsecondsbeforeuserlogout" || absolutePath.ToLowerInvariant() == "/umbraco/ping.aspx")
+			if (absolutePath.ToLowerInvariant().StartsWith("/umbraco") || absolutePath.ToLowerInvariant().StartsWith("/base/") || absolutePath.ToLowerInvariant() == "/umbraco/webservices/legacyajaxcalls.asmx/getsecondsbeforeuserlogout" || absolutePath.ToLowerInvariant() == "/umbraco/ping.aspx")
 				return result;
 
 			if (absolutePath.EndsWith(".aspx")) absolutePath = absolutePath.Remove(absolutePath.Length - 5);
 
-            if (absolutePath == "" || absolutePath.EndsWith(".js") || absolutePath.EndsWith(".ico") || absolutePath.EndsWith(".gif") || absolutePath.EndsWith(".css") || absolutePath.EndsWith(".jpg") || absolutePath.EndsWith(".jpeg") || absolutePath.EndsWith(".png") || absolutePath.EndsWith(".axd"))
+			if (absolutePath == "" || absolutePath.EndsWith(".js") || absolutePath.EndsWith(".ico") || absolutePath.EndsWith(".gif") || absolutePath.EndsWith(".css") || absolutePath.EndsWith(".jpg") || absolutePath.EndsWith(".jpeg") || absolutePath.EndsWith(".png") || absolutePath.EndsWith(".axd"))
 				return result;
 
 			if (_cmsApplication.IsReservedPathOrUrl(absolutePath))
@@ -105,52 +105,50 @@ namespace uWebshop.Domain.Services
 			}
 			else
 			{
-                Log.Instance.LogDebug("determinationResult != null: determinationResult.StoreUrl: " + determinationResult.StoreUrl);
+				Log.Instance.LogDebug("determinationResult != null: determinationResult.StoreUrl: " + determinationResult.StoreUrl);
 				determinationResult.Store.StoreURL = determinationResult.StoreUrl; // set url for this request (todo: different location?)
 			}
 			
 			result.StoreUrl = determinationResult.StoreUrl;
 			UwebshopRequest.Current.CurrentStore = determinationResult.Store; // set Store for this request (todo: different location?)
 
-		    if (HttpContext.Current != null)
-		    {
-		        var determinedStore = UwebshopRequest.Current.CurrentStore;
+			if (HttpContext.Current != null)
+			{
+				var determinedStore = UwebshopRequest.Current.CurrentStore;
 
-                Log.Instance.LogDebug("UrlRewriting: determinedStore: " + determinedStore.Alias);
+				Log.Instance.LogDebug("UrlRewriting: determinedStore: " + determinedStore.Alias);
 
-		        // todo: separate service for this:
-		        // copy from UmbracoStoreService public ILocalization GetCurrentLocalization() todo: why?
-		        ILocalization currentLocalization = null;
+				ILocalization currentLocalization = null;
 
-		        var currencyCode = HttpContext.Current.Request["currency"];
+				var currencyCode = HttpContext.Current.Request["currency"];
 
-		        if (currencyCode != null && determinedStore.CurrencyCodes.Contains(currencyCode.ToUpperInvariant()))
-		        {
-		            currentLocalization = Localization.CreateLocalization(determinedStore, currencyCode);
+				if (currencyCode != null && determinedStore.CurrencyCodes.Contains(currencyCode.ToUpperInvariant()))
+				{
+					currentLocalization = Localization.CreateLocalization(determinedStore, currencyCode);
 
-		        }
-		        else if (HttpContext.Current.Request.Cookies["StoreInfo"] != null)
-		        {
-		            var currency = HttpContext.Current.Request.Cookies["StoreInfo"].Values["currency"];
-		            if (!string.IsNullOrEmpty(currency) && determinedStore.CurrencyCodes.Contains(currency.ToUpperInvariant()))
-		            {
-		                currentLocalization = Localization.CreateLocalization(determinedStore, currency);
-		            }
-		        }
+				}
+				else if (HttpContext.Current.Request.Cookies["StoreInfo"] != null)
+				{
+					var currency = HttpContext.Current.Request.Cookies["StoreInfo"].Values["currency"];
+					if (!string.IsNullOrEmpty(currency) && determinedStore.CurrencyCodes.Contains(currency.ToUpperInvariant()))
+					{
+						currentLocalization = Localization.CreateLocalization(determinedStore, currency);
+					}
+				}
 
-		        UwebshopRequest.Current.Localization = currentLocalization;
-                
-		        if (currencyCode != null)
-		        {
-		            StoreHelper.SetStoreInfoCookie(determinedStore.Alias, currencyCode.ToUpperInvariant());
-		        }
-		        else
-		        {
-		            StoreHelper.SetStoreInfoCookie(determinedStore.Alias);
-		        }
-		    }
-		    
-         
+				UwebshopRequest.Current.Localization = currentLocalization;
+				
+				if (currencyCode != null)
+				{
+					StoreHelper.SetStoreInfoCookie(determinedStore.Alias, currencyCode.ToUpperInvariant());
+				}
+				else
+				{
+					StoreHelper.SetStoreInfoCookie(determinedStore.Alias);
+				}
+			}
+			
+		 
 
 			//CatalogUrlResolveServiceResult catalogUrlResolveServiceResult = _catalogUrlSplitterService.DetermineCatalogUrlComponents(absolutePath); // relatief duur
 			//result.StoreUrl = catalogUrlResolveServiceResult.StoreNodeUrl;

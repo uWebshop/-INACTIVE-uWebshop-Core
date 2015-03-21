@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using uWebshop.Domain;
-using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
 
 namespace uWebshop.Umbraco.Services

@@ -55,6 +55,7 @@
     <Compile Include="CouponCodeService.cs" />
     <Compile Include="LegacyDataAccessModule.cs" />
     <Compile Include="OrderData.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="uWebshopOrders.cs" />
     <Compile Include="uWebshopStock.cs" />
   </ItemGroup>

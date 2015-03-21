@@ -16,13 +16,14 @@ namespace uWebshop.Umbraco.Services
 	{
 		private readonly IProductService _productService;
 		private readonly IProductVariantService _productVariantService;
+		private readonly IProductVariantGroupService _productVariantGroupService;
 		private readonly ICategoryService _categoryService;
 		private readonly IOrderDiscountService _orderDiscountService;
 		private readonly IProductDiscountService _productDiscountService;
 		private readonly IProductRepository _productRepository;
 		private readonly ICategoryRepository _categoryRepository;
-	    private readonly IProductVariantGroupRepository _productVariantGroupRepository;
-	    private readonly IProductVariantRepository _productVariantRepository;
+		private readonly IProductVariantGroupRepository _productVariantGroupRepository;
+		private readonly IProductVariantRepository _productVariantRepository;
 		private readonly IStoreService _storeService;
 		private readonly IApplicationCacheService _applicationCacheService;
 
@@ -33,20 +34,21 @@ namespace uWebshop.Umbraco.Services
 
 		private readonly bool _manageUmbracoXMLCacheWhenLoadBalanced;
 
-		public UmbracoApplicationCacheManagingService(IProductService productService, IProductVariantService productVariantService, ICategoryService categoryService, 
+		public UmbracoApplicationCacheManagingService(IProductService productService, IProductVariantService productVariantService, IProductVariantGroupService productVariantGroupService, ICategoryService categoryService, 
 			IOrderDiscountService orderDiscountService, IProductDiscountService productDiscountService,
-            IProductRepository productRepository, ICategoryRepository categoryRepository, IProductVariantGroupRepository productVariantGroupRepository, IProductVariantRepository productVariantRepository,
+			IProductRepository productRepository, ICategoryRepository categoryRepository, IProductVariantGroupRepository productVariantGroupRepository, IProductVariantRepository productVariantRepository,
 			IStoreService storeService, IApplicationCacheService applicationCacheService)//, IShippingProviderService shippingProviderService, IPaymentProviderService paymentProviderService)
 		{
 			_productService = productService;
 			_productVariantService = productVariantService;
+			_productVariantGroupService = productVariantGroupService;
 			_categoryService = categoryService;
 			_orderDiscountService = orderDiscountService;
 			_productDiscountService = productDiscountService;
 			_productRepository = productRepository;
 			_categoryRepository = categoryRepository;
-		    _productVariantGroupRepository = productVariantGroupRepository;
-		    _productVariantRepository = productVariantRepository;
+			_productVariantGroupRepository = productVariantGroupRepository;
+			_productVariantRepository = productVariantRepository;
 			_storeService = storeService;
 			_applicationCacheService = applicationCacheService;
 
@@ -198,6 +200,7 @@ namespace uWebshop.Umbraco.Services
 		{
 			_productService.FullResetCache();
 			_productVariantService.FullResetCache();
+			_productVariantGroupService.FullResetCache();
 			_categoryService.FullResetCache();
 			_orderDiscountService.FullResetCache();
 			_productDiscountService.FullResetCache();

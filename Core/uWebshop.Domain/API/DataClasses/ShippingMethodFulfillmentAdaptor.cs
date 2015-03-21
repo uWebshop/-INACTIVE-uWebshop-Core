@@ -8,7 +8,7 @@ using uWebshop.Newtonsoft.Json;
 
 namespace uWebshop.API
 {
-	[DataContract(Name="ShippingProviderMethod", Namespace = "")]
+	[DataContract(Name = "ShippingProviderMethod", Namespace = "")]
 	internal class ShippingMethodFulfillmentAdaptor : IFulfillmentProviderMethod
 	{
 		private readonly ShippingProviderMethod _shippingProviderMethod;
@@ -24,9 +24,9 @@ namespace uWebshop.API
 			_order = order;
 			Id = shippingProviderMethod.Id;
 			Title = shippingProviderMethod.Title;
-		    Description = shippingProviderMethod.Description;
+			Description = shippingProviderMethod.Description;
 			Name = shippingProviderMethod.Name;
-		    Disabled = shippingProviderMethod.Disabled;
+			Disabled = shippingProviderMethod.Disabled;
 		}
 		[DataMember]
 		public string Id { get; set; }
@@ -35,10 +35,10 @@ namespace uWebshop.API
 		[DataMember]
 		public string Title { get; set; }
 
-	    public string Description { get; set; }
-	    public bool Disabled { get; set; }
+		public string Description { get; set; }
+		public bool Disabled { get; set; }
 
-	    public string Name { get; set; }
+		public string Name { get; set; }
 
 		[IgnoreDataMember]
 		public IDiscountedPrice Amount

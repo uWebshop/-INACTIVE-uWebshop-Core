@@ -287,17 +287,17 @@ namespace uWebshop.Domain.Helpers
 			return IO.Container.Resolve<IProductService>().GetById(productId, StoreHelper.GetLocalizationOrCurrent(storeAlias, currencyCode));
 		}
 
-        /// <summary>
-        /// Gets the product variant by unique identifier.
-        /// </summary>
-        /// <param name="productVariantGroupId">The product variant unique identifier.</param>
-        /// <param name="storeAlias">The store alias.</param>
-        /// <param name="currencyCode">The currency code.</param>
-        /// <returns></returns>
-        public static IProductVariantGroup GetProductVariantGroupById(int productVariantGroupId, string storeAlias = null, string currencyCode = null)
-        {
-            return IO.Container.Resolve<IProductVariantGroupService>().GetById(productVariantGroupId, StoreHelper.GetLocalizationOrCurrent(storeAlias, currencyCode));
-        }
+		/// <summary>
+		/// Gets the product variant by unique identifier.
+		/// </summary>
+		/// <param name="productVariantGroupId">The product variant unique identifier.</param>
+		/// <param name="storeAlias">The store alias.</param>
+		/// <param name="currencyCode">The currency code.</param>
+		/// <returns></returns>
+		public static IProductVariantGroup GetProductVariantGroupById(int productVariantGroupId, string storeAlias = null, string currencyCode = null)
+		{
+			return IO.Container.Resolve<IProductVariantGroupService>().GetById(productVariantGroupId, StoreHelper.GetLocalizationOrCurrent(storeAlias, currencyCode));
+		}
 
 		/// <summary>
 		/// Gets the product variant by unique identifier.

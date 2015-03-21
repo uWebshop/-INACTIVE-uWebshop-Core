@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Web;
 using System.Web.UI;
 using System.Xml.Linq;
@@ -16,6 +17,7 @@ using umbraco.cms.businesslogic.web;
 using umbraco.controls;
 using uWebshop.Umbraco.DataTypes.StorePicker;
 using Umbraco.Core;
+using Umbraco.Core.Logging;
 using Umbraco.Core.Models;
 using Umbraco.Core.Services;
 using Constants = uWebshop.Common.Constants;
@@ -92,10 +94,10 @@ namespace uWebshop.Package.Installer
 		}
 
 		private void DoLogged(Action action, string message)
-		{
-			umbraco.BusinessLogic.Log.Add(LogTypes.Debug, 0, message + " start: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
+		{	
+			LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, message + " start: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
 			action();
-			umbraco.BusinessLogic.Log.Add(LogTypes.Debug, 0, " end: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
+			LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, message + " end: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
 		}
 
 		private void RemoveOldDLLs()
@@ -103,8 +105,8 @@ namespace uWebshop.Package.Installer
 			var toDelete = new[] { "uWebshop.DataTypes", "uWebshop.ActionHandlers", "uWebshop.Examine", "uWebshop.Web", 
 				"uWebshop.DictionaryInstaller", "uWebshop.Package.Installer", "uWebshop.Starterkits.Sandbox", 
 				"uWebshop.Starterkits.MVCSandbox", "uWebshop.RazorExtensions", "uWebshop.XSLTExtensions", };
-
-			umbraco.BusinessLogic.Log.Add(LogTypes.Debug, 0, "uWebshop Installer RemoveOldDLLs start");
+;
+			LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "uWebshop Installer RemoveOldDLLs start");
 			foreach (var filename in toDelete)
 			{
 				try
@@ -113,20 +115,20 @@ namespace uWebshop.Package.Installer
 
 					if (System.IO.File.Exists(fileLocation))
 					{
-						umbraco.BusinessLogic.Log.Add(LogTypes.Debug, 0, "uWebshop Installer RemoveOldDLLs, deleting " + fileLocation);
+						LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "uWebshop Installer RemoveOldDLLs, deleting " + fileLocation);
 						System.IO.File.Delete(fileLocation);
 					}
 				}
 				catch (Exception ex)
 				{
-					umbraco.BusinessLogic.Log.Add(LogTypes.Debug, 0, "uWebshop Installer RemoveOldDLLs, failed " + filename + "  " + ex.Message);
+					LogHelper.Error(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "uWebshop Installer RemoveOldDLLs, failed " + filename, ex);
 				}
 			}
 		}
 
 		private static void AddRedirectorModuleToWebConfig()
 		{
-			umbraco.BusinessLogic.Log.Add(LogTypes.Debug, 0, "uWebshop Installer add web.config update Start: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
+			LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "uWebshop Installer add web.config update Start: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
 			try
 			{
 				var webConfigPath = HttpContext.Current.Server.MapPath("~/web.config");
@@ -166,12 +168,16 @@ namespace uWebshop.Package.Installer
 			{
 				Log.Instance.LogError("httpModules Not Added To Web.Config. Permission issue?");
 			}
-			umbraco.BusinessLogic.Log.Add(LogTypes.Debug, 0, "uWebshop Installer add web.config update End: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
+
+			LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "uWebshop Installer add web.config update End: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
+
 		}
 
 		private static void AlterDashboardConfig()
 		{
-			umbraco.BusinessLogic.Log.Add(LogTypes.Debug, 0, "uWebshop Installer add dashboardConfig Start: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
+
+			LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "uWebshop Installer add dashboardConfig Start: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
+
 			var dashboardConfigPath = HttpContext.Current.Server.MapPath("~/config/Dashboard.config");
 
 			var dashboardConfig = XDocument.Load(dashboardConfigPath);
@@ -183,12 +189,15 @@ namespace uWebshop.Package.Installer
 				dashboardConfig.Descendants("dashBoard").First().Add(uWebshopDashBoard);
 				dashboardConfig.Save(dashboardConfigPath);
 			}
-			umbraco.BusinessLogic.Log.Add(LogTypes.Debug, 0, "uWebshop Installer add dashboardConfig End: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
+
+			LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "uWebshop Installer add dashboardConfig End: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
+
 		}
 
 		private static void AlterWebConfig()
 		{
-			umbraco.BusinessLogic.Log.Add(LogTypes.Debug, 0, "uWebshop Installer add uWebshopDebugMessages Start: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
+			LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "uWebshop Installer add uWebshopDebugMessages Start: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
+
 			try
 			{
 				if (ConfigurationManager.AppSettings["uWebshopDebugMessages"] == null)
@@ -200,12 +209,15 @@ namespace uWebshop.Package.Installer
 			{
 				Log.Instance.LogError("uWebshopDebugMessages=Try Not Added To AppSettings, Web.Config permission issue?");
 			}
-			umbraco.BusinessLogic.Log.Add(LogTypes.Debug, 0, "uWebshop Installer add uWebshopDebugMessages End: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
+
+			LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "uWebshop Installer add uWebshopDebugMessages End: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
+
 		}
 
 		private static void MoveXLSTFiles()
 		{
-			umbraco.BusinessLogic.Log.Add(LogTypes.Debug, 0, "uWebshop Installer moveXsltItemList Start: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
+			LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "uWebshop Installer moveXsltItemList Start: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
+
 			var moveXsltItemList = new List<string> {"uwbsOrderInfo", "uwbsMailExample", "uwbsAccountMailExample"};
 
 			foreach (var xsltItem in moveXsltItemList)
@@ -222,12 +234,14 @@ namespace uWebshop.Package.Installer
 					System.IO.File.Delete(configSource);
 				}
 			}
-			umbraco.BusinessLogic.Log.Add(LogTypes.Debug, 0, "uWebshop Installer moveXsltItemList End: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
+			LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "uWebshop Installer moveXsltItemList End: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
+
 		}
 
 		private static void MoveConfigFiles()
 		{
-			umbraco.BusinessLogic.Log.Add(LogTypes.Debug, 0, "uWebshop Installer moveConfigItemList Start: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
+			LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "uWebshop Installer moveConfigItemList Start: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
+
 			var moveConfigItemList = new List<string> {"PaymentProviders", "ShippingProviders"};
 
 			foreach (var configItem in moveConfigItemList)
@@ -260,12 +274,13 @@ namespace uWebshop.Package.Installer
 				}
 			}
 			
-			umbraco.BusinessLogic.Log.Add(LogTypes.Debug, 0, "uWebshop Installer moveConfigItemList End: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
+			LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "uWebshop Installer moveConfigItemList End: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
+
 		}
 
 		private static void MoveNEWConfigFiles()
 		{
-			umbraco.BusinessLogic.Log.Add(LogTypes.Debug, 0, "uWebshop Installer moveNEWConfigItemList Start: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
+			LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "uWebshop Installer moveNEWConfigItemList Start: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
 
 			var moveConfigItemList = new List<string> { "CurrencyCultures", "ContentMapping" };
 
@@ -290,13 +305,14 @@ namespace uWebshop.Package.Installer
 				}
 			}
 
-			umbraco.BusinessLogic.Log.Add(LogTypes.Debug, 0, "uWebshop Installer moveNEWConfigItemList End: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
+			LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType,  "uWebshop Installer moveNEWConfigItemList End: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
 
 		}
 
 		private static void MoveXMLFiles()
 		{
-			umbraco.BusinessLogic.Log.Add(LogTypes.Debug, 0, "uWebshop Installer moveXmlItemList Start: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
+			LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType,"uWebshop Installer moveXmlItemList Start: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
+
 			var moveXmlItemList = new List<string> {"countries", "VATcountries", "regions"};
 
 			foreach (var configItem in moveXmlItemList)
@@ -313,12 +329,13 @@ namespace uWebshop.Package.Installer
 					System.IO.File.Delete(configSource);
 				}
 			}
-			umbraco.BusinessLogic.Log.Add(LogTypes.Debug, 0, "uWebshop Installer moveXmlItemList End: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
+			LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "uWebshop Installer moveXmlItemList End: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
 		}
 
 		private static void MoveRazorFiles()
 		{
-			umbraco.BusinessLogic.Log.Add(LogTypes.Debug, 0, "uWebshop Installer MoveRazorFiles Start: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
+			LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "uWebshop Installer MoveRazorFiles Start: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
+
 			var moveXmlItemList = new List<string> { "uWebshopUmbracoEmailDetails", "uWebshopUmbracoOrderDetails", "uWebshopUmbracoOrderOverview", "uWebshopUmbracoProductOverview" };
 
 			foreach (var configItem in moveXmlItemList)
@@ -342,7 +359,8 @@ namespace uWebshop.Package.Installer
 					System.IO.File.Delete(configSource);
 				}
 			}
-			umbraco.BusinessLogic.Log.Add(LogTypes.Debug, 0, "uWebshop Installer MoveRazorFiles End: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
+			LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "uWebshop Installer MoveRazorFiles End: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
+
 		}
 
 		private static void MoveVersionSpecificFiles()
@@ -378,21 +396,28 @@ namespace uWebshop.Package.Installer
 
 		protected void BtnStorePickerCLick(object sender, EventArgs e)
 		{
+			var contentService = ApplicationContext.Current.Services.ContentService;
 			var nodePicker = NodePickerStore;
 
 			if (!string.IsNullOrEmpty(nodePicker.Value))
 			{
-				var doc = new Document(int.Parse(nodePicker.Value));
+				var doc = contentService.GetById(int.Parse(nodePicker.Value));
 				var selectedDoctype = doc.ContentType;
 
 				var storePickerDataTypeDef = new StorePickerDataType();
-				var storePickerDataType = DataTypeDefinition.GetAll().FirstOrDefault(x => x.UniqueId == storePickerDataTypeDef.Id);
+				var storePickerDataType = ApplicationContext.Current.Services.DataTypeService.GetDataTypeDefinitionById(storePickerDataTypeDef.Id);
 
 				if (storePickerDataType != null)
 				{
-					if (selectedDoctype.getPropertyType(Constants.StorePickerAlias) == null)
+					if (selectedDoctype.PropertyTypes.All(x => x.Alias != Constants.StorePickerAlias))
 					{
-						selectedDoctype.AddPropertyType(storePickerDataType, Constants.StorePickerAlias, "#StorePicker");
+						var storePickerPropertyType = new PropertyType(storePickerDataType)
+						{
+							Alias = Constants.StorePickerAlias,
+							Name = "#StorePicker"
+						};
+
+						selectedDoctype.AddPropertyType(storePickerPropertyType);
 
 						BasePage.Current.ClientTools.ShowSpeechBubble(BasePage.speechBubbleIcon.success, "StorePicker Installed!", "StorePicker installed on " + doc.ContentType.Alias + " document type");
 					}

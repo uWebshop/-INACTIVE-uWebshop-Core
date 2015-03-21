@@ -76,6 +76,6 @@ namespace uWebshop.Domain.Interfaces
 		/// </value>
 		bool IsFulfilled { get; }
 
-	    int ContentId { get; }
+		int ContentId { get; }
 	}
 }

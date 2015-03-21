@@ -43,10 +43,10 @@ namespace uWebshop.API
 
 		#region Pure interface forward
 
-        [DataMember]
-        public string Description { get { return _discount.Description; } set { } }
+		[DataMember]
+		public string Description { get { return _discount.Description; } set { } }
 
-	    [DataMember]
+		[DataMember]
 		public bool OncePerCustomer { get { return _discount.OncePerCustomer; } set { } }
 		[DataMember]
 		public bool CounterEnabled { get { return _discount.CounterEnabled; } set { } }

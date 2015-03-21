@@ -74,22 +74,21 @@ namespace uWebshop.API
 			return Enumerable.Empty<IBillingProvider>();
 		}
 
+		/// <summary>
+		/// Gets the payment providers for a given country
+		/// </summary>
+		/// <param name="countryCode">the code of the country</param>
+		/// <param name="storeAlias">The store alias.</param>
+		/// <param name="currencyCode">The currency code.</param>
+		/// <returns></returns>
+		public static IEnumerable<IBillingProvider> GetPaymentProvidersForCountry(string countryCode, string storeAlias = null, string currencyCode = null)
+		{
+			var localization = StoreHelper.GetLocalizationOrCurrent(storeAlias, currencyCode);
 
-        /// <summary>
-        /// Gets the payment providers for a given country
-        /// </summary>
-        /// <param name="countryCode">the code of the country</param>
-        /// <param name="storeAlias">The store alias.</param>
-        /// <param name="currencyCode">The currency code.</param>
-        /// <returns></returns>
-        public static IEnumerable<IBillingProvider> GetPaymentProvidersForCountry(string countryCode, string storeAlias = null, string currencyCode = null)
-        {
-            var localization = StoreHelper.GetLocalizationOrCurrent(storeAlias, currencyCode);
+			var inclVat = IO.Container.Resolve<ISettingsService>().IncludingVat;
 
-            var inclVat = IO.Container.Resolve<ISettingsService>().IncludingVat;
-
-            return PaymentProviderHelper.GetAllPaymentProviders(storeAlias, currencyCode).Where(x => x.Zones.Any(y => y.CountryCodes.Contains(countryCode))).Select(p => new BillingFulfillmentAdaptor(p, inclVat, localization));
-        }
+			return PaymentProviderHelper.GetAllPaymentProviders(storeAlias, currencyCode).Where(x => x.Zones.Any(y => y.CountryCodes.Contains(countryCode))).Select(p => new BillingFulfillmentAdaptor(p, inclVat, localization));
+		}
 
 		/// <summary>
 		/// Gets all fulfillment providers. (ie shipping/pickup/etc)
@@ -149,21 +148,21 @@ namespace uWebshop.API
 			return Enumerable.Empty<IFulfillmentProvider>();
 		}
 
-        /// <summary>
-        /// Gets the fulfillment providers. (ie shipping/pickup/etc) for a given country
-        /// </summary>
-        /// <param name="countryCode">the code of the country</param>
-        /// <param name="storeAlias">The store alias.</param>
-        /// <param name="currencyCode">The currency code.</param>
-        /// <returns></returns>
-        public static IEnumerable<IFulfillmentProvider> GetFulfillmentProvidersForCountry(string countryCode, string storeAlias = null, string currencyCode = null)
-        {
-            var localization = StoreHelper.GetLocalizationOrCurrent(storeAlias, currencyCode);
+		/// <summary>
+		/// Gets the fulfillment providers. (ie shipping/pickup/etc) for a given country
+		/// </summary>
+		/// <param name="countryCode">the code of the country</param>
+		/// <param name="storeAlias">The store alias.</param>
+		/// <param name="currencyCode">The currency code.</param>
+		/// <returns></returns>
+		public static IEnumerable<IFulfillmentProvider> GetFulfillmentProvidersForCountry(string countryCode, string storeAlias = null, string currencyCode = null)
+		{
+			var localization = StoreHelper.GetLocalizationOrCurrent(storeAlias, currencyCode);
 
-            var inclVat = IO.Container.Resolve<ISettingsService>().IncludingVat;
+			var inclVat = IO.Container.Resolve<ISettingsService>().IncludingVat;
 
-            return ShippingProviderHelper.GetAllShippingProviders(storeAlias, currencyCode).Where(x => x.Zone.CountryCodes.Contains(countryCode)).Select(p => new ShippingFulfillmentAdaptor(p, inclVat, localization, null));
-        }
+			return ShippingProviderHelper.GetAllShippingProviders(storeAlias, currencyCode).Where(x => x.Zone.CountryCodes.Contains(countryCode)).Select(p => new ShippingFulfillmentAdaptor(p, inclVat, localization, null));
+		}
 
 	}
 }

@@ -8,6 +8,8 @@ using uWebshop.ActionHandlers;
 using uWebshop.Domain;
 using uWebshop.Domain.Interfaces;
 using uWebshop.Umbraco.Businesslogic;
+using Umbraco.Core.Configuration;
+using Umbraco.Core.Logging;
 using Log = uWebshop.Domain.Log;
 
 //[assembly: PreApplicationStartMethod(typeof (UwebshopUmbracoStartup), "Startup")]
@@ -24,9 +26,9 @@ namespace uWebshop.ActionHandlers
 				//DynamicModuleUtility.RegisterModule(typeof(UrlRewriting));
 				//DynamicModuleUtility.RegisterModule(typeof(aaaaaaaUwebshop));
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
-				umbraco.BusinessLogic.Log.Add(umbraco.BusinessLogic.LogTypes.Error, 0, "Error while initializing uWebshop, most likely due to wrong umbraco.config, please republish the site");
+				LogHelper.Error(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "Error while initializing uWebshop, most likely due to wrong umbraco.config, please republish the site", ex);
 
 				throw;
 			}
@@ -49,8 +51,7 @@ namespace uWebshop.ActionHandlers
 			}
 			try
 			{
-				// todo: not 100% about moving this from static constructor
-				NoRewriting = (InternalHelpers.MvcRenderMode && (GlobalSettings.VersionMajor > 6 || GlobalSettings.VersionMajor == 6 && GlobalSettings.VersionMinor >= 1));
+				NoRewriting = (InternalHelpers.MvcRenderMode && (UmbracoVersion.Current.Major > 6 || UmbracoVersion.Current.Major == 6 && UmbracoVersion.Current.Minor >= 1));
 			}
 			catch (Exception)
 			{

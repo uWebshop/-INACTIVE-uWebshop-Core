@@ -13,9 +13,9 @@ namespace uWebshop.Domain.Interfaces
 		//public int SortOrder { get { return _discount.SortOrder; } }
 		//public int Counter { get { return _discount.Counter; } }
 
-        string Title { get; }
+		string Title { get; }
 
-        string Description { get; }
+		string Description { get; }
 
 		/// <summary>
 		/// Gets a value indicating whether the discount is once per customer.

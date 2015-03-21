@@ -5,7 +5,7 @@ namespace uWebshop.Domain.Interfaces
 	/// <summary>
 	/// 
 	/// </summary>
-    public interface IProductVariantGroup : IUwebshopUmbracoEntity
+	public interface IProductVariantGroup : IUwebshopUmbracoEntity
 	{
 		/// <summary>
 		/// Product Variants in this group
@@ -23,13 +23,13 @@ namespace uWebshop.Domain.Interfaces
 		/// </value>
 		string Title { get; }
 
-        /// <summary>
-        /// Gets or sets the description.
-        /// </summary>
-        /// <value>
-        /// The title.
-        /// </value>
-        string Description { get; }
+		/// <summary>
+		/// Gets or sets the description.
+		/// </summary>
+		/// <value>
+		/// The title.
+		/// </value>
+		string Description { get; }
 
 		/// <summary>
 		/// Gets a value indicating whether the variant group is required.

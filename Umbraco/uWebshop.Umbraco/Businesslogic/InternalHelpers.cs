@@ -7,30 +7,29 @@ using System.Web.Caching;
 using System.Xml;
 using Examine;
 using Examine.LuceneEngine.Providers;
-using Examine.Providers;
 using Lucene.Net.Analysis;
-using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;
 using Lucene.Net.QueryParsers;
 using Lucene.Net.Search;
-using umbraco.cms.businesslogic.media;
+using umbraco;
+using umbraco.BusinessLogic;
 using uWebshop.Domain;
 using uWebshop.Domain.BaseClasses;
 using uWebshop.Domain.ContentTypes;
-using uWebshop.Domain.Helpers;
-using umbraco;
-using umbraco.BasePages;
-using umbraco.BusinessLogic;
-using umbraco.NodeFactory;
-using umbraco.cms.businesslogic.web;
-using Document = Lucene.Net.Documents.Document;
+using uWebshop.Umbraco6;
+using Umbraco.Core;
+using Umbraco.Core.Logging;
+using Umbraco.Core.Models;
+using Umbraco.Core.Services;
 using File = uWebshop.Domain.File;
-using Log = uWebshop.Domain.Log;
+using Log = umbraco.BusinessLogic.Log;
 
 namespace uWebshop.Umbraco.Businesslogic
 {
 	internal class InternalHelpers
 	{
+		public static IMediaService MediaService = ApplicationContext.Current.Services.MediaService;
+
 		internal static string[] ParseTagsString(string property)
 		{
 			var valueList = new List<string>();
@@ -217,27 +216,27 @@ namespace uWebshop.Umbraco.Businesslogic
 			return "folder.png";
 		}
 
-		private static void LoadMediaBase(MediaBase entity, Media media)
+		private static void LoadMediaBase(MediaBase entity, IMedia media)
 		{
 			entity.Id = media.Id;
 			entity.ParentId = media.ParentId;
-			entity.CreateDateTime = media.CreateDateTime;
-			entity.IsTrashed = media.IsTrashed;
+			entity.CreateDateTime = media.CreateDate;
+			entity.IsTrashed = media.Trashed;
 
-			entity.FileExtension = media.getProperty("umbracoExtension").Value.ToString();
-			entity.RelativePathToFile = media.HasProperty("umbracoFile") ? media.getProperty("umbracoFile").Value.ToString() : string.Empty;
-			entity.FileSize = Convert.ToInt64(media.getProperty("umbracoBytes").Value.ToString());
+			entity.FileExtension = media.GetValue<string>("umbracoExtension");
+			entity.RelativePathToFile = media.HasProperty("umbracoFile") ? media.GetValue<string>("umbracoFile") : string.Empty;
+			entity.FileSize = media.GetValue<int>("umbracoBytes");
 		}
 
 		internal static File LoadFileWithId(int id)
 		{
 			try
 			{
-				var media = new Media(id);
+				var media = MediaService.GetById(id);
 				var file = new File();
 				LoadMediaBase(file, media);
-				file.FileName = media.Text;
-				file.MultilanguageFileName = media.HasProperty("title") ? media.getProperty("title").Value.ToString() : media.Text;
+				file.FileName = media.Name;
+				file.MultilanguageFileName = media.HasProperty("title") ? media.GetValue<string>("title") : media.Name;
 				return file;
 			}
 			catch (Exception)
@@ -250,11 +249,11 @@ namespace uWebshop.Umbraco.Businesslogic
 		{
 			try
 			{
-				var media = new Media(id);
+				var media = MediaService.GetById(id);
 				var image = new Image();
 				LoadMediaBase(image, media);
-				image.Width = Convert.ToInt32(media.getProperty("umbracoWidth").Value.ToString());
-				image.Height = Convert.ToInt32(media.getProperty("umbracoHeight").Value.ToString());
+				image.Width = media.GetValue<int>("umbracoWidth");
+				image.Height = media.GetValue<int>("umbracoHeight");
 				return image;
 			}
 			catch (Exception)
@@ -314,10 +313,9 @@ namespace uWebshop.Umbraco.Businesslogic
 						var value = GetKey("/settings/templates/defaultRenderingEngine");
 						_mvcRenderMode = value.ToLowerInvariant() != "webforms";
 					}
-					catch (Exception)
+					catch (Exception ex)
 					{
-						umbraco.BusinessLogic.Log.Add(LogTypes.Error, 0, "Could not load /settings/templates/defaultRenderingEngine from umbracosettings.config");
-						//LogHelper.Error<UmbracoSettings>("Could not load /settings/templates/defaultRenderingEngine from umbracosettings.config", ex);
+						LogHelper.Error<UmbracoLoggingService>("Could not load /settings/templates/defaultRenderingEngine from umbracosettings.config",ex);
 						_mvcRenderMode = false;
 					}
 				}
@@ -368,7 +366,7 @@ namespace uWebshop.Umbraco.Businesslogic
 
 		internal static XmlDocument EnsureSettingsDocument()
 		{
-			string Filename = "umbracoSettings.config";
+			var Filename = "umbracoSettings.config";
 			var settingsFile = HttpRuntime.Cache["umbracoSettingsFile"];
 
 			// Check for language file in cache
@@ -387,14 +385,12 @@ namespace uWebshop.Umbraco.Businesslogic
 				}
 				catch (Exception e)
 				{
-					umbraco.BusinessLogic.Log.Add(LogTypes.Error, 0, "Error reading umbracoSettings file: " + e);
-					//LogHelper.Error<UmbracoSettings>("Error reading umbracoSettings file: " + e.ToString(), e);
+					LogHelper.Error<UmbracoSettings>("Error reading umbracoSettings file: " + e, e);
 				}
 				settingsReader.Close();
 				return temp;
 			}
-			else
-				return (XmlDocument) settingsFile;
+			return (XmlDocument) settingsFile;
 		}
 
 		#endregion

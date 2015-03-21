@@ -4,7 +4,7 @@
 	<info>
 		<package>
 			<name>uWebshop2</name>
-			<version>2.6.0.0</version>
+			<version>2.6.5.0</version>
 			<license url="http://uwebshop.com/terms-conditions">uWebshop License Agreement</license>
 			<url>http://uWebshop.com</url>
 			<requirements>
@@ -18,7 +18,7 @@
 			<website>http://uWebshop.com</website>
 		</author>
 		<readme>
-			<![CDATA[uWebshop 2.6.0.0 Foundation Package
+			<![CDATA[uWebshop 2.6.5.0 Foundation Package
 					   
 			uWebshop is a powerful, easy to manage, fully featured e-commerce package for Umbraco.
 			
@@ -29,7 +29,7 @@
 					   
 			This uWebshop package is compatible with Umbraco 6.0, 6.1 and up.
 			For Umbraco 4.8, 4.9, 4.10, 4.11 please download the v4 package
-								   			
+											
 			Some icons by Yusuke Kamiyamane (http://p.yusukekamiyamane.com/). All rights reserved. Licensed under a Creative Commons Attribution 3.0 License.            
 			]]>
 		</readme>
@@ -67,11 +67,11 @@
 			<orgPath>/bin</orgPath>
 			<orgName>uWebshop.Domain.dll</orgName>
 		</file>
-    <file>
-      <guid>uWebshop.Services.dll</guid>
-      <orgPath>/bin</orgPath>
-      <orgName>uWebshop.Services.dll</orgName>
-    </file>
+		<file>
+			<guid>uWebshop.Services.dll</guid>
+			<orgPath>/bin</orgPath>
+			<orgName>uWebshop.Services.dll</orgName>
+		</file>
 		<file>
 			<guid>uWebshop.Umbraco.dll</guid>
 			<orgPath>/bin</orgPath>

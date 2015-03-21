@@ -30,21 +30,21 @@ namespace uWebshop.Domain.Interfaces
 		/// </value>
 		string Title { get; }
 
-        /// <summary>
-        /// Gets the description.
-        /// </summary>
-        /// <value>
-        /// The title.
-        /// </value>
-        string Description { get; }
+		/// <summary>
+		/// Gets the description.
+		/// </summary>
+		/// <value>
+		/// The title.
+		/// </value>
+		string Description { get; }
 
-        /// <summary>
-        /// Disabled?.
-        /// </summary>
-        /// <value>
-        /// The title.
-        /// </value>
-        bool Disabled { get; }
+		/// <summary>
+		/// Disabled?.
+		/// </summary>
+		/// <value>
+		/// The title.
+		/// </value>
+		bool Disabled { get; }
 
 		/// <summary>
 		/// Gets the methods.
@@ -54,13 +54,13 @@ namespace uWebshop.Domain.Interfaces
 		/// </value>
 		IEnumerable<IBillingProviderMethod> Methods { get; }
 
-        /// <summary>
-        /// Gets the Zones.
-        /// </summary>
-        /// <value>
-        /// The methods.
-        /// </value>
-        List<Zone> Zones { get; }
+		/// <summary>
+		/// Gets the Zones.
+		/// </summary>
+		/// <value>
+		/// The methods.
+		/// </value>
+		List<Zone> Zones { get; }
 
 		/// <summary>
 		/// Gets the type of this billing provider.

@@ -38,53 +38,7 @@ namespace uWebshop.Umbraco6
 			var productsRepo = GetOrCreateContent(Catalog.ProductRepositoryNodeAlias, "Products", contentTypeService, contentService, catalog, contentList);
 
 			var orders = GetOrCreateContent(Order.OrderRepositoryNodeAlias, "Orders", contentTypeService, contentService, uWebshop, contentList);
-
-			var confirmedOrders = GetOrCreateContent(OrderSection.NodeAlias, "Confirmed Orders", contentTypeService, contentService, orders, contentList);
-			if (confirmedOrders.Id == 0)
-			{
-				if (confirmedOrders.HasProperty("orderSection"))
-				{
-					confirmedOrders.SetValue("orderSection", MakeOrderSectionValue(OrderStatus.Confirmed));
-				}
-			}
-
-			var unpaidOrders = GetOrCreateContent(OrderSection.NodeAlias, "Offline Payment Orders", contentTypeService, contentService, orders, contentList);
-			if (unpaidOrders.Id == 0)
-			{
-				if (unpaidOrders.HasProperty("orderSection"))
-				{
-					unpaidOrders.SetValue("orderSection", MakeOrderSectionValue(OrderStatus.OfflinePayment));
-				}
-			}
-
-			var readyfordispatchOrders = GetOrCreateContent(OrderSection.NodeAlias, "Order Ready For Dispatch", contentTypeService, contentService, orders, contentList);
-			if (readyfordispatchOrders.Id == 0)
-			{
-				if (readyfordispatchOrders.HasProperty("orderSection"))
-				{
-					readyfordispatchOrders.SetValue("orderSection", MakeOrderSectionValue(OrderStatus.ReadyForDispatch));
-				}
-			}
-
-			var dispatchedOrders = GetOrCreateContent(OrderSection.NodeAlias, "Dispatched Orders", contentTypeService, contentService, orders, contentList);
-			if (dispatchedOrders.Id == 0)
-			{
-				if (dispatchedOrders.HasProperty("orderSection"))
-				{
-					dispatchedOrders.SetValue("orderSection", MakeOrderSectionValue(OrderStatus.Dispatched));
-				}
-			}
-
-			var closedOrders = GetOrCreateContent(OrderSection.NodeAlias, "Closed Orders", contentTypeService, contentService, orders, contentList);
-			if (closedOrders.Id == 0)
-			{
-				if (closedOrders.HasProperty("orderSection"))
-				{
-					closedOrders.SetValue("orderSection", MakeOrderSectionValue(OrderStatus.Closed));
-				}
-			}
-
-
+			
 			var discountRep = GetOrCreateContent(DiscountOrder.RepositoryNodeAlias, "Discounts", contentTypeService, contentService, uWebshop, contentList);
 
 			var discountProductSection = GetOrCreateContent(DiscountProduct.SectionNodeAlias, "Product Discounts", contentTypeService, contentService, discountRep, contentList);
@@ -131,30 +85,30 @@ namespace uWebshop.Umbraco6
 			//umbraco.cms.businesslogic.web.Document.RegeneratePreviews();
 		}
 
-        internal static IContent GetOrCreateContent(string alias, string contentName, IContentTypeService contentTypeService, IContentService contentService, IContent parentContent, List<IContent> contentList)
+		internal static IContent GetOrCreateContent(string alias, string contentName, IContentTypeService contentTypeService, IContentService contentService, IContent parentContent, List<IContent> contentList)
 		{
 			var contentType = contentTypeService.GetContentType(alias);
 
-            return GetOrCreateContent(contentType, contentName, contentTypeService, contentService, parentContent, contentList);
+			return GetOrCreateContent(contentType, contentName, contentTypeService, contentService, parentContent, contentList);
 		}
 
-        internal static IContent GetOrCreateContent(IContentType contentType, string contentName, IContentTypeService contentTypeService, IContentService contentService, IContent parentContent, List<IContent> contentList)
-        {   
-            var content = contentService.GetContentOfContentType(contentType.Id).FirstOrDefault(x => !x.Trashed);
-            if (content == null)
-            {
-                if (parentContent == null)
-                {
-                    content = contentService.CreateContent(contentName, -1, contentType.Alias);
-                }
-                else
-                {
-                    content = contentService.CreateContent(contentName, parentContent, contentType.Alias);
-                }
-                contentList.Add(content);
-            }
-            return content;
-        }
+		internal static IContent GetOrCreateContent(IContentType contentType, string contentName, IContentTypeService contentTypeService, IContentService contentService, IContent parentContent, List<IContent> contentList)
+		{   
+			var content = contentService.GetContentOfContentType(contentType.Id).FirstOrDefault(x => !x.Trashed);
+			if (content == null)
+			{
+				if (parentContent == null)
+				{
+					content = contentService.CreateContent(contentName, -1, contentType.Alias);
+				}
+				else
+				{
+					content = contentService.CreateContent(contentName, parentContent, contentType.Alias);
+				}
+				contentList.Add(content);
+			}
+			return content;
+		}
 
 		private static string MakeOrderSectionValue(OrderStatus orderStatus)
 		{

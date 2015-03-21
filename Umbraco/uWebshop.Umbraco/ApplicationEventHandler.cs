@@ -190,93 +190,14 @@ namespace uWebshop.Umbraco
 		}
 
 
-		private void ResetAll(int id, string nodeTypeAlias)
+		private static void ResetAll(int id, string nodeTypeAlias)
 		{
 			IO.Container.Resolve<IApplicationCacheManagingService>().ReloadEntityWithGlobalId(id, nodeTypeAlias);
 			//UmbracoStaticCachedEntityRepository.ResetStaticCache();
 		}
 		private void ContentOnAfterUpdateDocumentCache(Document document, DocumentCacheEventArgs documentCacheEventArgs)
 		{
-		var contentService = ApplicationContext.Current.Services.ContentService;
-			var umbHelper = new UmbracoHelper(UmbracoContext.Current);
-
-			var content = contentService.GetById(document.Id);
-			//if (sender.ContentType.Alias.StartsWith("uwbs") && sender.ContentType.Alias != Order.NodeAlias)
-			//todo: work with aliasses from config
-			var alias = content.ContentType.Alias;
-			// todo: make a nice way for this block
-			if (Product.IsAlias(alias))
-			{
-				ResetAll(content.Id, alias);
-			}
-			else if (ProductVariant.IsAlias(alias))
-			{
-				ResetAll(content.Id, alias);
-			}
-			else if (Category.IsAlias(alias))
-			{
-				ResetAll(content.Id, alias);
-			}
-			else if (PaymentProvider.IsAlias(alias))
-			{
-				ResetAll(content.Id, alias);
-			}
-			else if (PaymentProviderMethod.IsAlias(alias))
-			{
-				ResetAll(content.Id, alias);
-			}
-			else if (DiscountProduct.IsAlias(alias))
-			{
-				ResetAll(content.Id, alias);
-			}
-			else if (DiscountOrder.IsAlias(alias))
-			{
-				ResetAll(content.Id, alias);
-			}
-			else if (ShippingProvider.IsAlias(alias))
-			{
-				ResetAll(content.Id, alias);
-			}
-			else if (ShippingProviderMethod.IsAlias(alias))
-			{
-				ResetAll(content.Id, alias);
-			}
-			else if (Store.IsAlias(alias))
-			{
-				ResetAll(content.Id, alias);
-			}
-			else if (alias.StartsWith("uwbs") && alias != Order.NodeAlias)
-			{
-				ResetAll(content.Id, alias);
-			}
-
-			if (content.HasProperty(Constants.StorePickerAlias))
-			{
-				var storeId = content.GetValue<int>(Constants.StorePickerAlias);
-
-				var storeService = StoreHelper.StoreService;
-				var storeById = storeService.GetById(storeId, null);
-				if (storeById != null)
-				{
-					storeService.TriggerStoreChangedEvent(storeById);
-				}
-			}
-
-			if (alias.StartsWith(Settings.NodeAlias))
-			{
-				IO.Container.Resolve<ISettingsService>().TriggerSettingsChangedEvent(SettingsLoader.GetSettings());
-			}
-
-			if (alias.StartsWith(Store.NodeAlias))
-			{
-				var storeService = StoreHelper.StoreService;
-				storeService.TriggerStoreChangedEvent(storeService.GetById(content.Id, null));
-				var node = umbHelper.Content(content.Id);
-				if (!content.Name.Equals(node.Name))
-				{
-					StoreHelper.RenameStore(node.Name, content.Name);
-				}
-			}
+		
 		}
 
 		private void ContentService_UnPublished(IPublishingStrategy sender, PublishEventArgs<IContent> e)
@@ -728,19 +649,21 @@ namespace uWebshop.Umbraco
 
 		private static void ContentService_Published(IPublishingStrategy strategy, PublishEventArgs<IContent> e)
 		{
+			var umbHelper = new UmbracoHelper(UmbracoContext.Current);
 			var contentService = ApplicationContext.Current.Services.ContentService;
 			var contents = e.PublishedEntities.Where(c => c.ContentType.Alias.StartsWith(Order.NodeAlias));
 			strategy.UnPublish(contents, 0);
 
 			// when thinking about adding something here, consider ContentOnAfterUpdateDocumentCache!
 
-			foreach (var sender in e.PublishedEntities) {
+			foreach (var sender in e.PublishedEntities)
+			{
 				if (sender.Level > 2)
 				{
 					if (sender.ContentType.Alias == Order.NodeAlias ||
-						sender.Parent() != null &&
-						(OrderedProduct.IsAlias(sender.ContentType.Alias) ||
-						 sender.Parent().Parent() != null && OrderedProductVariant.IsAlias(sender.ContentType.Alias)))
+					    sender.Parent() != null &&
+					    (OrderedProduct.IsAlias(sender.ContentType.Alias) ||
+					     sender.Parent().Parent() != null && OrderedProductVariant.IsAlias(sender.ContentType.Alias)))
 					{
 						var orderDoc = sender.ContentType.Alias == Order.NodeAlias
 							? sender
@@ -792,9 +715,10 @@ namespace uWebshop.Umbraco
 								orderInfo.CustomerFirstName = order.CustomerFirstName;
 								orderInfo.CustomerLastName = order.CustomerLastName;
 
-							
+
 								var dictionaryCustomer =
-									orderDoc.Properties.Where(x => x.Alias.StartsWith("customer")).ToDictionary(customerProperty => customerProperty.Alias,
+									orderDoc.Properties.Where(x => x.Alias.StartsWith("customer"))
+										.ToDictionary(customerProperty => customerProperty.Alias,
 											customerProperty => customerProperty.Value.ToString());
 
 								orderInfo.AddCustomerFields(dictionaryCustomer, CustomerDatatypes.Customer);
@@ -829,7 +753,8 @@ namespace uWebshop.Umbraco
 
 									var productInfo = new ProductInfo(orderedProduct, orderInfo);
 									productInfo.ProductVariants =
-										d.Children().Select(cd => new ProductVariantInfo(new OrderedProductVariant(cd.Id), productInfo, productInfo.Vat))
+										d.Children()
+											.Select(cd => new ProductVariantInfo(new OrderedProductVariant(cd.Id), productInfo, productInfo.Vat))
 											.ToList();
 									return new OrderLine(productInfo, orderInfo) {_customData = xDoc};
 								}).ToList();
@@ -854,6 +779,87 @@ namespace uWebshop.Umbraco
 							BasePage.Current.ClientTools.ShowSpeechBubble(BasePage.speechBubbleIcon.success, "Order Updated!",
 								"This order has been updated!");
 						}
+					}
+				}
+
+
+
+
+				var content = contentService.GetById(sender.Id);
+				//if (sender.ContentType.Alias.StartsWith("uwbs") && sender.ContentType.Alias != Order.NodeAlias)
+				//todo: work with aliasses from config
+				var alias = content.ContentType.Alias;
+				// todo: make a nice way for this block
+				if (Product.IsAlias(alias))
+				{
+					ResetAll(content.Id, alias);
+				}
+				else if (ProductVariant.IsAlias(alias))
+				{
+					ResetAll(content.Id, alias);
+				}
+				else if (Category.IsAlias(alias))
+				{
+					ResetAll(content.Id, alias);
+				}
+				else if (PaymentProvider.IsAlias(alias))
+				{
+					ResetAll(content.Id, alias);
+				}
+				else if (PaymentProviderMethod.IsAlias(alias))
+				{
+					ResetAll(content.Id, alias);
+				}
+				else if (DiscountProduct.IsAlias(alias))
+				{
+					ResetAll(content.Id, alias);
+				}
+				else if (DiscountOrder.IsAlias(alias))
+				{
+					ResetAll(content.Id, alias);
+				}
+				else if (ShippingProvider.IsAlias(alias))
+				{
+					ResetAll(content.Id, alias);
+				}
+				else if (ShippingProviderMethod.IsAlias(alias))
+				{
+					ResetAll(content.Id, alias);
+				}
+				else if (Store.IsAlias(alias))
+				{
+					ResetAll(content.Id, alias);
+				}
+				else if (alias.StartsWith("uwbs") && alias != Order.NodeAlias)
+				{
+					ResetAll(content.Id, alias);
+				}
+
+				if (content.HasProperty(Constants.StorePickerAlias))
+				{
+					var storeId = content.GetValue<int>(Constants.StorePickerAlias);
+
+					var storeService = StoreHelper.StoreService;
+					var storeById = storeService.GetById(storeId, null);
+					if (storeById != null)
+					{
+						storeService.TriggerStoreChangedEvent(storeById);
+					}
+				}
+
+				if (alias.StartsWith(Settings.NodeAlias))
+				{
+					IO.Container.Resolve<ISettingsService>().TriggerSettingsChangedEvent(SettingsLoader.GetSettings());
+				}
+
+				if (alias.StartsWith(Store.NodeAlias))
+				{
+					var storeService = StoreHelper.StoreService;
+					storeService.TriggerStoreChangedEvent(storeService.GetById(content.Id, null));
+					var node = umbHelper.Content(content.Id);
+					if (!content.Name.Equals(node.Name))
+					{
+						StoreHelper.RenameStore(node.Name, content.Name);
 					}
 				}
 			}

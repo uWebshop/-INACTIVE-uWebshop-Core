@@ -4,7 +4,6 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using umbraco.BusinessLogic;
 using umbraco.interfaces;
-using uWebshop.Domain;
 
 namespace uWebshop.Umbraco.DataTypes.LanguagePicker
 {
@@ -43,29 +42,19 @@ namespace uWebshop.Umbraco.DataTypes.LanguagePicker
 		{
 			base.OnInit(e);
 
-			
-
 			_dlInstalledLanguages = new DropDownList();
 
 			foreach (var language in umbraco.cms.businesslogic.language.Language.GetAllAsList())
 			{
 				var culture = new CultureInfo(language.CultureAlias);
-				if (!culture.IsNeutralCulture)
-				{
-					var currencyRegion = new RegionInfo(culture.LCID);
+				if (culture.IsNeutralCulture) continue;
+				var currencyRegion = new RegionInfo(culture.LCID);
 
-					var value = language.FriendlyName + " " + currencyRegion.ISOCurrencySymbol + " (" + currencyRegion.CurrencySymbol +
-					            " - " +
-					            currencyRegion.CurrencyEnglishName + ")";
+				var value = language.FriendlyName + " " + currencyRegion.ISOCurrencySymbol + " (" + currencyRegion.CurrencySymbol +
+							" - " +
+							currencyRegion.CurrencyEnglishName + ")";
 
-					_dlInstalledLanguages.Items.Add(new ListItem(value, language.id.ToString(CultureInfo.InvariantCulture)));
-				}
-				//else
-				//{
-				//	var value = language.FriendlyName;
-
-				//	_dlInstalledLanguages.Items.Add(new ListItem(value, language.id.ToString(CultureInfo.InvariantCulture)));
-				//}
+				_dlInstalledLanguages.Items.Add(new ListItem(value, language.id.ToString(CultureInfo.InvariantCulture)));
 			}
 			_dlInstalledLanguages.SelectedValue = _data.Value.ToString();
 

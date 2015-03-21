@@ -27,6 +27,7 @@ namespace uWebshop.Umbraco.Test.Model.CategoryTests
 			uWebshop.Domain.Core.Initialize.InitializeServiceLocators(IOC.CurrentContainer); // hackish, find a better solution
 		}
 
+		[Ignore]
 		[Test]
 		public void SingleLevelIncludingDomainAndHideTopLevel()
 		{

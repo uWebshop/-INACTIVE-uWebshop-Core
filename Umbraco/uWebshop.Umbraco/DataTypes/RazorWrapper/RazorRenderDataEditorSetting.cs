@@ -7,7 +7,7 @@ using umbraco.BusinessLogic;
 using umbraco.cms.businesslogic.datatype;
 using umbraco.DataLayer;
 using umbraco.interfaces;
-using umbraco.IO;
+using Umbraco.Core.IO;
 
 namespace uWebshop.Umbraco.DataTypes.RazorWrapper
 {

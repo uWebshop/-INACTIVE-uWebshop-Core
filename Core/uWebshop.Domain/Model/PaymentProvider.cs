@@ -42,9 +42,9 @@ namespace uWebshop.Domain
 		internal ILocalization Localization;
 
 		private List<PaymentProviderMethod> _paymentProviderMethods;
-	    private List<Zone> _paymentProviderZones;
+		private List<Zone> _paymentProviderZones;
 
-	    /// <summary>
+		/// <summary>
 		/// Initializes a new instance of the <see cref="PaymentProvider" /> class.
 		/// </summary>
 		public PaymentProvider()
@@ -100,19 +100,19 @@ namespace uWebshop.Domain
 		[ContentPropertyType(Alias = "type", DataType = DataType.PaymentProviderType, Tab = ContentTypeTab.Details, Name = "#PaymentProviderType", Description = "#PaymentProviderTypeDescription", SortOrder = 4)]
 		public PaymentProviderType Type { get; set; }
 
-	    /// <summary>
-	    /// Zones for this payment provider
-	    /// </summary>
-	    /// <value>
-	    /// The zone.
-	    /// </value>
-	    [DataMember]
-	    [ContentPropertyType(Alias = "zone", DataType = DataType.MultiContentPickerPaymentZones,
-	        Tab = ContentTypeTab.Details, Name = "#Zone", Description = "#ZoneDescription", SortOrder = 6)]
-        public List<Zone> Zones { get; set; }
+		/// <summary>
+		/// Zones for this payment provider
+		/// </summary>
+		/// <value>
+		/// The zone.
+		/// </value>
+		[DataMember]
+		[ContentPropertyType(Alias = "zone", DataType = DataType.MultiContentPickerPaymentZones,
+			Tab = ContentTypeTab.Details, Name = "#Zone", Description = "#ZoneDescription", SortOrder = 6)]
+		public List<Zone> Zones { get; set; }
 	   
 
-	    /// <summary>
+		/// <summary>
 		/// Gets or sets the succes node unique identifier.
 		/// </summary>
 		/// <value>
@@ -132,6 +132,16 @@ namespace uWebshop.Domain
 		[ContentPropertyType(Alias = "errorNode", DataType = DataType.ContentPicker, Tab = ContentTypeTab.Details, Name = "#ErrorNode", Description = "#ErrorNodeDescription", SortOrder = 8)]
 		public string ErrorNodeId { get; set; }
 
+		/// <summary>
+		/// Gets or sets the error node unique identifier.
+		/// </summary>
+		/// <value>
+		/// The error node unique identifier.
+		/// </value>
+		[DataMember]
+		[ContentPropertyType(Alias = "cancelNode", DataType = DataType.ContentPicker, Tab = ContentTypeTab.Details, Name = "#CancelNode", Description = "#CancelNodeDescription", SortOrder = 9)]
+		public string CancelNodeId { get; set; }
+
 
 		/// <summary>
 		/// Provider in testmode?
@@ -141,7 +151,7 @@ namespace uWebshop.Domain
 		///   <c>true</c> if [test mode]; otherwise, <c>false</c>.
 		/// </value>
 		[DataMember]
-		[ContentPropertyType(Alias = "testMode", DataType = DataType.EnableDisable, Tab = ContentTypeTab.Details, Name = "#TestMode", Description = "#TestModeDescription", SortOrder = 9)]
+		[ContentPropertyType(Alias = "testMode", DataType = DataType.EnableDisable, Tab = ContentTypeTab.Details, Name = "#TestMode", Description = "#TestModeDescription", SortOrder = 10)]
 		public bool TestMode { get; set; }
 
 		/// <summary>

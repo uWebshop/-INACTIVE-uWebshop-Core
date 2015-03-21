@@ -42,7 +42,7 @@ namespace uWebshop.API.JSON
 		/// </summary>
 		[WebMethod]
 		[ScriptMethod(ResponseFormat = ResponseFormat.Json)]
-        [RestExtensionMethod(AllowAll = true, ReturnXml = false)]
+		[RestExtensionMethod(AllowAll = true, ReturnXml = false)]
 		public static void Handle()
 		{
 			var successFailed = new Dictionary<string, object>();
@@ -97,10 +97,10 @@ namespace uWebshop.API.JSON
 			}
 
 			var serializeSettings = new JsonSerializerSettings()
-			                        {
-				                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore, 
+									{
+										ReferenceLoopHandling = ReferenceLoopHandling.Ignore, 
 										Formatting = GlobalSettings.DebugMode ? Formatting.Indented : Formatting.None
-			                        };
+									};
 
 			var json = JsonConvert.SerializeObject(successFailed, Formatting.Indented, serializeSettings);
 			HttpContext.Current.Response.ContentType = "application/json";

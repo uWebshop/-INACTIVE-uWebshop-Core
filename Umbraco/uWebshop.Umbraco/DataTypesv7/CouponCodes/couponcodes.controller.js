@@ -1,79 +1,79 @@
 angular.module("umbraco").controller("uWebshop.CouponCodes", function ($scope, assetsService, $routeParams, $http) {
 
-    var nodeId = $routeParams.id;
+	var nodeId = $routeParams.id;
 
-    $http.get('/Umbraco/uWebshop/StoreApi/GetCouponCodes?discountId=' + nodeId).then(function (res) {
+	$http.get('/Umbraco/uWebshop/StoreApi/GetCouponCodes?discountId=' + nodeId).then(function (res) {
 
-        $scope.Coupons = res.data;
+		$scope.Coupons = res.data;
 
-        $scope.editItem = function (itemToEdit, event) {
+		$scope.editItem = function (itemToEdit, event) {
 
-            if (event) {
-                event.stopPropagation();
-                event.preventDefault();
-            }
-          
-            var data = JSON.parse(itemToEdit);
+			if (event) {
+				event.stopPropagation();
+				event.preventDefault();
+			}
 
-            for (i = 0; $scope.Coupons.length > i; i += 1) {
-                if ($scope.Coupons[i].CouponCode == data.CouponCode && $scope.Coupons[i].NumberAvailable == data.NumberAvailable) {
+			var data = JSON.parse(itemToEdit);
 
-                    var matchedItem = $scope.Coupons[i];
+			for (i = 0; $scope.Coupons.length > i; i += 1) {
+				if ($scope.Coupons[i].CouponCode == data.CouponCode && $scope.Coupons[i].NumberAvailable == data.NumberAvailable) {
 
-                    var idx = $scope.Coupons.indexOf(matchedItem);
-                    // $scope.jsonData.splice(idx, 1);
+					var matchedItem = $scope.Coupons[i];
 
-                }
-            }
-            $scope.CouponCode = data.CouponCode;
-            $scope.NumberAvailable = data.NumberAvailable;
-        };
+					var idx = $scope.Coupons.indexOf(matchedItem);
+					// $scope.jsonData.splice(idx, 1);
 
-        $scope.saveItem = function (name, event) {
+				}
+			}
+			$scope.CouponCode = data.CouponCode;
+			$scope.NumberAvailable = data.NumberAvailable;
+		};
 
-            if (event) {
-                event.stopPropagation();
-                event.preventDefault();
-            }
+		$scope.saveItem = function (name, event) {
 
-            if ($scope.CouponCode && $scope.NumberAvailable) {
-                console.log("Save!");
+			if (event) {
+				event.stopPropagation();
+				event.preventDefault();
+			}
 
-                var add = true;
-                var idx = 0;
-                for (var i = 0; $scope.Coupons.length > i; i += 1) {
-                    if ($scope.Coupons[i].CouponCode == $scope.CouponCode) {
-                        add = false;
-                        idx = i;
-                        break;
-                    }
-                }
+			if ($scope.CouponCode && $scope.NumberAvailable) {
+				console.log("Save!");
 
-                if (add == false) {
-                    $scope.Coupons.splice(idx, 1);
-                }
+				var add = true;
+				var idx = 0;
+				for (var i = 0; $scope.Coupons.length > i; i += 1) {
+					if ($scope.Coupons[i].CouponCode == $scope.CouponCode) {
+						add = false;
+						idx = i;
+						break;
+					}
+				}
 
-                var data = { "CouponCode": $scope.CouponCode, "NumberAvailable": $scope.NumberAvailable };
+				if (add == false) {
+					$scope.Coupons.splice(idx, 1);
+				}
 
-                $scope.Coupons.push(data);
-            }
-        };
+				var data = { "CouponCode": $scope.CouponCode, "NumberAvailable": $scope.NumberAvailable };
 
-        $scope.deleteItem = function(itemToRemove, event) {
-            if (event) {
-                event.stopPropagation();
-                event.preventDefault();
-            }
-            $scope.Coupons.splice(itemToRemove, 1);
-        };
+				$scope.Coupons.push(data);
+			}
+		};
 
-        $scope.$on("formSubmitting", function (e, args) {
+		$scope.deleteItem = function (itemToRemove, event) {
+			if (event) {
+				event.stopPropagation();
+				event.preventDefault();
+			}
+			$scope.Coupons.splice(itemToRemove, 1);
+		};
 
-            $http.post('/Umbraco/uWebshop/StoreApi/PostCouponCodes', { "Coupons": $scope.Coupons, "DiscountId": nodeId })
-            .success(function (data, status, headers, config) { })
-            .error(function (responseData) {
-                alert('error saving couponcodes!');
-            });
-        });
-    });
+		$scope.$on("formSubmitting", function (e, args) {
+
+			$http.post('/Umbraco/uWebshop/StoreApi/PostCouponCodes', { "Coupons": $scope.Coupons, "DiscountId": nodeId })
+			.success(function (data, status, headers, config) { })
+			.error(function (responseData) {
+				alert('error saving couponcodes!');
+			});
+		});
+	});
 });

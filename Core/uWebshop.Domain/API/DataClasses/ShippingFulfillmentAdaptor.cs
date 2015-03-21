@@ -8,7 +8,7 @@ using uWebshop.Domain.Interfaces;
 namespace uWebshop.API
 {
 	[KnownType(typeof(ShippingMethodFulfillmentAdaptor))]
-	[DataContract(Name="ShippingProviders", Namespace = "")]
+	[DataContract(Name = "ShippingProviders", Namespace = "")]
 	internal class ShippingFulfillmentAdaptor : IFulfillmentProvider
 	{
 		private readonly ShippingProvider _shippingProvider;
@@ -18,11 +18,11 @@ namespace uWebshop.API
 			_shippingProvider = shippingProvider;
 			Id = shippingProvider.Id;
 			Title = shippingProvider.Title;
-		    Description = shippingProvider.Description;
+			Description = shippingProvider.Description;
 			Methods = new List<IFulfillmentProviderMethod>(shippingProvider.ShippingProviderMethods.Select(m => new ShippingMethodFulfillmentAdaptor(m, pricesIncludingVat, localization, order)));
 			Type = shippingProvider.Type;
-		    Zones = new List<Zone> {shippingProvider.Zone};
-		    Disabled = shippingProvider.Disabled;
+			Zones = new List<Zone> { shippingProvider.Zone };
+			Disabled = shippingProvider.Disabled;
 		}
 
 		[DataMember]
@@ -32,12 +32,12 @@ namespace uWebshop.API
 		[DataMember]
 		public string Title { get; set; }
 
-	    public string Description { get; set; }
-	    public bool Disabled { get; set; }
+		public string Description { get; set; }
+		public bool Disabled { get; set; }
 
-	    public List<Zone> Zones { get; set; }
+		public List<Zone> Zones { get; set; }
 
-	    [IgnoreDataMember]
+		[IgnoreDataMember]
 		public ShippingProviderType Type { get; set; }
 		[DataMember(Name = "Type")]
 		public string TypeText { get { return Type.ToString(); } set { } }

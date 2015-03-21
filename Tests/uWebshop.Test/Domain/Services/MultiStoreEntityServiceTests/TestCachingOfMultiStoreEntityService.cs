@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using Moq;
 using NUnit.Framework;
 using uWebshop.Domain;
 using uWebshop.Domain.Interfaces;
-using uWebshop.Test.Services.OrderUpdatingsServiceTests;
 using uWebshop.Test.Stubs;
 
 namespace uWebshop.Test.Domain.Services.MultiStoreEntityServiceTests
@@ -29,12 +25,12 @@ namespace uWebshop.Test.Domain.Services.MultiStoreEntityServiceTests
 		}
 
 		[Test]
-		public void GetAll_CallingTwice_ShouldCallRepoTwice()
+		public void GetAll_CallingTwice_ShouldCallRepoOnceBecauseOfCache()
 		{
 			_productService.GetAll(_localization);
 			_productService.GetAll(_localization);
 
-			_productRepositoryMock.Verify(m => m.GetAll(_localization), Times.Exactly(2));
+			_productRepositoryMock.Verify(m => m.GetAll(_localization), Times.Exactly(1));
 		}
 
 		[Test]

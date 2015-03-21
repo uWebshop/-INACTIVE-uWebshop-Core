@@ -41,25 +41,25 @@ namespace uWebshop.Test.Domain.Businesslogic.PriceTests
 			Assert.AreEqual(91, vatPrice.ValueInCents);
 		}
 
-        [Test]
-        public void CreateDiscountedRanged()
-        {
-            var amount = 40000;
+		[Test]
+		public void CreateDiscountedRanged()
+		{
+			var amount = 40000;
 			var discount = 1000;
 
-	        Assert.AreEqual(40000, Price.CreateDiscountedRanged(amount, null, false, 10, null
-                                                                , i => i - discount, null).BeforeDiscount.WithoutVat.ValueInCents);
+			Assert.AreEqual(40000, Price.CreateDiscountedRanged(amount, null, false, 10, null
+																, i => i - discount, null).BeforeDiscount.WithoutVat.ValueInCents);
 
-            Assert.AreEqual(3900, Price.CreateDiscountedRanged(amount, null, false, 10, null
-                                                               , i => i - discount, null).Vat.ValueInCents);
+			Assert.AreEqual(3900, Price.CreateDiscountedRanged(amount, null, false, 10, null
+															   , i => i - discount, null).Vat.ValueInCents);
 
-            Assert.AreEqual(42900, Price.CreateDiscountedRanged(amount, null, false, 10, null
-                                                                , i => i - discount, null).WithVat.ValueInCents);
+			Assert.AreEqual(42900, Price.CreateDiscountedRanged(amount, null, false, 10, null
+																, i => i - discount, null).WithVat.ValueInCents);
 
-            Assert.AreEqual(39000, Price.CreateDiscountedRanged(amount, null, false, 10, null
-                                                                , i => i - discount, null).WithoutVat.ValueInCents);
+			Assert.AreEqual(39000, Price.CreateDiscountedRanged(amount, null, false, 10, null
+																, i => i - discount, null).WithoutVat.ValueInCents);
 
-        }
+		}
 		[Test]
 		public void WeNeedToFixMultipleUsagesOfTheSamePrice()
 		{

@@ -136,12 +136,10 @@ namespace uWebshop.Domain.Interfaces
 		/// </value>
 		string StoreURL { get; }
 
-        /// <summary>
-        /// Gets the nodeIds that have this store picker set
-        /// </summary>
-        IEnumerable<int> GetConnectedNodes { get; }
-
-        
+		/// <summary>
+		/// Gets the nodeIds that have this store picker set
+		/// </summary>
+		IEnumerable<int> GetConnectedNodes { get; }
 	}
 
 	internal interface IStoreInternal : IStore

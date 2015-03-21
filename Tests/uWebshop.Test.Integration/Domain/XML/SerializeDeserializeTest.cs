@@ -50,6 +50,8 @@ namespace uWebshop.Test.Integration
 			var deserializedOrderInfo = OrderInfo.CreateOrderInfoFromOrderData(new OrderData { OrderXML = newXMLFromClientWithFailingGrandTotal, });
 			Assert.NotNull(deserializedOrderInfo);
 
+			Console.WriteLine(deserializedOrderInfo.VatCalculationStrategy.GetType().Name);
+
 			var orderline = deserializedOrderInfo.OrderLines.First();
 
 			Assert.AreEqual(16995 + 675, deserializedOrderInfo.GrandtotalInCents);

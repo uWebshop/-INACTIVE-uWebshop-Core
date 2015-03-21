@@ -6,7 +6,6 @@ using Moq;
 using NUnit.Framework;
 using uWebshop.Domain;
 using uWebshop.Domain.Helpers;
-using uWebshop.Domain.Services;
 using uWebshop.Test;
 
 namespace uWebshop.Umbraco.Test.Repositories
@@ -14,7 +13,6 @@ namespace uWebshop.Umbraco.Test.Repositories
 	[TestFixture]
 	public class StorePickerStoreUrlRepositoryTests
 	{
-		private IStoreUrlRepository _storeUrlRepository;
 		[SetUp]
 		public void Setup()
 		{
@@ -38,16 +36,14 @@ namespace uWebshop.Umbraco.Test.Repositories
 		}
 
 		[Test]
-		public void NoStorePickers_ShouldGiveNoUrls1asf()
+		public void NoStorePickers_NodeWithDomain_ShouldGiveNoUrlsWithoutDomain()
 		{
 			UseNodes(new[]
 				{
 					new UwbsNode{ Level = 1, Id = 1, SortOrder = 0, UrlName = "unused",},
-					//new UwbsNode{ Level = 1, Id = 2},
 				});
 			var setupNewMock = IOC.CMSApplication.SetupNewMock();
 			setupNewMock.Setup(m => m.GetDomainsForNodeId(1)).Returns(new[] { "www.domain.com/en" });
-			//setupNewMock.Setup(m => m.GetDomainsForNodeId(2)).Returns(new[] { "www.domain.com/en" });
 			var repo = IOC.StoreUrlRepository.Actual().Resolve();
 			var store = new Store();
 

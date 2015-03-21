@@ -123,12 +123,11 @@ namespace uWebshop.Test.Public_API.BasketTests
 			Assert.AreEqual(890000, product.Price.Discount.WithVat.ValueInCents);
 		}
 
-
 		[Test]
 		public void DiscountAmountRegressionTest20140321()
 		{
 			IOC.IntegrationTest();
-			IOC.VatCalculationStrategy.UseType<OverTotalVatCalculationStrategy>();
+			IOC.VatCalculationStrategy.OverParts();
 			var product1 = DefaultFactoriesAndSharedFunctionality.CreateProductInfo(10, 5);
 			var product2 = DefaultFactoriesAndSharedFunctionality.CreateProductInfo(750, 3);
 			//var product3 = DefaultFactoriesAndSharedFunctionality.CreateProductInfo(1, 5, 19);
@@ -153,12 +152,12 @@ namespace uWebshop.Test.Public_API.BasketTests
 
 			var newDiscount = line.SellableUnits.Select(su => su.PriceInCents - su.DiscountedPrice).Sum();
 			Assert.AreEqual(50, newDiscount);
-            
-            //OrderLineTotalWithVatInCents, GetAmount(true, false, true) - GetAmount(true, true, true)
+			
+			//OrderLineTotalWithVatInCents, GetAmount(true, false, true) - GetAmount(true, true, true)
 
-            Assert.AreEqual(0, order.OrderLineTotalWithVatInCents);
+			Assert.AreEqual(0, order.OrderLineTotalWithVatInCents);
 
-            var orderNewDiscount = order.DiscountAmountWithVatInCents;
+			var orderNewDiscount = order.DiscountAmountWithVatInCents;
 			Assert.AreEqual(2300, orderNewDiscount);
 
 			var orderDiscount = order.DiscountAmountInCents;
@@ -210,35 +209,35 @@ namespace uWebshop.Test.Public_API.BasketTests
 
 
 		[Test]
-        public void DiscountAmountRegressionTest20140408()
-        {
-            IOC.IntegrationTest();
-            var product1 = DefaultFactoriesAndSharedFunctionality.CreateProductInfo(400, 10);
-            var order = DefaultFactoriesAndSharedFunctionality.CreateIncompleteOrderInfo(product1);
+		public void DiscountAmountRegressionTest20140408()
+		{
+			IOC.IntegrationTest();
+			var product1 = DefaultFactoriesAndSharedFunctionality.CreateProductInfo(400, 10);
+			var order = DefaultFactoriesAndSharedFunctionality.CreateIncompleteOrderInfo(product1);
 
-            var discount = DefaultFactoriesAndSharedFunctionality.CreateDefaultOrderDiscountWithAmount(10, DiscountOrderCondition.OnTheXthItem, 2);
-            //IOC.OrderDiscountRepository.SetupFake(discount.ToDiscountOrder());
-            DefaultFactoriesAndSharedFunctionality.SetDiscountsOnOrderInfo(order, discount);
+			var discount = DefaultFactoriesAndSharedFunctionality.CreateDefaultOrderDiscountWithAmount(10, DiscountOrderCondition.OnTheXthItem, 2);
+			//IOC.OrderDiscountRepository.SetupFake(discount.ToDiscountOrder());
+			DefaultFactoriesAndSharedFunctionality.SetDiscountsOnOrderInfo(order, discount);
 
-            var basket = new BasketOrderInfoAdaptor(order);
-            var basketLine = basket.OrderLines.Single();
-            Console.WriteLine(basketLine.Amount.Discount.WithVat.ToCurrencyString());
-            Console.WriteLine(basketLine.Amount.BeforeDiscount.WithVat.ToCurrencyString());
-            Console.WriteLine(basketLine.Amount.WithVat.ToCurrencyString());
-            
-            var line = order.OrderLines.First();
-            Console.WriteLine(line.Amount.Discount.WithVat.ToCurrencyString());
-            Console.WriteLine(line.Amount.BeforeDiscount.WithVat.ToCurrencyString());
-            Console.WriteLine(line.Amount.WithVat.ToCurrencyString());
+			var basket = new BasketOrderInfoAdaptor(order);
+			var basketLine = basket.OrderLines.Single();
+			Console.WriteLine(basketLine.Amount.Discount.WithVat.ToCurrencyString());
+			Console.WriteLine(basketLine.Amount.BeforeDiscount.WithVat.ToCurrencyString());
+			Console.WriteLine(basketLine.Amount.WithVat.ToCurrencyString());
+			
+			var line = order.OrderLines.First();
+			Console.WriteLine(line.Amount.Discount.WithVat.ToCurrencyString());
+			Console.WriteLine(line.Amount.BeforeDiscount.WithVat.ToCurrencyString());
+			Console.WriteLine(line.Amount.WithVat.ToCurrencyString());
 
-            Assert.AreEqual(50, basketLine.Amount.Discount.WithVat.ValueInCents);
-            Assert.AreEqual(4000, basketLine.Amount.BeforeDiscount.WithVat.ValueInCents);
-            Assert.AreEqual(3950, basketLine.Amount.WithVat.ValueInCents);
+			Assert.AreEqual(50, basketLine.Amount.Discount.WithVat.ValueInCents);
+			Assert.AreEqual(4000, basketLine.Amount.BeforeDiscount.WithVat.ValueInCents);
+			Assert.AreEqual(3950, basketLine.Amount.WithVat.ValueInCents);
 
-            Assert.AreEqual(50, line.Amount.Discount.WithVat.ValueInCents);
-            Assert.AreEqual(4000, line.Amount.BeforeDiscount.WithVat.ValueInCents);
-            Assert.AreEqual(3950, line.Amount.WithVat.ValueInCents);
-        }
+			Assert.AreEqual(50, line.Amount.Discount.WithVat.ValueInCents);
+			Assert.AreEqual(4000, line.Amount.BeforeDiscount.WithVat.ValueInCents);
+			Assert.AreEqual(3950, line.Amount.WithVat.ValueInCents);
+		}
 
 
 	}

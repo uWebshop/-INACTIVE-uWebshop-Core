@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using uWebshop.Common.Interfaces;
-using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
 
 namespace uWebshop.Domain.Services
@@ -36,9 +34,7 @@ namespace uWebshop.Domain.Services
 
 			if (categoryNode != null && categoryNode.Products != null)
 			{
-				// throw new Exception("asf " + categoryUrlName + " " + productUrlName + " " + (categoryNode == null) + " " + categoryNode.Products.Where(p => p.LocalizedUrl.ToLowerInvariant() == "toy-boat").Select(p => p.Id).FirstOrDefault());
-				return
-					categoryNode.Products.FirstOrDefault(
+				return categoryNode.Products.FirstOrDefault(
 						product => product != null && product.UrlName.ToLowerInvariant() == productUrlName.ToLowerInvariant());
 			}
 			return _productService.GetAll(_storeService.GetCurrentLocalization())
@@ -48,7 +44,9 @@ namespace uWebshop.Domain.Services
 		public IEnumerable<ICategory> GetCategoryPathFromUrlName(string categoryUrlName)
 		{
 			if (string.IsNullOrEmpty(categoryUrlName) || categoryUrlName == "/")
+			{
 				return Enumerable.Empty<ICategory>();
+			}
 
 			categoryUrlName = categoryUrlName.TrimEnd('/');
 
@@ -73,7 +71,6 @@ namespace uWebshop.Domain.Services
 					//x.ParentCategory.UrlName.ToLower() == urlVariable
 					//&& !x.ParentCategory.Disabled
 					.SelectMany(currentLevelCategory => currentLevelCategory.GetParentCategories()).Where(c => c.CurrentCategory.UrlName.ToLowerInvariant() == urlVariable);
-				// TODO!!!!!!!! test
 			}
 
 			var categoryTreeWalkers = possibilities;

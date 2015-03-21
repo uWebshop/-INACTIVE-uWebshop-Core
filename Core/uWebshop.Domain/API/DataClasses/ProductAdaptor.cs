@@ -28,24 +28,42 @@ namespace uWebshop.API
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		public FlatDiscountedRangedPrice PriceFlat { get { return new FlatDiscountedRangedPrice(Price); } }
 
+		[JsonProperty]
 		public bool HasCategories { get { return _source.HasCategories; } }
+		[JsonProperty]
 		public IEnumerable<ICategory> Categories { get { return _source.Categories.Select(CategoryAdaptor.Create); } }
 		public bool PricesIncludingVat { get { return _source.PricesIncludingVat; } }
+		[JsonProperty]
 		public string SKU { get { return _source.SKU; } }
+		[JsonProperty]
 		public string[] Tags { get { return _source.Tags; } }
+		[JsonProperty]
 		public IEnumerable<Image> Images { get { return _source.Images; } }
+		[JsonProperty]
 		public IEnumerable<File> Files { get { return _source.Files; } }
+		[JsonProperty]
 		public double Length { get { return _source.Length; } }
+		[JsonProperty]
 		public double Width { get { return _source.Width; } }
+		[JsonProperty]
 		public double Height { get { return _source.Height; } }
+		[JsonProperty]
 		public double Weight { get { return _source.Weight; } }
+		[JsonProperty]
 		public IEnumerable<Range> Ranges { get { return _source.Ranges; } }
+		[JsonProperty]
 		public decimal Vat { get { return _source.Id; } }
+		[JsonProperty]
 		public int Stock { get { return _source.Stock; } }
+		[JsonProperty]
 		public int TotalItemsOrdered { get { return _source.TotalItemsOrdered; } }
+		[JsonProperty]
 		public int OrderCount { get { return _source.OrderCount; } }
+		[JsonProperty]
 		public bool StockStatus { get { return _source.StockStatus; } }
+		[JsonProperty]
 		public bool BackorderStatus { get { return _source.BackorderStatus; } }
+		[JsonProperty]
 		public bool UseVariantStock { get { return _source.UseVariantStock; } }
 		public IEnumerable<IProductVariant> GetAllVariants()
 		{
@@ -54,14 +72,23 @@ namespace uWebshop.API
 
 		[IgnoreDataMember]
 		public IProductDiscount Discount { get { return _source.Discount; } }
+		[JsonProperty]
 		public IEnumerable<IProductVariantGroup> VariantGroups { get { return _source.VariantGroups.Select(g => new VariantGroupAdaptor(g)); } }
+		[JsonProperty]
 		public bool Orderable { get { return _source.Orderable; } }
+		[JsonProperty]
 		public bool IsDiscounted { get { return _source.IsDiscounted; } }
+		[JsonProperty]
 		public string Url { get { return _source.Url; } }
+		[JsonProperty]
 		public string Title { get { return _source.Title; } }
+		[JsonProperty]
 		public string MetaDescription { get { return _source.MetaDescription; } }
+		[JsonProperty]
 		public string Description { get { return _source.Description; } }
+		[JsonProperty]
 		public int Template { get { return _source.Template; } }
+		[JsonProperty]
 		public string UrlName { get { return _source.UrlName; } }
 		public string NiceUrl()
 		{
@@ -92,6 +119,7 @@ namespace uWebshop.API
 		public DateTime CreateDate { get { return _source.CreateDate; } }
 		[IgnoreDataMember]
 		public DateTime UpdateDate { get { return _source.UpdateDate; } }
+		[JsonProperty]
 		public int SortOrder { get { return _source.SortOrder; } }
 	}
 }

@@ -9,6 +9,8 @@ using umbraco.BasePages;
 using umbraco.cms.businesslogic.web;
 using umbraco.controls;
 using uWebshop.Domain.Upgrading;
+using Umbraco.Core;
+using Umbraco.Core.Models;
 
 namespace uWebshop.Package.Installer
 {
@@ -45,18 +47,15 @@ namespace uWebshop.Package.Installer
 		protected ContentPicker NodePickerStore = new ContentPicker {ID = "nodePickerStore", AppAlias = "content", ClientIDMode = ClientIDMode.Static};
 		protected ContentPicker NodePickerContent = new ContentPicker {ID = "nodePickerContent", AppAlias = "content", ClientIDMode = ClientIDMode.Static};
 
-		public static List<DocumentType> DocumentTypeListWithoutuWebshopDocuments
+		public static List<IContentType> DocumentTypeListWithoutuWebshopDocuments
 		{
 			get
 			{
-				var docTypeList = DocumentType.GetAllAsList();
+				// todo: check
+				var contentTypeService = ApplicationContext.Current.Services.ContentTypeService;
+				var docTypeList = contentTypeService.GetAllContentTypes();
 
-				foreach (var docType in docTypeList.ToList().Where(docType => DocumentTypeAliasList.List.Contains(docType.Alias)))
-				{
-					docTypeList.Remove(docType);
-				}
-
-				return docTypeList;
+				return docTypeList.ToList().Where(docType => !DocumentTypeAliasList.List.Contains(docType.Alias)).ToList();
 			}
 		}
 

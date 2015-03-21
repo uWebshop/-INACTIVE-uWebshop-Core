@@ -76,13 +76,11 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>IF EXIST "$(SolutionDir)builds\package\" DEL /s /f /q "$(SolutionDir)builds\package\*.*"
-IF EXIST "$(SolutionDir)builds\package.v6\" DEL /s /f /q "$(SolutionDir)builds\package.v6\*.*"
-IF EXIST "$(SolutionDir)builds\package.v7\" DEL /s /f /q "$(SolutionDir)builds\package.v7\*.*"
-</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>SET UWBSVER=2.6.0.0
+    <PostBuildEvent>SET UWBSVER=2.6.5.1
 echo Rendering packages as version %25UWBSVER%25
 
 IF EXIST "$(SolutionDir)builds\package\" DEL /s /f /q "$(SolutionDir)builds\package\*.*"

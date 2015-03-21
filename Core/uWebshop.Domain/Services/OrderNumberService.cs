@@ -44,7 +44,7 @@ namespace uWebshop.Domain.Services
 						AssignNewOrderNumberToOrder(order, order.StoreInfo.Store);
 					}
 				}, // todo: highly likely this is not necessary with transactionalDB (functionality kept the same during refactoring)
-			    o => _orderRepository.SetOrderNumber(order.UniqueOrderId, order.OrderNumber, order.StoreInfo.Alias, id),
+				o => _orderRepository.SetOrderNumber(order.UniqueOrderId, order.OrderNumber, order.StoreInfo.Alias, id),
 				() => Monitor.Exit(this));
 		}
 
@@ -66,7 +66,7 @@ namespace uWebshop.Domain.Services
 			}
 			lastOrderReferenceNumber++;
 			lastOrderReferenceNumber = Math.Max(lastOrderReferenceNumber, store.OrderNumberStartNumber);
-			
+
 			orderInfo.StoreOrderReferenceId = lastOrderReferenceNumber;
 
 			Log.Instance.LogDebug("GenerateOrderNumber lastOrderReferenceNumber: " + lastOrderReferenceNumber);

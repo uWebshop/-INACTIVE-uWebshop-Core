@@ -44,7 +44,7 @@ namespace uWebshop.Umbraco.Repositories
 				entity.TestMode = testMode == "enable" || testMode == "1" || testMode == "true";
 			}
 
-            entity.Disabled = StoreHelper.GetMultiStoreDisableExamine(localization, fields);
+			entity.Disabled = StoreHelper.GetMultiStoreDisableExamine(localization, fields);
 
 			entity.ImageId = StoreHelper.GetMultiStoreIntValue(_aliasses.image, localization, fields);
 			var vat = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.vat, localization, fields);

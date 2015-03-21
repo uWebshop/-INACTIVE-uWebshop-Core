@@ -67,18 +67,18 @@ namespace uWebshop.Domain.Helpers
 				{
 					body = IO.Container.Resolve<ICMSApplication>().RenderXsltMacro(email.Template, parameters, orderInfoXml);
 				}
-                else 
-                {
-                    if (email.Template.Contains("."))
-                    {
-                        body = IO.Container.Resolve<ICMSApplication>().RenderMacro(email.Template, email.Id, parameters);
-                    }
-                    else
-                    {
-                        Log.Instance.LogWarning("SendOrderEmailCustomer email.Template no valid value: " + email.Template + " no email send");
-                        return;
-                    }
-                }
+				else 
+				{
+					if (email.Template.Contains("."))
+					{
+						body = IO.Container.Resolve<ICMSApplication>().RenderMacro(email.Template, email.Id, parameters);
+					}
+					else
+					{
+						Log.Instance.LogWarning("SendOrderEmailCustomer email.Template no valid value: " + email.Template + " no email send");
+						return;
+					}
+				}
 
 				var emailTo = OrderHelper.CustomerInformationValue(orderInfo, "customerEmail");
 				Log.Instance.LogDebug("SendOrderEmailCustomer emailTo: " + emailTo);
@@ -123,7 +123,7 @@ namespace uWebshop.Domain.Helpers
 
 				if (string.IsNullOrEmpty(email.Template))
 				{
-                    Log.Instance.LogWarning("SendOrderEmailCustomer nodeId: " + emailNodeId + " no valid Tempalte value: " + email.Template + " : no email send");
+					Log.Instance.LogWarning("SendOrderEmailCustomer nodeId: " + emailNodeId + " no valid Tempalte value: " + email.Template + " : no email send");
 
 					return;
 				}
@@ -144,15 +144,15 @@ namespace uWebshop.Domain.Helpers
 				}
 				else
 				{
-                    if (email.Template.Contains("."))
-                    {
-                        body = IO.Container.Resolve<ICMSApplication>().RenderMacro(email.Template, email.Id, parameters);
-                    }
-                    else
-                    {
-                        Log.Instance.LogWarning("SendOrderEmailStore nodeId: " + emailNodeId + " no valid Tempalte value: " + email.Template + " : no email send");
-                        return;
-                    }
+					if (email.Template.Contains("."))
+					{
+						body = IO.Container.Resolve<ICMSApplication>().RenderMacro(email.Template, email.Id, parameters);
+					}
+					else
+					{
+						Log.Instance.LogWarning("SendOrderEmailStore nodeId: " + emailNodeId + " no valid Tempalte value: " + email.Template + " : no email send");
+						return;
+					}
 				}
 
 				var emailTo = orderInfo.StoreInfo.Store.EmailAddressTo;
@@ -229,16 +229,16 @@ namespace uWebshop.Domain.Helpers
 					parameters.Add("UserName", member.UserName);
 					parameters.Add("Password", password);
 
-				    string body;
+					string body;
 
-                    if (email.Template.EndsWith(".xslt"))
-                    {
-                        body = IO.Container.Resolve<ICMSApplication>().RenderXsltMacro(email.Template, parameters);
-                    }
-                    else
-                    {
-                        body = IO.Container.Resolve<ICMSApplication>().RenderMacro(email.Template, email.Id, parameters);
-                    }
+					if (email.Template.EndsWith(".xslt"))
+					{
+						body = IO.Container.Resolve<ICMSApplication>().RenderXsltMacro(email.Template, parameters);
+					}
+					else
+					{
+						body = IO.Container.Resolve<ICMSApplication>().RenderMacro(email.Template, email.Id, parameters);
+					}
 
 					string emailTo = member.Email;
 
@@ -258,8 +258,8 @@ namespace uWebshop.Domain.Helpers
 				Log.Instance.LogError("SendMemberEmailCustomer: emailNodeId == 0 || member == null");
 			}
 		}
-        
-	    /// <summary>
+		
+		/// <summary>
 		/// Replaces the strings.
 		/// </summary>
 		/// <param name="stringToReplace">The string automatic replace.</param>

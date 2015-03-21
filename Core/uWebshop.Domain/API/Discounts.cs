@@ -24,17 +24,17 @@ namespace uWebshop.API
 			return IO.Container.Resolve<IOrderDiscountService>().GetAll(StoreHelper.GetLocalizationOrCurrent(storeAlias, currencyCode)).Select(d => new DiscountAdaptor(d));
 		}
 
-	    /// <summary>
-	    /// Get order discount by Id
-	    /// </summary>
-	    /// <param name="discountId"></param>
-	    /// <param name="storeAlias">The store alias.</param>
-	    /// <param name="currencyCode">The currency code.</param>
-	    /// <returns></returns>
-	    public static IOrderDiscount GetOrderDiscount(int discountId, string storeAlias = null, string currencyCode = null)
-        {
-	        return new DiscountAdaptor(IO.Container.Resolve<IOrderDiscountService>().GetById(discountId, StoreHelper.GetLocalizationOrCurrent(storeAlias, currencyCode)));
-        }
+		/// <summary>
+		/// Get order discount by Id
+		/// </summary>
+		/// <param name="discountId"></param>
+		/// <param name="storeAlias">The store alias.</param>
+		/// <param name="currencyCode">The currency code.</param>
+		/// <returns></returns>
+		public static IOrderDiscount GetOrderDiscount(int discountId, string storeAlias = null, string currencyCode = null)
+		{
+			return new DiscountAdaptor(IO.Container.Resolve<IOrderDiscountService>().GetById(discountId, StoreHelper.GetLocalizationOrCurrent(storeAlias, currencyCode)));
+		}
 
 		/// <summary>
 		/// Gets all discounts for the given order
@@ -61,17 +61,17 @@ namespace uWebshop.API
 			return IO.Container.Resolve<IOrderDiscountService>().GetApplicableDiscountsForOrder(orderInfo, StoreHelper.GetLocalizationOrCurrent(storeAlias, currencyCode)).Select(d => new DiscountAdaptor(d));
 		}
 
-        /// <summary>
-        /// Get the product discount by Id
-        /// </summary>
-        /// <param name="discountId">The product unique identifier.</param>
-        /// <param name="storeAlias">The store alias.</param>
-        /// <param name="currencyCode">The currency code.</param>
-        /// <returns></returns>
-        public static IProductDiscount GetProductDiscount(int discountId, string storeAlias = null, string currencyCode = null)
-        {
-            return IO.Container.Resolve<IProductDiscountService>().GetById(discountId, StoreHelper.GetLocalizationOrCurrent(storeAlias, currencyCode));
-        }
+		/// <summary>
+		/// Get the product discount by Id
+		/// </summary>
+		/// <param name="discountId">The product unique identifier.</param>
+		/// <param name="storeAlias">The store alias.</param>
+		/// <param name="currencyCode">The currency code.</param>
+		/// <returns></returns>
+		public static IProductDiscount GetProductDiscount(int discountId, string storeAlias = null, string currencyCode = null)
+		{
+			return IO.Container.Resolve<IProductDiscountService>().GetById(discountId, StoreHelper.GetLocalizationOrCurrent(storeAlias, currencyCode));
+		}
 
 		/// <summary>
 		/// Gets the discount for product.
@@ -142,8 +142,8 @@ namespace uWebshop.API
 		public DateTime CreateDate { get { return _orderDiscount.CreateDate; } }
 		public DateTime UpdateDate { get { return _orderDiscount.UpdateDate; } }
 		public int SortOrder { get { return _orderDiscount.SortOrder; } }
-        public string Description { get { return _orderDiscount.Description; } }
-	    public bool OncePerCustomer { get { return _orderDiscount.OncePerCustomer; } }
+		public string Description { get { return _orderDiscount.Description; } }
+		public bool OncePerCustomer { get { return _orderDiscount.OncePerCustomer; } }
 		public bool CounterEnabled { get { return _orderDiscount.CounterEnabled; } }
 		public int Counter { get { return _orderDiscount.Id; } }
 		public DiscountType Type { get { return _orderDiscount.Type; } }
@@ -159,6 +159,5 @@ namespace uWebshop.API
 		public string Title { get { return _orderDiscount.Title; } }
 		public IVatPrice MinimumOrderAmount { get { return _orderDiscount.MinimumOrderAmount; } }
 		public bool IncludeShippingInOrderDiscountableAmount { get { return _orderDiscount.IncludeShippingInOrderDiscountableAmount; } }
-		//public int OriginalId { get { return _orderDiscount.Id; } }
 	}
 }

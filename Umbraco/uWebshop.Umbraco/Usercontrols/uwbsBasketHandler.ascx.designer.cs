@@ -7,9 +7,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace uWebshop.Web.Usercontrols {
-    
-    
-    public partial class UwbsBasketHandler {
-    }
+namespace uWebshop.Web.Usercontrols
+{
+	public partial class UwbsBasketHandler
+	{
+	}
 }

@@ -8,6 +8,7 @@ using umbraco.cms.businesslogic.web;
 using umbraco.interfaces;
 using uWebshop.DataAccess;
 using uWebshop.Domain;
+using Umbraco.Core;
 
 namespace uWebshop.Umbraco.DataTypes.StockUpdate
 {
@@ -24,21 +25,23 @@ namespace uWebshop.Umbraco.DataTypes.StockUpdate
 
 		public void Save()
 		{
+		
 			if (!(Page.Request.CurrentExecutionFilePath ?? string.Empty).Contains("editContent.aspx"))
 				return;
 
+			var contentService = ApplicationContext.Current.Services.ContentService;
 			int currentId;
 
 			int.TryParse(Page.Request.QueryString["id"], out currentId);
 
-			var currentDoc = new Document(currentId);
+			var currentDoc = contentService.GetById(currentId);
 
 			// Get the current property type
 			var propertyTypeId = ((DefaultData) this._data).PropertyId;
 
-			var property = currentDoc.GenericProperties.FirstOrDefault(x => x.Id == propertyTypeId);
+			var property = currentDoc.Properties.FirstOrDefault(x => x.Id == propertyTypeId);
 
-			var propertyAlias = property.PropertyType.Alias;
+			var propertyAlias = property.Alias;
 			// test if the property alias contains an shopalias
 
 			var storeAlias = GetStoreAliasFromProperyAlias(propertyAlias);
@@ -77,9 +80,10 @@ namespace uWebshop.Umbraco.DataTypes.StockUpdate
 
 		protected override void OnInit(EventArgs e)
 		{
+			var contentService = ApplicationContext.Current.Services.ContentService;
+
 			base.OnInit(e);
 
-			
 
 			int currentId;
 
@@ -89,14 +93,14 @@ namespace uWebshop.Umbraco.DataTypes.StockUpdate
 				return;
 
 			if (currentId == 0) return;
-			var currentDoc = new Document(currentId);
+			var currentDoc = contentService.GetById(currentId);
 
 			// Get the current property type
 			var propertyTypeId = ((DefaultData) _data).PropertyId;
 
-			var property = currentDoc.GenericProperties.FirstOrDefault(x => x.Id == propertyTypeId);
+			var property = currentDoc.Properties.FirstOrDefault(x => x.Id == propertyTypeId);
 
-			var propertyAlias = property.PropertyType.Alias;
+			var propertyAlias = property.Alias;
 			// test if the property alias contains an shopalias
 
 			var storeAlias = GetStoreAliasFromProperyAlias(propertyAlias);

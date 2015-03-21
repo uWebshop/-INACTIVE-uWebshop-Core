@@ -8,12 +8,14 @@ using System.Xml;
 using umbraco;
 using umbraco.BasePages;
 using umbraco.BusinessLogic;
-using umbraco.cms.businesslogic.datatype;
 using umbraco.cms.businesslogic.member;
 using umbraco.cms.businesslogic.web;
 using uWebshop.Domain;
 using uWebshop.Domain.Interfaces;
 using uWebshop.Umbraco.Interfaces;
+using Umbraco.Core;
+using Umbraco.Core.Models;
+using DataTypeDefinition = umbraco.cms.businesslogic.datatype.DataTypeDefinition;
 using Log = uWebshop.Domain.Log;
 
 namespace uWebshop.Starterkits.DemoStore
@@ -25,21 +27,18 @@ namespace uWebshop.Starterkits.DemoStore
 		protected global::umbraco.uicontrols.Pane panel5;
 		protected global::umbraco.uicontrols.Pane panel2;
 
-		protected override void OnInit(EventArgs e)
-		{
-			base.OnInit(e);
-
-			
-		}
-
 		protected void Page_Load(object sender, EventArgs e)
 		{
-            var umbracoVersion = IO.Container.Resolve<IUmbracoVersion>();
+			var contentTypeService = ApplicationContext.Current.Services.ContentTypeService;
+			var contentService = ApplicationContext.Current.Services.ContentService;
+			var dataTypeService = ApplicationContext.Current.Services.DataTypeService;
+
+			var umbracoVersion = IO.Container.Resolve<IUmbracoVersion>();
 
 			bool storePresent;
 			IO.Container.Resolve<ICMSInstaller>().InstallStarterkit("demo", out storePresent);
 
-		    var admin = User.GetUser(0);
+			var admin = User.GetUser(0);
 			var configuration = WebConfigurationManager.OpenWebConfiguration("~");
 
 			//  change UmbracoMembershipProvider to this:
@@ -95,11 +94,11 @@ namespace uWebshop.Starterkits.DemoStore
 				//</profile>
 				
 				var providerSettings = new ProviderSettings
-				                       {
-					                       Name = "UmbracoMemberProfileProvider",
-					                       Type =
-						                       "umbraco.providers.members.UmbracoProfileProvider, umbraco.providers"
-				                       };
+									   {
+										   Name = "UmbracoMemberProfileProvider",
+										   Type =
+											   "umbraco.providers.members.UmbracoProfileProvider, umbraco.providers"
+									   };
 				
 				profileSection.Providers.Add(providerSettings);
 				profileSection.PropertySettings.Clear();
@@ -124,7 +123,6 @@ namespace uWebshop.Starterkits.DemoStore
 				var customerCountry = new ProfilePropertySettings("customerCountry", false, SerializationMode.String,
 					"UmbracoMemberProfileProvider", string.Empty, "System.String", false, string.Empty);
 				profileSection.PropertySettings.Add(customerCountry);
-				
 			}
 
 			configuration.Save();
@@ -134,59 +132,88 @@ namespace uWebshop.Starterkits.DemoStore
 
 			var customersType = MemberType.GetByAlias("Customers");
 
-		    if (customersType == null)
-		    {
-		        try
-		        {
-		            customersType = MemberType.MakeNew(admin, "Customers");
-		        }
-		        catch
-		        {
-                    Log.Instance.LogError("Umbraco Failed to create 'Customers' MemberType");
-		            // Umbraco bug with SQLCE + MemberType.MakeNew requires this catch, membertype will not be created...
-		        }
-		    }
+			if (customersType == null)
+			{
+				try
+				{
+					customersType = MemberType.MakeNew(admin, "Customers");
+				}
+				catch
+				{
+					Log.Instance.LogError("Umbraco Failed to create 'Customers' MemberType");
+					// Umbraco bug with SQLCE + MemberType.MakeNew requires this catch, membertype will not be created...
+				}
+			}
 
-		    var uwbsOrdersType = DocumentType.GetByAlias(Order.NodeAlias);
+			var uwbsOrdersType = contentTypeService.GetContentType(Order.NodeAlias);
 
 			if (customersType != null && uwbsOrdersType != null)
 			{
-				var customerTab = uwbsOrdersType.getVirtualTabs.FirstOrDefault(x => x.Caption.ToLowerInvariant() == "customer");
-				var customerTabId = customerTab == null ? uwbsOrdersType.AddVirtualTab("Customer") : customerTab.Id;
+				var customerTab = uwbsOrdersType.PropertyGroups.FirstOrDefault(x => x.Name.ToLowerInvariant() == "customer");
+				
+				if (customerTab == null)
+				{
+					uwbsOrdersType.AddPropertyGroup("Customer");
+				}
+				
+				var shippingTab = uwbsOrdersType.PropertyGroups.FirstOrDefault(x => x.Name.ToLowerInvariant() == "shipping");
+				
+				if (shippingTab == null)
+				{
+					uwbsOrdersType.AddPropertyGroup("Shipping");
+				}
 
-				var shippingTab = uwbsOrdersType.getVirtualTabs.FirstOrDefault(x => x.Caption.ToLowerInvariant() == "shipping");
-				var shippingTabId = shippingTab == null ? uwbsOrdersType.AddVirtualTab("Shipping") : shippingTab.Id;
+				contentTypeService.Save(uwbsOrdersType);
+				
 
-                // todo V7 version!
-                var stringDataType = umbracoVersion.GetDataTypeDefinition("Umbraco.Textbox", new Guid("0cc0eba1-9960-42c9-bf9b-60e150b429ae"));
-                var stringDataTypeDef = new DataTypeDefinition(stringDataType.Id);
-                var textboxMultipleDataType = umbracoVersion.GetDataTypeDefinition("Umbraco.TextboxMultiple", new Guid("c6bac0dd-4ab9-45b1-8e30-e4b619ee5da3"));
-                var textboxMultipleDataTypeDef = new DataTypeDefinition(textboxMultipleDataType.Id);
+				// todo V7 version!
+				var stringDataType = umbracoVersion.GetDataTypeDefinition("Umbraco.Textbox", new Guid("0cc0eba1-9960-42c9-bf9b-60e150b429ae"));
+				var stringDataTypeDef = dataTypeService.GetDataTypeDefinitionById(stringDataType.Id);
+				var textboxMultipleDataType = umbracoVersion.GetDataTypeDefinition("Umbraco.TextboxMultiple", new Guid("c6bac0dd-4ab9-45b1-8e30-e4b619ee5da3"));
+				var textboxMultipleDataTypeDef = dataTypeService.GetDataTypeDefinitionById(textboxMultipleDataType.Id);
 
 				foreach (var propertyKey in profileSection.PropertySettings.AllKeys)
 				{
-                    customersType.AddPropertyType(stringDataTypeDef, propertyKey, "#" + UppercaseFirstCharacter(propertyKey));
+
+					//todo: test if line should be commented or not
+					//customersType.AddPropertyType(stringDataTypeDef, propertyKey, "#" + UppercaseFirstCharacter(propertyKey));
 
 					if (uwbsOrdersType.PropertyTypes.All(x => x.Alias.ToLowerInvariant() != propertyKey.ToLowerInvariant()))
 					{
-                        var property = uwbsOrdersType.AddPropertyType(stringDataTypeDef, propertyKey, "#" + UppercaseFirstCharacter(propertyKey));
+						var propertyType = new PropertyType(stringDataTypeDef)
+						{
+							Alias = propertyKey,
+							Name = "#" + UppercaseFirstCharacter(propertyKey)
+						};
+
+						uwbsOrdersType.AddPropertyType(propertyType);
 
 						var propertyShippingKey = propertyKey.Replace("customer", "shipping");
+						var shipppingPropertyType = new PropertyType(stringDataTypeDef)
+						{
+							Alias = propertyShippingKey,
+							Name = "#" + UppercaseFirstCharacter(propertyShippingKey)
+						};
 
-                        var shippingProperty = uwbsOrdersType.AddPropertyType(stringDataTypeDef, propertyShippingKey, "#" + UppercaseFirstCharacter(propertyShippingKey));
+						uwbsOrdersType.AddPropertyType(shipppingPropertyType);
 
-						property.TabId = customerTabId;
-						shippingProperty.TabId = shippingTabId;
+						if (customerTab != null) customerTab.PropertyTypes.Add(propertyType);
+						if (shippingTab != null) shippingTab.PropertyTypes.Add(shipppingPropertyType);
 					}
 				}
 
 				customersType.Save();
 
-                // todo V7 version!
-                var extraMessageProperty = uwbsOrdersType.AddPropertyType(textboxMultipleDataTypeDef, "extraMessage", "#ExtraMessage");
-				extraMessageProperty.TabId = customerTabId;
+				var extraPropertyType = new PropertyType(stringDataTypeDef)
+				{
+					Alias = "extraMessage",
+					Name = "#ExtraMessage"
+				};
 
-				uwbsOrdersType.Save();
+				uwbsOrdersType.AddPropertyType(extraPropertyType);
+				if (customerTab != null) customerTab.PropertyTypes.Add(extraPropertyType);
+
+				contentTypeService.Save(uwbsOrdersType);
 			}
 
 			// create membergroup "customers", as set in the UmbracoMembershipProvider -> defaultMemberTypeAlias
@@ -195,8 +222,7 @@ namespace uWebshop.Starterkits.DemoStore
 				MemberGroup.MakeNew("Customers", admin);
 			}
 
-			Document.RePublishAll();
-			library.RefreshContent();
+			contentService.RePublishAll();
 		}
 
 		private static string UppercaseFirstCharacter(string s)
@@ -225,6 +251,7 @@ namespace uWebshop.Starterkits.DemoStore
 
 		public static bool PublishWithChildrenWithResult(Document doc, User u)
 		{
+			//todo: find out usage in starterkit
 			if (doc.PublishWithResult(u))
 			{
 				foreach (var dc in doc.Children.ToList())
@@ -236,18 +263,14 @@ namespace uWebshop.Starterkits.DemoStore
 			return false;
 		}
 
+		[Obsolete("Umbraco now updates cache after publish")]
 		public static void UpdateDocumentCache(Document doc)
 		{
-			library.UpdateDocumentCache(doc.Id);
-
-			foreach (var dc in doc.Children.ToList())
-			{
-				library.UpdateDocumentCache(dc.Id);
-			}
+			//todo: remove?
 		}
 	}
 
-	public partial class uWebshopStarterkitInstaller
+	public class uWebshopStarterkitInstaller
 	{
 		/// <summary>
 		/// panel2 control.

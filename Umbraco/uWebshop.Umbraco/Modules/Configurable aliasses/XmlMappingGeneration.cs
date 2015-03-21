@@ -660,6 +660,7 @@ public string ContentTypeAlias;
 internal interface IOrderRepositoryAliassesService
 {
 	string ContentTypeAlias { get; }
+	string orderSection { get; }
 }
 
 
@@ -673,36 +674,11 @@ internal interface IOrderRepositoryAliassesService
 		private OrderRepositoryAliassesXML _xml;
 
 		public string ContentTypeAlias { get { return _xml.ContentTypeAlias ?? "uwbsOrderRepository"; } }
+public string orderSection { get { return _xml.orderSection ?? "orderSection"; } }
 }
 
 [XmlRoot(ElementName = "OrderRepository")]
 public struct OrderRepositoryAliassesXML {
-[XmlAttribute("alias")]
-public string ContentTypeAlias;
-}
-
-internal interface IOrderSectionAliassesService
-{
-	string ContentTypeAlias { get; }
-	string orderSection { get; }
-}
-
-
-	internal class OrderSectionAliassesService : IOrderSectionAliassesService
-	{
-		public OrderSectionAliassesService(IContentTypeAliassesXmlService contentTypeAliassesXmlService)
-		{
-			_xml = contentTypeAliassesXmlService.Get().OrderSection;
-		}
-
-		private OrderSectionAliassesXML _xml;
-
-		public string ContentTypeAlias { get { return _xml.ContentTypeAlias ?? "uwbsOrderSection"; } }
-public string orderSection { get { return _xml.orderSection ?? "orderSection"; } }
-}
-
-[XmlRoot(ElementName = "OrderSection")]
-public struct OrderSectionAliassesXML {
 [XmlAttribute("alias")]
 public string ContentTypeAlias;
 	public string orderSection;
@@ -742,6 +718,7 @@ internal interface IPaymentProviderAliassesService
 	string zone { get; }
 	string successNode { get; }
 	string errorNode { get; }
+	string cancelNode { get; }
 	string testMode { get; }
 }
 
@@ -763,6 +740,7 @@ public string type { get { return _xml.type ?? "type"; } }
 public string zone { get { return _xml.zone ?? "zone"; } }
 public string successNode { get { return _xml.successNode ?? "successNode"; } }
 public string errorNode { get { return _xml.errorNode ?? "errorNode"; } }
+public string cancelNode { get { return _xml.cancelNode ?? "cancelNode"; } }
 public string testMode { get { return _xml.testMode ?? "testMode"; } }
 }
 
@@ -777,6 +755,7 @@ public string ContentTypeAlias;
 	public string zone;
 	public string successNode;
 	public string errorNode;
+	public string cancelNode;
 	public string testMode;
 }
 
@@ -1581,7 +1560,6 @@ public OrderAliassesXML Order;
 public OrderedProductAliassesXML OrderedProduct;
 public OrderedProductVariantAliassesXML OrderedProductVariant;
 public OrderRepositoryAliassesXML OrderRepository;
-public OrderSectionAliassesXML OrderSection;
 public OrderStoreFolderAliassesXML OrderStoreFolder;
 public PaymentProviderAliassesXML PaymentProvider;
 public PaymentProviderMethodAliassesXML PaymentProviderMethod;
@@ -1626,7 +1604,6 @@ container.RegisterType<IOrderAliassesService, OrderAliassesService>();
 container.RegisterType<IOrderedProductAliassesService, OrderedProductAliassesService>();
 container.RegisterType<IOrderedProductVariantAliassesService, OrderedProductVariantAliassesService>();
 container.RegisterType<IOrderRepositoryAliassesService, OrderRepositoryAliassesService>();
-container.RegisterType<IOrderSectionAliassesService, OrderSectionAliassesService>();
 container.RegisterType<IOrderStoreFolderAliassesService, OrderStoreFolderAliassesService>();
 container.RegisterType<IPaymentProviderAliassesService, PaymentProviderAliassesService>();
 container.RegisterType<IPaymentProviderMethodAliassesService, PaymentProviderMethodAliassesService>();
@@ -1672,7 +1649,6 @@ Order.NodeAlias = aliasses.Order.ContentTypeAlias ?? "uwbsOrder";
 OrderedProduct.NodeAlias = aliasses.OrderedProduct.ContentTypeAlias ?? "uwbsOrderedProduct";
 OrderedProductVariant.NodeAlias = aliasses.OrderedProductVariant.ContentTypeAlias ?? "uwbsOrderedProductVariant";
 OrderRepositoryContentType.NodeAlias = aliasses.OrderRepository.ContentTypeAlias ?? "uwbsOrderRepository";
-OrderSection.NodeAlias = aliasses.OrderSection.ContentTypeAlias ?? "uwbsOrderSection";
 OrderStoreFolder.NodeAlias = aliasses.OrderStoreFolder.ContentTypeAlias ?? "uwbsOrderStoreFolder";
 PaymentProvider.NodeAlias = aliasses.PaymentProvider.ContentTypeAlias ?? "uwbsPaymentProvider";
 PaymentProviderMethod.NodeAlias = aliasses.PaymentProviderMethod.ContentTypeAlias ?? "uwbsPaymentProviderMethod";
@@ -1796,8 +1772,7 @@ xml.OrderedProductVariant.ranges = "ranges";
 xml.OrderedProductVariant.discountPercentage = "discountPercentage";
 xml.OrderedProductVariant.discountAmount = "discountAmount";
 xml.OrderRepository.ContentTypeAlias = "uwbsOrderRepository";
-xml.OrderSection.ContentTypeAlias = "uwbsOrderSection";
-xml.OrderSection.orderSection = "orderSection";
+xml.OrderRepository.orderSection = "orderSection";
 xml.OrderStoreFolder.ContentTypeAlias = "uwbsOrderStoreFolder";
 xml.PaymentProvider.ContentTypeAlias = "uwbsPaymentProvider";
 xml.PaymentProvider.title = "title";
@@ -1807,6 +1782,7 @@ xml.PaymentProvider.type = "type";
 xml.PaymentProvider.zone = "zone";
 xml.PaymentProvider.successNode = "successNode";
 xml.PaymentProvider.errorNode = "errorNode";
+xml.PaymentProvider.cancelNode = "cancelNode";
 xml.PaymentProvider.testMode = "testMode";
 xml.PaymentProviderMethod.ContentTypeAlias = "uwbsPaymentProviderMethod";
 xml.PaymentProviderMethod.disable = "disable";

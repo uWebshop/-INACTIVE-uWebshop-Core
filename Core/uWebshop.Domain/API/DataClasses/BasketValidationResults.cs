@@ -37,8 +37,8 @@ namespace uWebshop.API
 			get
 			{
 				return _order != null && _order.ConfirmValidationFailed
-					       ? _orderService.ValidateGlobalValidations(_order).Select(i => new BasketValidationResult(i))
-					       : Enumerable.Empty<IValidationResult>();
+						   ? _orderService.ValidateGlobalValidations(_order).Select(i => new BasketValidationResult(i))
+						   : Enumerable.Empty<IValidationResult>();
 			}
 			set { }
 		}
@@ -57,7 +57,7 @@ namespace uWebshop.API
 		}
 		[DataMember]
 		public IEnumerable<IValidationResult> OrderLine
-		{ 
+		{
 			get
 			{
 				if (_order != null)
@@ -103,7 +103,7 @@ namespace uWebshop.API
 			{
 				if (_order != null)
 				{
-					return _orderService.ValidatePayment(_order).Select(i => new BasketValidationResult(i)); 
+					return _orderService.ValidatePayment(_order).Select(i => new BasketValidationResult(i));
 				}
 
 				return Enumerable.Empty<IValidationResult>();
@@ -120,9 +120,9 @@ namespace uWebshop.API
 					return _orderService.ValidateShipping(_order).Select(i => new BasketValidationResult(i));
 				}
 
-				return Enumerable.Empty<IValidationResult>(); 
+				return Enumerable.Empty<IValidationResult>();
 			}
-			set{}
+			set { }
 		}
 	}
 }

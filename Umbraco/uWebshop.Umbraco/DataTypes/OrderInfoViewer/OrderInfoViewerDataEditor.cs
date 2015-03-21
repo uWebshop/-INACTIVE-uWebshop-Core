@@ -7,6 +7,7 @@ using umbraco;
 using umbraco.cms.businesslogic.web;
 using umbraco.interfaces;
 using uWebshop.Domain.Helpers;
+using Umbraco.Core;
 
 namespace uWebshop.Umbraco.DataTypes.OrderInfoViewer
 {
@@ -42,6 +43,7 @@ namespace uWebshop.Umbraco.DataTypes.OrderInfoViewer
 
 		protected override void OnInit(EventArgs e)
 		{
+			var contentService = ApplicationContext.Current.Services.ContentService;
 			base.OnInit(e);
 
 			if (!(Page.Request.CurrentExecutionFilePath ?? string.Empty).Contains("editContent.aspx"))
@@ -50,12 +52,11 @@ namespace uWebshop.Umbraco.DataTypes.OrderInfoViewer
 			_lblOrderInfo = new Label();
 
 			var documentId = int.Parse(HttpContext.Current.Request.QueryString["id"]);
-			var orderDoc = new Document(documentId);
+			var orderDoc =contentService.GetById(documentId);
 
-			var orderGuidValue = orderDoc.getProperty("orderGuid").Value;
-			if (orderGuidValue != null && !string.IsNullOrEmpty(orderGuidValue.ToString()))
+			if (orderDoc.HasProperty("orderGuid"))
 			{
-				var orderGuid = Guid.Parse(orderDoc.getProperty("orderGuid").Value.ToString());
+				var orderGuid =orderDoc.GetValue<Guid>("orderGuid");
 
 				var orderInfoXml = OrderHelper.GetOrderXML(orderGuid);
 

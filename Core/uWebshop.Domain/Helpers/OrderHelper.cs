@@ -37,12 +37,23 @@ namespace uWebshop.Domain.Helpers
 		}
 
 		/// <summary>
+		/// Generates the Order cookie name
+		/// </summary>
+		/// <param name="isOrderComplete">Whether the order is complete or not</param>
+		public static string GetOrderCookieName(bool isOrderComplete = false)
+		{
+			var uwebshopConfiguration = UwebshopConfiguration.Current;
+			string cookiePrefix = (isOrderComplete ? "CompletedOrderId" : "OrderId");
+			return cookiePrefix + (uwebshopConfiguration == null || uwebshopConfiguration.ShareBasketBetweenStores ? string.Empty : StoreHelper.GetCurrentStore().UrlName);
+		}
+
+		/// <summary>
 		/// Sets the order cookie.
 		/// </summary>
 		/// <param name="orderInfo">The order information.</param>
 		public static void SetOrderCookie(OrderInfo orderInfo)
 		{
-			var cookieName = "OrderId" + (UwebshopConfiguration.Current.ShareBasketBetweenStores ? string.Empty : StoreHelper.GetCurrentStore().Alias);
+			var cookieName = GetOrderCookieName();
 
 			var minutesToAdd = 360;
 
@@ -52,12 +63,12 @@ namespace uWebshop.Domain.Helpers
 				minutesToAdd = incompleteOrderLifetime;
 			}
 
-            var expireDateTime = DateTime.Now;
-            expireDateTime = expireDateTime.AddMinutes(minutesToAdd);
+			var expireDateTime = DateTime.Now;
+			expireDateTime = expireDateTime.AddMinutes(minutesToAdd);
 
 			var cookie = new HttpCookie(cookieName, orderInfo.UniqueOrderId.ToString())
 			{
-                Expires = expireDateTime
+				Expires = expireDateTime
 			};
 
 			HttpContext.Current.Response.Cookies.Set(cookie);
@@ -68,13 +79,13 @@ namespace uWebshop.Domain.Helpers
 		/// </summary>
 		public static string GetCompletedOrderCookie()
 		{
-			var cookieName = "CompletedOrderId" + (UwebshopConfiguration.Current.ShareBasketBetweenStores ? string.Empty : StoreHelper.GetCurrentStore().Alias);
+			// todo: use UwebshopRequest for cache
+			var cookieName = GetOrderCookieName(true);
 
 			var orderIdCookie = HttpContext.Current.Request.Cookies[cookieName];
 
 			return orderIdCookie != null ? orderIdCookie.Value : null;
 		}
-
 
 		/// <summary>
 		/// Sets the order cookie.
@@ -82,7 +93,7 @@ namespace uWebshop.Domain.Helpers
 		/// <param name="orderInfo">The order information.</param>
 		public static void SetCompletedOrderCookie(OrderInfo orderInfo)
 		{
-			var cookieName = "CompletedOrderId" + (UwebshopConfiguration.Current.ShareBasketBetweenStores ? string.Empty : StoreHelper.GetCurrentStore().Alias);
+			var cookieName = GetOrderCookieName(true);
 
 			var cookie = new HttpCookie(cookieName, orderInfo.UniqueOrderId.ToString()) {Expires = DateTime.Now.AddMinutes(10)};
 
@@ -95,7 +106,7 @@ namespace uWebshop.Domain.Helpers
 		/// <param name="orderInfo">The order information.</param>
 		public static void RemoveOrderCookie(OrderInfo orderInfo)
 		{
-			var cookieName = "OrderId" + (UwebshopConfiguration.Current.ShareBasketBetweenStores ? string.Empty : StoreHelper.GetCurrentStore().Alias);
+			var cookieName = GetOrderCookieName();
 
 			var cookie = new HttpCookie(cookieName, string.Empty) {Expires = DateTime.Now.AddMinutes(-1)};
 
@@ -158,10 +169,42 @@ namespace uWebshop.Domain.Helpers
 				{
 					return null;
 				}
-
+				
 				orderInfo = GetOrder(cookieGuid);
 
+				if (IsCompletedOrderWithinValidLifetime(orderInfo) &&
+				  orderInfo.PaymentInfo.PaymentType == PaymentProviderType.OnlinePayment &&
+				  orderInfo.Paid == true)
+				{
+					return null;
+				}
+
+				if (IsCompletedOrderWithinValidLifetime(orderInfo) &&
+				  orderInfo.PaymentInfo.PaymentType != PaymentProviderType.OnlinePayment)
+				{
+					return null;
+				}
+
 				uwebshopRequest.OrderInfo = orderInfo;
+			}
+			else
+			{
+				// order from request
+				// is order marked as completed?
+				// AND is order set to use online payment provider?
+				// AND is payment not failed?
+				if (IsCompletedOrderWithinValidLifetime(orderInfo) && 
+					orderInfo.PaymentInfo.PaymentType == PaymentProviderType.OnlinePayment &&
+					orderInfo.Paid == true)
+				{
+					// the return null, so a new order should be made instead of having access to this one...
+					return null;
+				}
+				if (IsCompletedOrderWithinValidLifetime(orderInfo) &&
+				  orderInfo.PaymentInfo.PaymentType != PaymentProviderType.OnlinePayment)
+				{
+					return null;
+				}
 			}
 			return orderInfo;
 		}
@@ -271,28 +314,28 @@ namespace uWebshop.Domain.Helpers
 		}
 
 
-        /// <summary>
-        /// Returns all the orders from a customer (member) Id;
-        /// </summary>
-        /// <param name="customerId">The customer unique identifier.</param>
-        /// <param name="storeAlias">The store alias.</param>
-        /// <returns></returns>
-        public static IEnumerable<OrderInfo> GetWishlistsForCustomer(int customerId, string storeAlias = null)
-        {
-            return OrderRepository.GetWishlistsFromCustomer(customerId, storeAlias);
-        }
+		/// <summary>
+		/// Returns all the orders from a customer (member) Id;
+		/// </summary>
+		/// <param name="customerId">The customer unique identifier.</param>
+		/// <param name="storeAlias">The store alias.</param>
+		/// <returns></returns>
+		public static IEnumerable<OrderInfo> GetWishlistsForCustomer(int customerId, string storeAlias = null)
+		{
+			return OrderRepository.GetWishlistsFromCustomer(customerId, storeAlias);
+		}
 
-        /// <summary>
-        /// Returns all the order from a customer (member) Login name;
-        /// </summary>
-        /// <param name="userName">Name of the login.</param>
-        /// <param name="storeAlias">The store alias.</param>
-        /// <param name="includeIncomplete">if set to <c>true</c> [include incomplete].</param>
-        /// <returns></returns>
-        public static IEnumerable<OrderInfo> GetWishlistsForCustomer(string userName, string storeAlias = null)
-        {
-            return OrderRepository.GetWishlistsFromCustomer(userName, storeAlias);
-        }
+		/// <summary>
+		/// Returns all the order from a customer (member) Login name;
+		/// </summary>
+		/// <param name="userName">Name of the login.</param>
+		/// <param name="storeAlias">The store alias.</param>
+		/// <param name="includeIncomplete">if set to <c>true</c> [include incomplete].</param>
+		/// <returns></returns>
+		public static IEnumerable<OrderInfo> GetWishlistsForCustomer(string userName, string storeAlias = null)
+		{
+			return OrderRepository.GetWishlistsFromCustomer(userName, storeAlias);
+		}
 		
 		/// <summary>
 		/// Gets all orders.
@@ -301,13 +344,13 @@ namespace uWebshop.Domain.Helpers
 		/// <returns></returns>
 		public static IEnumerable<OrderInfo> GetAllOrders(string storeAlias = null)
 		{
-		    return storeAlias != null
-		        ? OrderRepository.GetAllOrders()
-		            .Where(x => x.StoreInfo.Alias.ToLowerInvariant() == storeAlias.ToLowerInvariant())
-		        : OrderRepository.GetAllOrders();
+			return storeAlias != null
+				? OrderRepository.GetAllOrders()
+					.Where(x => x.StoreInfo.Alias.ToLowerInvariant() == storeAlias.ToLowerInvariant())
+				: OrderRepository.GetAllOrders();
 		}
 
-	    /// <summary>
+		/// <summary>
 		/// Check if VAT should be applied for this order
 		/// </summary>
 		/// <returns>
@@ -479,8 +522,10 @@ namespace uWebshop.Domain.Helpers
 							if (succesNodeId != 0)
 							{
 								var urlToReturn = IO.Container.Resolve<ICMSApplication>().GetUrlForContentWithId(succesNodeId);
-
-								urlToReturn = string.Format("//{0}{1}", currentDomain, urlToReturn);
+                                if(!urlToReturn.ToString().ToLower().StartsWith("http"))
+                                {
+                                    urlToReturn = string.Format("//{0}{1}", currentDomain, urlToReturn);
+                                }								
 								Log.Instance.LogDebug("HandlePaymentRequest SuccesNodeId: " + urlToReturn);
 
 								return urlToReturn;
@@ -502,11 +547,11 @@ namespace uWebshop.Domain.Helpers
 									var handlerResult = handler.CreatePaymentRequest(orderInfo);
 									orderInfo.Save();
 
-								    if (handlerResult == null)
-								    {
-                                        Log.Instance.LogError("HandlePaymentRequest handler.CreatePaymentRequest(orderInfo) == null");
-                                        return "failed";
-								    }
+									if (handlerResult == null)
+									{
+										Log.Instance.LogError("HandlePaymentRequest handler.CreatePaymentRequest(orderInfo) == null");
+										return "failed";
+									}
 								}
 								catch (Exception ex)
 								{
@@ -569,11 +614,11 @@ namespace uWebshop.Domain.Helpers
 									return "failed";
 								case PaymentTransactionMethod.ServerPost:
 
-                                    if (handler != null)
+									if (handler != null)
 									{
-                                        Log.Instance.LogDebug("HandlePaymentRequest paymentRequestHandlers.GetName(): " + handler.GetName());
+										Log.Instance.LogDebug("HandlePaymentRequest paymentRequestHandlers.GetName(): " + handler.GetName());
 
-                                        string nextURL = handler.GetPaymentUrl(orderInfo);
+										string nextURL = handler.GetPaymentUrl(orderInfo);
 
 										Log.Instance.LogDebug("HandlePaymentRequest PaymentTransactionMethod.ServerPost nextURL: " + nextURL);
 
@@ -598,13 +643,13 @@ namespace uWebshop.Domain.Helpers
 									return "failed";
 								case PaymentTransactionMethod.WebClient:
 									return "webclient";
-                                case PaymentTransactionMethod.Inline:
+								case PaymentTransactionMethod.Inline:
 
-                                    if (handler != null)
-							        {
-                                        return handler.GetPaymentUrl(orderInfo);
-							        }
-                                    return "inline";
+									if (handler != null)
+									{
+										return handler.GetPaymentUrl(orderInfo);
+									}
+									return "inline";
 							}
 						}
 						Log.Instance.LogError("HandlePaymentRequest With Online Payment FAILED");
@@ -1036,30 +1081,30 @@ namespace uWebshop.Domain.Helpers
 
 		#endregion
 
-        /// <summary>
-        /// Returns true if the order is complete, with a valid guid in the completed order Id and the confirm datetime is maximum 10 minutes old.
-        /// </summary>
-        /// <param name="order"></param>
-        /// <returns></returns>
-        public static bool IsCompletedOrderWithinValidLifetime(OrderInfo order)
-        {
-            var completedOrderCookie = GetCompletedOrderCookie();
-            return completedOrderCookie != null && (completedOrderCookie == order.UniqueOrderId.ToString() &&
-                                                    order.ConfirmDate.GetValueOrDefault().AddMinutes(10) >= DateTime.Now);
-        }
+		/// <summary>
+		/// Returns true if the order is complete, with a valid guid in the completed order Id and the confirm datetime is maximum 10 minutes old.
+		/// </summary>
+		/// <param name="order"></param>
+		/// <returns></returns>
+		public static bool IsCompletedOrderWithinValidLifetime(OrderInfo order)
+		{
+			var completedOrderCookie = GetCompletedOrderCookie();
+			return completedOrderCookie != null && (completedOrderCookie == order.UniqueOrderId.ToString() &&
+													order.ConfirmDate.GetValueOrDefault().AddMinutes(10) >= DateTime.Now);
+		}
 
-        /// <summary>
-        /// Returns true if the order is complete, with a valid guid in the completed order Id and the confirm datetime is maximum 10 minutes old.
-        /// </summary>
-        /// <param name="order"></param>
-        /// <returns></returns>
-        public static bool IsCompletedOrderWithinValidLifetime(IOrder order)
-        {
-            var completedOrderCookie = GetCompletedOrderCookie();
-            return completedOrderCookie != null && (completedOrderCookie == order.UniqueId.ToString() &&
-                                                    order.ConfirmDate.AddMinutes(10) >= DateTime.Now);
-        }
-    }
+		/// <summary>
+		/// Returns true if the order is complete, with a valid guid in the completed order Id and the confirm datetime is maximum 10 minutes old.
+		/// </summary>
+		/// <param name="order"></param>
+		/// <returns></returns>
+		public static bool IsCompletedOrderWithinValidLifetime(IOrder order)
+		{
+			var completedOrderCookie = GetCompletedOrderCookie();
+			return completedOrderCookie != null && (completedOrderCookie == order.UniqueId.ToString() &&
+													order.ConfirmDate.AddMinutes(10) >= DateTime.Now);
+		}
+	}
 
 
 }

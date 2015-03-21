@@ -57,7 +57,7 @@ namespace uWebshop.Domain
 		/// <value>
 		/// The order status picker.
 		/// </value>
-        [ContentPropertyType(Alias = "orderStatusPicker", DataType = DataType.OrderStatusPicker, Tab = ContentTypeTab.Global, Name = "#OrderStatusPicker", Description = "#OrderStatusPickerDescription", Umbraco6Only = true)]
+		[ContentPropertyType(Alias = "orderStatusPicker", DataType = DataType.OrderStatusPicker, Tab = ContentTypeTab.Global, Name = "#OrderStatusPicker", Description = "#OrderStatusPickerDescription", Umbraco6Only = true)]
 		public string OrderStatusPicker
 		{
 			get { return Document.GetProperty<string>("orderStatusPicker"); }
@@ -97,7 +97,7 @@ namespace uWebshop.Domain
 		/// <value>
 		/// The unique order unique identifier.
 		/// </value>
-        [ContentPropertyType(Alias = "orderGuid", DataType = DataType.Label, Tab = ContentTypeTab.Global, Name = "#OrderGuid", Description = "#OrderGuidDescription", Umbraco6Only = true)]
+		[ContentPropertyType(Alias = "orderGuid", DataType = DataType.Label, Tab = ContentTypeTab.Global, Name = "#OrderGuid", Description = "#OrderGuidDescription", Umbraco6Only = true)]
 		public Guid UniqueOrderId
 		{
 			get

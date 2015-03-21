@@ -8,7 +8,7 @@ using uWebshop.Newtonsoft.Json;
 
 namespace uWebshop.API
 {
-	[DataContract(Name = "OrderedProductVariant", Namespace= "")]
+	[DataContract(Name = "OrderedProductVariant", Namespace = "")]
 	internal class OrderedProductVariantInfoAdapter : IOrderedProductVariant
 	{
 		private readonly ProductVariantInfo _source;
@@ -16,14 +16,14 @@ namespace uWebshop.API
 		public OrderedProductVariantInfoAdapter(ProductVariantInfo source, ProductInfo product)
 		{
 			_source = source;
-		    _source.Product = product;
+			_source.Product = product;
 		}
 
 		[DataMember]
 		public string TypeAlias { get { return _source.TypeAlias; } set { } }
 		[IgnoreDataMember]
 		public IDiscountedRangedPrice Price { get { return _source.Price; } }
-		[DataMember(Name ="Price")]
+		[DataMember(Name = "Price")]
 		[JsonProperty(PropertyName = "Price")]
 		[Browsable(false)]
 		[EditorBrowsable(EditorBrowsableState.Never)]

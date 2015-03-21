@@ -47,7 +47,6 @@ namespace uWebshop.Domain
 			}
 		}
 
-		// todo: test
 		internal int Amount(YesNoDifference discount, YesNoDifference vatVal, IAmountUnit source, bool ranged)
 		{
 			if (discount == YesNoDifference.Difference)

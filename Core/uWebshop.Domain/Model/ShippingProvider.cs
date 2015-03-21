@@ -249,50 +249,50 @@ namespace uWebshop.Domain
 		[DataMember]
 		public IEnumerable<ShippingProviderMethod> ShippingProviderMethods
 		{
-		    get
-		    {
-		        if (_shippingProviderMethods != null)
-		        {
-		            return _shippingProviderMethods;
-		        }
+			get
+			{
+				if (_shippingProviderMethods != null)
+				{
+					return _shippingProviderMethods;
+				}
 
-		        var shippingProviderMethodList = new List<ShippingProviderMethod>();
+				var shippingProviderMethodList = new List<ShippingProviderMethod>();
 
-		        shippingProviderMethodList.AddRange(
-		            IO.Container.Resolve<IShippingProviderMethodRepository>()
-		                .GetAll(Localization)
-		                .Where(pm => pm.ParentId == Id)
-		                .ToList());
+				shippingProviderMethodList.AddRange(
+					IO.Container.Resolve<IShippingProviderMethodRepository>()
+						.GetAll(Localization)
+						.Where(pm => pm.ParentId == Id)
+						.ToList());
 
 
-		        foreach (var shippingProviderMethod in shippingProviderMethodList)
-		        {
-		            shippingProviderMethod.Name = shippingProviderMethod.Title;
-		            shippingProviderMethod.ProviderName = Title;
-		        }
+				foreach (var shippingProviderMethod in shippingProviderMethodList)
+				{
+					shippingProviderMethod.Name = shippingProviderMethod.Title;
+					shippingProviderMethod.ProviderName = Title;
+				}
 
-		        shippingProviderMethodList.AddRange(LoadShippingMethods());
+				shippingProviderMethodList.AddRange(LoadShippingMethods());
 
-		        if (!shippingProviderMethodList.Any())
-		        {
-		            var shippingMethodDummy = new ShippingProviderMethod
-		            {
-		                Id = Id.ToString(),
-		                Name = Title,
-		                Title = Title,
-		                ProviderName = Title,
-		                PriceInCents = 0
-		            };
+				if (!shippingProviderMethodList.Any())
+				{
+					var shippingMethodDummy = new ShippingProviderMethod
+					{
+						Id = Id.ToString(),
+						Name = Title,
+						Title = Title,
+						ProviderName = Title,
+						PriceInCents = 0
+					};
 
-		            Log.Instance.LogDebug(
-		                string.Format("ShippingProvider: {0} Without Methods, fallback to code created dummy method", Title));
-		            shippingProviderMethodList.Add(shippingMethodDummy);
-		        }
+					Log.Instance.LogDebug(
+						string.Format("ShippingProvider: {0} Without Methods, fallback to code created dummy method", Title));
+					shippingProviderMethodList.Add(shippingMethodDummy);
+				}
 
-		        return _shippingProviderMethods = shippingProviderMethodList;
+				return _shippingProviderMethods = shippingProviderMethodList;
 
-		    }
-		    set { }
+			}
+			set { }
 		}
 
 		/// <summary>

@@ -23,7 +23,7 @@
 		<img src="/App_Plugins/uWebshop/images/uWebshop32x32.png" alt="Create an uWebshop Store!" class="dashboardIcon" />
 		<p>The installed uWebshop version is: <strong><asp:Literal runat="server" ID="uwbsVersionInfo"/></strong></p>		
 		<p>View the uWebshop changelog <a href="http://uwebshop.com/changelog" target="_blank">on the uWebshop Website</a></p>
-        <hr class="line"/>
+		<hr class="line"/>
 	</div>
 </umb:Pane>
 
@@ -34,9 +34,9 @@
 		<div class="dashboardColWrapper">
 			<div class="dashboardCols">
 				<p>You can find the post installation/getting started guide on our support platform. <a class="btn" target="_blank" href="http://docs.uwebshop.com/general/guides/getting-started/">Read the post-installation documentation</a></p>
-                <p>Read about all the ins-and-out of uWebshop on our <a  class="btn" target="_blank" href="http://docs.uwebshop.com/">Documentation Portal</a></p>
-                    <p>If you have questions or want help with uWebshop, <a  class="btn" target="_blank" href="http://support.uwebshop.com/">get in touch with our support desk!</a></p>
-                    <p>Did you know we have various support options, including a Gold Partnership that gives you full uWebshop Source access on GitHub? <a class="btn btn-primary" target="_blank" href="http://uwebshop.com/partners/become-an-uwebshop-partner/">uWebshop Support &amp; Partnership Information</a></p>				
+				<p>Read about all the ins-and-out of uWebshop on our <a  class="btn" target="_blank" href="http://docs.uwebshop.com/">Documentation Portal</a></p>
+					<p>If you have questions or want help with uWebshop, <a  class="btn" target="_blank" href="http://support.uwebshop.com/">get in touch with our support desk!</a></p>
+					<p>Did you know we have various support options, including a Gold Partnership that gives you full uWebshop Source access on GitHub? <a class="btn btn-primary" target="_blank" href="http://uwebshop.com/partners/become-an-uwebshop-partner/">uWebshop Support &amp; Partnership Information</a></p>				
 			</div>
 		</div>
 	</div>

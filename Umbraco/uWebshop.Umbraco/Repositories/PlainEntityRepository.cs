@@ -59,17 +59,17 @@ namespace uWebshop.Umbraco.Repositories
 	}
 	internal class PlainProductRepository : PlainEntityRepository<Product>, IProductRepository
 	{
-        public PlainProductRepository(ISettingsService settingsService, IStoreService storeService, IProductVariantService variantService, IProductVariantGroupService variantGroupService, IProductAliassesService productAliassesService)
+		public PlainProductRepository(ISettingsService settingsService, IStoreService storeService, IProductVariantService variantService, IProductVariantGroupService variantGroupService, IProductAliassesService productAliassesService)
 		{
-            _oldRepo = new UmbracoProductRepository(settingsService, storeService, variantService, variantGroupService, productAliassesService);
+			_oldRepo = new UmbracoProductRepository(settingsService, storeService, variantService, variantGroupService, productAliassesService);
 		}
 	}
 
-    internal class PlainVariantGroupRepository : PlainEntityRepository<ProductVariantGroup>, IProductVariantGroupRepository
-    {
-        public PlainVariantGroupRepository(IStoreService storeService, IProductVariantGroupAliassesService aliasses)
-        {
-            _oldRepo = new UmbracoProductVariantGroupRepository(storeService, aliasses);
-        }
-    }
+	internal class PlainVariantGroupRepository : PlainEntityRepository<ProductVariantGroup>, IProductVariantGroupRepository
+	{
+		public PlainVariantGroupRepository(IStoreService storeService, IProductVariantGroupAliassesService aliasses)
+		{
+			_oldRepo = new UmbracoProductVariantGroupRepository(storeService, aliasses);
+		}
+	}
 }

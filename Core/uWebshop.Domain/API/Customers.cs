@@ -7,7 +7,6 @@ using System.Web.Profile;
 using System.Web.Security;
 using uWebshop.Common;
 using uWebshop.Domain;
-using uWebshop.Domain.Businesslogic;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
 
@@ -115,9 +114,6 @@ namespace uWebshop.API
 		/// <summary>
 		/// Gets all customers.
 		/// </summary>
-		/// <param name="storeAlias">The store alias.</param>
-		/// <param name="currencyCode">The currency code.</param>
-		/// <returns></returns>
 		public static IEnumerable<ICustomer> GetAllCustomers()
 		{
 			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || UwebshopRequest.Current.PaymentProvider != null)
@@ -132,19 +128,11 @@ namespace uWebshop.API
 		/// Gets the customers.
 		/// </summary>
 		/// <param name="group">The group.</param>
-		/// <param name="storeAlias">The store alias.</param>
-		/// <param name="currencyCode">The currency code.</param>
-		/// <returns></returns>
 		public static IEnumerable<ICustomer> GetCustomers(string group)
 		{
-            if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || UwebshopRequest.Current.PaymentProvider != null)
+			if ((IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || UwebshopRequest.Current.PaymentProvider != null) && Roles.RoleExists(@group))
 			{
-				if (Roles.RoleExists(group))
-				{
-					return Roles.GetUsersInRole(group).Select(u => new CustomerNetMembershipAdaptor(Membership.GetUser(u)));
-				}
-
-				return Enumerable.Empty<ICustomer>();
+				return Roles.GetUsersInRole(@group).Select(u => new CustomerNetMembershipAdaptor(Membership.GetUser(u)));
 			}
 
 			return Enumerable.Empty<ICustomer>();
@@ -155,10 +143,9 @@ namespace uWebshop.API
 		/// </summary>
 		/// <param name="amountInCents">The amount in cents.</param>
 		/// <param name="storeAlias">The store alias.</param>
-		/// <returns></returns>
 		public static IEnumerable<ICustomer> GetCustomersBySpending(int amountInCents, string storeAlias = null)
 		{
-            if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || UwebshopRequest.Current.PaymentProvider != null)
+			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || UwebshopRequest.Current.PaymentProvider != null)
 			{
 				var customers = new List<ICustomer>();
 				foreach (var customer in GetAllCustomers())
@@ -190,7 +177,6 @@ namespace uWebshop.API
 		/// </summary>
 		/// <param name="customerId">The customer unique identifier.</param>
 		/// <param name="storeAlias">The store alias.</param>
-		/// <returns></returns>
 		public static IEnumerable<IOrder> GetOrders(int customerId, string storeAlias = null)
 		{
 			return Orders.GetOrdersForCustomer(customerId, storeAlias);
@@ -212,7 +198,6 @@ namespace uWebshop.API
 		/// </summary>
 		/// <param name="wishlistName">Name of the wishlist.</param>
 		/// <param name="storeAlias">The store alias.</param>
-		/// <returns></returns>
 		public static IWishlist GetWishlist(string wishlistName = null, string storeAlias = null)
 		{
 			var member = Membership.GetUser();
@@ -232,11 +217,10 @@ namespace uWebshop.API
 
 				if (wishGuid != default(Guid) || wishGuid != Guid.Empty)
 				{
-					var wishlist = Orders.GetOrder(wishGuid);
-
-					if (wishlist.Status == OrderStatus.Wishlist)
+					var wishlist = OrderHelper.GetOrder(wishGuid);
+					if (wishlist != null && wishlist.Status == OrderStatus.Wishlist)
 					{
-						return (IWishlist)wishlist;
+						return new BasketOrderInfoAdaptor(wishlist);
 					}
 				}
 			}
@@ -266,10 +250,10 @@ namespace uWebshop.API
 		/// <summary>
 		/// Gets the wishlist.
 		/// </summary>
-		/// <param name="userName">Name of the usern.</param>
+		/// <param name="userName">Name of the user.</param>
 		/// <param name="wishlistName">Name of the wishlist.</param>
 		/// <param name="storeAlias">The store alias.</param>
-		/// <returns></returns>
+		// todo: problem in API, hidden by overload
 		public static IWishlist GetWishlist(string userName, string wishlistName = null, string storeAlias = null)
 		{
 			var wishlists = GetWishlists(userName, storeAlias);
@@ -282,18 +266,15 @@ namespace uWebshop.API
 		/// </summary>
 		/// <param name="customerId">The customer unique identifier.</param>
 		/// <param name="storeAlias">The store alias.</param>
-		/// <returns></returns>
 		public static IEnumerable<IWishlist> GetWishlists(int customerId, string storeAlias = null)
 		{
 			var membershipUser = Membership.GetUser();
-            if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || membershipUser != null && membershipUser.ProviderUserKey == customerId.ToString() || UwebshopRequest.Current.PaymentProvider != null)
+			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || membershipUser != null && membershipUser.ProviderUserKey as string == customerId.ToString() || UwebshopRequest.Current.PaymentProvider != null)
 			{
-                return OrderHelper.GetWishlistsForCustomer(customerId, storeAlias).Select(Orders.CreateBasketFromOrderInfo).Cast<IWishlist>();
+				return OrderHelper.GetWishlistsForCustomer(customerId, storeAlias).Select(Orders.CreateBasketFromOrderInfo).Cast<IWishlist>();
 			}
 
 			return Enumerable.Empty<IWishlist>();
-
-			//return Orders.GetOrdersForCustomer(customerId, storeAlias).Where(x => x.Status == OrderStatus.Wishlist).Cast<IWishlist>();
 		}
 
 		/// <summary>
@@ -301,23 +282,21 @@ namespace uWebshop.API
 		/// </summary>
 		/// <param name="userName">Name of the usern.</param>
 		/// <param name="storeAlias">The store alias.</param>
-		/// <returns></returns>
 		public static IEnumerable<IWishlist> GetWishlists(string userName, string storeAlias = null)
 		{
-            var membershipUser = Membership.GetUser();
-            if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || membershipUser != null && membershipUser.UserName == userName || UwebshopRequest.Current.PaymentProvider != null)
-            {
-                return OrderHelper.GetWishlistsForCustomer(userName, storeAlias).Select(Orders.CreateBasketFromOrderInfo).Cast<IWishlist>();
-            }
+			var membershipUser = Membership.GetUser();
+			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || membershipUser != null && membershipUser.UserName == userName || UwebshopRequest.Current.PaymentProvider != null)
+			{
+				return OrderHelper.GetWishlistsForCustomer(userName, storeAlias).Select(Orders.CreateBasketFromOrderInfo).Cast<IWishlist>();
+			}
 
-            return Enumerable.Empty<IWishlist>();			
+			return Enumerable.Empty<IWishlist>();			
 		}
 		
 		/// <summary>
 		/// Get the customer field value from from session
 		/// </summary>
 		/// <param name="fieldName">the property field name</param>
-		/// <returns></returns>
 		public static string GetCustomerValueFromSession(string fieldName)
 		{
 			if (HttpContext.Current != null && HttpContext.Current.Session != null)
@@ -342,7 +321,6 @@ namespace uWebshop.API
 		/// Get the customer field value from from membership
 		/// </summary>
 		/// <param name="fieldName">the property field name</param>
-		/// <returns></returns>
 		public static string GetCustomerValueFromProfile(string fieldName)
 		{
 			var member = Membership.GetUser();
@@ -377,13 +355,11 @@ namespace uWebshop.API
 
 			return string.Empty;
 		}
-
-
+		
 		/// <summary>
 		/// Get the customer field value first from session then from membership
 		/// </summary>
 		/// <param name="fieldName">the property field name</param>
-		/// <returns></returns>
 		public static string GetCustomerValueFromSessionOrProfile(string fieldName)
 		{
 			var sessionValue = GetCustomerValueFromSession(fieldName);
@@ -401,8 +377,6 @@ namespace uWebshop.API
 		/// <summary>
 		/// Get the customer field value first from from session, then from the current saved basket and finally from membership
 		/// </summary>
-		/// <param name="fieldName">the property field name</param>
-		/// <returns></returns>
 		public static string GetCustomerValueFromSessionOrBasketOrProfile(IBasket basket, string fieldName)
 		{
 			var sessionValue = GetCustomerValueFromSession(fieldName);
@@ -429,14 +403,12 @@ namespace uWebshop.API
 
 			return string.Empty;
 		}
-
-
+		
 		/// <summary>
 		/// Get the customer field value first from from session, then from the current saved basket and finally from membership
 		/// </summary>
 		/// <param name="guidAsString">the basket guid as a string</param>
 		/// <param name="fieldName">the property field name</param>
-		/// <returns></returns>
 		public static string GetCustomerValueFromSessionOrBasketOrProfile(string guidAsString, string fieldName)
 		{
 			Guid guid;

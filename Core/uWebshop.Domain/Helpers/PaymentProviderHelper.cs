@@ -46,7 +46,7 @@ namespace uWebshop.Domain.Helpers
 		/// <returns></returns>
 		public static IEnumerable<PaymentProvider> GetAllPaymentProviders(string storeAlias = null, string currencyCode = null)
 		{
-            return IO.Container.Resolve<IPaymentProviderService>().GetAll(StoreHelper.GetLocalizationOrCurrent(storeAlias, currencyCode)).Where(x => !x.Disabled);
+			return IO.Container.Resolve<IPaymentProviderService>().GetAll(StoreHelper.GetLocalizationOrCurrent(storeAlias, currencyCode)).Where(x => !x.Disabled);
 		}
 
 		/// <summary>
@@ -91,7 +91,7 @@ namespace uWebshop.Domain.Helpers
 		{
 			if (orderInfo == null)
 			{
-                Log.Instance.LogError("GetBillingProvidersForOrder: Asking for payment without order");
+				Log.Instance.LogError("GetBillingProvidersForOrder: Asking for payment without order");
 				return new List<PaymentProvider>();
 			}
 
@@ -291,13 +291,13 @@ namespace uWebshop.Domain.Helpers
 
 			var value = helper.Settings[helperKey];
 
-		    if (!string.IsNullOrEmpty(value))
-		    {
-		        return value;
-		    }
+			if (!string.IsNullOrEmpty(value))
+			{
+				return value;
+			}
 
-		    Log.Instance.LogError(paymentProvider.Name + ": Missing or empty PaymentProvider.Config field with Key: " + helperKey);
-		    return string.Empty;
+			Log.Instance.LogError(paymentProvider.Name + ": Missing or empty PaymentProvider.Config field with Key: " + helperKey);
+			return string.Empty;
 		}
 
 		public static XElement GetSettingsXML(this PaymentProvider paymentProvider){
@@ -361,6 +361,35 @@ namespace uWebshop.Domain.Helpers
 				}
 
 				return errorUrl;
+			}
+
+			return baseUrl;
+		}
+
+		/// <summary>
+		/// Successes the node URL.
+		/// </summary>
+		/// <param name="paymentProvider">The payment provider.</param>
+		/// <returns></returns>
+		/// <exception cref="System.Exception"></exception>
+		public static string CancelUrl(this PaymentProvider paymentProvider)
+		{
+			var baseUrl = PaymentProviderHelper.GenerateBaseUrl();
+
+			var cancelNodeIdAsString = paymentProvider.CancelNodeId;
+
+			int cancelNodeId;
+			int.TryParse(cancelNodeIdAsString, out cancelNodeId);
+
+			if (cancelNodeId != 0)
+			{
+				var cancelUrl = IO.Container.Resolve<ICMSApplication>().GetUrlForContentWithId(cancelNodeId);
+				if (!cancelUrl.StartsWith("http"))
+				{
+					cancelUrl = string.Format("{0}/{1}", baseUrl, cancelUrl.TrimStart('/'));
+				}
+
+				return cancelUrl;
 			}
 
 			return baseUrl;

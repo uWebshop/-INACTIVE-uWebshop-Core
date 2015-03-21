@@ -124,20 +124,20 @@ namespace uWebshop.Domain.OrderDTO
 			}
 		}
 
-        public string Description
-        {
-            get
-            {
-                var originalDiscount = IO.Container.Resolve<IOrderDiscountService>().GetById(OriginalId, Localization);
-                if (originalDiscount != null)
-                {
-                    return originalDiscount.Description;
-                }
-                return string.Empty;
-            }
-        }
+		public string Description
+		{
+			get
+			{
+				var originalDiscount = IO.Container.Resolve<IOrderDiscountService>().GetById(OriginalId, Localization);
+				if (originalDiscount != null)
+				{
+					return originalDiscount.Description;
+				}
+				return string.Empty;
+			}
+		}
 
-	    public List<int> AffectedOrderlines { get; set; }
+		public List<int> AffectedOrderlines { get; set; }
 
 		[XmlIgnore]
 		public IEnumerable<string> AffectedProductTags { get { return Tags ?? Enumerable.Empty<string>(); } set { Tags = value.ToArray(); } }

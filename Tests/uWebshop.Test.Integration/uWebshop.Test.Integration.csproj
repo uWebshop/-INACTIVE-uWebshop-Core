@@ -49,9 +49,9 @@
     <Compile Include="Domain\XML\OrderInfoXMLTest.cs" />
     <Compile Include="Domain\XML\SerializeDeserializeTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RegressionTests\20130508 paymentprovider missing in cache after app pool reset.cs" />
     <Compile Include="RegressionTests\20130620 orderdiscount with coupon and hundred percent had eror in DiscountamountForOrder.cs" />
     <Compile Include="RegressionTests\20131205 price VAT rounding.cs" />
+    <Compile Include="RegressionTests\20150206 order grand total VAT over total.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Core\uWebshop.Common\uWebshop.Common.csproj">

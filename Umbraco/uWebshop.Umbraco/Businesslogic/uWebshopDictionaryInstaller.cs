@@ -119,7 +119,6 @@ namespace uWebshop.DictionaryInstaller
 					if (firstOrDefault != null && string.IsNullOrEmpty(di.Value(lang.id)))
 					{
 						di.setValue(lang.id, firstOrDefault.Value);
-						di.Save();
 					}
 				}
 

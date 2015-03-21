@@ -45,21 +45,21 @@ namespace uWebshop.Umbraco.Repositories
 
 			var values = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.zone, localization, fields);
 
-		    if (values.Any())
-		    {
-		        entity.Zones =
-		            DomainHelper.ParseIntegersFromUwebshopProperty(values)
-		                .Select(x => _zoneService.GetByIdOrFallbackZone(x, localization))
-		                .ToList();
-		    }
-		    else
-		    {
-                entity.Zones = _zoneService.GetFallBackZone(localization);
-		    }
+			if (values.Any())
+			{
+				entity.Zones =
+					DomainHelper.ParseIntegersFromUwebshopProperty(values)
+						.Select(x => _zoneService.GetByIdOrFallbackZone(x, localization))
+						.ToList();
+			}
+			else
+			{
+				entity.Zones = _zoneService.GetFallBackZone(localization);
+			}
 
-            entity.Disabled = StoreHelper.GetMultiStoreDisableExamine(localization, fields);
+			entity.Disabled = StoreHelper.GetMultiStoreDisableExamine(localization, fields);
 
-		    var paymentProviderAmountType = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.type, localization, fields);
+			var paymentProviderAmountType = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.type, localization, fields);
 			PaymentProviderType type;
 			entity.Type = Enum.TryParse(paymentProviderAmountType, out type) ? type : PaymentProviderType.Unknown;
 			
@@ -72,6 +72,7 @@ namespace uWebshop.Umbraco.Repositories
 			entity.ControlNodeId = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary("controlNode", localization, fields);
 			entity.SuccesNodeId = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.successNode, localization, fields);
 			entity.ErrorNodeId = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.errorNode, localization, fields);
+			entity.CancelNodeId = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.cancelNode, localization, fields);
 		}
 
 		public override string TypeAlias

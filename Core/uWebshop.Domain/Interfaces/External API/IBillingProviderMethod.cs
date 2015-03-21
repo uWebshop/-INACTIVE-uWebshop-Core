@@ -26,21 +26,21 @@ namespace uWebshop.Domain.Interfaces
 		/// The title.
 		/// </value>
 		string Title { get; }
-        /// <summary>
-        /// Gets the description.
-        /// </summary>
-        /// <value>
-        /// The title.
-        /// </value>
-        string Description { get; }
+		/// <summary>
+		/// Gets the description.
+		/// </summary>
+		/// <value>
+		/// The title.
+		/// </value>
+		string Description { get; }
 
-        /// <summary>
-        /// Disabled?.
-        /// </summary>
-        /// <value>
-        /// The title.
-        /// </value>
-        bool Disabled { get; }
+		/// <summary>
+		/// Disabled?.
+		/// </summary>
+		/// <value>
+		/// The title.
+		/// </value>
+		bool Disabled { get; }
 		/// <summary>
 		/// Gets the name.
 		/// </summary>

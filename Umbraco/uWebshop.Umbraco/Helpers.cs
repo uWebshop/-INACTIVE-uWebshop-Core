@@ -90,7 +90,7 @@ namespace uWebshop.Umbraco
 		public static string ParseInternalLinks(string text)
 		{
 			//don't attempt to proceed without a context as we cannot lookup urls without one
-			if (UmbracoContext.Current == null)
+			if (global::Umbraco.Web.UmbracoContext.Current == null)
 			{
 				return text;
 			}
@@ -182,6 +182,7 @@ namespace uWebshop.Umbraco
 		/// <param name="preFillRequiredItems"></param>
 		internal static void InstallStore(string storeAlias, IContent storeDocument, string cultureCode = null, bool preFillRequiredItems = false)
 		{
+			var contentTypeService = ApplicationContext.Current.Services.ContentTypeService;
 			var reg = new Regex(@"\s*");
 			storeAlias = reg.Replace(storeAlias, "");
 
@@ -199,7 +200,7 @@ namespace uWebshop.Umbraco
 
 			if (installStoreSpecificPropertiesOnDocumentTypes == null || installStoreSpecificPropertiesOnDocumentTypes != "false")
 			{
-				if (DocumentType.GetAllAsList().Where(x => x.Alias.StartsWith(Store.NodeAlias)).All(x => x.Text.ToLower() != storeAlias.ToLower()))
+				if (contentTypeService.GetAllContentTypes().Where(x => x.Alias.StartsWith(Store.NodeAlias)).All(x => x.Name.ToLower() != storeAlias.ToLower()))
 				{
 					IO.Container.Resolve<IUmbracoDocumentTypeInstaller>().InstallStore(storeAlias);
 				}

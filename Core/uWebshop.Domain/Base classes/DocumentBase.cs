@@ -1,11 +1,10 @@
 ﻿using System;
-using uWebshop.Domain.ContentTypes;
 using uWebshop.Domain.Interfaces;
 
 namespace uWebshop.Domain.BaseClasses
 {
 	/// <summary>
-	///     Class based on the Umbraco Document class to inherit from
+	/// Class based on the Umbraco Document class to inherit from
 	/// </summary>
 	public class DocumentBase
 	{

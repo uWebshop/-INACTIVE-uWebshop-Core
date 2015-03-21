@@ -102,7 +102,6 @@ namespace uWebshop.DataTypes
 			Define(DataType.Zones, ZoneSelectorDataType.DefId, ZoneSelectorDataType.Key, ZoneSelectorDataType.Name, ZoneSelectorDataType.DatabaseType);
 			Define(DataType.Currencies, CurrenciesDataType.DefId, CurrenciesDataType.Key, CurrenciesDataType.Name, CurrenciesDataType.DatabaseType);
 
-			// todo: Mark deze zijn leeg bij install van pacakge... betere fallback realiseren
 			var catagoryRepositoryXPath = "//" + Catalog.CategoryRepositoryNodeAlias;
 			if (string.IsNullOrEmpty(Catalog.CategoryRepositoryNodeAlias))
 			{
@@ -153,16 +152,16 @@ namespace uWebshop.DataTypes
 			}
 
 
-            Define(DataType.MultiContentPickerCatalog, new Guid(DataTypeGuids.MultiNodeTreePickerId), new Guid("ea745beb-271c-4542-a5be-5fba2be86f07"), "uWebshop Catalog Picker", DatabaseType.Ntext, GetPrevaluesForMultiNodeTreePicker(catalogXPath));
-            Define(DataType.MultiContentPickerCategories, new Guid(DataTypeGuids.MultiNodeTreePickerId), new Guid("c0d85cb4-6e4d-4f10-9107-abdee89b5d7d"), "uWebshop Category Picker", DatabaseType.Ntext, GetPrevaluesForMultiNodeTreePicker(catagoryRepositoryXPath, categoryNodeAlias));
+			Define(DataType.MultiContentPickerCatalog, new Guid(DataTypeGuids.MultiNodeTreePickerId), new Guid("ea745beb-271c-4542-a5be-5fba2be86f07"), "uWebshop Catalog Picker", DatabaseType.Ntext, GetPrevaluesForMultiNodeTreePicker(catalogXPath));
+			Define(DataType.MultiContentPickerCategories, new Guid(DataTypeGuids.MultiNodeTreePickerId), new Guid("c0d85cb4-6e4d-4f10-9107-abdee89b5d7d"), "uWebshop Category Picker", DatabaseType.Ntext, GetPrevaluesForMultiNodeTreePicker(catagoryRepositoryXPath, categoryNodeAlias));
 			Define(DataType.MultiContentPickerImages, new Guid(DataTypeGuids.MultiNodeTreePickerId), new Guid("d61cbc2c-87d3-49d9-8e58-87996d22d97f"), "uWebshop Image Picker", DatabaseType.Ntext, GetPrevaluesForImagesFiles());
 			Define(DataType.MultiContentPickerFiles, new Guid(DataTypeGuids.MultiNodeTreePickerId), new Guid("83c13f11-95d8-4f10-b510-581983fe8c19"), "uWebshop File Picker", DatabaseType.Ntext, GetPrevaluesForImagesFiles());
 			Define(DataType.MultiContentPickerProducts, new Guid(DataTypeGuids.MultiNodeTreePickerId), new Guid("23806a76-6a36-468c-8188-f25308a71cdb"), "uWebshop Product Picker", DatabaseType.Ntext, GetPrevaluesForMultiNodeTreePicker(catalogXPath, productNodeAlias));
 			Define(DataType.MultiContentPickerPaymentZones, new Guid(DataTypeGuids.MultiNodeTreePickerId), new Guid("406a4f2d-dd31-43be-9114-8077f43a6151"), "uWebshop Payment Zone Picker", DatabaseType.Ntext, GetPrevaluesForMultiNodeTreePicker(paymentproviderzoneXpath, paymentZoneNodeAlias));
 			Define(DataType.MultiContentPickerShippingZones, new Guid(DataTypeGuids.MultiNodeTreePickerId), new Guid("18ee35a7-7931-4d80-822c-ffe2bfb40f6e"), "uWebshop Shipping Zone Picker", DatabaseType.Ntext, GetPrevaluesForMultiNodeTreePicker(shippingproviderzoneXpath, shippingZoneNodeAlias));
-            
+			
 
-            
+			
 			// uWebshop OrderDetails
 			// uWebshop OrderOverview
 			// EmailDetails

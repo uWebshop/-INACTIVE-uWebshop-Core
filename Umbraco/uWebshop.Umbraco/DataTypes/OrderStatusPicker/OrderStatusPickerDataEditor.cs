@@ -8,11 +8,14 @@ using umbraco.cms.businesslogic.web;
 using umbraco.interfaces;
 using uWebshop.Common;
 using uWebshop.Domain.Helpers;
+using Umbraco.Core;
+using Umbraco.Core.Services;
 
 namespace uWebshop.Umbraco.DataTypes.OrderStatusPicker
 {
 	public class OrderStatusPickerDataEditor : UpdatePanel, IDataEditor
 	{
+		public static IContentService ContentService = ApplicationContext.Current.Services.ContentService;
 		private readonly IData _data;
 
 		private DropDownList _dlOrderStatus;
@@ -29,19 +32,16 @@ namespace uWebshop.Umbraco.DataTypes.OrderStatusPicker
 			if (_data != null) _data.Value = _dlOrderStatus.SelectedValue;
 
 			var documentId = int.Parse(HttpContext.Current.Request.QueryString["id"]);
-			var orderDoc = new Document(documentId);
+			var orderDoc = ContentService.GetById(documentId);
 
-			var orderGuidValue = orderDoc.getProperty("orderGuid").Value;
-			if (orderGuidValue == null)
-			{
-				return;
-			}
-			if (string.IsNullOrEmpty(orderGuidValue.ToString()))
+			if (!orderDoc.HasProperty("orderGuid"))
 			{
 				return;
 			}
 
-			var orderInfo = OrderHelper.GetOrder(Guid.Parse(orderDoc.getProperty("orderGuid").Value.ToString()));
+			var orderGuid = orderDoc.GetValue<Guid>("orderGuid");
+
+			var orderInfo = OrderHelper.GetOrder(orderGuid);
 
 			orderInfo.SetStatus((OrderStatus) Enum.Parse(typeof (OrderStatus), _dlOrderStatus.SelectedValue), _cbSentEmail.Checked);
 			orderInfo.Save();
@@ -97,14 +97,13 @@ namespace uWebshop.Umbraco.DataTypes.OrderStatusPicker
 
 			var documentId = int.Parse(HttpContext.Current.Request.QueryString["id"]);
 
-			var orderDoc = new Document(documentId);
+			var orderDoc = ContentService.GetById(documentId);
 
-			var orderGuidValue = orderDoc.getProperty("orderGuid").Value;
-			if (orderGuidValue != null && !string.IsNullOrEmpty(orderGuidValue.ToString()))
+			if (orderDoc.HasProperty("orderGuid"))
 			{
-				var orderGuid = Guid.Parse(orderDoc.getProperty("orderGuid").Value.ToString());
+				var orderGuid = orderDoc.GetValue<Guid>("orderGuid");
 
-				var orderInfo = OrderHelper.GetOrderInfo(orderGuid);
+				var orderInfo = OrderHelper.GetOrder(orderGuid);
 
 				_dlOrderStatus.SelectedValue = orderInfo.Status.ToString();
 			}

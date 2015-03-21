@@ -14,11 +14,9 @@ namespace uWebshop.Domain
 		public SellableUnit(ProductInfo product)
 		{
 			Product = product;
-			//ProductDiscountEffects = new DiscountEffects();
 			SellableUnitDiscountEffects = new DiscountEffects();
 		}
 		public ProductInfo Product;
-		//internal DiscountEffects ProductDiscountEffects;
 		internal DiscountEffects SellableUnitDiscountEffects; // includes discount from product and all variants
 
 		internal int PriceInCents

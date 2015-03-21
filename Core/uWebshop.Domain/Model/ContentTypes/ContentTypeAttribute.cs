@@ -12,11 +12,11 @@ namespace uWebshop.Domain.ContentTypes
 		public Type[] AllowedChildTypes;
 		public string Description;
 		public ContentIcon Icon;
-	    public IconClass IconClass;
+		public IconClass IconClass;
 		public string Name;
 		public Type ParentContentType;
 		public ContentThumbnail Thumbnail;
 		public bool InstallerOnly;
-	    public int SortOrder;
+		public int SortOrder;
 	}
 }

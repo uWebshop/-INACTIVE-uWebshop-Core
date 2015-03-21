@@ -74,10 +74,10 @@ namespace uWebshop.API
 			return CategoryAdaptor.Create(DomainHelper.GetCategoryById(categoryId, storeAlias, currencyCode));
 		}
 
-        public static IEnumerable<ICategory> GetCurrentCategoryPath()
-        {
-            return UwebshopRequest.Current.CategoryPath.Select(c => CategoryAdaptor.Create(DomainHelper.GetCategoryById(c.Id)));
-        }
+		public static IEnumerable<ICategory> GetCurrentCategoryPath()
+		{
+			return UwebshopRequest.Current.CategoryPath.Select(c => CategoryAdaptor.Create(DomainHelper.GetCategoryById(c.Id)));
+		}
 
 		/// <summary>
 		/// Gets the category.
