@@ -53,8 +53,8 @@ namespace uWebshop.Umbraco
 			container.RegisterType<IOrderDiscountRepository, UmbracoOrderDiscountRepository>();
 			container.RegisterType<IProductDiscountRepository, UmbracoProductDiscountRepository>();
 			container.RegisterType<IProductRepository, PlainProductRepository>();
-            container.RegisterType<IProductVariantGroupRepository, PlainVariantGroupRepository>();
-            container.RegisterType<IProductVariantRepository, PlainVariantRepository>();
+			container.RegisterType<IProductVariantGroupRepository, PlainVariantGroupRepository>();
+			container.RegisterType<IProductVariantRepository, PlainVariantRepository>();
 			container.RegisterType<ICategoryRepository, PlainCategoryRepository>();
 
 			container.RegisterType<ICMSContentService, CMSContentService>();

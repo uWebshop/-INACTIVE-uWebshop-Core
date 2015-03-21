@@ -15,6 +15,7 @@ using uWebshop.Test.Repositories;
 using uWebshop.Test.Stubs;
 using uWebshop.Umbraco.Interfaces;
 using uWebshop.Umbraco.Repositories;
+using uWebshop.Umbraco.Services;
 using IOrderDiscount = uWebshop.Domain.Interfaces.IOrderDiscount;
 
 namespace uWebshop.Test
@@ -124,6 +125,16 @@ namespace uWebshop.Test
 		public static IOCBuilder<ICategoryService> CategoryService
 		{
 			get { return Config<ICategoryService>(); }
+		}
+
+		public static IOCBuilder<ICategoryRepository> CategoryRepository
+		{
+			get { return Config<ICategoryRepository>(); }
+		}
+
+		public static IOCBuilder<IProductVariantRepository> ProductVariantRepository
+		{
+			get { return Config<IProductVariantRepository>(); }
 		}
 
 		public static IOCBuilder<IProductService> ProductService
@@ -293,6 +304,8 @@ namespace uWebshop.Test
 			ProductDiscountRepository.Mock();
 			ProductRepository.Mock();
 			ProductVariantGroupRepository.Mock();
+			CategoryRepository.Mock();
+			ProductVariantRepository.Mock();
 
 			CMSApplication.Use(new StubCMSApplicationNotInBackend());
 			HttpContextWrapper.Mock();
@@ -556,6 +569,18 @@ namespace uWebshop.Test
 		public static IOCBuilder<IOrderNumberService> Actual(this IOCBuilder<IOrderNumberService> iocBuilder)
 		{
 			iocBuilder.UseType<OrderNumberService>();
+			return iocBuilder;
+		}
+
+		public static IOCBuilder<IApplicationCacheManagingService> Actual(this IOCBuilder<IApplicationCacheManagingService> iocBuilder)
+		{
+			iocBuilder.UseType<UmbracoApplicationCacheManagingService>();
+			return iocBuilder;
+		}
+
+		public static IOCBuilder<ICategoryService> Actual(this IOCBuilder<ICategoryService> iocBuilder)
+		{
+			iocBuilder.UseType<CategoryService>();
 			return iocBuilder;
 		}
 		

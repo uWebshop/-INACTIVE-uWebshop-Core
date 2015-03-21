@@ -37,7 +37,7 @@ namespace uWebshop.Umbraco.Services
 		public UmbracoApplicationCacheManagingService(IProductService productService, IProductVariantService productVariantService, IProductVariantGroupService productVariantGroupService, ICategoryService categoryService, 
 			IOrderDiscountService orderDiscountService, IProductDiscountService productDiscountService,
 			IProductRepository productRepository, ICategoryRepository categoryRepository, IProductVariantGroupRepository productVariantGroupRepository, IProductVariantRepository productVariantRepository,
-			IStoreService storeService, IApplicationCacheService applicationCacheService)//, IShippingProviderService shippingProviderService, IPaymentProviderService paymentProviderService)
+			IStoreService storeService, IApplicationCacheService applicationCacheService)
 		{
 			_productService = productService;
 			_productVariantService = productVariantService;
@@ -65,9 +65,6 @@ namespace uWebshop.Umbraco.Services
 
 		public void ReloadEntityWithGlobalId(int id, string typeName = null)
 		{
-			//if (nodeTypeAlias == null) nodeTypeAlias = new Document(id).ContentType.Alias;
-			//IO.Container.Resolve<IEntityServiceService>().GetByTypeAlias(nodeTypeAlias).ReloadEntityWithId(id);
-			
 			if (Settings.NodeAlias == typeName)
 			{
 				Log.Instance.LogDebug("Settings published, requesting rebuild cache");
@@ -87,13 +84,6 @@ namespace uWebshop.Umbraco.Services
 
 		public void UnloadEntityWithGlobalId(int id, string typeName = null)
 		{
-			//if (typeName == null) typeName = new Document(id).ContentType.Alias;
-
-			//if (Product.IsAlias(typeName))
-			//	_productService.UnloadEntityWithId(id);
-			//else if (ProductVariant.IsAlias(typeName))
-			//	_productVariantService.UnloadEntityWithId(id);
-
 			if (Store.IsAlias(typeName))
 			{
 				Log.Instance.LogDebug("Store published, requesting rebuild cache");
@@ -152,7 +142,7 @@ namespace uWebshop.Umbraco.Services
 		private void FullResetWorker()
 		{
 			// todo: reimplement using TPL
-			// todo: if new publish detected, don't update cache, but wait untill there is no new publish detected in the timeframe
+			// todo: if new publish detected, don't update cache, but wait until there is no new publish detected in the timeframe (Rx throttle)
 			Thread.Sleep(GlobalSettings.DebugMode ? 0 : 2000);
 
 			if (_storesDirty)
@@ -193,7 +183,6 @@ namespace uWebshop.Umbraco.Services
 				OldCacheStuff();
 				MakeCacheResetter();
 			}
-			
 		}
 
 		private void OldCacheStuff()
@@ -207,11 +196,5 @@ namespace uWebshop.Umbraco.Services
 			UmbracoStaticCachedEntityRepository.ResetStaticCache();
 			UmbracoStaticCachedEntityRepository.ResetEntityCache();
 		}
-	}
-
-	// idee
-	internal interface IEntityServiceService
-	{
-		IEntityService<T> GetByTypeAlias<T>(string alias);
 	}
 }
