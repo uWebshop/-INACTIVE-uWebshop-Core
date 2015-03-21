@@ -1,2 +1,2 @@
 build:
-  project: uWebshop.sln      # path to Visual Studio solution or project
+  project: Umbraco\uWebshop.BuildProject\uWebshop.BuildProject.csproj      # path to Visual Studio solution or project
