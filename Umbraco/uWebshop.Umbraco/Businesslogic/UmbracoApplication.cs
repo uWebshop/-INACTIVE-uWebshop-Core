@@ -89,13 +89,14 @@ namespace uWebshop.Umbraco
 
 		public string GetPaymentProviderRepositoryCMSNodeUrlName()
 		{
-			var paymentProviderRepositoryNode = DomainHelper.GetObjectsByAlias<IPublishedContent>(PaymentProvider.PaymentProviderRepositoryNodeAlias, Constants.NonMultiStoreAlias).FirstOrDefault();
+			var paymentProviderRepositoryNode =
+				new UmbracoHelper(UmbracoContext.Current).ContentSingleAtXPath(@"//" + PaymentProvider.PaymentProviderRepositoryNodeAlias);
 			return paymentProviderRepositoryNode == null ? null : paymentProviderRepositoryNode.UrlName;
 		}
 
 		public string GetPaymentProviderSectionCMSNodeUrlName()
 		{
-			var paymentProviderSectionNode = DomainHelper.GetObjectsByAlias<IPublishedContent>(PaymentProvider.PaymentProviderSectionNodeAlias, Constants.NonMultiStoreAlias).FirstOrDefault();
+			var paymentProviderSectionNode = new UmbracoHelper(UmbracoContext.Current).ContentSingleAtXPath(@"//" + PaymentProvider.PaymentProviderSectionNodeAlias);
 			return paymentProviderSectionNode == null ? null : paymentProviderSectionNode.UrlName;
 		}
 
