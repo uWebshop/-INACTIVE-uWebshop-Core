@@ -41,6 +41,16 @@ namespace uWebshop.Umbraco
 	{
 		public void OnApplicationInitialized(UmbracoApplicationBase umbracoApplication, ApplicationContext applicationContext)
 		{
+
+		}
+
+		public void OnApplicationStarting(UmbracoApplicationBase umbracoApplication, ApplicationContext applicationContext)
+		{
+
+		}
+
+		public void OnApplicationStarted(UmbracoApplicationBase umbracoApplication, ApplicationContext applicationContext)
+		{
 			try
 			{
 				Initialize.ContinueInitialization();
@@ -50,15 +60,7 @@ namespace uWebshop.Umbraco
 			{
 				LogHelper.Error(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "Error while initializing uWebshop, most likely due to wrong umbraco.config, please republish the site " + ex.Message, ex);
 			}
-		}
 
-		public void OnApplicationStarting(UmbracoApplicationBase umbracoApplication, ApplicationContext applicationContext)
-		{
-			
-		}
-
-		public void OnApplicationStarted(UmbracoApplicationBase umbracoApplication, ApplicationContext applicationContext)
-		{
 			ContentService.Created += ContentService_Created;
 			ContentService.Published += ContentService_Published;
 			ContentService.Publishing +=ContentService_Publishing;
@@ -609,41 +611,52 @@ namespace uWebshop.Umbraco
 
 		private static void ContentService_Created(IContentService sender, NewEventArgs<IContent> e)
 		{
-			if (e.Entity.Id != 0)
+			try
 			{
-				if (e.Entity.ContentType.Alias.StartsWith(Store.NodeAlias))
+				if (sender == null)
 				{
-					var reg = new Regex(@"\s*");
-					var storeAlias = reg.Replace(e.Entity.Name, "");
+					return;
+				}
+				if (e.Entity.Id != 0)
+				{
+					if (e.Entity.ContentType.Alias.StartsWith(Store.NodeAlias))
+					{
+						var reg = new Regex(@"\s*");
+						var storeAlias = reg.Replace(e.Entity.Name, "");
 
-					Helpers.InstallStore(storeAlias, sender.GetById(e.Entity.Id));
+						Helpers.InstallStore(storeAlias, sender.GetById(e.Entity.Id));
 
-					e.Entity.Name = storeAlias;
-					sender.Save(e.Entity);
+						e.Entity.Name = storeAlias;
+						sender.Save(e.Entity);
+					}
+				}
+
+				var parent = sender.GetParent(e.Entity.Id);
+
+				if (parent == null || parent.Id < 0)
+				{
+					return;
+				}
+
+				var parentDoc = sender.GetById(parent.Id);
+				if (parentDoc.ContentType != null && (Category.IsAlias(e.Entity.ContentType.Alias) && parentDoc.ContentType.Alias == Catalog.CategoryRepositoryNodeAlias))
+				{
+					var docs = GlobalSettings.HideTopLevelNodeFromPath ? sender.GetRootContent().SelectMany(d => d.Children()).ToArray() : sender.GetRootContent();
+
+					var contentEnum = docs as IContent[] ?? docs.ToArray();
+					FixRootCategoryUrlName(e.Entity, contentEnum, "url");
+
+					foreach (var store in StoreHelper.GetAllStores())
+					{
+						string multiStorePropertyName;
+						if (GetMultiStorePropertyName(e.Entity, store, out multiStorePropertyName)) continue;
+						FixRootCategoryUrlName(e.Entity, contentEnum, multiStorePropertyName);
+					}
 				}
 			}
-
-			var parent = sender.GetParent(e.Entity.Id);
-
-			if (parent == null || parent.Id < 0)
+			catch (Exception exception)
 			{
-				return;
-			}
-
-			var parentDoc = sender.GetById(parent.Id);
-			if (parentDoc.ContentType != null && (Category.IsAlias(e.Entity.ContentType.Alias) && parentDoc.ContentType.Alias == Catalog.CategoryRepositoryNodeAlias))
-			{
-				var docs = GlobalSettings.HideTopLevelNodeFromPath ? sender.GetRootContent().SelectMany(d => d.Children()).ToArray() : sender.GetRootContent();
-
-				var contentEnum = docs as IContent[] ?? docs.ToArray();
-				FixRootCategoryUrlName(e.Entity, contentEnum, "url");
-
-				foreach (var store in StoreHelper.GetAllStores())
-				{
-					string multiStorePropertyName;
-					if (GetMultiStorePropertyName(e.Entity, store, out multiStorePropertyName)) continue;
-					FixRootCategoryUrlName(e.Entity, contentEnum, multiStorePropertyName);
-				}
+				LogHelper.Error<ApplicationEventHandler>("ContentService_Created", exception);
 			}
 		}
 

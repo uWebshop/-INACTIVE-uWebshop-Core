@@ -1,4 +1,5 @@
-﻿using Umbraco.Core;
+﻿using System;
+using Umbraco.Core;
 using Umbraco.Core.Services;
 using uWebshop.Common;
 using uWebshop.Domain.Core;
@@ -23,8 +24,16 @@ namespace uWebshop.Umbraco7
 				control.NotNow();
 				return;
 			}
-			control.RegisterInstance<IContentService, IContentService>(ApplicationContext.Current.Services.ContentService);
-			control.RegisterInstance<IContentTypeService, IContentTypeService>(ApplicationContext.Current.Services.ContentTypeService);
+			try
+			{
+				control.RegisterInstance<IContentService, IContentService>(ApplicationContext.Current.Services.ContentService);
+				control.RegisterInstance<IContentTypeService, IContentTypeService>(ApplicationContext.Current.Services.ContentTypeService);
+			}
+			catch (Exception)
+			{
+				control.NotNow();
+				return;
+			}
 
 			UmbracoAddon.VersionSpecificTypesConfiguredInIOCContainer = true;
 		}
