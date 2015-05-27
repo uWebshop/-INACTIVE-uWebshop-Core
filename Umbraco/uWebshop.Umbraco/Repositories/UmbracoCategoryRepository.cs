@@ -4,6 +4,7 @@ using uWebshop.Domain;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
 using uWebshop.Umbraco.Businesslogic;
+using Umbraco.Web;
 
 namespace uWebshop.Umbraco.Repositories
 {
@@ -25,7 +26,19 @@ namespace uWebshop.Umbraco.Repositories
 			category.Disabled = StoreHelper.GetMultiStoreDisableExamine(localization, fields);
 
 			category.Title = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.title, localization, fields);
-			category.URL = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.url, localization, fields);
+			var url = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.url, localization, fields);
+			
+			if (!string.IsNullOrEmpty(url))
+			{
+				category.URL = url;
+			}
+			else
+			{
+				// if there is no url field filled or available, fallback to the Urlname of the node
+				category.URL = new UmbracoHelper(UmbracoContext.Current).TypedContent(category.Id).UrlName;;
+			}
+
+
 			category.MetaDescription = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.metaDescription, localization, fields);
 
 			var rteItem = "RTEItem" + _aliasses.description;

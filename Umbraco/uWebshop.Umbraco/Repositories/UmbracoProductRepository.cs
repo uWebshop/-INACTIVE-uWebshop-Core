@@ -14,6 +14,7 @@ using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
 using uWebshop.Domain.Services;
 using uWebshop.Umbraco.Businesslogic;
+using Umbraco.Web;
 
 namespace uWebshop.Umbraco.Repositories
 {
@@ -55,7 +56,18 @@ namespace uWebshop.Umbraco.Repositories
 			product.SetTemplate(StoreHelper.GetMultiStoreIntValue("template", localization, fields));
 
 			product.Title = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.title, localization, fields);
-			product.URL = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.url, localization, fields);
+			var url = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.url, localization, fields);
+
+			if (!string.IsNullOrEmpty(url))
+			{
+				product.URL = url;
+			}
+			else
+			{
+				// if there is no url field filled or available, fallback to the Urlname of the node
+				product.URL = new UmbracoHelper(UmbracoContext.Current).TypedContent(product.Id).UrlName; ;
+			}
+
 			product.MetaDescription = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.metaDescription, localization, fields);
 
 			var rteItem = "RTEItem" + _aliasses.description;
