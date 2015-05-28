@@ -4,8 +4,7 @@ angular.module("umbraco").controller("uWebshop.VatPicker", function ($scope, ass
 	var config = {
 		items: []
 	};
-
-
+	
 	//map the user config
 	angular.extend(config, $scope.model.config);
 	//map back to the model
@@ -48,4 +47,8 @@ angular.module("umbraco").controller("uWebshop.VatPicker", function ($scope, ass
 	$scope.update = function() {
 		$scope.model.value = $scope.selectedOption.value;
 	};
+
+	$scope.$on("formSubmitting", function () {
+		$scope.model.value = $scope.selectedOption.value;
+	});
 });

@@ -35,5 +35,9 @@ angular.module("umbraco").controller("uWebshop.OrderStatusPicker", function ($sc
 		$scope.update = function () {
 			$scope.model.value = $scope.selectedOption.value;
 		};
+
+		$scope.$on("formSubmitting", function () {
+			$scope.model.value = $scope.selectedOption.value;
+		});
 	});
 });

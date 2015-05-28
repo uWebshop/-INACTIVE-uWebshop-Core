@@ -18,5 +18,9 @@ angular.module("umbraco").controller("uWebshop.PaymentProviderAmountType", funct
 			$scope.model.value = $scope.selectedOption;
 		};
 
+		$scope.$on("formSubmitting", function () {
+			$scope.model.value = $scope.selectedOption;
+		});
+
 	});
 });

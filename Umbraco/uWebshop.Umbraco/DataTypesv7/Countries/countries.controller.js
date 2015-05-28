@@ -29,5 +29,9 @@ angular.module("umbraco").controller("uWebshop.Countries", function ($scope, ass
             $scope.model.value = $scope.selectedOption.Code;
         };
 
+        $scope.$on("formSubmitting", function () {
+        	$scope.model.value = $scope.selectedOption.Code;
+        });
+
     });
 });

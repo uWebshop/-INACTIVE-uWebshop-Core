@@ -21,4 +21,8 @@ angular.module("umbraco").controller("uWebshop.EnableDisable", function ($scope,
 	$scope.update = function () {
 		$scope.model.value = $scope.selectedOption.value;
 	};
+
+	$scope.$on("formSubmitting", function () {
+		$scope.model.value = $scope.selectedOption.value;
+	});
 });

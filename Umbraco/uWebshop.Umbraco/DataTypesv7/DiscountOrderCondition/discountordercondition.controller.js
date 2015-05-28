@@ -18,5 +18,9 @@ angular.module("umbraco").controller("uWebshop.DiscountOrderCondition", function
 			$scope.model.value = $scope.selectedOption;
 		};
 
+		$scope.$on("formSubmitting", function () {
+			$scope.model.value = $scope.selectedOption;
+		});
+
 	});
 });

@@ -17,5 +17,9 @@ angular.module("umbraco").controller("uWebshop.StorePicker", function ($scope, a
 			$scope.model.value = $scope.selectedOption.id;
 		}
 
+		$scope.$on("formSubmitting", function () {
+			$scope.model.value = $scope.selectedOption.id;
+		});
+
 	});
 });

@@ -15,5 +15,9 @@ angular.module("umbraco").controller("uWebshop.EmailTemplatePicker", function ($
 		$scope.update = function () {
 			$scope.model.value = $scope.SelectedOption;
 		};
+
+		$scope.$on("formSubmitting", function () {
+			$scope.model.value = $scope.selectedOption;
+		});
 	});
 });

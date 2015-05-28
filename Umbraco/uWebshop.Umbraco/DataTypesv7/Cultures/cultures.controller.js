@@ -23,5 +23,9 @@ angular.module("umbraco").controller("uWebshop.Cultures", function ($scope, asse
 			$scope.model.value = $scope.selectedOption.LanguageId;
 		};
 
+		$scope.$on("formSubmitting", function () {
+			$scope.model.value = $scope.selectedOption.LanguageId;
+		});
+
 	});
 });
