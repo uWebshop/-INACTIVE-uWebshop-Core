@@ -23,6 +23,7 @@ using IProduct = uWebshop.API.IProduct;
 
 namespace uWebshop.Umbraco.WebApi
 {
+
 	[PluginController("uWebshop")]
 	[KnownType(typeof(BasketOrderInfoAdaptor))]
 	public class StoreApiController : UmbracoApiController
@@ -229,6 +230,30 @@ namespace uWebshop.Umbraco.WebApi
 			var orders = Orders.GetAllOrders().Where(x => x.Customer.GetValue<string>(property) != null && x.Customer.GetValue<string>(property).ToLowerInvariant() == value.ToLowerInvariant());
 
 			return orders.Select(o => o as BasketOrderInfoAdaptor);
+		}
+
+		public string GetCustomerValueFromOrder(string orderGuid, string property)
+		{
+			var order = Orders.GetOrder(orderGuid);
+
+			var customerValue = order.Customer.GetValue<string>(property,true);
+			if (!string.IsNullOrEmpty(customerValue))
+			{
+				return customerValue;
+			}
+			var shippingValue = order.Customer.Shipping.GetValue<string>(property, true);
+			if (!string.IsNullOrEmpty(shippingValue))
+			{
+				return shippingValue;
+			}
+			var extraValue = order.OrderFields.GetValue<string>(property);
+
+			if (!string.IsNullOrEmpty(extraValue))
+			{
+				return extraValue;
+			}
+
+			return string.Empty;
 		}
 
 		public class PostStockRequest

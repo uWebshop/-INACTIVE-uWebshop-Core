@@ -1,9 +1,23 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Serialization;
+using System.Xml;
 using System.Xml.Linq;
+using System.Xml.Serialization;
+using System.Xml.XPath;
 using uWebshop.Domain.Interfaces;
 
 namespace uWebshop.API
 {
+	[DataContract(Name = "Property", Namespace = "")]
+	internal class Property
+	{
+		[DataMember]
+		public string Alias { get; set; }
+		[DataMember]
+		public string Value { get; set; }
+	}
+	
 	[DataContract(Name = "Address", Namespace = "")]
 	internal class XElementAddress : IAddress
 	{
@@ -50,7 +64,26 @@ namespace uWebshop.API
 		public string Phone { get { return GetValue(_propertyNameprefix + "Phone"); } set { } }
 		[DataMember]
 		public string Email { get { return GetValue(_propertyNameprefix + "Email"); } set { } }
+		
+		[DataMember]
+		public IEnumerable<Property> Properties
+		{
+			get
+			{
 
+
+				var enumElements = new List<Property>();
+				foreach (var field in _source.Elements())
+				{
+					enumElements.Add(new Property { Alias = field.Name.LocalName, Value = field.Value });
+				}
+
+				return enumElements;
+
+			}
+			set { }
+		}
+	
 		public T GetValue<T>(string fieldName, bool ignoreCustomerIsShipping = false)
 		{
 			if (_customerIsShipping && !ignoreCustomerIsShipping)
