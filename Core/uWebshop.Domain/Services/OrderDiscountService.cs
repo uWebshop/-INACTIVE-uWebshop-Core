@@ -32,7 +32,7 @@ namespace uWebshop.Domain.Services
 
 		public IEnumerable<IOrderDiscount> GetApplicableDiscountsForOrder(OrderInfo order, ILocalization localization)
 		{
-			if (order.Status != OrderStatus.Incomplete)
+			if (order.IsConfirmed())
 			{
 				Log.Instance.LogError("GetApplicableDiscountsForOrder with NOT incomplete order: " + order.UniqueOrderId + " status: " + order.Status);
 				throw new Exception("Error, please contact the webmaster. Mention: Discount Issue");

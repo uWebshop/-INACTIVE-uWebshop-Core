@@ -41,7 +41,7 @@ namespace uWebshop.Domain.Services
 				return 0;
 			}
 
-			if (orderInfo.Status == OrderStatus.Incomplete)
+			if (orderInfo.IsNotConfirmed())
 			{
 				var coupons = _couponCodeService.GetAllForDiscount(discount.Id);
 				if (coupons.Any()) //
@@ -61,7 +61,7 @@ namespace uWebshop.Domain.Services
 
 			if (discount.OncePerCustomer && !string.IsNullOrEmpty(authenticationProvider.CurrentLoginName))
 			{
-				var ordersforCurrentMember = OrderHelper.GetOrdersForCustomer(authenticationProvider.CurrentLoginName).Where(x => x.Status != OrderStatus.Incomplete && x.Status != OrderStatus.Cancelled && x.Status != OrderStatus.Returned);
+				var ordersforCurrentMember = OrderHelper.GetOrdersForCustomer(authenticationProvider.CurrentLoginName).Where(x => x.IsConfirmed() && x.Status != OrderStatus.Cancelled && x.Status != OrderStatus.Returned);
 
 				if (ordersforCurrentMember.Any(x => x.Discounts.Any(d => d.OriginalId == discount.Id)))
 				{

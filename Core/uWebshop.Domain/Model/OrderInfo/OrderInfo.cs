@@ -367,30 +367,24 @@ namespace uWebshop.Domain
 		/// <param name="sendEmails">if set to <c>true</c> [send emails].</param>
 		public void SetStatus(OrderStatus newStatus, bool sendEmails = true)
 		{
-			//Log.Instance.LogDebug("SetStatus Start SetStatus :" + newStatus);
 			if (EventsOn && BeforeStatusChanged != null)
 			{
 				BeforeStatusChanged(this, new BeforeOrderStatusChangedEventArgs { OrderInfo = this, OrderStatus = _status });
 			}
-			//Log.Instance.LogDebug("SetStatus After BeforeStatusChanged :" + newStatus);
 
-			//Log.Instance.LogDebug("SetStatus Before datetime :" + newStatus);
 			if (_status == OrderStatus.Incomplete && newStatus != OrderStatus.Incomplete)
 			{
 				var discounts = Discounts.ToList();
 				OrderDiscountsFactory = () => discounts;
 				ConfirmDate = DateTime.Now;
 			}
-			//Log.Instance.LogDebug("SetStatus After datetime :" + newStatus);
 
 			_status = newStatus;
 
-			//Log.Instance.LogDebug("SetStatus Start AfterStatusChanged :" + newStatus);
 			if (EventsOn && AfterStatusChanged != null)
 			{
 				AfterStatusChanged(this, new AfterOrderStatusChangedEventArgs { OrderInfo = this, OrderStatus = _status, SendEmails = sendEmails });
 			}
-			//Log.Instance.LogDebug("SetStatus End  :" + newStatus);
 		}
 
 		#endregion
@@ -920,7 +914,7 @@ namespace uWebshop.Domain
 					orderLine.ProductInfo.DiscountAmountInCents = orderLine.ProductInfo.ProductRangePriceInCents - orderLine.ProductInfo.PriceInCents;
 				}
 
-				if (orderInfo.Status != OrderStatus.Incomplete)
+				if (orderInfo.IsConfirmed())
 				{
 					DateTime val;
 					if (!DateTime.TryParse(orderInfo.OrderDate, orderInfo.StoreInfo.CultureInfo.DateTimeFormat, DateTimeStyles.None, out val))

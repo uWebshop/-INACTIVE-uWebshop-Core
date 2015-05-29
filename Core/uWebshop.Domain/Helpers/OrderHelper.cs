@@ -146,7 +146,7 @@ namespace uWebshop.Domain.Helpers
 		{
 			var order = GetUnmodifiedCurrentOrder();
 
-			if (order != null && order.Status != OrderStatus.Incomplete)
+			if (order != null && !order.IsBasket())
 			{
 				order = null;
 			}
@@ -247,14 +247,14 @@ namespace uWebshop.Domain.Helpers
 			}
 
 			// if status is NOT incomplete, and status is PAID or status is OfflinePayment, or if status is confirmed without a payment provider (only possible if there are no payment providers created) return null.
-			if (orderInfo.Status == OrderStatus.OfflinePayment || orderInfo.Status != OrderStatus.Incomplete && orderInfo.Paid == true || orderInfo.Status == OrderStatus.Confirmed && orderInfo.PaymentInfo.Id == 0)
+			if (orderInfo.Status == OrderStatus.OfflinePayment || orderInfo.IsConfirmed() && orderInfo.Paid == true || orderInfo.Status == OrderStatus.Confirmed && orderInfo.PaymentInfo.Id == 0)
 			{
 				return null;
 			}
 			
 			// if status is NOT incomplete and NOT waiting for paymentprovider and NOT paid it means the order is in 'payment progress'
 			// action: create a new COPY of the current order so the customer can't change the original order.
-			if (orderInfo.Status != OrderStatus.OfflinePayment && orderInfo.Status != OrderStatus.Incomplete && orderInfo.Status != OrderStatus.WaitingForPaymentProvider && orderInfo.Paid != true)
+			if (orderInfo.Status != OrderStatus.OfflinePayment && orderInfo.IsConfirmed() && orderInfo.Status != OrderStatus.WaitingForPaymentProvider && orderInfo.Paid != true)
 			{
 				orderInfo = OrderService.CreateCopyOfOrder(orderInfo);
 			}

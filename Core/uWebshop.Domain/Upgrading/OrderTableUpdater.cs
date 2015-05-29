@@ -14,7 +14,7 @@ namespace uWebshop.Domain.Upgrading
 
 		public void AddStoreOrderReferenceIdToExistingOrders()
 		{
-			var orders = OrderHelper.GetAllOrders().Where(orderinfo => orderinfo != null && orderinfo.Status != OrderStatus.Incomplete);
+			var orders = OrderHelper.GetAllOrders().Where(orderinfo => orderinfo != null && orderinfo.IsConfirmed());
 			var orderRepository = IO.Container.Resolve<IOrderRepository>();
 
 			foreach (var orderInfo in orders.Where(order => !order.StoreOrderReferenceId.HasValue))
@@ -29,7 +29,7 @@ namespace uWebshop.Domain.Upgrading
 				{
 					Log.Instance.LogWarning("Ordernumber could not be parsed, for order with id " + orderInfo.DatabaseId + ", guid " + orderInfo.UniqueOrderId);
 				}
-				else if (orderInfo.Status != OrderStatus.Incomplete)
+				else
 				{
 					Log.Instance.LogWarning("Order without ordernumber, id " + orderInfo.DatabaseId + ", guid " + orderInfo.UniqueOrderId);
 				}

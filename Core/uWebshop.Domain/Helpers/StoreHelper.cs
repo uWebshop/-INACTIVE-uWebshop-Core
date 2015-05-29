@@ -561,7 +561,7 @@ namespace uWebshop.Domain.Helpers
 			{
 				var uwebshopRequest = UwebshopRequest.Current;
 				uwebshopRequest.Localization = result;
-				if (uwebshopRequest.OrderInfo != null && uwebshopRequest.OrderInfo.Status == OrderStatus.Incomplete)
+				if (uwebshopRequest.OrderInfo != null && uwebshopRequest.OrderInfo.IsBasket())
 				{
 					IO.Container.Resolve<IOrderUpdatingService>().ChangeLocalization(uwebshopRequest.OrderInfo, CurrentLocalization);
 				}

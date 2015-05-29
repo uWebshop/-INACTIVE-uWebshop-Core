@@ -70,7 +70,7 @@ namespace uWebshop.Domain.Services
 
 			if (!_cmsApplication.RequestIsInCMSBackend(HttpContext.Current) && !isWishList)
 			{
-				if (order == null || order.Paid.GetValueOrDefault(false) || (order.Status != OrderStatus.PaymentFailed && order.Status != OrderStatus.Incomplete && order.Status != OrderStatus.WaitingForPayment))
+				if (order == null || order.Paid.GetValueOrDefault(false) || (order.Status != OrderStatus.PaymentFailed && order.IsConfirmed() && order.Status != OrderStatus.WaitingForPayment))
 				{
 					Log.Instance.LogDebug("Starting new order for user" + (order == null ? "" : ", previous order: " + order.UniqueOrderId));
 					order = OrderHelper.CreateOrder();
@@ -312,12 +312,12 @@ namespace uWebshop.Domain.Services
 
 			order.FireBeforeOrderUpdatedEvent();
 
-			if (order.Status == OrderStatus.Incomplete)
+			if (order.IsBasket())
 			{
 				OrderHelper.SetOrderCookie(order);
 			}
 
-			if (order.Status == OrderStatus.Incomplete)
+			if (order.IsBasket())
 			{
 				order.OrderDate = DateTime.Now.ToString("f");
 
@@ -331,7 +331,7 @@ namespace uWebshop.Domain.Services
 
 		public void SetCurrentMember(OrderInfo order)
 		{
-			if (order.Status != OrderStatus.Incomplete)
+			if (order.IsConfirmed())
 			{
 				Log.Instance.LogError("SetCurrentMember for NOT incomplete order: " + order.UniqueOrderId + " status: " + order.Status);
 			}
@@ -642,7 +642,7 @@ namespace uWebshop.Domain.Services
 		{
 			if (!_cmsApplication.RequestIsInCMSBackend(HttpContext.Current))
 			{
-				if (order.Paid.GetValueOrDefault() || order.Status != OrderStatus.PaymentFailed && order.Status != OrderStatus.Incomplete && order.Status != OrderStatus.WaitingForPayment)
+				if (order.Paid.GetValueOrDefault() || order.Status != OrderStatus.PaymentFailed && order.IsConfirmed() && order.Status != OrderStatus.WaitingForPayment)
 				{
 					return true;
 				}
@@ -706,7 +706,7 @@ namespace uWebshop.Domain.Services
 
 		public void ChangeLocalization(OrderInfo order, ILocalization localization)
 		{
-			if (order.Status != OrderStatus.Incomplete)
+			if (order.IsConfirmed())
 			{
 				Log.Instance.LogError("ChangeLocalization for NOT incomplete order: " + order.UniqueOrderId + " status: " + order.Status);
 			}
@@ -728,7 +728,7 @@ namespace uWebshop.Domain.Services
 			AddPaymentProvider(order, order.PaymentInfo.Id, order.PaymentInfo.MethodId, localization);
 			AddShippingProvider(order, order.ShippingInfo.Id, order.ShippingInfo.MethodId, localization);
 
-			if (order.Status != OrderStatus.Incomplete)
+			if (order.IsConfirmed())
 			{
 				Log.Instance.LogError("ReloadOrderData for NOT incomplete order: " + order.UniqueOrderId + " status: " +order.Status);
 			}

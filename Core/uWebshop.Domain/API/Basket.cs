@@ -67,7 +67,7 @@ namespace uWebshop.API
 
 			var order = OrderHelper.GetOrder(guid);
 
-			if (order.Status == OrderStatus.Incomplete)
+			if (order.IsBasket())
 			{
 				return CreateBasketFromOrderInfo(order);
 			}
