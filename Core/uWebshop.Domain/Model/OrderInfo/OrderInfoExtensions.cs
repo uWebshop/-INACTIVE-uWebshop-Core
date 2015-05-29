@@ -18,7 +18,7 @@ namespace uWebshop.Domain
 		/// <param name="order">The order.</param>
 		public static bool IsNotConfirmed(this OrderInfo order)
 		{
-			return order.Status == OrderStatus.Incomplete; // or scheduled
+			return order.Status == OrderStatus.Incomplete || order.Status == OrderStatus.Scheduled; // todo: what about whishlist?
 		}
 
 		/// <summary>
@@ -36,7 +36,7 @@ namespace uWebshop.Domain
 		/// <param name="order">The order.</param>
 		public static bool IsConfirmed(this OrderInfo order)
 		{
-			return order.Status != OrderStatus.Incomplete; // or scheduled
+			return order.Status != OrderStatus.Incomplete && order.Status != OrderStatus.Scheduled; // todo: what about whishlist?
 		}
 	}
 }

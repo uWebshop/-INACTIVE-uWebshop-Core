@@ -687,7 +687,7 @@ namespace uWebshop.Domain.Services
 				// set final ordernumber for payment provider communication, but not yet save it in the database
 				orderNrTransaction.Generate();
 
-				var paymentRedirectUrl = OrderHelper.HandlePaymentRequest(order, confirmationNodeId);
+				var paymentRedirectUrl = OrderHelper.HandlePaymentRequest(order, confirmationNodeId); // todo: this may be inappropriate as it will worsen responsiveness
 				if (paymentRedirectUrl == "failed")
 				{
 					orderNrTransaction.Rollback();

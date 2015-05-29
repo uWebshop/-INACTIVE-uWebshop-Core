@@ -99,7 +99,8 @@
 		WaitingForPayment,
 		WaitingForPaymentProvider,
 		Returned,
-		Wishlist
+		Wishlist,
+		Scheduled,
 	}
 
 	public enum EmailType
