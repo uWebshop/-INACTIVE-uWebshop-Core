@@ -35,9 +35,8 @@ namespace uWebshop.Umbraco.Repositories
 			else
 			{
 				// if there is no url field filled or available, fallback to the Urlname of the node
-				category.URL = new UmbracoHelper(UmbracoContext.Current).TypedContent(category.Id).UrlName;;
+				category.URL = new UmbracoHelper(UmbracoContext.Current).TypedContent(category.Id).UrlName;
 			}
-
 
 			category.MetaDescription = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.metaDescription, localization, fields);
 

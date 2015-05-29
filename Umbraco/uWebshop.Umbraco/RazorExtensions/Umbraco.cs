@@ -4,15 +4,11 @@ using System.Linq;
 using System.Web;
 using System.Xml;
 using umbraco.BasePages;
-using umbraco.cms.businesslogic.web;
-using umbraco.interfaces;
-using umbraco.NodeFactory;
 using uWebshop.Common;
 using uWebshop.DataAccess;
 using uWebshop.Domain;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
-using uWebshop.Umbraco;
 using uWebshop.Umbraco.Interfaces;
 using Umbraco.Core;
 using Umbraco.Core.Services;
@@ -26,10 +22,7 @@ namespace uWebshop.API
 
 		public static string GetProperty(this IUwebshopUmbracoEntity content, string propertyAlias)
 		{
-			var umbHelper = new UmbracoHelper(UmbracoContext.Current);
-			var property = umbHelper.Content(content.Id).GetMultiStoreItem(propertyAlias);
-			if (property == null) return string.Empty;
-			return property.Value;
+			return Umbraco.ExtensionMethods.GetProperty(content, propertyAlias);
 		}
 
 		/// <summary>

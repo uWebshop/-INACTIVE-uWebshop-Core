@@ -93,12 +93,11 @@ namespace uWebshop.Umbraco
 			return IO.Container.Resolve<ICMSEntityRepository>().GetByGlobalId(entity.Id).NodeTypeAlias;
 		}
 
-		public static string GetProperty(this IProductVariant variant, string propertyAlias)
+		public static string GetProperty(this IUwebshopUmbracoEntity variant, string propertyAlias)
 		{
 			var umbHelper = new UmbracoHelper(UmbracoContext.Current);
-			var property = umbHelper.Content(variant.Id).GetMultiStoreItem(propertyAlias);
-			if (property == null) return string.Empty;
-			return property.Value;
+			var property = umbHelper.TypedContent(variant.Id).GetMultiStoreItem(propertyAlias);
+			return property == null ? string.Empty : property.Value.ToString();
 		}
 
 		public static string GetProperty(this MultiStoreUwebshopContent content, string propertyAlias)
@@ -106,14 +105,12 @@ namespace uWebshop.Umbraco
 			var umbHelper = new UmbracoHelper(UmbracoContext.Current);
 			if (propertyAlias != null && content != null)
 			{
-				var property = umbHelper.Content(content.Id).GetMultiStoreItem(propertyAlias);
-
+				var property = umbHelper.TypedContent(content.Id).GetMultiStoreItem(propertyAlias);
 				if (property != null && property.Value != null)
 				{
-					return property.Value;
+					return property.Value.ToString();
 				}
 			}
-
 			return string.Empty;
 		}
 

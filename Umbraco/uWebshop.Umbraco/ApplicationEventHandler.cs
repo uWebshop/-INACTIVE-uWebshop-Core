@@ -869,7 +869,7 @@ namespace uWebshop.Umbraco
 				{
 					var storeService = StoreHelper.StoreService;
 					storeService.TriggerStoreChangedEvent(storeService.GetById(content.Id, null));
-					var node = umbHelper.Content(content.Id);
+					var node = umbHelper.TypedContent(content.Id);
 					if (!content.Name.Equals(node.Name))
 					{
 						StoreHelper.RenameStore(node.Name, content.Name);

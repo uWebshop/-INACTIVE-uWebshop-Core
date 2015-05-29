@@ -1,10 +1,7 @@
 ﻿using System;
-
 using System.Web;
 using System.Xml;
 using umbraco.BasePages;
-using umbraco.cms.businesslogic.web;
-
 using uWebshop.Common;
 using uWebshop.DataAccess;
 using uWebshop.Domain;
@@ -23,10 +20,7 @@ namespace uWebshop.RazorExtensions
 
 		public static string GetProperty(this IUwebshopUmbracoEntity content, string propertyAlias)
 		{
-			var umbHelper = new UmbracoHelper(UmbracoContext.Current);
-			var property = umbHelper.Content(content.Id).GetMultiStoreItem(propertyAlias);
-			if (property == null) return string.Empty;
-			return property.Value;
+			return Umbraco.ExtensionMethods.GetProperty(content, propertyAlias);
 		}
 
 		/// <summary>
@@ -49,19 +43,12 @@ namespace uWebshop.RazorExtensions
 		/// <returns></returns>
 		public static OrderInfo GetOrderByDocumentId(int documentId)
 		{
-			
-
 			var orderDoc = ContentService.GetById(documentId);
-
 			if (orderDoc.HasProperty("orderGuid"))
 			{
-
 				var orderGuid = orderDoc.GetValue<Guid>("orderGuid");
-
 				return OrderHelper.GetOrder(orderGuid);
-
 			}
-
 			return null;
 		}
 
@@ -73,12 +60,10 @@ namespace uWebshop.RazorExtensions
 		public static OrderStatus OrderStatusFromRequest()
 		{
 			var orderStatus = HttpContext.Current.Request["orderStatus"];
-
 			if (!string.IsNullOrEmpty(orderStatus))
 			{
 				return (OrderStatus) Enum.Parse(typeof (OrderStatus), orderStatus);
 			}
-
 			return OrderStatus.Confirmed;
 		}
 
@@ -88,7 +73,6 @@ namespace uWebshop.RazorExtensions
 		public static void CreateOrderDocument()
 		{
 			var orderGuid = HttpContext.Current.Request["orderGuid"];
-
 			if (!string.IsNullOrEmpty(orderGuid))
 			{
 				var guid = Guid.Parse(orderGuid);
@@ -111,7 +95,6 @@ namespace uWebshop.RazorExtensions
 		public static void OpenNode()
 		{
 			var nodeIdString = HttpContext.Current.Request["openNodeId"];
-
 			if (!string.IsNullOrEmpty(nodeIdString))
 			{
 				int nodeId;
@@ -127,7 +110,6 @@ namespace uWebshop.RazorExtensions
 		public static void OpenNode(int nodeId)
 		{
 			var doc = ContentService.GetById(nodeId);
-
 			if (!string.IsNullOrEmpty(doc.Path) && BasePage.Current != null)
 			{
 				BasePage.Current.ClientTools.SyncTree(doc.Path, true);
@@ -141,62 +123,52 @@ namespace uWebshop.RazorExtensions
 			var storeAlias = HttpContext.Current.Request["storeAlias"];
 			var sender = HttpContext.Current.Request["Id"];
 
-			if (!string.IsNullOrEmpty(editNodeId))
+			if (string.IsNullOrEmpty(editNodeId))
 			{
-				int nodeId;
-				int.TryParse(editNodeId, out nodeId);
+				return false;
+			}
 
-				if (nodeId != 0)
+			var nodeId = Helpers.ParseInt(editNodeId);
+			if (nodeId == 0)
+			{
+				return false;
+			}
+
+			var publish = false;
+
+			var doc = IO.Container.Resolve<ICMSChangeContentService>().GetById(nodeId);
+
+			foreach (var key in HttpContext.Current.Request.Form.AllKeys)
+			{
+				if (key != null && !key.StartsWith("ctl00$") && !key.StartsWith("body_TabView") && !key.StartsWith("__EVENT") && !key.StartsWith("__VIEWSTATE") &&
+				    !key.StartsWith("__ASYNCPOST") && doc.HasProperty(key))
 				{
-					var publish = false;
-
-					//var contentService = ApplicationContext.Current.Services.ContentService;
-
-					var doc = IO.Container.Resolve<ICMSChangeContentService>().GetById(nodeId);
-
-					//var doc = new Document(nodeId);//contentService.GetById(nodeId);
-
-					foreach (var key in HttpContext.Current.Request.Form.AllKeys)
+					var value = HttpContext.Current.Request.Form[key];
+					if (!key.StartsWith("stock"))
 					{
-						if (key != null && !key.StartsWith("ctl00$") && !key.StartsWith("body_TabView") && !key.StartsWith("__EVENT") && !key.StartsWith("__VIEWSTATE") && !key.StartsWith("__ASYNCPOST") && doc.HasProperty(key))
+						if (!string.IsNullOrEmpty(value))
 						{
-							var value = HttpContext.Current.Request.Form[key];
-
-							if (!key.StartsWith("stock"))
-							{
-								if (!string.IsNullOrEmpty(value))
-								{
-									doc.SetValue(key, value);
-
-									//doc.SetValue(key, value);
-
-									publish = true;
-								}
-							}
-							else
-							{
-								if (Product.IsAlias(doc.ContentTypeAlias) || ProductVariant.IsAlias(doc.ContentTypeAlias))
-								{
-									int newStockInt;
-
-									int.TryParse(value, out newStockInt);
-
-									UWebshopStock.UpdateStock(nodeId, newStockInt, false, storeAlias);
-								}
-							}
+							doc.SetValue(key, value);
+							publish = true;
 						}
 					}
-
-					if (publish)
+					else
 					{
-						//contentService.SaveAndPublish(doc, 0, true);
-						doc.SaveAndPublish();
-						//doc.Save();
-						//doc.Publish(new User(0));
-						BasePage.Current.ClientTools.ChangeContentFrameUrl(string.Concat("editContent.aspx?id=", sender));
-						return true;
+						if (Product.IsAlias(doc.ContentTypeAlias) || ProductVariant.IsAlias(doc.ContentTypeAlias))
+						{
+							int newStockInt;
+							int.TryParse(value, out newStockInt);
+							UWebshopStock.UpdateStock(nodeId, newStockInt, false, storeAlias);
+						}
 					}
 				}
+			}
+
+			if (publish)
+			{
+				doc.SaveAndPublish();
+				BasePage.Current.ClientTools.ChangeContentFrameUrl(string.Concat("editContent.aspx?id=", sender));
+				return true;
 			}
 
 			return false;

@@ -65,7 +65,7 @@ namespace uWebshop.Umbraco.Repositories
 			else
 			{
 				// if there is no url field filled or available, fallback to the Urlname of the node
-				product.URL = new UmbracoHelper(UmbracoContext.Current).TypedContent(product.Id).UrlName; ;
+				product.URL = new UmbracoHelper(UmbracoContext.Current).TypedContent(product.Id).UrlName;
 			}
 
 			product.MetaDescription = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.metaDescription, localization, fields);

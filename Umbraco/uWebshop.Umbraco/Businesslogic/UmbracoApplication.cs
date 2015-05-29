@@ -205,30 +205,35 @@ namespace uWebshop.Umbraco
 				Log.Instance.LogDebug("GetMultiStoreContentProperty Fallback to node after this");
 			}
 
-			var node = umbHelper.Content(contentId);
+			var node = umbHelper.TypedContent(contentId);
 			if (node.Name != null)
 			{
 				var property = node.GetProperty(propertyAlias);
-				if (globalOverrulesStore && property != null && !string.IsNullOrEmpty(property.Value))
+				if (globalOverrulesStore && PropertyHasNonEmptyValue(property))
 				{
-					return property.Value;
+					return property.Value.ToString();
 				}
 				var propertyMultiStoreMultiCurrency = node.GetProperty(multiStoreMultiCurrencyAlias);
-				if (propertyMultiStoreMultiCurrency != null && !string.IsNullOrEmpty(propertyMultiStoreMultiCurrency.Value))
+				if (PropertyHasNonEmptyValue(propertyMultiStoreMultiCurrency))
 				{
-					return propertyMultiStoreMultiCurrency.Value;
+					return propertyMultiStoreMultiCurrency.Value.ToString();
 				}
 				var propertyMultistore = node.GetProperty(multiStoreAlias);
-				if (propertyMultistore != null && !string.IsNullOrEmpty(propertyMultistore.Value))
+				if (PropertyHasNonEmptyValue(propertyMultistore))
 				{
-					return propertyMultistore.Value;
+					return propertyMultistore.Value.ToString();
 				}
-				if (property != null)
+				if (property != null && property.Value != null)
 				{
-					return property.Value;
+					return property.Value.ToString();
 				}
 			}
 			return string.Empty;
+		}
+
+		private static bool PropertyHasNonEmptyValue(IPublishedContentProperty property)
+		{
+			return (property != null && property.Value != null && !string.IsNullOrEmpty(property.Value.ToString()));
 		}
 
 		public string RenderMacro(string templateAlias, int contentId, params object[] properties)

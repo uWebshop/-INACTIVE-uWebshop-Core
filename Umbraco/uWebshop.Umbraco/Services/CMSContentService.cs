@@ -254,7 +254,7 @@ namespace uWebshop.Umbraco.Services
 			public NodeBasedContent(int id)
 			{
 				var umbHelper = new UmbracoHelper(UmbracoContext.Current);
-				_node = umbHelper.Content(id);
+				_node = umbHelper.TypedContent(id);
 			}
 
 			private NodeBasedContent(IPublishedContent node)

@@ -13,7 +13,7 @@ namespace uWebshop.XSLTExtensions
 			try
 			{
 				var umbHelper = new UmbracoHelper(UmbracoContext.Current);
-				return umbHelper.Content(nodeId).GetMultiStoreItem(alias).Value;
+				return umbHelper.TypedContent(nodeId).GetMultiStoreItem(alias).Value.ToString();
 			}
 			catch
 			{
