@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Web.Http;
 using System.Web.Security;
 using Umbraco.Core.IO;
 using Umbraco.Web.Mvc;
@@ -71,11 +73,11 @@ namespace uWebshop.Umbraco.WebApi
 
 		public IEnumerable<BasketOrderInfoAdaptor> GetAllOrders(string status = "All")
 		{
-			var orders = OrderHelper.GetAllOrders().Select(o => new BasketOrderInfoAdaptor(o)).Where(x => x.Status != OrderStatus.Incomplete);
+			var orders = Orders.GetAllOrders().Where(x => x.Status != OrderStatus.Incomplete);
 
 			if (string.IsNullOrEmpty(status) || status.ToLowerInvariant() == "all" || status.ToLowerInvariant() == "undefined")
 			{
-				return orders;
+				return orders.Select(o => o as BasketOrderInfoAdaptor);
 			}
 
 			OrderStatus orderStatus;
@@ -83,12 +85,50 @@ namespace uWebshop.Umbraco.WebApi
 
 			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated)
 			{
-				return orders.Where(x => x.Status == orderStatus);
+				return orders.Where(x => x.Status == orderStatus).Select(o => o as BasketOrderInfoAdaptor);
 			}
 
 			return null;
 		}
+
 		
+		public IEnumerable<BasketOrderInfoAdaptor> GetOrdersByDays(int days, string storeAlias = null)
+		{
+			var orders = Orders.GetOrders(days, storeAlias).Where(x => x.Status != OrderStatus.Incomplete);
+
+			return orders.Select(o => o as BasketOrderInfoAdaptor);
+		}
+		
+		public IEnumerable<BasketOrderInfoAdaptor> GetOrdersByStatus(string status, string storeAlias = null)
+		{
+			OrderStatus orderStatus;
+			Enum.TryParse(status, true, out orderStatus); 
+
+			var orders = Orders.GetOrders(orderStatus, storeAlias);
+
+			return orders.Select(o => o as BasketOrderInfoAdaptor);
+		}
+		
+		/// <summary>
+		/// Get orders based on DateTimeRange
+		/// </summary>
+		/// <param name="startDateTime">Format: 2015-05-26T16:03:35</param>
+		/// <param name="endDateTime">Format: 2015-05-26T16:03:35</param>
+		/// <param name="storeAlias"></param>
+		/// <returns></returns>
+		public IEnumerable<BasketOrderInfoAdaptor> GetOrdersByDateRange(string startDateTime, string endDateTime = null, string storeAlias = null)
+		{
+			DateTime startDate;
+			DateTime.TryParse(startDateTime, out startDate);
+			var endDate = DateTime.Now;
+			if (endDateTime != null) DateTime.TryParse(endDateTime, out endDate);
+
+			var orders = Orders.GetOrders(startDate, endDate, storeAlias);
+
+			return orders.Select(o => o as BasketOrderInfoAdaptor);
+		}
+
+
 		public IEnumerable<string> GetEmailTemplates()
 		{
 			var files = Directory.GetFiles(IOHelper.MapPath(SystemDirectories.Xslt), "*.xslt", SearchOption.AllDirectories).Select(file => file.Replace(IOHelper.MapPath(SystemDirectories.Xslt) + @"\", string.Empty)).ToList();
@@ -160,28 +200,35 @@ namespace uWebshop.Umbraco.WebApi
 			var order = Orders.GetAllOrders()
 				.FirstOrDefault(x => x.OrderReference.ToLowerInvariant() == orderNumber.ToLowerInvariant());
 
-			return order != null ? order as BasketOrderInfoAdaptor : null;
+			return order as BasketOrderInfoAdaptor;
 		}
 
 		public IEnumerable<BasketOrderInfoAdaptor> GetOrdersByFirstName(string customerFirstName)
 		{
-			var orders = OrderHelper.GetAllOrders().Where(x => x.CustomerFirstName.ToLowerInvariant() == customerFirstName.ToLowerInvariant());
+			var orders = Orders.GetAllOrders().Where(x => x.Customer.FirstName.ToLowerInvariant() == customerFirstName.ToLowerInvariant());
 
-			return orders.Select(o => new BasketOrderInfoAdaptor(o));
+			return orders.Select(o => o as BasketOrderInfoAdaptor);
 		}
 
 		public IEnumerable<BasketOrderInfoAdaptor> GetOrdersByLastName(string customerLastName)
 		{
-			var orders = OrderHelper.GetAllOrders().Where(x => x.CustomerLastName.ToLowerInvariant() == customerLastName.ToLowerInvariant());
+			var orders = Orders.GetAllOrders().Where(x => x.Customer.LastName.ToLowerInvariant() == customerLastName.ToLowerInvariant());
 
-			return orders.Select(o => new BasketOrderInfoAdaptor(o));
+			return orders.Select(o => o as BasketOrderInfoAdaptor);
 		}
 
 		public IEnumerable<BasketOrderInfoAdaptor> GetOrdersByEmail(string customerEmail)
 		{
-			var orders = OrderHelper.GetAllOrders().Where(x => x.CustomerEmail.ToLowerInvariant() == customerEmail.ToLowerInvariant());
+			var orders = Orders.GetAllOrders().Where(x => x.Customer.Email.ToLowerInvariant() == customerEmail.ToLowerInvariant());
 
-			return orders.Select(o => new BasketOrderInfoAdaptor(o));
+			return orders.Select(o => o as BasketOrderInfoAdaptor);
+		}
+
+		public IEnumerable<BasketOrderInfoAdaptor> GetOrdersByCustomerProperty(string property, string value)
+		{
+			var orders = Orders.GetAllOrders().Where(x => x.Customer.GetValue<string>(property) != null && x.Customer.GetValue<string>(property).ToLowerInvariant() == value.ToLowerInvariant());
+
+			return orders.Select(o => o as BasketOrderInfoAdaptor);
 		}
 
 		public class PostStockRequest
