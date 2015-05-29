@@ -45,9 +45,9 @@ namespace uWebshop.Umbraco.Repositories
 	// todo: merge the functionality of these and the old repo's
 	internal class PlainCategoryRepository : PlainEntityRepository<Category>, ICategoryRepository
 	{
-		public PlainCategoryRepository(ICategoryAliassesService aliasses)
+		public PlainCategoryRepository(ICategoryAliassesService aliasses, ICMSContentService cmsContentService)
 		{
-			_oldRepo = new UmbracoCategoryRepository(aliasses);
+			_oldRepo = new UmbracoCategoryRepository(aliasses, cmsContentService);
 		}
 	}
 	internal class PlainVariantRepository : PlainEntityRepository<ProductVariant>, IProductVariantRepository
@@ -59,9 +59,9 @@ namespace uWebshop.Umbraco.Repositories
 	}
 	internal class PlainProductRepository : PlainEntityRepository<Product>, IProductRepository
 	{
-		public PlainProductRepository(ISettingsService settingsService, IStoreService storeService, IProductVariantService variantService, IProductVariantGroupService variantGroupService, IProductAliassesService productAliassesService)
+		public PlainProductRepository(ISettingsService settingsService, IStoreService storeService, IProductVariantService variantService, IProductVariantGroupService variantGroupService, IProductAliassesService productAliassesService, ICMSContentService cmsContentService)
 		{
-			_oldRepo = new UmbracoProductRepository(settingsService, storeService, variantService, variantGroupService, productAliassesService);
+			_oldRepo = new UmbracoProductRepository(settingsService, storeService, variantService, variantGroupService, productAliassesService, cmsContentService);
 		}
 	}
 

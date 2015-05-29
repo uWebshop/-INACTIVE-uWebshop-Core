@@ -8,7 +8,7 @@ using uWebshop.Domain.Interfaces;
 namespace uWebshop.Domain.BaseClasses
 {
 	/// <summary>
-	///     Class based on the Umbraco Node-class to inherit from
+	/// Class based on the Umbraco Node-class to inherit from
 	/// </summary>
 	[DataContract(Name = "Node", Namespace = "", IsReference = true)]
 	public class uWebshopEntity : IUwebshopUmbracoEntity
@@ -17,9 +17,6 @@ namespace uWebshop.Domain.BaseClasses
 
 		private int _nodeId;
 
-		/// <summary>
-		/// The _node name
-		/// </summary>
 		protected string _nodeName;
 
 		private string _nodeTypeAlias;
@@ -37,7 +34,7 @@ namespace uWebshop.Domain.BaseClasses
 		}
 
 		/// <summary>
-		///     Initializes a new instance of the uWebshop.Domain.NodeBase class
+		/// Initializes a new instance of the uWebshop.Domain.NodeBase class
 		/// </summary>
 		/// <param name="id">NodeId of the node</param>
 		public uWebshopEntity(int id)
@@ -48,8 +45,6 @@ namespace uWebshop.Domain.BaseClasses
 		/// <summary>
 		/// Gets the node.
 		/// </summary>
-		/// <value> The node.
-		/// </value>
 		/// <exception cref="System.ArgumentException">Request for Node but no nodeId</exception>
 		[IgnoreDataMember]
 		[Browsable(false)]
@@ -66,7 +61,7 @@ namespace uWebshop.Domain.BaseClasses
 		}
 
 		/// <summary>
-		///     Gets the id of the node
+		/// Gets the id of the node
 		/// </summary>
 		[DataMember(Name = "id")]
 		public int Id
@@ -83,7 +78,7 @@ namespace uWebshop.Domain.BaseClasses
 			get { return NodeTypeAlias; }
 			internal set { NodeTypeAlias = value; }
 		}
-		
+
 		/// <summary>
 		/// Gets a value indicating whether the entity is disabled.
 		/// </summary>
@@ -91,13 +86,9 @@ namespace uWebshop.Domain.BaseClasses
 		///   <c>true</c> if disabled; otherwise, <c>false</c>.
 		/// </value>
 		public virtual bool Disabled { get; set; }
-		//{
-		//	get { return false; }
-		//	set { }
-		//}
 
 		/// <summary>
-		///     Gets the type alias of the node
+		/// Gets the type alias of the node
 		/// </summary>
 		[DataMember(Name = "nodeTypeAlias")]
 		public string NodeTypeAlias
@@ -107,7 +98,7 @@ namespace uWebshop.Domain.BaseClasses
 		}
 
 		/// <summary>
-		///     Gets the name of the node
+		/// Gets the name of the node
 		/// </summary>
 		[DataMember(Name = "nodeName")]
 		public string Name
@@ -117,7 +108,7 @@ namespace uWebshop.Domain.BaseClasses
 		}
 
 		/// <summary>
-		///     Gets the id of the parent of the node
+		/// Gets the id of the parent of the node
 		/// </summary>
 		[DataMember(Name = "parentID")]
 		public int ParentId
@@ -130,39 +121,6 @@ namespace uWebshop.Domain.BaseClasses
 				if (parent != null)
 					_parentId = parent.Id;
 				return _parentId.GetValueOrDefault();
-
-				//Log.Instance.LogDebug(DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") + " using Fallback to find ParentID, Examine failed!");
-				//SearchResult examineNode = StoreHelper.GetNodeFromExamine(Id, "NodeBase.....ParentId....");
-				//if (examineNode != null && examineNode.Fields.ContainsKey("parentID"))
-				//{
-				//	string value = examineNode.Fields["parentID"];
-				//	int id;
-				//	if (Int32.TryParse(value, out id))
-				//		return id;
-				//}
-
-				////Log.Instance.LogDebug("ParentId 1: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
-				//var parent = Node.Parent;
-				////Log.Instance.LogDebug("ParentId 2: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
-				//bool parentNotNull = parent != null;
-				////Log.Instance.LogDebug("ParentId 3: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
-
-				//if (parentNotNull)
-				//{
-				//	int result = parent.Id;
-				//	_parentId = result;
-				//	//Log.Instance.LogDebug("ParentId 4: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
-				//	return result;
-				//}
-
-				//var n = Node;
-				//if (n.Parent != null)
-				//{
-				//	_parentId = n.Parent.Id;
-				//	return n.Parent.Id;
-				//}
-
-				//return -1;
 			}
 			set { _parentId = value; }
 		}
@@ -176,12 +134,12 @@ namespace uWebshop.Domain.BaseClasses
 		[DataMember(Name = "path")]
 		public string Path
 		{
-			get { return _path ?? (_path = Node.Path); } //StoreHelper.GetMultiStoreItem(Id, "path"));
+			get { return _path ?? (_path = Node.Path); } //StoreHelper.GetMultiStoreItem(Id, "path")); => todo: preferred, but we can't use multistore at this level
 			set { _path = value; }
 		}
 
 		/// <summary>
-		///     Gets a System.DateTime object that is set to the date and time when the node is created
+		/// Gets a System.DateTime object that is set to the date and time when the node is created
 		/// </summary>
 		[DataMember(Name = "createDate")]
 		public DateTime CreateDate
@@ -191,7 +149,7 @@ namespace uWebshop.Domain.BaseClasses
 		}
 
 		/// <summary>
-		///     Gets a System.DateTime object that is set to the date and time when the node is updated
+		/// Gets a System.DateTime object that is set to the date and time when the node is updated
 		/// </summary>
 		[DataMember(Name = "updateDate")]
 		public DateTime UpdateDate
@@ -201,7 +159,7 @@ namespace uWebshop.Domain.BaseClasses
 		}
 
 		/// <summary>
-		///     SortOrder for the node
+		/// SortOrder for the node
 		/// </summary>
 		[DataMember]
 		public int SortOrder
@@ -210,7 +168,7 @@ namespace uWebshop.Domain.BaseClasses
 			{
 				if (_sortOrder.HasValue) return _sortOrder.GetValueOrDefault();
 				//int sortOrder;
-				return //int.TryParse(StoreHelper.GetMultiStoreItem(Id, "sortOrder"), out sortOrder) ? sortOrder : 
+				return //int.TryParse(StoreHelper.GetMultiStoreItem(Id, "sortOrder"), out sortOrder) ? sortOrder :  => todo: preferred, but we can't use multistore at this level
 					Node.SortOrder; // Node fallback
 			}
 			set { _sortOrder = value; }
@@ -229,35 +187,9 @@ namespace uWebshop.Domain.BaseClasses
 			set { _urlName = value; }
 		}
 
-		///// <summary>
-		///// Loads the data from examine.
-		///// </summary>
-		///// <param name="storeAlias">The store alias.</param>
-		///// <param name="examineNode">The examine node.</param>
-		///// <returns></returns>
-		//protected virtual bool LoadDataFromExamine(string storeAlias, SearchResult examineNode = null)
-		//{
-		//	//Log.Instance.LogDebug( DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") + "LoadDataFromExamine::NodeBase start"); 
-		//	bool logAtEnd = false;
-		//	if (examineNode == null)
-		//	{
-		//		logAtEnd = true;
-		//		examineNode = StoreHelper.GetNodeFromExamine(_nodeId);
-		//	}
-		//	if (examineNode == null)
-		//	{
-		//		return false;
-		//	}
-
-		//	LoadFieldsFromExamine(new DictionaryPropertyProvider(examineNode));
-
-		//	//if (logAtEnd)
-		//	//    Log.Instance.LogDebug(DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") + "END LoadDataFromExamine::NodeBase typealias:" + _nodeTypeAlias);
-		//	return true;
-		//}
-
 		internal virtual void LoadFieldsFromExamine(IPropertyProvider fields)
 		{
+			// NB: we can't use multi store properties here, since Store itself is loaded using this method
 			string stringValue = null;
 			if (_nodeId == 0 && fields.UpdateValueIfPropertyPresent("id", ref stringValue))
 			{
@@ -273,15 +205,11 @@ namespace uWebshop.Domain.BaseClasses
 
 			if (fields.ContainsKey("sortOrder"))
 			{
-				string value = fields.GetStringValue("sortOrder");
+				var value = fields.GetStringValue("sortOrder");
 				int sortOrder;
 				if (Int32.TryParse(value, out sortOrder))
 					_sortOrder = sortOrder;
 			}
-			//if (_nodeId == 0)
-			//	_nodeId = GetIntValue("id", examineNode).GetValueOrDefault(); can't use multistore here!!!! -> vanwege Store (will cause endless loop)
-			//_parentId = GetIntValue("parentID", examineNode);  can't use multistore here!!!! -> vanwege Store
-			//_sortOrder = GetIntValue("sortOrder", examineNode); can't use multistore here!!!! -> vanwege Store
 
 			if (fields.ContainsKey("nodeTypeAlias"))
 			{

@@ -20,7 +20,6 @@ namespace uWebshop.Umbraco.Services
 	{
 		public IUwebshopReadonlyContent GetReadonlyById(int id)
 		{
-			// might want to do some caching here
 			return new NodeBasedContent(id);
 		}
 
@@ -93,8 +92,7 @@ namespace uWebshop.Umbraco.Services
 		{
 			return InternalHelpers.LoadImageWithId(id);
 		}
-
-
+		
 		private class DocumentBasedContent : IUwebshopContent
 		{
 			private readonly IContent _document;

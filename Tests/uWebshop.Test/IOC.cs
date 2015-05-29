@@ -274,6 +274,11 @@ namespace uWebshop.Test
 			get { return Config<IAuthenticationProvider>(); }
 		}
 
+		public static IOCBuilder<ICMSContentService> CMSContentService
+		{
+			get { return Config<ICMSContentService>(); }
+		}
+
 		public static IOCBuilder<T> Config<T>() where T : class
 		{
 			return new IOCBuilder<T>();
@@ -307,6 +312,7 @@ namespace uWebshop.Test
 			CategoryRepository.Mock();
 			ProductVariantRepository.Mock();
 
+			CMSContentService.SetupNewMock().Setup(m => m.GetReadonlyById(It.IsAny<int>())).Returns(new Mock<IUwebshopReadonlyContent>().Object);
 			CMSApplication.Use(new StubCMSApplicationNotInBackend());
 			HttpContextWrapper.Mock();
 

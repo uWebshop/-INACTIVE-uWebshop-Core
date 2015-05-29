@@ -46,8 +46,6 @@ namespace uWebshop.Domain
 
 		public IEnumerable<ICategory> CategoryPath { get; set; }
 
-		// evt fallback voor oude shops?  IO.Container.Resolve<ICatalogUrlResolvingService>().GetCategoryFromUrlName(HttpContext.Current.Request["category"]); HttpContext.Current.Request["resolvedCategoryId"];
-
 		/// <summary>
 		/// Gets the current product.
 		/// </summary>

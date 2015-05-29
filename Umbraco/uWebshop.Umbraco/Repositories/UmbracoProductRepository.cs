@@ -25,14 +25,16 @@ namespace uWebshop.Umbraco.Repositories
 		private readonly IProductVariantService _variantService;
 		private readonly IProductVariantGroupService _variantGroupService;
 		private readonly IProductAliassesService _aliasses;
-		
-		public UmbracoProductRepository(ISettingsService settingsService, IStoreService storeService, IProductVariantService variantService, IProductVariantGroupService variantGroupService, IProductAliassesService productAliassesService)
+		private readonly ICMSContentService _cmsContentService;
+
+		public UmbracoProductRepository(ISettingsService settingsService, IStoreService storeService, IProductVariantService variantService, IProductVariantGroupService variantGroupService, IProductAliassesService productAliassesService, ICMSContentService cmsContentService)
 		{
 			_settingsService = settingsService;
 			_storeService = storeService;
 			_variantService = variantService;
 			_variantGroupService = variantGroupService;
 			_aliasses = productAliassesService;
+			_cmsContentService = cmsContentService;
 		}
 
 		public override void LoadDataFromPropertiesDictionary(Product product, IPropertyProvider fields, ILocalization localization)
@@ -65,7 +67,7 @@ namespace uWebshop.Umbraco.Repositories
 			else
 			{
 				// if there is no url field filled or available, fallback to the Urlname of the node
-				product.URL = new UmbracoHelper(UmbracoContext.Current).TypedContent(product.Id).UrlName;
+				product.URL = _cmsContentService.GetReadonlyById(product.Id).UrlName;
 			}
 
 			product.MetaDescription = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.metaDescription, localization, fields);

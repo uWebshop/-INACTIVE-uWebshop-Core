@@ -19,10 +19,6 @@ namespace uWebshop.Domain
 	[ContentType(ParentContentType = typeof(StoreRepositoryContentType), Name = "Store", Description = "#StoreDescription", Alias = "uwbsStore", IconClass = IconClass.store, Icon = ContentIcon.Store, Thumbnail = ContentThumbnail.Folder)]
 	public class Store : uWebshopEntity, IStoreInternal
 	{
-		public Store()
-		{
-			
-		}
 		/// <summary>
 		/// The node alias
 		/// </summary>
