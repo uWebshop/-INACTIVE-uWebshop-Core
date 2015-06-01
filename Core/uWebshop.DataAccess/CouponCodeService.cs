@@ -18,10 +18,7 @@ namespace uWebshop.DataAccess
 		public IEnumerable<ICoupon> GetAll()
 		{
 			var coupons = new List<Coupon>();
-
-			var sqlHelper = DataLayerHelper.CreateSqlHelper(ConnectionString);
-
-			using (var reader = sqlHelper.ExecuteReader("SELECT * FROM uWebshopCoupons " + null))
+			using (var reader = uWebshopOrders.SQLHelper.ExecuteReader("SELECT * FROM uWebshopCoupons " + null))
 			{
 				while (reader.Read())
 				{
@@ -33,10 +30,8 @@ namespace uWebshop.DataAccess
 
 		public IEnumerable<ICoupon> GetAllForDiscount(int discountId)
 		{
-			var sqlHelper = DataLayerHelper.CreateSqlHelper(ConnectionString);
 			var coupons = new List<Coupon>();
-
-			using (var reader = sqlHelper.ExecuteReader("SELECT * FROM uWebshopCoupons WHERE DiscountId = @discountId", sqlHelper.CreateParameter("@discountId", discountId)))
+			using (var reader = uWebshopOrders.SQLHelper.ExecuteReader("SELECT * FROM uWebshopCoupons WHERE DiscountId = @discountId", uWebshopOrders.SQLHelper.CreateParameter("@discountId", discountId)))
 			{
 				while (reader.Read())
 				{
@@ -48,9 +43,7 @@ namespace uWebshop.DataAccess
 
 		public ICoupon Get(int discountId, string couponCode)
 		{
-			var sqlHelper = DataLayerHelper.CreateSqlHelper(ConnectionString);
-
-			using (var reader = sqlHelper.ExecuteReader("SELECT * FROM uWebshopCoupons WHERE DiscountId = @discountId AND CouponCode = @couponCode", sqlHelper.CreateParameter("@discountId", discountId), sqlHelper.CreateParameter("@couponCode", couponCode)))
+			using (var reader = uWebshopOrders.SQLHelper.ExecuteReader("SELECT * FROM uWebshopCoupons WHERE DiscountId = @discountId AND CouponCode = @couponCode", uWebshopOrders.SQLHelper.CreateParameter("@discountId", discountId), uWebshopOrders.SQLHelper.CreateParameter("@couponCode", couponCode)))
 			{
 				while (reader.Read())
 				{
@@ -66,10 +59,8 @@ namespace uWebshop.DataAccess
 		
 		public IEnumerable<ICoupon> GetAllWithCouponcode(string couponCode)
 		{
-			var sqlHelper = DataLayerHelper.CreateSqlHelper(ConnectionString);
 			var coupons = new List<Coupon>();
-
-			using (var reader = sqlHelper.ExecuteReader("SELECT * FROM uWebshopCoupons WHERE CouponCode = @couponCode", sqlHelper.CreateParameter("@couponCode", couponCode)))
+			using (var reader = uWebshopOrders.SQLHelper.ExecuteReader("SELECT * FROM uWebshopCoupons WHERE CouponCode = @couponCode", uWebshopOrders.SQLHelper.CreateParameter("@couponCode", couponCode)))
 			{
 				while (reader.Read())
 				{
@@ -87,29 +78,25 @@ namespace uWebshop.DataAccess
 
 		public void Save(ICoupon coupon)
 		{
-			var sqlHelper = DataLayerHelper.CreateSqlHelper(ConnectionString);
-
-			sqlHelper.ExecuteNonQuery("update [uWebshopCoupons] set NumberAvailable = @NumberAvailable WHERE DiscountId = @DiscountId and CouponCode = @CouponCode", sqlHelper.CreateParameter("@DiscountId", coupon.DiscountId), sqlHelper.CreateParameter("@CouponCode", coupon.CouponCode), sqlHelper.CreateParameter("@NumberAvailable", coupon.NumberAvailable));
+			uWebshopOrders.SQLHelper.ExecuteNonQuery("update [uWebshopCoupons] set NumberAvailable = @NumberAvailable WHERE DiscountId = @DiscountId and CouponCode = @CouponCode", uWebshopOrders.SQLHelper.CreateParameter("@DiscountId", coupon.DiscountId), uWebshopOrders.SQLHelper.CreateParameter("@CouponCode", coupon.CouponCode), uWebshopOrders.SQLHelper.CreateParameter("@NumberAvailable", coupon.NumberAvailable));
 		}
 
 		public void Save(int discountId, IEnumerable<ICoupon> coupons)
 		{
-			var sqlHelper = DataLayerHelper.CreateSqlHelper(ConnectionString);
-
-			sqlHelper.ExecuteNonQuery("delete from [uWebshopCoupons] WHERE DiscountId = @discountId", sqlHelper.CreateParameter("@discountId", discountId));
+			uWebshopOrders.SQLHelper.ExecuteNonQuery("delete from [uWebshopCoupons] WHERE DiscountId = @discountId", uWebshopOrders.SQLHelper.CreateParameter("@discountId", discountId));
 
 			if (coupons.Any())
 			{
-				if (sqlHelper.ConnectionString.Contains("|DataDirectory|") || DataLayerHelper.IsEmbeddedDatabase(ConnectionString) || ConnectionString.ToLower().Contains("mysql"))
+				if (uWebshopOrders.SQLHelper.ConnectionString.Contains("|DataDirectory|") || DataLayerHelper.IsEmbeddedDatabase(ConnectionString) || ConnectionString.ToLower().Contains("mysql"))
 				{
 					foreach (var coupon in coupons)
 					{
-						sqlHelper.ExecuteNonQuery(@"INSERT into uWebshopCoupons(DiscountId, CouponCode, NumberAvailable) values(@discountId, @couponcode, @numberavailable)", sqlHelper.CreateParameter("@discountId", coupon.DiscountId), sqlHelper.CreateParameter("@couponcode", coupon.CouponCode), sqlHelper.CreateParameter("@numberavailable", coupon.NumberAvailable));
+						uWebshopOrders.SQLHelper.ExecuteNonQuery(@"INSERT into uWebshopCoupons(DiscountId, CouponCode, NumberAvailable) values(@discountId, @couponcode, @numberavailable)", uWebshopOrders.SQLHelper.CreateParameter("@discountId", coupon.DiscountId), uWebshopOrders.SQLHelper.CreateParameter("@couponcode", coupon.CouponCode), uWebshopOrders.SQLHelper.CreateParameter("@numberavailable", coupon.NumberAvailable));
 					}
 				}
 				else
 				{
-					sqlHelper.ExecuteNonQuery("insert into [uWebshopCoupons] (DiscountId, CouponCode, NumberAvailable) VALUES " + string.Join(", ", coupons.Select(c => "(" + c.DiscountId + ", '" + c.CouponCode + "', " + c.NumberAvailable + ")").ToArray()));
+					uWebshopOrders.SQLHelper.ExecuteNonQuery("insert into [uWebshopCoupons] (DiscountId, CouponCode, NumberAvailable) VALUES " + string.Join(", ", coupons.Select(c => "(" + c.DiscountId + ", '" + c.CouponCode + "', " + c.NumberAvailable + ")").ToArray()));
 				}
 			}
 		}
@@ -125,11 +112,9 @@ namespace uWebshop.DataAccess
 
 		public void InstallCouponsTable()
 		{
-			var sqlHelper = DataLayerHelper.CreateSqlHelper(ConnectionString);
-
 			try
 			{
-				sqlHelper.ExecuteNonQuery(@"CREATE TABLE 
+				uWebshopOrders.SQLHelper.ExecuteNonQuery(@"CREATE TABLE 
 					[uWebshopCoupons](
 					[DiscountId] [int] NOT NULL,
 					[CouponCode] nvarchar (500) NOT NULL, 

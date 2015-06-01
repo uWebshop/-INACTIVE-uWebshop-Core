@@ -35,9 +35,7 @@ namespace uWebshop.DataAccess
 			else
 			{
 				stocks = new List<StockInfo>();
-				var sqlHelper = DataLayerHelper.CreateSqlHelper(ConnectionString);
-
-				var reader = sqlHelper.ExecuteReader("SELECT NodeId, Stock, StoreAlias, OrderCount FROM uWebshopStock");
+				var reader = uWebshopOrders.SQLHelper.ExecuteReader("SELECT NodeId, Stock, StoreAlias, OrderCount FROM uWebshopStock");
 				while (reader.Read())
 				{
 					stocks.Add(new StockInfo {NodeId = reader.GetInt("NodeId"), Stock = reader.GetInt("Stock"), StoreAlias = reader.GetString("StoreAlias"), OrderCount = reader.GetInt("OrderCount")});
@@ -49,9 +47,7 @@ namespace uWebshop.DataAccess
 
 		public static Guid GetCacheGuid()
 		{
-			var sqlHelper = DataLayerHelper.CreateSqlHelper(ConnectionString);
-
-			var reader = sqlHelper.ExecuteReader("SELECT cacheGuid FROM uWebshop");
+			var reader = uWebshopOrders.SQLHelper.ExecuteReader("SELECT cacheGuid FROM uWebshop");
 			while (reader.Read())
 			{
 				reader.GetString("cacheGuid");
@@ -128,7 +124,7 @@ namespace uWebshop.DataAccess
 		{
 			var setOrderCount = updateOrderCount;
 
-			var sqlHelper = DataLayerHelper.CreateSqlHelper(ConnectionString);
+			var sqlHelper = uWebshopOrders.SQLHelper;
 			storeAlias = storeAlias ?? string.Empty;
 
 			var currentStock = 0;
@@ -179,7 +175,7 @@ namespace uWebshop.DataAccess
 
 			var setOrderCount = updateOrderCount;
 
-			var sqlHelper = DataLayerHelper.CreateSqlHelper(ConnectionString);
+			var sqlHelper = uWebshopOrders.SQLHelper;
 
 			var currentStock = 0;
 			var orderedCount = 0;
@@ -212,7 +208,7 @@ namespace uWebshop.DataAccess
 		/// <param name="storeAlias"> </param>
 		public static int SetOrderCount(int productId, int orderCountToUpdate, string storeAlias = null)
 		{
-			var sqlHelper = DataLayerHelper.CreateSqlHelper(ConnectionString);
+			var sqlHelper = uWebshopOrders.SQLHelper;
 			storeAlias = storeAlias ?? string.Empty;
 
 			var orderedCount = 0;
@@ -239,11 +235,9 @@ namespace uWebshop.DataAccess
 
 		public static void InstallStockTable()
 		{
-			var sqlHelper = DataLayerHelper.CreateSqlHelper(ConnectionString);
-
 			try
 			{
-				sqlHelper.ExecuteNonQuery(@"CREATE TABLE 
+				uWebshopOrders.SQLHelper.ExecuteNonQuery(@"CREATE TABLE 
 					[uWebshopStock](
 					[id] [int] IDENTITY(1,1) PRIMARY KEY NOT NULL,
 					[Stock] [int] NOT NULL,
@@ -270,8 +264,7 @@ namespace uWebshop.DataAccess
 		{
 			var setOrderCount = updateOrderCount;
 
-			var sqlHelper = DataLayerHelper.CreateSqlHelper(ConnectionString);
-
+			var sqlHelper = uWebshopOrders.SQLHelper;
 			if (string.IsNullOrEmpty(storeAlias))
 			{
 				storeAlias = string.Empty;
