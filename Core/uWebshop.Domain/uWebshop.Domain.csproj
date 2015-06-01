@@ -138,6 +138,7 @@
     <Compile Include="Interfaces\IDiscountEffect.cs" />
     <Compile Include="Interfaces\IDiscountableUnit.cs" />
     <Compile Include="Model\OrderInfo\OrderInfoExtensions.cs" />
+    <Compile Include="Model\OrderInfo\OrderSeries.cs" />
     <Compile Include="Model\OrderInfo\SellableUnit.cs" />
     <Compile Include="Businesslogic\SimplePrice.cs" />
     <Compile Include="NewtonsoftJsonNet\Bson\BsonBinaryType.cs" />

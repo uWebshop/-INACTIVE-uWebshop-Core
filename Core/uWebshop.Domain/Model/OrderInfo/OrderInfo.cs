@@ -24,7 +24,7 @@ using IOrderDiscount = uWebshop.Domain.Interfaces.IOrderDiscount;
 namespace uWebshop.Domain
 {
 	/// <summary>
-	/// 
+	/// An order
 	/// </summary>
 	[DataContract(Namespace = "")]
 	[Serializable]
@@ -190,7 +190,6 @@ namespace uWebshop.Domain
 		#endregion
 
 		// dependencies
-
 		private readonly List<CustomOrderValidation> _customValidations = new List<CustomOrderValidation>();
 
 		/// <summary>
@@ -299,6 +298,20 @@ namespace uWebshop.Domain
 		[DataMember]
 		public int ShippingProviderAmountInCents;
 
+		/// <summary>
+		/// Gets or sets the delivery date.
+		/// </summary>
+		[DataMember]
+		public DateTime DeliveryDate { get; set; }
+
+		/// <summary>
+		/// Gets or sets the order series.
+		/// </summary>
+		/// <value>
+		/// The order series.
+		/// </value>
+		public OrderSeries OrderSeries { get; set; }
+		
 		/// <summary>
 		/// The store information
 		/// </summary>
@@ -987,6 +1000,11 @@ namespace uWebshop.Domain
 			orderInfo.StoreOrderReferenceId = orderData.StoreOrderReferenceId;
 			orderInfo.OrderNumber = orderData.OrderReferenceNumber;
 
+			if (orderData.SeriesId > 0)
+			{
+				orderInfo.OrderSeries = new OrderSeries(orderData);
+			}
+
 			if (HttpContext.Current != null && (!IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || UwebshopRequest.Current.PaymentProvider != null))
 			{
 				var currentUserIp = HttpContext.Current.Request.UserHostAddress;
@@ -1088,6 +1106,15 @@ namespace uWebshop.Domain
 			orderData.CustomerFirstName = CustomerFirstName;
 			orderData.CustomerLastName = CustomerLastName;
 			orderData.TransactionId = PaymentInfo.TransactionId;
+
+			if (OrderSeries != null)
+			{
+				orderData.SeriesId = OrderSeries.Id;
+				orderData.SeriesCronInterval = OrderSeries.CronInterval;
+				orderData.SeriesStart = OrderSeries.Start;
+				orderData.SeriesEnd = OrderSeries.End;
+				orderData.SeriesEndAfterInstances = OrderSeries.EndAfterInstances;
+			}
 
 			orderData.OrderXML = DomainHelper.SerializeObjectToXmlString(new OrderDTO.Order(this));
 

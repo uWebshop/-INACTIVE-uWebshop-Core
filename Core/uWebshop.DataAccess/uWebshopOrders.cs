@@ -185,6 +185,35 @@ namespace uWebshop.DataAccess
 			return orderInfos;
 		}
 
+		public static List<OrderData> GetOrdersDeliveredBetweenTimes(DateTime startTime, DateTime endTime)
+		{
+			var orderInfos = new List<OrderData>();
+
+			if (startTime >= endTime)
+			{
+				return orderInfos;
+			}
+
+			var sqlHelper = DataLayerHelper.CreateSqlHelper(ConnectionString);
+
+			using (var reader = sqlHelper.ExecuteReader(
+				"SELECT * FROM uWebshopOrders left outer join uWebshopOrderSeries on seriesID = uWebshopOrderSeries.id " +
+				" WHERE deliveryDate >= @startTime and deliveryDate < @endTime",
+				sqlHelper.CreateParameter("@startTime", startTime),
+				sqlHelper.CreateParameter("@endTime", endTime)))
+			{
+				while (reader.Read())
+				{
+					var orderInfo = reader.GetString("orderInfo");
+					if (!string.IsNullOrEmpty(orderInfo))
+					{
+						orderInfos.Add(new OrderData(reader));
+					}
+				}
+			}
+			return orderInfos;
+		}
+
 		public static void StoreOrder(OrderData orderData)
 		{
 			if (string.IsNullOrWhiteSpace(orderData.OrderXML))
@@ -331,9 +360,6 @@ namespace uWebshop.DataAccess
 		public static void InstallOrderTable()
 		{
 			var sqlHelper = DataLayerHelper.CreateSqlHelper(ConnectionString);
-
-			var isMySql = sqlHelper.GetType().Name.Contains("mysql"); // untested! idee naar http://our.umbraco.org/forum/developers/api-questions/33111-Detecting-database-in-use-(MS-SQL-SQL-CE-MySQL)
-
 			try
 			{
 				sqlHelper.ExecuteNonQuery(@"CREATE TABLE 
@@ -352,12 +378,13 @@ namespace uWebshop.DataAccess
 					[customerID] int NULL,
 					[customerUsername] nvarchar (500) NULL,
 					[createDate] [datetime] NULL,
-					[updateDate] [datetime] NULL)");
+					[updateDate] [datetime] NULL,
+					[deliveryDate] [datetime] NULL,
+					[seriesID] [int] NULL)");
 			}
 			catch (Exception ex)
 			{
-				LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "InstallOrderTable Catch: Already Exists?");
-
+				LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "InstallOrderTable Catch: Already Exists? Exception: " + ex);
 				try
 				{
 					sqlHelper.ExecuteNonQuery(@"ALTER TABLE [uWebshopOrders]
@@ -365,6 +392,7 @@ namespace uWebshop.DataAccess
 				}
 				catch
 				{
+					LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "InstallOrderTable Catch adding customerUsername column: Already Exists? Exception: " + ex);
 				}
 				try
 				{
@@ -373,7 +401,38 @@ namespace uWebshop.DataAccess
 				}
 				catch
 				{
+					LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "InstallOrderTable Catch adding storeOrderReferenceID column: Already Exists? Exception: " + ex);
 				}
+				try
+				{
+					sqlHelper.ExecuteNonQuery(@"ALTER TABLE [uWebshopOrders]
+						ADD [deliveryDate] [datetime] NULL");
+					sqlHelper.ExecuteNonQuery(@"ALTER TABLE [uWebshopOrders]
+						ADD [seriesID] [int] NULL");
+				}
+				catch
+				{
+					LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "InstallOrderTable Catch adding deliveryDate,seriesID columns: Already Exists? Exception: " + ex);
+				}
+			}
+		}
+
+		public static void InstallOrderSeriesTable()
+		{
+			var sqlHelper = DataLayerHelper.CreateSqlHelper(ConnectionString);
+			try
+			{
+				sqlHelper.ExecuteNonQuery(@"CREATE TABLE 
+					[uWebshopOrderSeries](
+					[id] [int] IDENTITY(1,1) PRIMARY KEY NOT NULL,
+					[cronInterval] [varchar](100) NOT NULL,
+					[start] [datetime] NOT NULL,
+					[end] [datetime] NULL,
+					[endAfterInstances] [int] NOT NULL)");
+			}
+			catch (Exception ex)
+			{
+				LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "InstallOrderSeriesTable Catch: Already Exists? Exception: " + ex);
 			}
 		}
 

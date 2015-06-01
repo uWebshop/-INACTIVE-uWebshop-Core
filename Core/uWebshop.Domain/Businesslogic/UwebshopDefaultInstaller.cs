@@ -28,6 +28,16 @@ namespace uWebshop.Domain.Businesslogic
 			}
 			try
 			{
+				Log.Instance.LogDebug("uWebshop Installer InstallOrderSeriesTable Start: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
+				uWebshopOrders.InstallOrderSeriesTable();
+				Log.Instance.LogDebug("uWebshop Installer InstallOrderSeriesTable End: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
+			}
+			catch
+			{
+				Log.Instance.LogError("uWebshopOrders.InstallOrderSeriesTable()");
+			}
+			try
+			{
 				Log.Instance.LogDebug("uWebshop Installer AddStoreOrderReferenceIdToExistingOrders Start: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
 				new OrderTableUpdater().AddStoreOrderReferenceIdToExistingOrders();
 				Log.Instance.LogDebug("uWebshop Installer AddStoreOrderReferenceIdToExistingOrders End: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
