@@ -73,9 +73,10 @@ namespace uWebshop.API
 
 
 				var enumElements = new List<Property>();
-				foreach (var field in _source.Elements())
+				if (_source != null && _source.Elements().Any())
 				{
-					enumElements.Add(new Property { Alias = field.Name.LocalName, Value = field.Value });
+					enumElements.AddRange(
+						_source.Elements().Select(field => new Property {Alias = field.Name.LocalName, Value = field.Value}));
 				}
 
 				return enumElements;
