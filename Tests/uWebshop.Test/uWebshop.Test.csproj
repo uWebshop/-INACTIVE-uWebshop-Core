@@ -87,6 +87,7 @@
     <Compile Include="Domain\Domain classes\ProductTests\NiceUrlTests.cs" />
     <Compile Include="Domain\Domain classes\ProductTests\OrderablePropertyTests.cs" />
     <Compile Include="Domain\Domain classes\ProductTests\ProductIncludingVariantPricesTests.cs" />
+    <Compile Include="Domain\Helper classes\CronHelperTests.cs" />
     <Compile Include="Domain\Model\ProductVariantInfoTests\RangedPriceInCentsTests.cs" />
     <Compile Include="Domain\Services\CatalogUrlResolvingServiceTests.cs" />
     <Compile Include="Domain\Services\StorepickerUrlDeterminationTests.cs" />

@@ -99,6 +99,8 @@
     <Compile Include="Businesslogic\HttpRequestSender.cs" />
     <Compile Include="Businesslogic\Price.cs" />
     <Compile Include="Core\Initialize.cs" />
+    <Compile Include="Helpers\CronHelper.cs" />
+    <Compile Include="Helpers\CrontabSchedule.cs" />
     <Compile Include="Interfaces\External API\ICustomer.cs" />
     <Compile Include="Interfaces\External API\IOrderFields.cs" />
     <Compile Include="Interfaces\ICategoryRepository.cs" />
