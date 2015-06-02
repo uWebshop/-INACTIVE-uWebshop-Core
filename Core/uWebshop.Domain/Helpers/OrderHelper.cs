@@ -217,7 +217,6 @@ namespace uWebshop.Domain.Helpers
 		/// if status is NOT incomplete, and status is PAID or status is OfflinePayment, return null.
 		/// </summary>
 		/// <param name="overruleCopyOrderOnConfirmedOrder">if set to <c>true</c> don't make a new order when the current one is confirmed.</param>
-		/// <returns></returns>
 		public static OrderInfo GetOrder(bool overruleCopyOrderOnConfirmedOrder = false)
 		{
 			var orderInfo = GetUnmodifiedCurrentOrder();
@@ -231,9 +230,8 @@ namespace uWebshop.Domain.Helpers
 		/// action: create a new COPY of the current order so the customer can't change the original order.
 		/// if status is NOT incomplete, and status is PAID or status is OfflinePayment, return null.
 		/// </summary>
-		/// <param name="orderInfo"></param>
+		/// <param name="orderInfo">The order</param>
 		/// <param name="overruleCopyOrderOnConfirmedOrder">if set to <c>true</c> don't make a new order when the current one is confirmed.</param>
-		/// <returns></returns>
 		public static OrderInfo GetOrder(OrderInfo orderInfo, bool overruleCopyOrderOnConfirmedOrder = false)
 		{
 			if (orderInfo == null)
@@ -269,7 +267,6 @@ namespace uWebshop.Domain.Helpers
 		/// action: create a new COPY of the current order so the customer can't change the original order.
 		/// if status is NOT incomplete, and status is PAID or status is OfflinePayment, create a new order
 		/// </summary>
-		/// <returns></returns>
 		public static OrderInfo GetOrCreateOrder()
 		{
 			LogThis("GetOrCreateOrder()");
@@ -283,7 +280,6 @@ namespace uWebshop.Domain.Helpers
 		/// Get order for current customer
 		/// </summary>
 		/// <param name="uniqueOrderId">The unique order unique identifier.</param>
-		/// <returns></returns>
 		public static XmlDocument GetOrderXML(Guid uniqueOrderId)
 		{
 			return OrderRepository.GetOrderInfoXML(uniqueOrderId);
@@ -295,7 +291,6 @@ namespace uWebshop.Domain.Helpers
 		/// <param name="customerId">The customer unique identifier.</param>
 		/// <param name="storeAlias">The store alias.</param>
 		/// <param name="includeIncomplete">if set to <c>true</c> [include incomplete].</param>
-		/// <returns></returns>
 		public static IEnumerable<OrderInfo> GetOrdersForCustomer(int customerId, string storeAlias = null, bool includeIncomplete = false)
 		{
 			return OrderRepository.GetOrdersFromCustomer(customerId, storeAlias, includeIncomplete); 
@@ -307,19 +302,26 @@ namespace uWebshop.Domain.Helpers
 		/// <param name="userName">Name of the login.</param>
 		/// <param name="storeAlias">The store alias.</param>
 		/// <param name="includeIncomplete">if set to <c>true</c> [include incomplete].</param>
-		/// <returns></returns>
 		public static IEnumerable<OrderInfo> GetOrdersForCustomer(string userName, string storeAlias = null, bool includeIncomplete = false)
 		{
 			return OrderRepository.GetOrdersFromCustomer(userName, storeAlias, includeIncomplete);
 		}
 
+		/// <summary>
+		/// Gets the orders delivered between times.
+		/// </summary>
+		/// <param name="startTime">The start time.</param>
+		/// <param name="endTime">The end time.</param>
+		public static IEnumerable<OrderInfo> GetOrdersDeliveredBetweenTimes(DateTime startTime, DateTime endTime)
+		{
+			return uWebshopOrders.GetOrdersDeliveredBetweenTimes(startTime, endTime).Select(OrderInfo.CreateOrderInfoFromOrderData);
+		}
 
 		/// <summary>
 		/// Returns all the orders from a customer (member) Id;
 		/// </summary>
 		/// <param name="customerId">The customer unique identifier.</param>
 		/// <param name="storeAlias">The store alias.</param>
-		/// <returns></returns>
 		public static IEnumerable<OrderInfo> GetWishlistsForCustomer(int customerId, string storeAlias = null)
 		{
 			return OrderRepository.GetWishlistsFromCustomer(customerId, storeAlias);
@@ -330,8 +332,6 @@ namespace uWebshop.Domain.Helpers
 		/// </summary>
 		/// <param name="userName">Name of the login.</param>
 		/// <param name="storeAlias">The store alias.</param>
-		/// <param name="includeIncomplete">if set to <c>true</c> [include incomplete].</param>
-		/// <returns></returns>
 		public static IEnumerable<OrderInfo> GetWishlistsForCustomer(string userName, string storeAlias = null)
 		{
 			return OrderRepository.GetWishlistsFromCustomer(userName, storeAlias);
@@ -341,7 +341,6 @@ namespace uWebshop.Domain.Helpers
 		/// Gets all orders.
 		/// </summary>
 		/// <param name="storeAlias">The store alias.</param>
-		/// <returns></returns>
 		public static IEnumerable<OrderInfo> GetAllOrders(string storeAlias = null)
 		{
 			return storeAlias != null
@@ -377,7 +376,6 @@ namespace uWebshop.Domain.Helpers
 		/// Gets the total amount using vat check in cents.
 		/// </summary>
 		/// <param name="uniqueOrderId">The unique order unique identifier.</param>
-		/// <returns></returns>
 		public static int GetTotalAmountUsingVatCheckInCents(Guid uniqueOrderId)
 		{
 			return GetOrder(uniqueOrderId).ChargedAmountInCents;
@@ -389,7 +387,6 @@ namespace uWebshop.Domain.Helpers
 		/// <param name="orderInfo">The order</param>
 		/// <param name="orderLineId">Id of the orderline</param>
 		/// <param name="alias">the fieldalias</param>
-		/// <returns></returns>
 		public static string CustomOrderLineValue(OrderInfo orderInfo, int orderLineId, string alias)
 		{
 			var orderline = orderInfo.OrderLines.FirstOrDefault(x => x.OrderLineId == orderLineId);
@@ -401,7 +398,6 @@ namespace uWebshop.Domain.Helpers
 		/// </summary>
 		/// <param name="orderInfo">The order information.</param>
 		/// <param name="alias">The alias.</param>
-		/// <returns></returns>
 		public static string CustomerInformationValue(OrderInfo orderInfo, string alias)
 		{
 			return ExtraInformationValueHelper(alias, orderInfo.CustomerInfo.CustomerInformation);
@@ -412,7 +408,6 @@ namespace uWebshop.Domain.Helpers
 		/// </summary>
 		/// <param name="orderInfo">The order information.</param>
 		/// <param name="alias">The alias.</param>
-		/// <returns></returns>
 		public static string ShippingInformationValue(OrderInfo orderInfo, string alias)
 		{
 			return ExtraInformationValueHelper(alias, orderInfo.CustomerInfo.ShippingInformation);
@@ -423,7 +418,6 @@ namespace uWebshop.Domain.Helpers
 		/// </summary>
 		/// <param name="orderInfo">The order information.</param>
 		/// <param name="alias">The alias.</param>
-		/// <returns></returns>
 		public static string ExtraInformationValue(OrderInfo orderInfo, string alias)
 		{
 			return ExtraInformationValueHelper(alias, orderInfo.CustomerInfo.ExtraInformation);
