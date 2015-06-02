@@ -3,6 +3,7 @@ using System.Linq;
 using Umbraco.Core;
 using Umbraco.Core.Models;
 using uWebshop.Umbraco.Interfaces;
+using Umbraco.Web;
 
 namespace uWebshop.Umbraco7
 {
@@ -17,6 +18,14 @@ namespace uWebshop.Umbraco7
 		{
 			var dataTypeService = ApplicationContext.Current.Services.DataTypeService;
 			return dataTypeService.GetDataTypeDefinitionByPropertyEditorAlias(alias).FirstOrDefault();
+		}
+
+		public bool IsBackendUserAuthenticated
+		{
+			get
+			{
+				return UmbracoContext.Current.Security.ValidateCurrentUser();
+			}
 		}
 	}
 }

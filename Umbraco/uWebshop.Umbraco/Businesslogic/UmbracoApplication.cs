@@ -14,6 +14,7 @@ using umbraco.DataLayer;
 using umbraco.cms.businesslogic.member;
 using uWebshop.Domain.Interfaces;
 using uWebshop.Umbraco.Businesslogic;
+using uWebshop.Umbraco.Interfaces;
 using Umbraco.Core.Models;
 using Umbraco.Web;
 using Constants = uWebshop.Common.Constants;
@@ -26,10 +27,12 @@ namespace uWebshop.Umbraco
 	{	
 
 		private readonly IHttpContextWrapper _httpContextWrapper;
+		private readonly IUmbracoVersion _umbracoVersion;
 
-		public UmbracoApplication(IHttpContextWrapper httpContextWrapper)
+		public UmbracoApplication(IHttpContextWrapper httpContextWrapper, IUmbracoVersion umbracoVersion)
 		{
 			_httpContextWrapper = httpContextWrapper;
+			_umbracoVersion = umbracoVersion;
 		}
 
 		public bool RequestIsInCMSBackend(HttpContext context)
@@ -144,7 +147,7 @@ namespace uWebshop.Umbraco
 
 		public bool IsBackendUserAuthenticated
 		{
-			get { return umbraco.BusinessLogic.User.GetCurrent() != null; }
+			get { return _umbracoVersion.IsBackendUserAuthenticated; }
 		}
 
 		public IMemberInfo CurrentMemberInfo()

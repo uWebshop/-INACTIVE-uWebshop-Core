@@ -11,6 +11,7 @@ using uWebshop.Umbraco.Businesslogic;
 using Umbraco.Core;
 using Umbraco.Core.Models;
 using Umbraco.Web;
+using Umbraco.Web.Security;
 using File = uWebshop.Domain.File;
 using Log = uWebshop.Domain.Log;
 

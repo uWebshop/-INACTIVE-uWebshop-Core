@@ -2,8 +2,11 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using uWebshop.Common.Interfaces;
 using uWebshop.Domain.Interfaces;
+using Umbraco.Core;
+using Umbraco.Web;
 
 namespace uWebshop.Umbraco.Repositories
 {
@@ -79,6 +82,12 @@ namespace uWebshop.Umbraco.Repositories
 
 			public void Rebuild()
 			{
+				if (UmbracoContext.Current == null)
+				{
+					var context = new HttpContext(new HttpRequest("", "http://dummy.local/", ""), new HttpResponse(null));
+
+					UmbracoContext.EnsureContext(new HttpContextWrapper(context), ApplicationContext.Current);
+				}
 				_newCache = CreateDictionary(_factory);
 			}
 

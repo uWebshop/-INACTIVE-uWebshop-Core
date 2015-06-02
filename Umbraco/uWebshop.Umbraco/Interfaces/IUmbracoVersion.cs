@@ -10,5 +10,8 @@ namespace uWebshop.Umbraco.Interfaces
 	{
 		IDataTypeDefinition CreateDataTypeDefinition(int parentId, string alias, Guid legacyGuid);
 		IDataTypeDefinition GetDataTypeDefinition(string alias, Guid legacyGuid);
+
+		bool IsBackendUserAuthenticated { get; }
+	
 	}
 }

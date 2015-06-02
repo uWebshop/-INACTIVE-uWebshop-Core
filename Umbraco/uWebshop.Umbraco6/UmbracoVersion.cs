@@ -17,5 +17,10 @@ namespace uWebshop.Umbraco6
 			var dataTypeService = ApplicationContext.Current.Services.DataTypeService;
 			return dataTypeService.GetDataTypeDefinitionById(legacyGuid);
 		}
+
+		public bool IsBackendUserAuthenticated
+		{
+			get { return umbraco.BusinessLogic.User.GetCurrent() != null; }
+		}
 	}
 }
