@@ -19,11 +19,15 @@ namespace uWebshop.Test.Domain.Helper_classes
 		public void ManualCheckOfCronHelper()
 		{
 			// functionality of NCronTab is assumed tested
-			var a = CronHelper.GenerateDateTimeInstancesFromCrontabExpressionStartingNow("0 15 * jan,feb mon,tue");
+			//var cron = "0 15 * jan,feb mon,tue";
+			//var cron = "00 15 1-7 * thu";
+			var cron = "00 15 1-7 */3 thu";
+			//var cron = "00 15 * * 4L"; not supported
+			var a = CronHelper.GenerateDateTimeInstancesFromCrontabExpressionStartingNow(cron);
 			foreach (var dateTime in a)
 			{
 				Console.WriteLine(dateTime);
 			}
 		}
-		}
 	}
+}

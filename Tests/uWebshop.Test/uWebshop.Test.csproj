@@ -91,6 +91,7 @@
     <Compile Include="Domain\Model\ProductVariantInfoTests\RangedPriceInCentsTests.cs" />
     <Compile Include="Domain\Services\CatalogUrlResolvingServiceTests.cs" />
     <Compile Include="Domain\Services\StorepickerUrlDeterminationTests.cs" />
+    <Compile Include="Domain\Updating\OrderUpdatingServiceCreateCronInterval.cs" />
     <Compile Include="Public API\BasketTests\OrderAmountTests.cs" />
     <Compile Include="Repositories\TestPropertyProvider.cs" />
     <Compile Include="Domain\Domain classes\ProductInfoTests\EffectsOfVariantOnProductPrices.cs" />

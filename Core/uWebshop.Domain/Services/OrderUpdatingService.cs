@@ -617,95 +617,78 @@ namespace uWebshop.Domain.Services
 			var interval = int.TryParse(repeatInterval, out intVal) ? intVal : 0;
 
 			// todo: create cron statement, fill OrderSeries
-			order.OrderSeries.CronInterval = CreateCronInterval(order.OrderSeries.Start, repeatOrder, repeatTimes, interval, repeatDays);
+			order.OrderSeries.CronInterval = CreateCronInterval(order.OrderSeries.Start, repeatOrder, repeatTimes, interval, repeatDays).Item1;
 		}
 
-		public static string CreateCronInterval(DateTime seriesStart, string repeatOrder, string repeatTimes, int repeatInterval, string repeatDays)
+		public static Tuple<string, string> CreateCronInterval(DateTime seriesStart, string repeatOrder, string repeatTimes, int repeatInterval, string repeatDays)
 		{
 			// mm hh dd mm MON
 			// slightly adjusted cron: 10:00,12:00 * */w1 mon,tue
 			// or: w2|0 10 * * mon,tue|0 12 * * mon,tue
 
 			var cron = string.Empty;
+			string cronExplanation = null;
 			if (repeatInterval > 1)
 			{
 				if (repeatOrder == "weekly")
 				{
 					cron = "w" + repeatInterval + "|";
+					cronExplanation = "Every " + repeatInterval + " weeks";
 				}
 				if (repeatOrder == "monthly")
 				{
-					cron = "m" + repeatInterval + "|";
+					//cron = "m" + repeatInterval + "|";
+					cronExplanation = "Every " + repeatInterval + " months";
 				}
 			}
 			var days = "*";
 			var weekDays = "*";
 			if (repeatOrder == "monthly")
 			{
+				cronExplanation = cronExplanation ?? "Every month";
 				var day = seriesStart.Day;
 				var dayOfWeek = seriesStart.DayOfWeek;
 				weekDays = dayOfWeek.ToString().ToLowerInvariant().Substring(0, 3);
 				if (day < 8) // first Monday/etc of the month
 				{
 					days = "1-7";
+					cronExplanation += " on the first " + dayOfWeek;
 				}
 				else if (day < 15)
 				{
 					days = "8-14";
+					cronExplanation += " on the second " + dayOfWeek;
 				}
 				else if (day < 22)
 				{
 					days = "15-21";
+					cronExplanation += " on the third " + dayOfWeek;
 				}
 				else // last Monday of the month
 				{
+					//weekDays += "L"; NCronTab doesn't support this..
 					days = "22-31"; //this is wrong todo: depends on month
+					cronExplanation += " on the last " + dayOfWeek;
 				}
 			}
 			if (repeatOrder == "weekly")
 			{
+				cronExplanation = cronExplanation ?? "Every week";
+				cronExplanation += " on " + repeatDays;
 				weekDays = repeatDays;
 			}
 
 			var times = seriesStart.ToString("HH:mm");
-			cron += seriesStart.ToString("mm") + " " + seriesStart.ToString("HH") + " " + days + " * " + weekDays;
-			// todo: multiple times = multiple cron expressions
+			cronExplanation += " at " + times;
+			cron += seriesStart.ToString("mm") + " " + seriesStart.ToString("HH") + " " + days + (repeatOrder == "monthly" && repeatInterval > 1 ? " */" + repeatInterval+ " " : " * ") + weekDays;
 			
+			// todo: multiple times = multiple cron expressions
 			if (!string.IsNullOrWhiteSpace(repeatTimes))
 			{
 				times += "," + repeatTimes;
 			}
 
-			return cron; // todo: lots of tests
-		}
-
-		private void UpdateRepeatField(KeyValuePair<string, string> field, OrderInfo order)
-		{
-			if (order.OrderSeries == null)
-			{
-				return;
-			}
-			if (field.Key.ToLower() == "repeatOrder")
-			{
-				if (field.Value == "never")
-				{
-					order.OrderSeries = null;
-				}
-
-
-
-				if (field.Value != "0")
-				{
-					order.CustomerInfo.CountryCode = field.Value;
-
-					if (field.Value.Length > 4)
-					{
-						Log.Instance.LogDebug(
-							string.Format("customerCountry Length == {0} Value: {1}, Possible added Country.Name instead of Country.Code?",
-								field.Key.Length, field.Value));
-					}
-				}
-			}
+			return new Tuple<string, string>(cron, cronExplanation); // todo: lots of tests
 		}
 
 		public ProviderActionResult AddPaymentProvider(OrderInfo order, int paymentProviderId, string paymentProviderMethodId, ILocalization store)
