@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using uWebshop.Common.Interfaces;
+using uWebshop.Domain.Interfaces;
 
 namespace uWebshop.Domain.Core
 {
@@ -34,5 +35,6 @@ namespace uWebshop.Domain.Core
 		void FatalError(string message = null); // when this happens, possibly redo entire initialization without this addon
 		void NotNow();
 		void Debug(string message);
+		IDependencyResolver Resolver { get; }
 	}
 }

@@ -5,6 +5,7 @@ using System.Text;
 using Moq;
 using NUnit.Framework;
 using uWebshop.Common.Interfaces;
+using uWebshop.Common.ServiceInterfaces;
 using uWebshop.Domain.Interfaces;
 using uWebshop.Test.Mocks;
 using uWebshop.Test.Stubs;
@@ -63,5 +64,6 @@ namespace uWebshop.Test.Domain.Businesslogic.UwebshopUrlsRewritingServiceTests
 		public bool ShareBasketBetweenStores { get; set; }
 		public bool DisableDateFolders { get; set; }
 		public int OrdersCacheTimeoutMilliseconds { get; set; }
+		public string ConnectionString { get; set; }
 	}
 }

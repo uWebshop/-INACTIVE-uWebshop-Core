@@ -2,11 +2,8 @@
 using System.ComponentModel;
 using Umbraco.Core;
 using Umbraco.Core.Services;
-using Umbraco.Web;
 using uWebshop.Common;
-using uWebshop.Common.Interfaces;
 using uWebshop.Domain.Core;
-using uWebshop.Domain.Interfaces;
 using uWebshop.Umbraco;
 using uWebshop.Umbraco.Interfaces;
 
@@ -40,7 +37,7 @@ namespace uWebshop.Umbraco6
 		}
 		public override int StateInitializationOrder()
 		{
-			return InitializationOrder.InternalNoDependencies;
+			return InitializationOrder.InternalNoDependencies + 6;
 		}
 	}
 }

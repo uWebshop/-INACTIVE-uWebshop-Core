@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using uWebshop.Common.ServiceInterfaces;
 using uWebshop.Domain.Core;
 using uWebshop.Domain.Interfaces;
 
@@ -23,5 +24,15 @@ namespace uWebshop.DataAccess
 			control.RegisterType<ICouponCodeService, CouponCodeService>();
 		}
 
+		public override int StateInitializationOrder()
+		{
+			return 1;
+		}
+
+		public override void StateInitialization(IInitializationControl control)
+		{
+			uWebshopOrders.ConnectionString = control.Resolver.Resolve<IUwebshopConfiguration>().ConnectionString;
+			base.StateInitialization(control);
+		}
 	}
 }

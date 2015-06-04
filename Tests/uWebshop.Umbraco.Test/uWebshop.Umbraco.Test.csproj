@@ -85,6 +85,9 @@
   <ItemGroup>
     <Content Include="API check\uWebshopProduct.cshtml" />
     <Content Include="API check\uWebshopBasket.cshtml" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

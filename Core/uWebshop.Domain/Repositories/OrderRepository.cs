@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.Caching;
 using System.Xml;
 using uWebshop.Common;
+using uWebshop.Common.ServiceInterfaces;
 using uWebshop.DataAccess;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;

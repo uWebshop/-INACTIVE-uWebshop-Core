@@ -20,8 +20,6 @@ namespace uWebshop.DataAccess
 	/// </summary>
 	public class UWebshopStock
 	{
-		public static string ConnectionString = ApplicationContext.Current.DatabaseContext.ConnectionString;
-
 		public const string AllStockCacheKey = "AllStockCacheKey";
 
 		private static List<StockInfo> LoadAllStockInfo()

@@ -6,6 +6,7 @@ using Moq;
 using NUnit.Framework;
 using VATChecker;
 using uWebshop.Common.Interfaces;
+using uWebshop.Common.ServiceInterfaces;
 using uWebshop.Domain;
 using uWebshop.Domain.Core;
 using uWebshop.Domain.Interfaces;
@@ -358,6 +359,8 @@ namespace uWebshop.Test
 		{
 			UnitTest();
 
+			UwebshopConfiguration.Actual();
+
 			//CatalogUrlResolvingService.Use(new CatalogUrlResolvingService()); //not yet (repo)
 			DiscountCalculationService.Actual();
 			DiscountService.Actual();
@@ -589,7 +592,13 @@ namespace uWebshop.Test
 			iocBuilder.UseType<CategoryService>();
 			return iocBuilder;
 		}
-		
+
+		public static IOCBuilder<IUwebshopConfiguration> Actual(this IOCBuilder<IUwebshopConfiguration> iocBuilder)
+		{
+			iocBuilder.UseType<UwebshopConfiguration>();
+			return iocBuilder;
+		}
+
 		// not sure about this
 		public static TestCMSEntityRepository GetFake(this IOCBuilder<ICMSEntityRepository> iocBuilder)
 		{

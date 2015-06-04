@@ -14,7 +14,6 @@ namespace uWebshop.DataAccess
 {
 	internal class CouponCodeService : ICouponCodeService
 	{
-		public static string ConnectionString = ApplicationContext.Current.DatabaseContext.ConnectionString;
 		public IEnumerable<ICoupon> GetAll()
 		{
 			var coupons = new List<Coupon>();
@@ -87,7 +86,8 @@ namespace uWebshop.DataAccess
 
 			if (coupons.Any())
 			{
-				if (uWebshopOrders.SQLHelper.ConnectionString.Contains("|DataDirectory|") || DataLayerHelper.IsEmbeddedDatabase(ConnectionString) || ConnectionString.ToLower().Contains("mysql"))
+				var connectionString = uWebshopOrders.ConnectionString;
+				if (uWebshopOrders.SQLHelper.ConnectionString.Contains("|DataDirectory|") || DataLayerHelper.IsEmbeddedDatabase(connectionString) || connectionString.ToLower().Contains("mysql"))
 				{
 					foreach (var coupon in coupons)
 					{

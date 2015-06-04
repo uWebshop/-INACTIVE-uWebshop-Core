@@ -14,7 +14,7 @@ namespace uWebshop.DataAccess
 {
 	public class uWebshopOrders
 	{
-		public static string ConnectionString = ApplicationContext.Current.DatabaseContext.ConnectionString;
+		public static string ConnectionString;
 
 		internal static ISqlHelper SQLHelper
 		{

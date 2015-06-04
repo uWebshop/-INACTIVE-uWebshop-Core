@@ -3,8 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Moq;
 using NUnit.Framework;
+using uWebshop.Common;
+using uWebshop.Domain.Core;
 using uWebshop.Domain.Helpers;
+using uWebshop.Umbraco.Interfaces;
 
 namespace uWebshop.Test.Domain.Helper_classes
 {
@@ -21,5 +25,5 @@ namespace uWebshop.Test.Domain.Helper_classes
 				Console.WriteLine(dateTime);
 			}
 		}
+		}
 	}
-}

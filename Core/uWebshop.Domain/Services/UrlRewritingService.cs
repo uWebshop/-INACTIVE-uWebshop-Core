@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Web;
 using uWebshop.Common.Interfaces;
+using uWebshop.Common.ServiceInterfaces;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
 using uWebshop.Domain.Model;

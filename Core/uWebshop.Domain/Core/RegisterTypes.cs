@@ -1,4 +1,5 @@
 ﻿using uWebshop.Common.Interfaces;
+using uWebshop.Common.ServiceInterfaces;
 using uWebshop.Domain.Businesslogic;
 using uWebshop.Domain.Core;
 using uWebshop.Domain.Interfaces;

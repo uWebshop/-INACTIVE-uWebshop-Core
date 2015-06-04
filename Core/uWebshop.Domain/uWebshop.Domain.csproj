@@ -433,7 +433,6 @@
     <Compile Include="Model\Email.cs" />
     <Compile Include="Interfaces\IOrderDiscount.cs" />
     <Compile Include="Interfaces\IOrderUpdatingService.cs" />
-    <Compile Include="Interfaces\IUwebshopConfiguration.cs" />
     <Compile Include="Interfaces\IUwebshopRequestService.cs" />
     <Compile Include="Interfaces\IVatChecker.cs" />
     <Compile Include="Interfaces\ISettingsService.cs" />

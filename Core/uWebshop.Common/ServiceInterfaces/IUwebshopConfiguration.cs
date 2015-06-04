@@ -1,4 +1,4 @@
-﻿namespace uWebshop.Domain.Interfaces
+﻿namespace uWebshop.Common.ServiceInterfaces
 {
 	/// <summary>
 	/// 
@@ -84,5 +84,10 @@
 		/// The orders cache timeout in milliseconds.
 		/// </value>
 		int OrdersCacheTimeoutMilliseconds { get; }
+
+		/// <summary>
+		/// Gets the connection string.
+		/// </summary>
+		string ConnectionString { get; }
 	}
 }

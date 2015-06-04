@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Web;
 using uWebshop.Common.Interfaces;
+using uWebshop.Common.ServiceInterfaces;
 using uWebshop.Domain.Core;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
@@ -78,12 +79,12 @@ namespace uWebshop.Domain.Core
 					InitializeServiceLocators(_iocContainer);
 				}
 
-				StartOrContinuInitializingModulesState();
+				StartOrContinueInitializingModulesState();
 				_currentlyInitializing = 0;
 			}
 		}
 
-		private static void StartOrContinuInitializingModulesState()
+		private static void StartOrContinueInitializingModulesState()
 		{
 			// todo: don't retry indefinately
 			// todo: don't wait indefinately for external code (use ask based implementation)
@@ -212,7 +213,7 @@ namespace uWebshop.Domain.Core
 					});
 			}
 		}
-		public class InitializationControl : IInitializationControl
+		internal class InitializationControl : IInitializationControl
 		{
 			internal bool NotNowCalled = false;
 			public void Done()
@@ -234,8 +235,13 @@ namespace uWebshop.Domain.Core
 			{
 
 			}
+
+			public IDependencyResolver Resolver
+			{
+				get { return IO.Container; }
+			}
 		}
-		public class RegistrationControl : InitializationControl, IRegistrationControl
+		internal class RegistrationControl : InitializationControl, IRegistrationControl
 		{
 			private readonly IIocContainerConfiguration _container;
 

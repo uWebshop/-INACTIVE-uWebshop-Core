@@ -13,14 +13,4 @@ namespace uWebshop.Domain.Interfaces
 		/// <param name="serviceFactory">The service factory.</param>
 		void SetDefaultServiceFactory(IServiceFactory serviceFactory);
 	}
-
-	internal interface IDependencyResolver
-	{
-		/// <summary>
-		/// Resolves this instance.
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		T Resolve<T>() where T : class;
-	}
 }

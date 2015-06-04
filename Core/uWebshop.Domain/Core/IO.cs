@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Reflection;
+using uWebshop.Common.Interfaces;
 using uWebshop.Domain.Interfaces;
 
 namespace uWebshop.Domain

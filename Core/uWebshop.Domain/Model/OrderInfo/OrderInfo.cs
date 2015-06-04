@@ -1019,7 +1019,7 @@ namespace uWebshop.Domain
 			Enum.TryParse(orderData.OrderStatus, out orderStatus);
 
 			// if Incomplete and in frontend, refer to current discounts instead of stored
-			if (orderStatus == OrderStatus.Incomplete && !cmsApplication.RequestIsInCMSBackend(HttpContext.Current))
+			if (orderStatus == OrderStatus.Incomplete && HttpContext.Current != null && !cmsApplication.RequestIsInCMSBackend(HttpContext.Current))
 			{
 				orderInfo.EventsOn = false; // somehow a loop with the events keeps popping up, therefore an extra safeguard
 				orderInfo.Status = orderStatus;
