@@ -471,8 +471,6 @@ namespace uWebshop.Domain.Services
 				return false;
 			}
 
-			//var xDoc = OrderUpdatingService.CreateXDocumentBasedOnCMSDocumentType(fields, documentAlias);
-
 			var xDoc = new XDocument(new XElement(customerDataType.ToString()));
 
 			if (customerDataType == CustomerDatatypes.Customer)
@@ -497,7 +495,7 @@ namespace uWebshop.Domain.Services
 
 			AddFieldsToXDocumentBasedOnCMSDocumentType(xDoc, fields, Order.NodeAlias);
 
-			var documentType = IO.Container.Resolve<ICMSDocumentTypeService>().GetByAlias(Order.NodeAlias);
+			UpdateRepeatFields(order, fields);
 
 			// special fields that also work when field is not created on order document type
 			foreach (var field in fields)
@@ -592,6 +590,122 @@ namespace uWebshop.Domain.Services
 			}
 
 			return false;
+		}
+
+		private static void UpdateRepeatFields(OrderInfo order, Dictionary<string, string> fields)
+		{
+			var repeatOrder = fields["repeatOrder"]; //never sameday weekly monthly
+			if (repeatOrder == "never")
+			{
+				order.OrderSeries = null;
+				return;
+			}
+			order.OrderSeries = new OrderSeries();
+			var seriesStart = fields["shippingDeliveryDateTime"]; // 2015-05-26T16:03:35
+			var repeatDays = fields["repeatDays"];  // mon,tue,wed
+			var repeatTimes = fields["repeatTimes"]; // 00:00,15:00,17:00
+			var repeatInterval = fields["repeatInterval"]; // #
+			//var repeatEndsOn = fields["repeatEndsOn"]; // never/count/date => not needed, only frontend
+			var repeatEndAfterInstances = fields["repeatEndAfterInstances"]; // #
+			var repeatEndDate = fields["repeatEndDate"]; // 2015-05-26 or 2015-05-26T16:03:35
+			
+			DateTime dateTime;
+			int intVal;
+			order.OrderSeries.Start = DateTime.TryParse(seriesStart, out dateTime) ? dateTime : DateTime.Now;
+			order.OrderSeries.End = DateTime.TryParse(repeatEndDate, out dateTime) ? (DateTime?)dateTime : null;
+			order.OrderSeries.EndAfterInstances = int.TryParse(repeatEndAfterInstances, out intVal) ? intVal : 0;
+			var interval = int.TryParse(repeatInterval, out intVal) ? intVal : 0;
+
+			// todo: create cron statement, fill OrderSeries
+			order.OrderSeries.CronInterval = CreateCronInterval(order.OrderSeries.Start, repeatOrder, repeatTimes, interval, repeatDays);
+		}
+
+		public static string CreateCronInterval(DateTime seriesStart, string repeatOrder, string repeatTimes, int repeatInterval, string repeatDays)
+		{
+			// mm hh dd mm MON
+			// slightly adjusted cron: 10:00,12:00 * */w1 mon,tue
+			// or: w2|0 10 * * mon,tue|0 12 * * mon,tue
+
+			var cron = string.Empty;
+			if (repeatInterval > 1)
+			{
+				if (repeatOrder == "weekly")
+				{
+					cron = "w" + repeatInterval + "|";
+				}
+				if (repeatOrder == "monthly")
+				{
+					cron = "m" + repeatInterval + "|";
+				}
+			}
+			var days = "*";
+			var weekDays = "*";
+			if (repeatOrder == "monthly")
+			{
+				var day = seriesStart.Day;
+				var dayOfWeek = seriesStart.DayOfWeek;
+				weekDays = dayOfWeek.ToString().ToLowerInvariant().Substring(0, 3);
+				if (day < 8) // first Monday/etc of the month
+				{
+					days = "1-7";
+				}
+				else if (day < 15)
+				{
+					days = "8-14";
+				}
+				else if (day < 22)
+				{
+					days = "15-21";
+				}
+				else // last Monday of the month
+				{
+					days = "22-31"; //this is wrong todo: depends on month
+				}
+			}
+			if (repeatOrder == "weekly")
+			{
+				weekDays = repeatDays;
+			}
+
+			var times = seriesStart.ToString("HH:mm");
+			cron += seriesStart.ToString("mm") + " " + seriesStart.ToString("HH") + " " + days + " * " + weekDays;
+			// todo: multiple times = multiple cron expressions
+			
+			if (!string.IsNullOrWhiteSpace(repeatTimes))
+			{
+				times += "," + repeatTimes;
+			}
+
+			return cron; // todo: lots of tests
+		}
+
+		private void UpdateRepeatField(KeyValuePair<string, string> field, OrderInfo order)
+		{
+			if (order.OrderSeries == null)
+			{
+				return;
+			}
+			if (field.Key.ToLower() == "repeatOrder")
+			{
+				if (field.Value == "never")
+				{
+					order.OrderSeries = null;
+				}
+
+
+
+				if (field.Value != "0")
+				{
+					order.CustomerInfo.CountryCode = field.Value;
+
+					if (field.Value.Length > 4)
+					{
+						Log.Instance.LogDebug(
+							string.Format("customerCountry Length == {0} Value: {1}, Possible added Country.Name instead of Country.Code?",
+								field.Key.Length, field.Value));
+					}
+				}
+			}
 		}
 
 		public ProviderActionResult AddPaymentProvider(OrderInfo order, int paymentProviderId, string paymentProviderMethodId, ILocalization store)

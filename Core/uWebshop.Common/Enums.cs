@@ -189,6 +189,7 @@
 	{
 		Customer,
 		Shipping,
-		Extra
+		Extra,
+		Repeat
 	}
 }

@@ -130,12 +130,19 @@ namespace uWebshop.Domain.Businesslogic
 			var postedFields = new Dictionary<string, object> { { Constants.PostedFieldsKey, fieldsToSession } };
 			
 			var handleObjectList = new List<HandleObject>();
-
-
+			
 			var currencyQueryStringCollection = requestParameters.AllKeys.Where(x => x != null && x.ToLower().StartsWith("changecurrency"));
 			if (currencyQueryStringCollection.Any())
 			{
 				var result = ChangeCurrency(requestParameters, rawRequestUrl);
+				handleObjectList.Add(result);
+			}
+
+			List<string> repeatQueryStringCollection = requestParameters.AllKeys.Where(x => x != null && x.ToLower().StartsWith("repeat") && x.ToLower() != "shippingprovider").ToList();
+
+			if (repeatQueryStringCollection.Any())
+			{
+				var result = AddCustomerInformation(requestParameters, repeatQueryStringCollection, CustomerDatatypes.Repeat, rawRequestUrl);
 				handleObjectList.Add(result);
 			}
 
@@ -154,14 +161,6 @@ namespace uWebshop.Domain.Businesslogic
 				var result = AddCustomerInformation(requestParameters, customerQueryStringCollection, CustomerDatatypes.Customer, rawRequestUrl);
 				handleObjectList.Add(result);
 			}
-
-			//var customerIsShipping = requestParameters.AllKeys.FirstOrDefault(x => x != null && x.ToLower() == "customerisshipping");
-
-			//if (customerIsShipping != null && (shippingQueryStringCollection.Any() && string.IsNullOrEmpty(customerIsShipping)))
-			//{
-			//	AddCustomerInformation(requestParameters, shippingQueryStringCollection, CustomerDatatypes.Shipping);
-			//	redirectAfterHandle = true;
-			//}
 
 			List<string> extraQueryStringCollection = requestParameters.AllKeys.Where(x => x != null && x.ToLower().StartsWith("extra")).ToList();
 
@@ -311,8 +310,7 @@ namespace uWebshop.Domain.Businesslogic
 					handleObjectList.Add(result);
 				}
 			}
-			;
-
+			
 			List<string> accountSignInQueryStringCollection = requestParameters.AllKeys.Where(x => x != null && x.ToLower() == "accountsignin").ToList();
 
 			if (accountSignInQueryStringCollection.Any())
@@ -1740,7 +1738,6 @@ namespace uWebshop.Domain.Businesslogic
 			handleObject.Success = true;
 			handleObject.Messages = result;
 			return handleObject;
-
 		}
 
 		private HandleObject AddCustomerInformation(NameValueCollection requestParameters, IEnumerable<string> queryStringCollection, CustomerDatatypes customerDataType, Uri requestUri)

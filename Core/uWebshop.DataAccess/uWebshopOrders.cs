@@ -419,14 +419,9 @@ namespace uWebshop.DataAccess
 		}
 		public static void SetCustomerInfo(Guid orderId, string customerEmail, string customerFirstName, string customerLastName)
 		{
-			if (string.IsNullOrEmpty(customerFirstName))
-			{
-				customerFirstName = string.Empty;
-			}
-			if (string.IsNullOrEmpty(customerLastName))
-			{
-				customerLastName = string.Empty;
-			}
+			customerFirstName = customerFirstName ?? string.Empty;
+			customerLastName = customerLastName ?? string.Empty;
+			customerEmail = customerEmail ?? string.Empty;
 			SQLHelper.ExecuteNonQuery("update uWebshopOrders set customerEmail = @customerEmail, " +
 				"customerFirstName = @customerFirstName, customerLastName = @customerLastName, " +
 				"updateDate = @updateDate where uniqueID = @uniqueID",
@@ -474,7 +469,6 @@ namespace uWebshop.DataAccess
 			}
 			return null;
 		}
-
 
 		public static void SetOrderNumber(Guid uniqueOrderId, string orderNumber, string storeAlias, int storeOrderReferenceID)
 		{
