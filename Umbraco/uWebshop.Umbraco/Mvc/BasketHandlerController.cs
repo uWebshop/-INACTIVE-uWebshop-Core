@@ -26,6 +26,22 @@ namespace uWebshop.Umbraco.Mvc
 		{
 			var refferer = HttpContext.Request.UrlReferrer;
 
+			if (!string.IsNullOrEmpty(HttpContext.Request.RawUrl))
+			{
+				if (HttpContext.Request.Url != null && !HttpContext.Request.RawUrl.StartsWith("http"))
+				{
+					var strPathAndQuery = HttpContext.Request.Url.PathAndQuery;
+					var strUrl = HttpContext.Request.Url.AbsoluteUri.Replace(strPathAndQuery, string.Empty);
+
+					refferer = new Uri(string.Format("{0}{1}", strUrl, HttpContext.Request.RawUrl));
+				}
+				else if (HttpContext.Request.RawUrl.StartsWith("http"))
+				{
+					refferer = new Uri(HttpContext.Request.RawUrl);
+				}
+			}
+
+
 			var redirectAfterHandle = new BasketRequestHandler().HandleBasketRequest(Request.Form, refferer);
 
 			if (Request.UrlReferrer == null)
