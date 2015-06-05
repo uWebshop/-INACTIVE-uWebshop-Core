@@ -138,7 +138,7 @@ namespace uWebshop.Domain.Businesslogic
 				handleObjectList.Add(result);
 			}
 
-			List<string> repeatQueryStringCollection = requestParameters.AllKeys.Where(x => x != null && x.ToLower().StartsWith("repeat") && x.ToLower() != "shippingprovider").ToList();
+			List<string> repeatQueryStringCollection = requestParameters.AllKeys.Where(x => x != null && (x.ToLower().StartsWith("repeat") || x.ToLower().StartsWith("shippingDeliveryDateTime"))).ToList();
 
 			if (repeatQueryStringCollection.Any())
 			{

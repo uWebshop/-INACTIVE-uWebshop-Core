@@ -616,34 +616,40 @@ namespace uWebshop.Domain.Services
 			order.OrderSeries.EndAfterInstances = int.TryParse(repeatEndAfterInstances, out intVal) ? intVal : 0;
 			var interval = int.TryParse(repeatInterval, out intVal) ? intVal : 0;
 
-			// todo: create cron statement, fill OrderSeries
 			order.OrderSeries.CronInterval = CreateCronInterval(order.OrderSeries.Start, repeatOrder, repeatTimes, interval, repeatDays).Item1;
+			// todo: (re)create scheduled orders based on cron
 		}
 
-		public static Tuple<string, string> CreateCronInterval(DateTime seriesStart, string repeatOrder, string repeatTimes, int repeatInterval, string repeatDays)
+		/// <summary>
+		/// Creates a custom cron interval.
+		/// </summary>
+		/// <param name="seriesStart">The series start date.</param>
+		/// <param name="repeatNature">The repeat nature (weekly/monthly/other=undefined).</param>
+		/// <param name="repeatTimes">The repeat times, additional times at which the cron interval will also hit, structure: 10:00,11:30,15:45</param>
+		/// <param name="repeatInterval">The repeat interval. Repeat every x weeks/months</param>
+		/// <param name="repeatDays">The repeat weekdays. Format: mon,tue,fri</param>
+		/// <returns>First part of the tuple is a custom Cron extension (might be as custom as: w2|0 10 * * mon,tue|0 12 * * mon,tue), second part is an Enlish explanation (don't depend on the latter to stay exactly the same)</returns>
+		public static Tuple<string, string> CreateCronInterval(DateTime seriesStart, string repeatNature, string repeatTimes, int repeatInterval, string repeatDays)
 		{
-			// mm hh dd mm MON
-			// slightly adjusted cron: 10:00,12:00 * */w1 mon,tue
-			// or: w2|0 10 * * mon,tue|0 12 * * mon,tue
+			// w2|0 10 * * mon,tue|0 12 * * mon,tue
 
 			var cron = string.Empty;
 			string cronExplanation = null;
 			if (repeatInterval > 1)
 			{
-				if (repeatOrder == "weekly")
+				if (repeatNature == "weekly")
 				{
 					cron = "w" + repeatInterval + "|";
 					cronExplanation = "Every " + repeatInterval + " weeks";
 				}
-				if (repeatOrder == "monthly")
+				if (repeatNature == "monthly")
 				{
-					//cron = "m" + repeatInterval + "|";
 					cronExplanation = "Every " + repeatInterval + " months";
 				}
 			}
 			var days = "*";
 			var weekDays = "*";
-			if (repeatOrder == "monthly")
+			if (repeatNature == "monthly")
 			{
 				cronExplanation = cronExplanation ?? "Every month";
 				var day = seriesStart.Day;
@@ -664,31 +670,43 @@ namespace uWebshop.Domain.Services
 					days = "15-21";
 					cronExplanation += " on the third " + dayOfWeek;
 				}
-				else // last Monday of the month
+				else if (day < 29)
 				{
-					//weekDays += "L"; NCronTab doesn't support this..
-					days = "22-31"; //this is wrong todo: depends on month
-					cronExplanation += " on the last " + dayOfWeek;
+					days = "22-28";
+					cronExplanation += " on the fourth " + dayOfWeek;
+				}
+				else // temporary behaviour, don't depend on this remaining stable! would like this to be last Monday of the month
+				{
+					//weekDays += "L"; NCronTab doesn't support this.. (neither satL nor 6L)
+					//days = "22-31"; //this is wrong todo: depends on month
+					//cronExplanation += " on the last " + dayOfWeek;
+
+					days = "29-31";
+					cronExplanation += " on the fifth " + dayOfWeek;
 				}
 			}
-			if (repeatOrder == "weekly")
+			if (repeatNature == "weekly")
 			{
 				cronExplanation = cronExplanation ?? "Every week";
 				cronExplanation += " on " + repeatDays;
 				weekDays = repeatDays;
 			}
 
-			var times = seriesStart.ToString("HH:mm");
-			cronExplanation += " at " + times;
-			cron += seriesStart.ToString("mm") + " " + seriesStart.ToString("HH") + " " + days + (repeatOrder == "monthly" && repeatInterval > 1 ? " */" + repeatInterval+ " " : " * ") + weekDays;
+			cronExplanation += " at " + seriesStart.ToString("HH:mm");
+			var cronDatePart = " " + days + (repeatNature == "monthly" && repeatInterval > 1 ? " */" + repeatInterval + " " : " * ") + weekDays;
+			cron += seriesStart.ToString("mm") + " " + seriesStart.ToString("HH") + cronDatePart;
 			
-			// todo: multiple times = multiple cron expressions
 			if (!string.IsNullOrWhiteSpace(repeatTimes))
 			{
-				times += "," + repeatTimes;
+				foreach (var time in repeatTimes.Split(','))
+				{
+					var timeSplit = time.Split(':');
+					cron += "|" + timeSplit[1] + " " + timeSplit[0] + cronDatePart;
+					cronExplanation += " and at " + time;
+				}
 			}
 
-			return new Tuple<string, string>(cron, cronExplanation); // todo: lots of tests
+			return new Tuple<string, string>(cron, cronExplanation);
 		}
 
 		public ProviderActionResult AddPaymentProvider(OrderInfo order, int paymentProviderId, string paymentProviderMethodId, ILocalization store)
