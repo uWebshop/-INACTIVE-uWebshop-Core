@@ -548,5 +548,11 @@ commit tran", SQLHelper.CreateParameter("@id", databaseId), SQLHelper.CreatePara
 
 			SQLHelper.ExecuteNonQuery("DELETE from uWebshopOrders where uniqueID in (" + string.Join(",", orderGuids.Select(g => g.ToString()).ToArray()) + ")");
 		}
+
+		public static void RemoveScheduledOrdersWithSeriesId(int seriesId)
+		{
+			if (seriesId <= 0) throw new ArgumentOutOfRangeException("seriesId");
+			SQLHelper.ExecuteNonQuery("DELETE from uWebshopOrders where seriesID = @seriesId and orderStatus = 'Scheduled'", SQLHelper.CreateParameter("@seriesId", seriesId));
+		}
 	}
 }

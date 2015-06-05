@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -597,27 +598,52 @@ namespace uWebshop.Domain.Services
 			var repeatOrder = fields["repeatOrder"]; //never sameday weekly monthly
 			if (repeatOrder == "never")
 			{
+				if (order.OrderSeries != null)
+				{
+					RemoveAllScheduledOrders(order.OrderSeries);
+				}
 				order.OrderSeries = null;
 				return;
 			}
 			order.OrderSeries = new OrderSeries();
 			var seriesStart = fields["shippingDeliveryDateTime"]; // 2015-05-26T16:03:35
-			var repeatDays = fields["repeatDays"];  // mon,tue,wed
+			var repeatDays = fields["repeatDays"]; // mon,tue,wed
 			var repeatTimes = fields["repeatTimes"]; // 00:00,15:00,17:00
 			var repeatInterval = fields["repeatInterval"]; // #
 			//var repeatEndsOn = fields["repeatEndsOn"]; // never/count/date => not needed, only frontend
 			var repeatEndAfterInstances = fields["repeatEndAfterInstances"]; // #
 			var repeatEndDate = fields["repeatEndDate"]; // 2015-05-26 or 2015-05-26T16:03:35
-			
+
 			DateTime dateTime;
 			int intVal;
 			order.OrderSeries.Start = DateTime.TryParse(seriesStart, out dateTime) ? dateTime : DateTime.Now;
-			order.OrderSeries.End = DateTime.TryParse(repeatEndDate, out dateTime) ? (DateTime?)dateTime : null;
+			order.OrderSeries.End = DateTime.TryParse(repeatEndDate, out dateTime) ? (DateTime?) dateTime : null;
 			order.OrderSeries.EndAfterInstances = int.TryParse(repeatEndAfterInstances, out intVal) ? intVal : 0;
 			var interval = int.TryParse(repeatInterval, out intVal) ? intVal : 0;
 
 			order.OrderSeries.CronInterval = CreateCronInterval(order.OrderSeries.Start, repeatOrder, repeatTimes, interval, repeatDays).Item1;
+			
 			// todo: (re)create scheduled orders based on cron
+			ScheduleOrdersOneYearInAdvance(order); // the location of this call is terrible, but given the spaghetti leading up to this method I don't see a proper solution given available time
+		}
+
+		private static void RemoveAllScheduledOrders(OrderSeries series)
+		{
+			if (series == null) throw new ArgumentNullException("series");
+			uWebshopOrders.RemoveScheduledOrdersWithSeriesId(series.Id);
+		}
+
+		private static void ScheduleOrdersOneYearInAdvance(OrderInfo order)
+		{
+			if (order.OrderSeries == null)
+			{
+				return;
+			}
+
+			foreach (var date in CronHelper.GenerateDateTimeInstancesFromOrderSeries(order.OrderSeries))
+			{
+				// todo stuff
+			}
 		}
 
 		/// <summary>
@@ -698,10 +724,11 @@ namespace uWebshop.Domain.Services
 			
 			if (!string.IsNullOrWhiteSpace(repeatTimes))
 			{
+				cron += "|" + repeatTimes;
 				foreach (var time in repeatTimes.Split(','))
 				{
-					var timeSplit = time.Split(':');
-					cron += "|" + timeSplit[1] + " " + timeSplit[0] + cronDatePart;
+					//var timeSplit = time.Split(':');
+					//cron += "|" + timeSplit[1] + " " + timeSplit[0] + cronDatePart;
 					cronExplanation += " and at " + time;
 				}
 			}
