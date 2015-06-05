@@ -595,8 +595,7 @@ namespace uWebshop.Domain.Services
 
 		private static void UpdateRepeatFields(OrderInfo order, Dictionary<string, string> fields)
 		{
-			var repeatOrder = fields["repeatOrder"]; //never sameday weekly monthly
-			if (repeatOrder == "never")
+			if (fields.All(x => x.Key != "repeatOrder") || fields.Any(x => x.Key == "repeatOrder" && x.Value == "never"))
 			{
 				if (order.OrderSeries != null)
 				{
@@ -605,6 +604,8 @@ namespace uWebshop.Domain.Services
 				order.OrderSeries = null;
 				return;
 			}
+
+			var repeatOrder = fields["repeatOrder"]; //never sameday weekly monthly
 			order.OrderSeries = new OrderSeries();
 			var seriesStart = fields["shippingDeliveryDateTime"]; // 2015-05-26T16:03:35
 			var repeatDays = fields["repeatDays"]; // mon,tue,wed

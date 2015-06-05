@@ -350,6 +350,19 @@ namespace uWebshop.Domain.Businesslogic
 				}
 			}
 
+			List<string> orderToBasketQueryStringCollection = requestParameters.AllKeys.Where(x => x != null && x.ToLower() == "ordertobasket").ToList();
+
+			if (orderToBasketQueryStringCollection.Any())
+			{
+				var keyValue = requestParameters[orderToBasketQueryStringCollection.First()];
+				if (keyValue.ToLower() == "true" || keyValue.ToLower() == "ordertobasket" || keyValue.ToLower() == "on" ||
+					keyValue == "1")
+				{
+					var result = OrderToBasket(requestParameters, rawRequestUrl);
+					handleObjectList.Add(result);
+				}
+			}
+
 			List<string> wishlistToBasketQueryStringCollection = requestParameters.AllKeys.Where(x => x != null && x.ToLower() == "wishlisttobasket").ToList();
 
 			if (wishlistToBasketQueryStringCollection.Any())
@@ -362,6 +375,8 @@ namespace uWebshop.Domain.Businesslogic
 					handleObjectList.Add(result);
 				}
 			}
+
+
 
 			List<string> wishlistRemoveQueryStringCollection = requestParameters.AllKeys.Where(x => x != null && x.ToLower() == "removewishlist").ToList();
 
@@ -2139,6 +2154,61 @@ namespace uWebshop.Domain.Businesslogic
 			handleObject.Messages = result;
 			return handleObject;
 		}
+
+		internal HandleObject OrderToBasket(NameValueCollection requestParameters, Uri requestUri)
+		{
+			var handleObject = new HandleObject {Action = "AddOrderToBasket", Url = requestUri};
+
+			var result = new Dictionary<string, string>();
+
+			string renewOrderKey = requestParameters.AllKeys.FirstOrDefault(x => x.ToLower() == "orderguid");
+			if (renewOrderKey == null)
+			{
+				handleObject.Validated = false;
+				handleObject.Success = false;
+				handleObject.Messages = result;
+				return handleObject;
+			}
+
+			var orderGuid = Guid.Parse(requestParameters[renewOrderKey]);
+
+			var renewOrder = OrderHelper.GetOrder(orderGuid);
+
+			var currentOrder = OrderHelper.GetOrder();
+
+			if (currentOrder == null)
+			{
+				currentOrder = OrderHelper.CreateOrder();
+			}
+
+			currentOrder.Status = OrderStatus.Incomplete;
+
+			foreach (var line in renewOrder.OrderLines)
+			{
+				Dictionary<string, string> dictionary = null;
+				var xElement = line.CustomData.Element("fields");
+
+				if (xElement != null)
+				{
+					dictionary = xElement.Elements().ToDictionary(e => e.Name.LocalName, e => e.Value);
+				}
+
+				currentOrder.AddOrUpdateOrderLine(0, line.ProductInfo.Id, "add", line.ProductInfo.ItemCount.GetValueOrDefault(1),
+					line.ProductInfo.ProductVariants.Select(v => v.Id), dictionary);
+			}
+			
+			Session.Add(Constants.OrderToBasketActionResult, BasketActionResult.Success);
+			result.Add(Constants.OrderToBasketActionResult, BasketActionResult.Success.ToString());
+
+			currentOrder.Save();
+
+			handleObject.Validated = false;
+			handleObject.Success = true;
+			SetBasket(handleObject, currentOrder);
+			handleObject.Messages = result;
+			return handleObject;
+		}
+
 
 		private ConcurrentDictionary<Guid, object> _orderLocks = new ConcurrentDictionary<Guid, object>();
 		private object GetLockForOrder(Guid order)
