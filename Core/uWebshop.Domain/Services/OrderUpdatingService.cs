@@ -593,11 +593,12 @@ namespace uWebshop.Domain.Services
 			return false;
 		}
 
-		private static void UpdateRepeatFields(OrderInfo order, Dictionary<string, string> fields)
+		private void UpdateRepeatFields(OrderInfo order, Dictionary<string, string> fields)
 		{
-			if (fields.All(x => x.Key != "repeatOrder") || fields.Any(x => x.Key == "repeatOrder" && x.Value == "never"))
+			var repeatOrder = fields.TryGetValue("repeatOrder"); //never sameday weekly monthly
+			if (repeatOrder == null || repeatOrder == "never")
 			{
-				if (order.OrderSeries != null)
+				if (order.OrderSeries != null && order.OrderSeries.Id > 0)
 				{
 					RemoveAllScheduledOrders(order.OrderSeries);
 				}
@@ -605,19 +606,23 @@ namespace uWebshop.Domain.Services
 				return;
 			}
 
-			var repeatOrder = fields["repeatOrder"]; //never sameday weekly monthly
 			order.OrderSeries = new OrderSeries();
-			var seriesStart = fields["shippingDeliveryDateTime"]; // 2015-05-26T16:03:35
-			var repeatDays = fields["repeatDays"]; // mon,tue,wed
-			var repeatTimes = fields["repeatTimes"]; // 00:00,15:00,17:00
-			var repeatInterval = fields["repeatInterval"]; // #
+			var seriesStart = fields.TryGetValue("shippingDeliveryDateTime"); // 2015-05-26T16:03:35
+			if (seriesStart == null)
+			{
+				order.OrderValidationErrors.Add(new OrderValidationError { Alias = "ShippingDeliveryDateTimeNotSet", Value = "ShippingDeliveryDateTime is not set" });
+				return;
+			}
+			var repeatDays = fields.TryGetValue("repeatDays"); // mon,tue,wed
+			var repeatTimes = fields.TryGetValue("repeatTimes"); // 00:00,15:00,17:00
+			var repeatInterval = fields.TryGetValue("repeatInterval"); // 2
 			//var repeatEndsOn = fields["repeatEndsOn"]; // never/count/date => not needed, only frontend
-			var repeatEndAfterInstances = fields["repeatEndAfterInstances"]; // #
-			var repeatEndDate = fields["repeatEndDate"]; // 2015-05-26 or 2015-05-26T16:03:35
+			var repeatEndAfterInstances = fields.TryGetValue("repeatEndAfterInstances"); // 10
+			var repeatEndDate = fields.TryGetValue("repeatEndDate"); // 2015-05-26 or 2015-05-26T16:03:35
 
 			DateTime dateTime;
 			int intVal;
-			order.OrderSeries.Start = DateTime.TryParse(seriesStart, out dateTime) ? dateTime : DateTime.Now;
+			order.OrderSeries.Start = DateTime.TryParse(seriesStart, out dateTime) ? dateTime : DateTime.Now; // todo: fail to parse might be an error
 			order.OrderSeries.End = DateTime.TryParse(repeatEndDate, out dateTime) ? (DateTime?) dateTime : null;
 			order.OrderSeries.EndAfterInstances = int.TryParse(repeatEndAfterInstances, out intVal) ? intVal : 0;
 			var interval = int.TryParse(repeatInterval, out intVal) ? intVal : 0;
@@ -634,7 +639,7 @@ namespace uWebshop.Domain.Services
 			uWebshopOrders.RemoveScheduledOrdersWithSeriesId(series.Id);
 		}
 
-		private static void ScheduleOrdersOneYearInAdvance(OrderInfo order)
+		private void ScheduleOrdersOneYearInAdvance(OrderInfo order)
 		{
 			if (order.OrderSeries == null)
 			{
@@ -643,7 +648,10 @@ namespace uWebshop.Domain.Services
 
 			foreach (var date in CronHelper.GenerateDateTimeInstancesFromOrderSeries(order.OrderSeries))
 			{
-				// todo stuff
+				var newOrder = _orderService.CreateCopyOfOrder(order);
+				newOrder.DeliveryDate = date;
+				newOrder.Status = OrderStatus.Scheduled;
+				newOrder.Save();
 			}
 		}
 

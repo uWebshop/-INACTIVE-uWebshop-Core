@@ -139,5 +139,14 @@ namespace uWebshop.Domain
 			var source = (Price)price;
 			return source.ValueInCents;
 		}
+
+		public static string TryGetValue(this Dictionary<string, string> fields, string key)
+		{
+			if (fields.ContainsKey(key))
+			{
+				return fields[key];
+			}
+			return null;
+		}
 	}
 }

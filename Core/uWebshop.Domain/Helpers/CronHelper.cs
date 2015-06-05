@@ -29,7 +29,6 @@ namespace uWebshop.Domain.Helpers
 		/// <param name="startDate">The start date.</param>
 		/// <param name="endDate">The end date.</param>
 		/// <param name="crontabExpression">The crontab expression.</param>
-		/// <returns></returns>
 		public static IEnumerable<DateTime> GenerateDateTimeInstancesFromCrontabExpression(DateTime startDate, DateTime endDate, string crontabExpression)
 		{
 			return CrontabSchedule.CrontabSchedule.Parse(crontabExpression).GetNextOccurrences(startDate, endDate);
@@ -59,9 +58,8 @@ namespace uWebshop.Domain.Helpers
 			var cron = cronParts.First();
 			var times = cronParts.Skip(1).FirstOrDefault();
 			int weekCount = 0, previousweek = 0;
-			foreach (var date in CronHelper.GenerateDateTimeInstancesFromCrontabExpression(series.Start, endDate, cron))
+			foreach (var date in GenerateDateTimeInstancesFromCrontabExpression(series.Start, endDate, cron))
 			{
-				// todo: test weekinterval logic
 				var week = GetWeekOfYear(date);
 				if (week != previousweek)
 				{
@@ -72,12 +70,11 @@ namespace uWebshop.Domain.Helpers
 				{
 					yield return date;
 					
-					// todo: times
 					if (!string.IsNullOrWhiteSpace(times))
 					{
 						foreach (var time in times.Split(','))
 						{
-							if (instancesCount-- > 0)
+							if (instancesCount-- > 0) // there's a minor issue here; the times might not be ordered, which then leads to unexpected behaviour at the last day
 							{
 								var timeParts = time.Split(':');
 								var hour = int.Parse(timeParts[0]);
