@@ -963,8 +963,24 @@ namespace uWebshop.Domain.Businesslogic
 				handleObject.Messages = result;
 				return handleObject;
 			}
-
+			
 			FormsAuthentication.SetAuthCookie(userNameValue, true);
+
+			var profile = ProfileBase.Create(userNameValue);
+			if (profile["forceChangePassword"] != null)
+			{
+				var value = profile["forceChangePassword"].ToString();
+				if (value == "true" || value == "1" || value == "on")
+				{
+					var changePasswordUrl = API.Store.GetStore().AccountChangePasswordUrl;
+
+					var strPathAndQuery = HttpContext.Current.Request.Url.PathAndQuery;
+					var strUrl = HttpContext.Current.Request.Url.AbsoluteUri.Replace(strPathAndQuery, string.Empty);
+
+					handleObject.Url = new Uri(string.Format("{0}{1}", strUrl, changePasswordUrl));
+				}
+			}
+
 
 			Session.Add(Constants.SignInMemberSessionKey, AccountActionResult.Success);
 			Session.Remove(Constants.SignOutMemberSessionKey);
@@ -1318,6 +1334,13 @@ namespace uWebshop.Domain.Businesslogic
 
 			string resetPassword = user.ResetPassword();
 
+			var profile = ProfileBase.Create(userNameValue);
+			if (profile["forceChangePassword"] != null)
+			{
+				profile.SetPropertyValue("forceChangePassword", "1");
+				profile.Save();
+			}
+
 			string newPassword = Membership.GeneratePassword(Membership.MinRequiredPasswordLength, Membership.MinRequiredNonAlphanumericCharacters);
 
 			if (user.ChangePassword(resetPassword, newPassword))
@@ -1434,6 +1457,13 @@ namespace uWebshop.Domain.Businesslogic
 					result.Add(Constants.ChangePasswordSessionKey, AccountActionResult.Success.ToString());
 
 					memberShipUser.ChangePassword(currentPasswordValue, newPasswordValue);
+
+					var profile = ProfileBase.Create(memberShipUser.UserName);
+					if (profile["forceChangePassword"] != null)
+					{
+						profile.SetPropertyValue("forceChangePassword", "0");
+						profile.Save();
+					}
 
 					handleObject.Success = true;
 					handleObject.Messages = result;

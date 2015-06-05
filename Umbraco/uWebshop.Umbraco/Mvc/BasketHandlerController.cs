@@ -40,6 +40,18 @@ namespace uWebshop.Umbraco.Mvc
 			
 			var redirectUrl = HttpContext.Request.RawUrl;
 
+			var goToUrlHandler = redirectAfterHandle.LastOrDefault(x => x.Url != null);
+
+			if (goToUrlHandler != null)
+			{
+				var redirectUri = goToUrlHandler.Url;
+
+				if (redirectUri != null)
+				{
+					redirectUrl = redirectUri.AbsoluteUri;
+				}
+			}
+
 			var postConfirmUrlHandler = redirectAfterHandle.LastOrDefault(x => x.PostConfirmUrl != null);
 
 			if (postConfirmUrlHandler != null)

@@ -379,6 +379,14 @@ namespace uWebshop.Domain
 		public string AccountForgotPasswordEmail { get; set; }
 
 		/// <summary>
+		/// The node the member is redirect to when he has to changege his password
+		/// </summary>
+		[ContentPropertyType(Alias = "AccountChangePasswordNode", DataType = DataType.ContentPicker, Tab = ContentTypeTab.Email, Name = "#AccountChangePasswordNode", Description = "#AccountChangePasswordNodeDescription")]
+		public string AccountChangePasswordNode { get; set; }
+
+		public string AccountChangePasswordUrl { get; set; }
+
+		/// <summary>
 		/// Sent and email to the store after the order is confirmed
 		/// </summary>
 		/// <value>

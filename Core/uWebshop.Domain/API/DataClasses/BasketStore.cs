@@ -120,6 +120,12 @@ namespace uWebshop.API
 		}
 
 		[DataMember]
+		public string AccountChangePasswordUrl
+		{
+			get { return _store.AccountChangePasswordUrl; }
+		}
+
+		[DataMember]
 		public string StoreURL
 		{
 			get { return _store.StoreURL; }

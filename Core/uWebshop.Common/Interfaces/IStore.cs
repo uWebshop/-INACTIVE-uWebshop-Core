@@ -127,6 +127,11 @@ namespace uWebshop.Domain.Interfaces
 		/// The email address automatic.
 		/// </value>
 		string EmailAddressTo { get; }
+
+		/// <summary>
+		/// Node the member is redirected to if he needs to change the password
+		/// </summary>
+		string AccountChangePasswordUrl { get; }
 		
 		/// <summary>
 		/// Gets or sets the store URL.
@@ -140,6 +145,7 @@ namespace uWebshop.Domain.Interfaces
 		/// Gets the nodeIds that have this store picker set
 		/// </summary>
 		IEnumerable<int> GetConnectedNodes { get; }
+
 	}
 
 	internal interface IStoreInternal : IStore

@@ -5,11 +5,13 @@ using System.Linq;
 using System.Web;
 using umbraco.cms.businesslogic.language;
 using umbraco.cms.businesslogic.web;
+using umbraco.cms.helpers;
 using umbraco.NodeFactory;
 using uWebshop.Domain;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
 using Umbraco.Core;
+using Umbraco.Web;
 using Constants = uWebshop.Common.Constants;
 
 namespace uWebshop.Umbraco.Repositories
@@ -103,6 +105,7 @@ namespace uWebshop.Umbraco.Repositories
 		{
 			public override void LoadDataFromPropertiesDictionary(Store store, IPropertyProvider fields, ILocalization localization)
 			{
+				var umbracoHelper = new UmbracoHelper(UmbracoContext.Current);
 				var contentTypeService = ApplicationContext.Current.Services.ContentTypeService;
 	
 				// note: it's impossible to use StoreHelper.GetMultiStoreItemExamine here (or any multi store)
@@ -276,6 +279,19 @@ namespace uWebshop.Umbraco.Repositories
 				store.EmailAddressTo = FieldsValueOrEmpty("storeEmailTo", fields);
 				store.AccountCreatedEmail = FieldsValueOrEmpty("accountEmailCreated", fields);
 				store.AccountForgotPasswordEmail = FieldsValueOrEmpty("accountForgotPassword", fields);
+
+				store.AccountChangePasswordNode = FieldsValueOrEmpty("AccountChangePasswordNode", fields);
+				var changeUrl = string.Empty;
+
+				var accountChangeNodeId = 0;
+				int.TryParse(FieldsValueOrEmpty("AccountChangePasswordNode", fields), out accountChangeNodeId);
+				if (accountChangeNodeId > 0)
+				{
+					changeUrl = umbracoHelper.TypedContent(accountChangeNodeId).Url;
+				}
+
+				store.AccountChangePasswordUrl = changeUrl;
+
 				store.ConfirmationEmailStore = FieldsValueOrEmpty("confirmationEmailStore", fields);
 				store.ConfirmationEmailCustomer = FieldsValueOrEmpty("confirmationEmailCustomer", fields);
 				store.OnlinePaymentEmailStore = FieldsValueOrEmpty("onlinePaymentEmailStore", fields);
