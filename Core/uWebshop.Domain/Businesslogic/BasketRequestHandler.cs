@@ -138,7 +138,7 @@ namespace uWebshop.Domain.Businesslogic
 				handleObjectList.Add(result);
 			}
 
-			List<string> repeatQueryStringCollection = requestParameters.AllKeys.Where(x => x != null && (x.ToLower().StartsWith("repeat") || x.ToLower().StartsWith("shippingDeliveryDateTime"))).ToList();
+			List<string> repeatQueryStringCollection = requestParameters.AllKeys.Where(x => x != null && (x.ToLower().StartsWith("repeat") || x.ToLower().StartsWith("shippingdeliverydatetime"))).ToList();
 
 			if (repeatQueryStringCollection.Any())
 			{
@@ -169,6 +169,8 @@ namespace uWebshop.Domain.Businesslogic
 				var result = AddCustomerInformation(requestParameters, extraQueryStringCollection, CustomerDatatypes.Extra, rawRequestUrl);
 				handleObjectList.Add(result);
 			}
+
+			
 			
 			List<string> cleanOrderLinesCollection = requestParameters.AllKeys.Where(x => x != null && x.ToLower() == "clearbasket").ToList();
 

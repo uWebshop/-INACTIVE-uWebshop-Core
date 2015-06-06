@@ -595,6 +595,12 @@ namespace uWebshop.Domain.Services
 
 		private void UpdateRepeatFields(OrderInfo order, Dictionary<string, string> fields)
 		{
+			if(!fields.Any(x => x.Key.ToLowerInvariant().StartsWith("repeat")))
+			{
+				// if there are only shipping fields posted, and non repeat fields, return.
+				// this is to prevent repeats being emptied when they should not.
+				return;
+			}
 			var repeatOrder = fields.TryGetValue("repeatOrder"); //never sameday weekly monthly
 			if (repeatOrder == null || repeatOrder == "never")
 			{
@@ -622,6 +628,14 @@ namespace uWebshop.Domain.Services
 
 			DateTime dateTime;
 			int intVal;
+
+			var splitRepeatDays = repeatDays.Split(',');
+			var splitRepeatTime = repeatTimes.Split(',');
+
+			// empty values
+			repeatDays = splitRepeatDays.Any(x => !string.IsNullOrEmpty(x)) ? string.Join(",", splitRepeatDays.Where(x=> !string.IsNullOrEmpty(x))) : string.Empty;
+			repeatTimes = splitRepeatTime.Any(x => !string.IsNullOrEmpty(x)) ? string.Join(",", splitRepeatDays.Where(x=> !string.IsNullOrEmpty(x))) : string.Empty;
+			
 			order.OrderSeries.Start = DateTime.TryParse(seriesStart, out dateTime) ? dateTime : DateTime.Now; // todo: fail to parse might be an error
 			order.OrderSeries.End = DateTime.TryParse(repeatEndDate, out dateTime) ? (DateTime?) dateTime : null;
 			order.OrderSeries.EndAfterInstances = int.TryParse(repeatEndAfterInstances, out intVal) ? intVal : 0;

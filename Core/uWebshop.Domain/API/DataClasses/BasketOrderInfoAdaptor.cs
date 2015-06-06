@@ -123,6 +123,9 @@ namespace uWebshop.API
 		public IOrderFields OrderFields { get { return new OrderFields(_source.CustomerInfo.ExtraInformation); } set { } }
 		[DataMember]
 		public ICustomer Customer { get { return new BasketCustomer(_source.CustomerInfo); } set { } }
+		[DataMember]
+		public IOrderSeries OrderSeries { get { return new OrderSeries(_source.ToOrderData()); } set { } }
+
 		[IgnoreDataMember]
 		public IStore Store { get { return new BasketStore(_source.StoreInfo); } set { } }
 

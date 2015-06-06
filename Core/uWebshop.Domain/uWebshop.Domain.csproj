@@ -103,6 +103,7 @@
     <Compile Include="Helpers\CrontabSchedule.cs" />
     <Compile Include="Interfaces\External API\ICustomer.cs" />
     <Compile Include="Interfaces\External API\IOrderFields.cs" />
+    <Compile Include="Interfaces\External API\IOrderSeries.cs" />
     <Compile Include="Interfaces\ICategoryRepository.cs" />
     <Compile Include="Interfaces\ICategoryService.cs" />
     <Compile Include="Interfaces\ICMSContentService.cs" />

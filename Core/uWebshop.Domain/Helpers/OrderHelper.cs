@@ -312,9 +312,15 @@ namespace uWebshop.Domain.Helpers
 		/// </summary>
 		/// <param name="startTime">The start time.</param>
 		/// <param name="endTime">The end time.</param>
-		public static IEnumerable<OrderInfo> GetOrdersDeliveredBetweenTimes(DateTime startTime, DateTime endTime)
+		public static IEnumerable<OrderInfo> GetOrdersDeliveredBetweenTimes(DateTime startTime, DateTime endTime, string storeAlias = null)
 		{
-			return uWebshopOrders.GetOrdersDeliveredBetweenTimes(startTime, endTime).Select(OrderInfo.CreateOrderInfoFromOrderData);
+			if (storeAlias != null)
+			{
+				return
+					uWebshopOrders.GetOrdersDeliveredBetweenTimes(startTime, endTime).Where(x => x.StoreAlias.ToLowerInvariant() == storeAlias.ToLowerInvariant()).Select(OrderInfo.CreateOrderInfoFromOrderData);
+			}
+			return
+				uWebshopOrders.GetOrdersDeliveredBetweenTimes(startTime, endTime).Select(OrderInfo.CreateOrderInfoFromOrderData);
 		}
 
 		/// <summary>

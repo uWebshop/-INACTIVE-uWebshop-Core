@@ -310,6 +310,7 @@ namespace uWebshop.Domain
 		/// <value>
 		/// The order series.
 		/// </value>
+		[DataMember]
 		public OrderSeries OrderSeries { get; set; }
 		
 		/// <summary>

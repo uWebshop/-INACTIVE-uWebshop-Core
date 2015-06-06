@@ -141,6 +141,25 @@ namespace uWebshop.API
 		}
 
 		/// <summary>
+		/// Gets orders deliverd between, or to be delivered between certaintime frame
+		/// </summary>
+		/// <param name="startDate"></param>
+		/// <param name="endDate"></param>
+		/// <param name="storeAlias"></param>
+		/// <returns></returns>
+		public static IEnumerable<IOrder> GetOrdersDeliveredBetweenTimes(DateTime startDate, DateTime endDate, string storeAlias = null)
+		{
+			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || UwebshopRequest.Current.PaymentProvider != null)
+			{
+				return OrderHelper.GetOrdersDeliveredBetweenTimes(startDate, endDate, storeAlias).Select(CreateBasketFromOrderInfo);
+			}
+
+			return Enumerable.Empty<IOrder>();
+		}
+
+		
+		
+		/// <summary>
 		/// Gets the orders for customer.
 		/// </summary>
 		/// <param name="customerId">The customer unique identifier.</param>

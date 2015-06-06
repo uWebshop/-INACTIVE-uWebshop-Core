@@ -56,6 +56,11 @@ namespace uWebshop.Domain.Interfaces
 		IOrderFields OrderFields { get; }
 
 		/// <summary>
+		/// Get the series for this order
+		/// </summary>
+		IOrderSeries OrderSeries { get; }
+
+		/// <summary>
 		/// Gets the store.
 		/// </summary>
 		/// <value>
