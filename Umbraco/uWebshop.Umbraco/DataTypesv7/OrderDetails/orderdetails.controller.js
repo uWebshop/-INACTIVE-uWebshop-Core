@@ -9,7 +9,7 @@ angular.module("umbraco").controller("uWebshop.OrderInfoViewer", function ($scop
 		$scope.SelectedOption = $scope.StatusArray[0];
 	});
 
-	$http.get('/Umbraco/uWebshop/StoreApi/GetOrder?uniqueOrderId=' + uniqueId).then(function (res) {
+	$http.get('/Umbraco/backoffice/uWebshop/StoreApi/GetOrder?uniqueOrderId=' + uniqueId).then(function (res) {
 
 		$scope.CurrentOrder = res.data;
 
@@ -45,7 +45,7 @@ angular.module("umbraco").controller("uWebshop.OrderInfoViewer", function ($scop
 		if ($scope.selectedOption != $scope.CurrentOrder.Status) {
 			var data = { 'Id': uniqueId, 'status': $scope.SelectedOption, 'emails': $scope.SendEmail };
 
-			$http.post('/Umbraco/uWebshop/StoreApi/PostOrderStatus/', data)
+			$http.post('/Umbraco/backoffice/uWebshop/StoreApi/PostOrderStatus/', data)
 				.success(function (data, status, headers, config) { })
 				.error(function (responseData) {
 					alert('error saving status!');
@@ -56,7 +56,7 @@ angular.module("umbraco").controller("uWebshop.OrderInfoViewer", function ($scop
 
 			var data = { 'Id': uniqueId, 'paid': $scope.OrderPaid };
 
-			$http.post('/Umbraco/uWebshop/StoreApi/PostPaid/', data)
+			$http.post('/Umbraco/backoffice/uWebshop/StoreApi/PostPaid/', data)
 				.success(function (data, status, headers, config) { })
 				.error(function (responseData) {
 					alert('error saving paid!');

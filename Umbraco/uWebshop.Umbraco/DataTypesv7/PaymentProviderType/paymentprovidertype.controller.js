@@ -2,7 +2,7 @@ angular.module("umbraco").controller("uWebshop.PaymentProviderType", function ($
 
 	$scope.ItemArray = [];
 
-	$http.get('/Umbraco/uWebshop/StoreApi/GetPaymentProviderTypes').then(function (res) {
+	$http.get('/Umbraco/backoffice/uWebshop/StoreApi/GetPaymentProviderTypes').then(function (res) {
 
 		$scope.ItemArray = res.data;
 

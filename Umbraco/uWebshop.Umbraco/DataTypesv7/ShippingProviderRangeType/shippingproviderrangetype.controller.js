@@ -2,7 +2,7 @@ angular.module("umbraco").controller("uWebshop.ShippingProviderRangeType", funct
 
 	$scope.ItemArray = [];
 
-	$http.get('/Umbraco/uWebshop/StoreApi/GetShippingRangeTypes').then(function (res) {
+	$http.get('/Umbraco/backoffice/uWebshop/StoreApi/GetShippingRangeTypes').then(function (res) {
 
 		$scope.ItemArray = res.data;
 

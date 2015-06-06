@@ -2,7 +2,7 @@ angular.module("umbraco").controller("uWebshop.DiscountType", function ($scope, 
 
 	$scope.ItemArray = [];
 
-	$http.get('/Umbraco/uWebshop/StoreApi/GetDiscountTypes').then(function (res) {
+	$http.get('/Umbraco/backoffice/uWebshop/StoreApi/GetDiscountTypes').then(function (res) {
 
 		$scope.ItemArray = res.data;
 

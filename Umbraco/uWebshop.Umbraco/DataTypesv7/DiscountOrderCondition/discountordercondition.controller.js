@@ -2,7 +2,7 @@ angular.module("umbraco").controller("uWebshop.DiscountOrderCondition", function
 
 	$scope.ItemArray = [];
 
-	$http.get('/Umbraco/uWebshop/StoreApi/GetDiscountOrderConditions').then(function (res) {
+	$http.get('/Umbraco/backoffice/uWebshop/StoreApi/GetDiscountOrderConditions').then(function (res) {
 
 		$scope.ItemArray = res.data;
 

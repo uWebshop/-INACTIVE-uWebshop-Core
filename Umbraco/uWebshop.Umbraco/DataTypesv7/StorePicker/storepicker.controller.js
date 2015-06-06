@@ -1,6 +1,6 @@
 angular.module("umbraco").controller("uWebshop.StorePicker", function ($scope, assetsService, $http) {
 
-	$http.get('/Umbraco/uWebshop/StoreApi/GetAllStores').then(function (res) {
+	$http.get('/Umbraco/backoffice/uWebshop/StoreApi/GetAllStores').then(function (res) {
 		$scope.ItemArray = res.data;
 
 		$scope.selectedOption = $scope.ItemArray[0];

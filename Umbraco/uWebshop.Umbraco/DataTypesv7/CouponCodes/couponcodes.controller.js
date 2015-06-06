@@ -2,7 +2,7 @@ angular.module("umbraco").controller("uWebshop.CouponCodes", function ($scope, a
 
 	var nodeId = $routeParams.id;
 
-	$http.get('/Umbraco/uWebshop/StoreApi/GetCouponCodes?discountId=' + nodeId).then(function (res) {
+	$http.get('/Umbraco/backoffice/uWebshop/StoreApi/GetCouponCodes?discountId=' + nodeId).then(function (res) {
 
 		$scope.Coupons = res.data;
 
@@ -69,7 +69,7 @@ angular.module("umbraco").controller("uWebshop.CouponCodes", function ($scope, a
 
 		$scope.$on("formSubmitting", function (e, args) {
 
-			$http.post('/Umbraco/uWebshop/StoreApi/PostCouponCodes', { "Coupons": $scope.Coupons, "DiscountId": nodeId })
+			$http.post('/Umbraco/backoffice/uWebshop/StoreApi/PostCouponCodes', { "Coupons": $scope.Coupons, "DiscountId": nodeId })
 			.success(function (data, status, headers, config) { })
 			.error(function (responseData) {
 				alert('error saving couponcodes!');

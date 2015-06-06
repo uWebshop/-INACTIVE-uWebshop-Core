@@ -8,7 +8,7 @@ angular.module("umbraco").controller("uWebshop.Stock", function ($scope, assetsS
 
 		$scope.stock = { value: res.data };
 
-		$http.get('/Umbraco/uWebshop/StoreApi/GetStoreSpecificStockStoreAliasses').then(function (res) {
+		$http.get('/Umbraco/backoffice/uWebshop/StoreApi/GetStoreSpecificStockStoreAliasses').then(function (res) {
 
 			$scope.ItemArray = res.data;
 
@@ -34,7 +34,7 @@ angular.module("umbraco").controller("uWebshop.Stock", function ($scope, assetsS
 
 			var data = { 'id': nodeId, 'stock': $scope.stock.value, 'storealias': $scope.selectedOption };
 
-			$http.post('/Umbraco/uWebshop/StoreApi/PostStock/', data)
+			$http.post('/Umbraco/backoffice/uWebshop/StoreApi/PostStock/', data)
 			.success(function (data, status, headers, config) { })
 			.error(function (responseData) {
 				alert('error saving stock!');

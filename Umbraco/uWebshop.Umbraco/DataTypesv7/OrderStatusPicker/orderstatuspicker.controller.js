@@ -20,7 +20,7 @@ angular.module("umbraco").controller("uWebshop.OrderStatusPicker", function ($sc
 			}
 		}
 
-		$http.get('/Umbraco/uWebshop/StoreApi/GetOrder?uniqueOrderId=' + uniqueId).then(function (res) {
+		$http.get('/Umbraco/backoffice/uWebshop/StoreApi/GetOrder?uniqueOrderId=' + uniqueId).then(function (res) {
 			$scope.CurrentOrder = res.data;
 
 			var orderStatus = $scope.CurrentOrder.Status;

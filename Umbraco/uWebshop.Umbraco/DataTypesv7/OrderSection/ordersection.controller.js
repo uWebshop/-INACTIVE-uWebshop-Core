@@ -94,7 +94,7 @@ function listViewController($rootScope, $scope, $routeParams, $injector, notific
 	$scope.reloadView = function (id) {
 		$scope.pagination = [];
 
-		$http.get('/Umbraco/uWebshop/StoreApi/GetAllOrders').then(function (res) {
+		$http.get('/Umbraco/backoffice/uWebshop/StoreApi/GetAllOrders').then(function (res) {
 			$scope.listViewResultSet.items = res.data;
 			$scope.listViewResultSet.totalItems = res.data.length;
 
@@ -180,7 +180,7 @@ function listViewController($rootScope, $scope, $routeParams, $injector, notific
 
 			console.log(data);
 
-			$http.post('/Umbraco/uWebshop/StoreApi/PostOrder/', data)
+			$http.post('/Umbraco/backoffice/uWebshop/StoreApi/PostOrder/', data)
 				.success(function (data, status, headers, config) {
 
 					$scope.bulkStatus = "";
@@ -205,7 +205,7 @@ function listViewController($rootScope, $scope, $routeParams, $injector, notific
 
 	$scope.getTreeNodeUrl = function (item) {
 
-		$http.get('/Umbraco/uWebshop/StoreApi/GetOrCreateOrderNode?uniqueOrderId=' + item.UniqueId).then(function (res) {
+		$http.get('/Umbraco/backoffice/uWebshop/StoreApi/GetOrCreateOrderNode?uniqueOrderId=' + item.UniqueId).then(function (res) {
 
 			contentResource.getById(res.data).then(function (content) {
 				navigationService.syncTree({ tree: "content", path: content.path.split(","), forceReload: true, activate: true }).then(function (syncArgs) {

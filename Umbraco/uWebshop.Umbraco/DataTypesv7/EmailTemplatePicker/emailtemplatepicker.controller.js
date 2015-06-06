@@ -1,6 +1,6 @@
 angular.module("umbraco").controller("uWebshop.EmailTemplatePicker", function ($scope, assetsService, editorState, $routeParams, $http) {
 
-	$http.get('/Umbraco/uWebshop/StoreApi/GetEmailTemplates').then(function (res) {
+	$http.get('/Umbraco/backoffice/uWebshop/StoreApi/GetEmailTemplates').then(function (res) {
 
 		$scope.ItemArray = res.data;
 

@@ -1,6 +1,6 @@
 angular.module("umbraco").controller("uWebshop.MemberGroups", function ($scope, assetsService, $http) {
 
-	$http.get('/Umbraco/uWebshop/StoreAPI/GetAllMemberGroups').then(function (res) {
+	$http.get('/Umbraco/backoffice/uWebshop/StoreApi/GetAllMemberGroups').then(function (res) {
 
 		$scope.Items = res.data;
 
