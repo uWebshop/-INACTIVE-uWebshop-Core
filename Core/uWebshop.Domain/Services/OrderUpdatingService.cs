@@ -531,6 +531,16 @@ namespace uWebshop.Domain.Services
 					}
 				}
 
+				if (field.Key == "shippingDeliveryDateTime")
+				{
+					var deliveryDate = fields.TryGetValue("shippingDeliveryDateTime"); // 2015-05-26T16:03:35
+					if (deliveryDate != null)
+					{
+						DateTime dateTime;
+						order.DeliveryDate = DateTime.TryParse(deliveryDate, out dateTime) ? dateTime : DateTime.Now; // todo: fail to parse might be an error
+					}
+				}
+
 				if (field.Key.ToLower() == "customervatnumber")
 				{
 					order.SetVATNumber(field.Value);
