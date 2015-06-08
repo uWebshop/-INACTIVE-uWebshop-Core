@@ -302,7 +302,7 @@ namespace uWebshop.Domain
 		/// Gets or sets the delivery date.
 		/// </summary>
 		[DataMember]
-		public DateTime DeliveryDate { get; set; }
+		public DateTime? DeliveryDate { get; set; }
 
 		/// <summary>
 		/// Gets or sets the order series.
@@ -865,7 +865,23 @@ namespace uWebshop.Domain
 		public int DatabaseId { get; set; }
 
 		/// <summary>
-		///     Gets a list with the orderlines of the order
+		/// Internal use. Sets Id of the OrderSeries
+		/// </summary>
+		/// <param name="newSeriesId">The new series unique identifier.</param>
+		/// <exception cref="System.ApplicationException">Setting seriesId on order without Series</exception>
+		[Browsable(false)]
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void SetNewSeriesId(int newSeriesId)
+		{
+			if (OrderSeries == null)
+			{
+				throw new ApplicationException("Setting seriesId on order without Series");
+			}
+			OrderSeries.Id = newSeriesId;
+		}
+
+		/// <summary>
+		/// Gets a list with the orderlines of the order
 		/// </summary>
 		[DataMember]
 		public List<OrderLine> OrderLines { get; set; }
@@ -1001,6 +1017,8 @@ namespace uWebshop.Domain
 			orderInfo.StoreOrderReferenceId = orderData.StoreOrderReferenceId;
 			orderInfo.OrderNumber = orderData.OrderReferenceNumber;
 
+			orderInfo.DeliveryDate = orderData.DeliveryDate;
+
 			if (orderData.SeriesId > 0)
 			{
 				orderInfo.OrderSeries = new OrderSeries(orderData);
@@ -1107,6 +1125,8 @@ namespace uWebshop.Domain
 			orderData.CustomerFirstName = CustomerFirstName;
 			orderData.CustomerLastName = CustomerLastName;
 			orderData.TransactionId = PaymentInfo.TransactionId;
+
+			orderData.DeliveryDate = DeliveryDate;
 
 			if (OrderSeries != null)
 			{

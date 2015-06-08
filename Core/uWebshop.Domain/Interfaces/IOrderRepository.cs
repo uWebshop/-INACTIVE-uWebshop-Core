@@ -41,6 +41,7 @@ namespace uWebshop.Domain.Interfaces
 		/// <param name="transactionId">The transaction unique identifier.</param>
 		/// <returns></returns>
 		OrderInfo GetOrderInfo(string transactionId);
+		OrderInfo GetOrderInfo(int databaseId);
 
 		/// <summary>
 		/// Saves the order.

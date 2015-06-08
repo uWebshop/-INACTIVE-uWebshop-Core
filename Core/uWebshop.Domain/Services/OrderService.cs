@@ -49,7 +49,7 @@ namespace uWebshop.Domain.Services
 			order.ShippingCostsMightBeOutdated = true;
 
 			order.VATCheckService = IO.Container.Resolve<IVATCheckService>();
-			InitializeNewOrder(order);
+			InitializeNewOrder(order); // todo: begin possible race condition ending in out of sync orderNumber
 			UseDatabaseDiscounts(order);
 
 			order.CustomerInfo.CountryCode = !string.IsNullOrEmpty(store.DefaultCountryCode) ? store.DefaultCountryCode : store.CountryCode;
@@ -70,7 +70,7 @@ namespace uWebshop.Domain.Services
 			order.Localization = StoreHelper.CurrentLocalization; // todo clean
 			order.AddStore(store);
 
-			order.Save();
+			order.Save(); // end possible race condition ending in out of sync orderNumber
 
 			return order;
 		}
@@ -111,10 +111,10 @@ namespace uWebshop.Domain.Services
 
 		public OrderInfo CreateCopyOfOrder(OrderInfo order)
 		{
-			InitializeNewOrder(order);
+			InitializeNewOrder(order); // todo: begin possible race condition ending in out of sync orderNumber
 			order.PaymentInfo.TransactionId = string.Empty;
 
-			order.Save();
+			order.Save(); // end possible race condition ending in out of sync orderNumber
 
 			return order;
 		}

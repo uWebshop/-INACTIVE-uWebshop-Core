@@ -3,5 +3,6 @@
 	public interface IDatabaseOrder
 	{
 		int DatabaseId { set; }
+		void SetNewSeriesId(int newSeriesId);
 	}
 }

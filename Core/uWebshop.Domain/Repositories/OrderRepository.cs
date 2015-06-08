@@ -64,6 +64,11 @@ namespace uWebshop.Domain.Repositories
 			return OrderInfo.CreateOrderInfoFromOrderData(uWebshopOrders.GetOrderInfo(transactionId));
 		}
 
+		public OrderInfo GetOrderInfo(int databaseId)
+		{
+			return OrderInfo.CreateOrderInfoFromOrderData(uWebshopOrders.GetOrderInfo(databaseId));
+		}
+
 		public IEnumerable<OrderInfo> GetOrdersFromCustomer(int customerId, string storeAlias = null, bool includeIncomplete = false)
 		{
 			return uWebshopOrders.GetOrdersFromCustomer(customerId, includeIncomplete).Select(OrderInfo.CreateOrderInfoFromOrderData);

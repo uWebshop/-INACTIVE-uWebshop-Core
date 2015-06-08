@@ -142,6 +142,11 @@ namespace uWebshop.Domain.Helpers
 			return OrderRepository.GetOrderInfo(transactionId);
 		}
 
+		internal static OrderInfo GetOrder(int databaseId)
+		{
+			return OrderRepository.GetOrderInfo(databaseId);
+		}
+
 		internal static OrderInfo GetCurrentBasketOrNewIfNotIncomplete()
 		{
 			var order = GetUnmodifiedCurrentOrder();

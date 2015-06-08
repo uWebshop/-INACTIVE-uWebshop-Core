@@ -53,12 +53,15 @@ namespace uWebshop.DataAccess
 			if (!reader.IsNull("seriesID"))
 			{
 				SeriesId = reader.GetInt("seriesID");
-				SeriesCronInterval = reader.GetString("cronInterval");
-				if (!reader.IsNull("start"))
-					SeriesStart = reader.GetDateTime("start");
-				if (!reader.IsNull("end"))
-					SeriesEnd = reader.GetDateTime("end");
-				SeriesEndAfterInstances = reader.GetInt("endAfterInstances");
+				if (SeriesId != 0)
+				{
+					SeriesCronInterval = reader.GetString("cronInterval");
+					if (!reader.IsNull("start"))
+						SeriesStart = reader.GetDateTime("start");
+					if (!reader.IsNull("end"))
+						SeriesEnd = reader.GetDateTime("end");
+					SeriesEndAfterInstances = reader.GetInt("endAfterInstances");
+				}
 			}
 			OrderXML = reader.GetString("orderInfo");
 			OrderStatus = reader.GetString("orderStatus");
@@ -84,6 +87,12 @@ namespace uWebshop.DataAccess
 		{
 			DatabaseId = id;
 			if (Order != null) Order.DatabaseId = id;
+		}
+
+		public void SetGeneratedDatabaseSeriesId(int newSeriesId)
+		{
+			SeriesId = newSeriesId;
+			if (Order != null) Order.SetNewSeriesId(newSeriesId);
 		}
 	}
 }

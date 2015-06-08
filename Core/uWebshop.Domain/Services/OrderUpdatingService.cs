@@ -670,6 +670,22 @@ namespace uWebshop.Domain.Services
 				return;
 			}
 
+			if (order.OrderSeries.Id == 0)
+			{
+				order.Save();
+				var newOrder = OrderHelper.GetOrder(order.DatabaseId);
+				if (newOrder == null)
+				{
+					throw new ApplicationException("Can't load order with id " + order.DatabaseId);
+				}
+				order = newOrder;
+			}
+
+			if (order.OrderSeries.Id == 0)
+			{
+				throw new ApplicationException("OrderSeries without id loaded");
+			}
+
 			foreach (var date in CronHelper.GenerateDateTimeInstancesFromOrderSeries(order.OrderSeries))
 			{
 				var newOrder = _orderService.CreateCopyOfOrder(order);
