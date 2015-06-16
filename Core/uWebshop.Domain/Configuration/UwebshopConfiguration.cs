@@ -24,6 +24,7 @@ namespace uWebshop.Domain
 			ShareBasketBetweenStores = ConfigurationManager.AppSettings["uwbsShareBasketBetweenStores"] == "true";
 			OrdersCacheTimeoutMilliseconds = Common.Helpers.ParseInt(ConfigurationManager.AppSettings["uwbsOrdersCacheTimeoutMilliseconds"], 2000);
 			DisableDateFolders = ConfigurationManager.AppSettings["uwbsDisableDateFolders"] == "true";
+			UseDeliveryDateAsConfirmDateForScheduledOrders = ConfigurationManager.AppSettings["uwbsUseDeliveryDateAsConfirmDateForScheduledOrders"] == "true";
 			LoadConnectionString();
 		}
 
@@ -112,5 +113,7 @@ namespace uWebshop.Domain
 		/// Gets the connection string.
 		/// </summary>
 		public string ConnectionString { get; private set; }
+
+		public bool UseDeliveryDateAsConfirmDateForScheduledOrders { get; private set; }
 	}
 }

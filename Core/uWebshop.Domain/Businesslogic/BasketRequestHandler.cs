@@ -1634,7 +1634,6 @@ namespace uWebshop.Domain.Businesslogic
 				return handleObject;
 			}
 
-
 			handleObject.Validated = true;
 			if (order.PaymentInfo.TransactionMethod == PaymentTransactionMethod.WebClient)
 			{
@@ -1655,7 +1654,6 @@ namespace uWebshop.Domain.Businesslogic
 				
 				// todo: nasty hack, because on localhost // somehow makes from // file:// instead of http:// 
 				var redirectUrl = order.RedirectUrl;
-
 				if (order.RedirectUrl.StartsWith("//"))
 				{
 					var http = "http:";
@@ -1663,16 +1661,14 @@ namespace uWebshop.Domain.Businesslogic
 					{
 						http = "https:";
 					}
-
 					redirectUrl = string.Format("{0}{1}", http, order.RedirectUrl);
 				}
 
-				if(redirectUrl != "inline")
+				if(redirectUrl != "inline") // todo: Arnold, is this if correct? or should both lines be conditional?
 				handleObject.Url = new Uri(redirectUrl);
 				handleObject.PostConfirmUrl = new Uri(redirectUrl);
 
 				Log.Instance.LogDebug("CONFIRM ORDER REDIRECT URL: "+ redirectUrl + " (handleObject.PostConfirmUrl) handleObject.PostConfirmUrl.AbsoluteUri: " + handleObject.PostConfirmUrl.AbsoluteUri);
-
 			}
 
 			Session.Add(Constants.ConfirmOrderKey, AccountActionResult.Success);

@@ -302,21 +302,18 @@ namespace uWebshop.DataAccess
 						SQLHelper.CreateParameter("@orderInfo", orderData.OrderXML), 
 						SQLHelper.CreateParameter("@uniqueID", orderData.UniqueId),
 						CreateParameterFromNullableValue("@storeOrderReferenceID", orderData.StoreOrderReferenceId),
-						//orderData.StoreOrderReferenceId.HasValue ? SQLHelper.CreateParameter("@storeOrderReferenceID", orderData.StoreOrderReferenceId.GetValueOrDefault()) : SQLHelper.CreateParameter("@storeOrderReferenceID", DBNull.Value), 
 						CreateDbNullStringParameter("@orderNumber", orderData.OrderReferenceNumber),
 						CreateDbNullStringParameter("@orderStatus", orderData.OrderStatus),
 						SQLHelper.CreateParameter("@createDate", DateTime.Now), 
 						SQLHelper.CreateParameter("@updateDate", DateTime.Now),
 						CreateDbNullStringParameter("@storeAlias", orderData.StoreAlias),
 						CreateParameterFromNullableValue("@customerID", orderData.CustomerId),
-						//orderData.CustomerId == null ? SQLHelper.CreateParameter("@customerID", DBNull.Value) : SQLHelper.CreateParameter("@customerID", orderData.CustomerId),
 						CreateDbNullStringParameter("@customerUsername", orderData.CustomerUsername),
 						CreateDbNullStringParameter("@customerEmail", orderData.CustomerEmail),
 						CreateDbNullStringParameter("@customerFirstName", orderData.CustomerFirstName),
 						CreateDbNullStringParameter("@customerLastName", orderData.CustomerLastName),
 						CreateDbNullStringParameter("@transactionID", orderData.TransactionId),
 						CreateParameterFromNullableValue("@deliveryDate", orderData.DeliveryDate),
-						//orderData.DeliveryDate != null ? SQLHelper.CreateParameter("@deliveryDate", orderData.DeliveryDate) : SQLHelper.CreateParameter("@deliveryDate", DBNull.Value), 
 						SQLHelper.CreateParameter("@seriesID", orderData.SeriesId),
 						CreateDbNullStringParameter("@seriesCronInterval", orderData.SeriesCronInterval),
 						CreateParameterFromNullableValue("@seriesStart", orderData.SeriesStart),
@@ -327,7 +324,6 @@ namespace uWebshop.DataAccess
 				{
 					orderData.SetGeneratedDatabaseId(insertedId);
 				}
-				// todo: NB, ID of OrderSeries object is not set
 				if (!string.IsNullOrWhiteSpace(orderData.SeriesCronInterval))
 				{
 					var newSeriesId = SQLHelper.ExecuteScalar<int>("select seriesId from uWebshopOrders where id = @orderId", SQLHelper.CreateParameter("@orderId", orderData.DatabaseId));

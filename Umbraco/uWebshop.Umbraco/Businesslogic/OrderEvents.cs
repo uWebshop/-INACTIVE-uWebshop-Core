@@ -123,6 +123,9 @@ namespace uWebshop.Umbraco.Businesslogic
 					#endregion
 
 					break;
+				case OrderStatus.Scheduled:
+					OrderHelper.SetCompletedOrderCookie(orderInfo); // todo inappropriate if it is an order from a series
+					break;
 				case OrderStatus.Cancelled:
 
 					// return stock

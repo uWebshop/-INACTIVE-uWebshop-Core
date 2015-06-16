@@ -89,5 +89,7 @@
 		/// Gets the connection string.
 		/// </summary>
 		string ConnectionString { get; }
+
+		bool UseDeliveryDateAsConfirmDateForScheduledOrders { get; }
 	}
 }

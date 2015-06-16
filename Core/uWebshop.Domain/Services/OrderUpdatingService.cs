@@ -9,6 +9,7 @@ using System.Web.SessionState;
 using System.Xml.Linq;
 using uWebshop.Common;
 using uWebshop.Common.Interfaces;
+using uWebshop.Common.ServiceInterfaces;
 using uWebshop.DataAccess;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
@@ -20,21 +21,20 @@ namespace uWebshop.Domain.Services
 		private readonly ICMSApplication _cmsApplication;
 		private readonly IProductService _productService;
 		private readonly IProductVariantService _productVariantService;
-		private readonly ICouponCodeService _couponCodeService;
 		private readonly IOrderService _orderService;
 		private readonly IOrderNumberService _orderNumberService;
 		private readonly IOrderRepository _orderRepository;
+		private readonly IUwebshopConfiguration _uwebshopConfiguration;
 
-		public OrderUpdatingService(ICMSApplication cmsApplication, IProductService productService, IProductVariantService productVariantService, 
-			ICouponCodeService couponCodeService, IOrderService orderService, IOrderNumberService orderNumberService, IOrderRepository orderRepository)
+		public OrderUpdatingService(ICMSApplication cmsApplication, IProductService productService, IProductVariantService productVariantService, IOrderService orderService, IOrderNumberService orderNumberService, IOrderRepository orderRepository, IUwebshopConfiguration uwebshopConfiguration)
 		{
 			_cmsApplication = cmsApplication;
 			_productService = productService;
 			_productVariantService = productVariantService;
-			_couponCodeService = couponCodeService;
 			_orderService = orderService;
 			_orderNumberService = orderNumberService;
 			_orderRepository = orderRepository;
+			_uwebshopConfiguration = uwebshopConfiguration;
 		}
 
 		private HttpSessionState Session
@@ -629,7 +629,7 @@ namespace uWebshop.Domain.Services
 				order.OrderValidationErrors.Add(new OrderValidationError { Alias = "ShippingDeliveryDateTimeNotSet", Value = "ShippingDeliveryDateTime is not set" });
 				return;
 			}
-			var repeatDays = fields.TryGetValue("repeatDays"); // mon,tue,wed
+			var repeatDays = fields.TryGetValue("repeatDays") ?? string.Empty; // mon,tue,wed
 			var repeatTimes = fields.TryGetValue("repeatTimes"); // 00:00,15:00,17:00
 			var repeatInterval = fields.TryGetValue("repeatInterval"); // 2
 			//var repeatEndsOn = fields["repeatEndsOn"]; // never/count/date => not needed, only frontend
@@ -652,9 +652,6 @@ namespace uWebshop.Domain.Services
 			var interval = int.TryParse(repeatInterval, out intVal) ? intVal : 0;
 
 			order.OrderSeries.CronInterval = CreateCronInterval(order.OrderSeries.Start, repeatOrder, repeatTimes, interval, repeatDays).Item1;
-			
-			// todo: (re)create scheduled orders based on cron
-			ScheduleOrdersOneYearInAdvance(order); // the location of this call is terrible, but given the spaghetti leading up to this method I don't see a proper solution given available time
 		}
 
 		private static void RemoveAllScheduledOrders(OrderSeries series)
@@ -729,7 +726,7 @@ namespace uWebshop.Domain.Services
 				cronExplanation = cronExplanation ?? "Every month";
 				var day = seriesStart.Day;
 				var dayOfWeek = seriesStart.DayOfWeek;
-				weekDays = dayOfWeek.ToString().ToLowerInvariant().Substring(0, 3);
+				weekDays = dayOfWeek.ToString().ToLowerInvariant().Substring(0, 3); // todo: test with culture != EN
 				if (day < 8) // first Monday/etc of the month
 				{
 					days = "1-7";
@@ -762,6 +759,10 @@ namespace uWebshop.Domain.Services
 			}
 			if (repeatNature == "weekly")
 			{
+				if (string.IsNullOrWhiteSpace(repeatDays))
+				{
+					repeatDays = seriesStart.DayOfWeek.ToString().ToLowerInvariant().Substring(0, 3); // todo: test with culture != EN
+				}
 				cronExplanation = cronExplanation ?? "Every week";
 				cronExplanation += " on " + repeatDays;
 				weekDays = repeatDays;
@@ -878,7 +879,7 @@ namespace uWebshop.Domain.Services
 				// set final ordernumber for payment provider communication, but not yet save it in the database
 				orderNrTransaction.Generate();
 
-				var paymentRedirectUrl = OrderHelper.HandlePaymentRequest(order, confirmationNodeId); // todo: this may be inappropriate as it will worsen responsiveness
+				var paymentRedirectUrl = OrderHelper.HandlePaymentRequest(order, confirmationNodeId); // todo: this may be inappropriate as it will worsen overall responsiveness (because of the transaction)
 				if (paymentRedirectUrl == "failed")
 				{
 					orderNrTransaction.Rollback();
@@ -890,7 +891,10 @@ namespace uWebshop.Domain.Services
 				orderNrTransaction.Persist();
 			}
 
-			order.Status = OrderStatus.Confirmed;
+			ScheduleOrdersOneYearInAdvance(order);
+
+			order.Status = _uwebshopConfiguration.UseDeliveryDateAsConfirmDateForScheduledOrders && order.DeliveryDate.HasValue
+				? OrderStatus.Scheduled : OrderStatus.Confirmed;
 			Save(order, true);
 			return true;
 		}

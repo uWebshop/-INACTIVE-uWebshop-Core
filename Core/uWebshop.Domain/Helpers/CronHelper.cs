@@ -66,7 +66,7 @@ namespace uWebshop.Domain.Helpers
 					weekCount++;
 					previousweek = week;
 				}
-				if ((weekInterval == 1 || weekCount % weekInterval == 1) && instancesCount-- > 0 && date > today)
+				if ((weekInterval == 1 || weekCount % weekInterval == 1) && instancesCount-- > 1 && date > today)
 				{
 					yield return date;
 					

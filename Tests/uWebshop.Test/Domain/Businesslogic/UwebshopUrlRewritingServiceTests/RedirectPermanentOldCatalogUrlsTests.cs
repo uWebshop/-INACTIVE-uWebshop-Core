@@ -65,5 +65,6 @@ namespace uWebshop.Test.Domain.Businesslogic.UwebshopUrlsRewritingServiceTests
 		public bool DisableDateFolders { get; set; }
 		public int OrdersCacheTimeoutMilliseconds { get; set; }
 		public string ConnectionString { get; set; }
+		public bool UseDeliveryDateAsConfirmDateForScheduledOrders { get; set; }
 	}
 }
