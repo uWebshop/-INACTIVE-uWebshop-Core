@@ -93,7 +93,9 @@ namespace uWebshop.Umbraco.WebApi
 
 		public IEnumerable<BasketOrderInfoAdaptor> GetOrdersToDeliverToday(string storeAlias = null)
 		{
-			return OrderHelper.GetOrdersDeliveredBetweenTimes(DateTime.Today, DateTime.Today.AddDays(1), storeAlias).Select(o => Orders.CreateBasketFromOrderInfo(o) as BasketOrderInfoAdaptor);
+			return OrderHelper.GetOrdersDeliveredBetweenTimes(DateTime.Today, DateTime.Today.AddDays(1), storeAlias)
+				.Where(o => o.Status == OrderStatus.Confirmed || o.Status == OrderStatus.Scheduled)
+				.Select(o => Orders.CreateBasketFromOrderInfo(o) as BasketOrderInfoAdaptor);
 		}
 		
 		public IEnumerable<BasketOrderInfoAdaptor> GetOrdersByStatus(string status, string storeAlias = null)
