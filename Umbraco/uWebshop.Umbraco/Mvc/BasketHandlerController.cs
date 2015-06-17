@@ -607,7 +607,7 @@ namespace uWebshop.Umbraco.Mvc
 		[HttpPost]
 		public ActionResult AccountUpdate(Dictionary<string, string> property = null, bool generatePassword = false, string currentPassword = null, string newPassword = null, string validatePassword = null)
 		{
-			var memberShipUser = Membership.GetUser();
+			var memberShipUser = UwebshopRequest.Current.User;
 
 			if (memberShipUser == null)
 			{

@@ -107,8 +107,8 @@ namespace uWebshop.API
 		private static string GetCustomerValueFromSessionOrBasketOrProfile(XContainer xSource, string fieldName)
 		{
 			// todo: think about the order
-			if (fieldName != null)
-			{
+			if (fieldName != null) 
+			{// todo: this call is strange in the backend or worse: when client views his old orders
 				var sessionValue = Customers.GetCustomerValueFromSession(fieldName);
 
 				if (!string.IsNullOrEmpty(sessionValue))

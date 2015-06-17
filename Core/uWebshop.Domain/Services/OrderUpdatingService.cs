@@ -339,7 +339,7 @@ namespace uWebshop.Domain.Services
 			// If no member connected to the order, add member to the order
 			//if (string.IsNullOrEmpty(order.CustomerInfo.LoginName))
 			{
-				var currentMember = Membership.GetUser(); // TODO: dip
+				var currentMember = UwebshopRequest.Current.User; // TODO: dip
 
 				if (currentMember != null && 
 					(order.CustomerInfo.LoginName != currentMember.UserName || currentMember.ProviderUserKey != null && order.CustomerInfo.CustomerId != (int) currentMember.ProviderUserKey))
@@ -389,7 +389,7 @@ namespace uWebshop.Domain.Services
 				return CouponCodeResult.NotFound;
 			}
 
-			var member = Membership.GetUser();
+			var member = UwebshopRequest.Current.User;
 			var oncePerCustomer = discounts.All(discount => discount.OncePerCustomer);
 			if (oncePerCustomer && member != null)
 			{
@@ -536,8 +536,9 @@ namespace uWebshop.Domain.Services
 					var deliveryDate = fields.TryGetValue("shippingDeliveryDateTime"); // 2015-05-26T16:03:35
 					if (deliveryDate != null)
 					{
-						DateTime dateTime;
-						order.DeliveryDate = DateTime.TryParse(deliveryDate, out dateTime) ? dateTime : DateTime.Now; // todo: fail to parse might be an error
+						var date = Common.Helpers.DateTimeMultiCultureParse(deliveryDate);
+						if (date == null) throw new ApplicationException("Could not parse delivery date string: " + deliveryDate);
+						order.DeliveryDate = date;
 					}
 				}
 
@@ -636,7 +637,6 @@ namespace uWebshop.Domain.Services
 			var repeatEndAfterInstances = fields.TryGetValue("repeatEndAfterInstances"); // 10
 			var repeatEndDate = fields.TryGetValue("repeatEndDate"); // 2015-05-26 or 2015-05-26T16:03:35
 
-			DateTime dateTime;
 			int intVal;
 
 			var splitRepeatDays = repeatDays.Split(',');
@@ -645,9 +645,14 @@ namespace uWebshop.Domain.Services
 			// empty values
 			repeatDays = splitRepeatDays.Any(x => !string.IsNullOrEmpty(x)) ? string.Join(",", splitRepeatDays.Where(x=> !string.IsNullOrEmpty(x))) : string.Empty;
 			repeatTimes = splitRepeatTime.Any(x => !string.IsNullOrEmpty(x)) ? string.Join(",", splitRepeatDays.Where(x=> !string.IsNullOrEmpty(x))) : string.Empty;
-			
-			order.OrderSeries.Start = DateTime.TryParse(seriesStart, out dateTime) ? dateTime : DateTime.Now; // todo: fail to parse might be an error
-			order.OrderSeries.End = DateTime.TryParse(repeatEndDate, out dateTime) ? (DateTime?) dateTime : null;
+
+			var startDate = Common.Helpers.DateTimeMultiCultureParse(seriesStart);
+			if (startDate == null) throw new ApplicationException("Could not parse orderseries start date string: " + seriesStart);
+			order.OrderSeries.Start = startDate.Value;
+
+			var endDate = Common.Helpers.DateTimeMultiCultureParse(repeatEndDate);
+			if (!string.IsNullOrWhiteSpace(repeatEndDate) && endDate == null) throw new ApplicationException("Could not parse orderseries end date string: " + repeatEndDate);
+			order.OrderSeries.End = endDate;
 			order.OrderSeries.EndAfterInstances = int.TryParse(repeatEndAfterInstances, out intVal) ? intVal : 0;
 			var interval = int.TryParse(repeatInterval, out intVal) ? intVal : 0;
 

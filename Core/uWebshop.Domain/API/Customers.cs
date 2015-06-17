@@ -200,7 +200,7 @@ namespace uWebshop.API
 		/// <param name="storeAlias">The store alias.</param>
 		public static IWishlist GetWishlist(string wishlistName = null, string storeAlias = null)
 		{
-			var member = Membership.GetUser();
+			var member = UwebshopRequest.Current.User;
 			if (member != null)
 			{
 				return GetWishlist(member.UserName, wishlistName, storeAlias);
@@ -268,7 +268,7 @@ namespace uWebshop.API
 		/// <param name="storeAlias">The store alias.</param>
 		public static IEnumerable<IWishlist> GetWishlists(int customerId, string storeAlias = null)
 		{
-			var membershipUser = Membership.GetUser();
+			var membershipUser = UwebshopRequest.Current.User;
 			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || membershipUser != null && membershipUser.ProviderUserKey as string == customerId.ToString() || UwebshopRequest.Current.PaymentProvider != null)
 			{
 				return OrderHelper.GetWishlistsForCustomer(customerId, storeAlias).Select(Orders.CreateBasketFromOrderInfo).Cast<IWishlist>();
@@ -284,7 +284,7 @@ namespace uWebshop.API
 		/// <param name="storeAlias">The store alias.</param>
 		public static IEnumerable<IWishlist> GetWishlists(string userName, string storeAlias = null)
 		{
-			var membershipUser = Membership.GetUser();
+			var membershipUser = UwebshopRequest.Current.User;
 			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || membershipUser != null && membershipUser.UserName == userName || UwebshopRequest.Current.PaymentProvider != null)
 			{
 				return OrderHelper.GetWishlistsForCustomer(userName, storeAlias).Select(Orders.CreateBasketFromOrderInfo).Cast<IWishlist>();
@@ -323,7 +323,7 @@ namespace uWebshop.API
 		/// <param name="fieldName">the property field name</param>
 		public static string GetCustomerValueFromProfile(string fieldName)
 		{
-			var member = Membership.GetUser();
+			var member = UwebshopRequest.Current.User;
 
 			if (member == null)
 			{

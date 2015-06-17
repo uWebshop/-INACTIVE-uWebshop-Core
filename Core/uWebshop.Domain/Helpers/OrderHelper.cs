@@ -447,7 +447,7 @@ namespace uWebshop.Domain.Helpers
 			}
 			if (alias == "customerEmail")
 			{
-				var member = Membership.GetUser(); // todo: decouple
+				var member = UwebshopRequest.Current.User; // todo: decouple
 				if (member != null) return member.Email;
 			}
 			var profile = HttpContext.Current.Profile;

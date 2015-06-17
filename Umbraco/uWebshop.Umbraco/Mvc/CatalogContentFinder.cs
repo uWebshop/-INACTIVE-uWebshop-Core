@@ -132,7 +132,7 @@ namespace uWebshop.Umbraco.Mvc
 
 				if (categoryFromUrl.Disabled) return false;
 
-				if (Access.HasAccess(categoryFromUrl.Id, categoryFromUrl.Path, Membership.GetUser()))
+				if (Access.HasAccess(categoryFromUrl.Id, categoryFromUrl.Path, UwebshopRequest.Current.User))
 				{
 					var doc = contentRequest.RoutingContext.UmbracoContext.ContentCache.GetById(content.Id);
 					if (doc != null)
@@ -161,7 +161,7 @@ namespace uWebshop.Umbraco.Mvc
 				var productFromUrl = content as Product;
 				if (productFromUrl.Disabled) return false;
 
-				if (Access.HasAccess(productFromUrl.Id, productFromUrl.Path, Membership.GetUser()))
+				if (Access.HasAccess(productFromUrl.Id, productFromUrl.Path, UwebshopRequest.Current.User))
 				{
 					var doc = contentRequest.RoutingContext.UmbracoContext.ContentCache.GetById(content.Id);
 					if (doc != null)

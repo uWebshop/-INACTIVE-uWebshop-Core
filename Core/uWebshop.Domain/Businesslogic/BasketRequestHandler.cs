@@ -531,7 +531,7 @@ namespace uWebshop.Domain.Businesslogic
 
 				if (!string.IsNullOrEmpty(wishlistName))
 				{
-					var membershipUser = Membership.GetUser();
+					var membershipUser = UwebshopRequest.Current.User;
 					if (membershipUser != null)
 					{
 						var wishlistFromMember = Customers.GetWishlist(membershipUser.UserName, wishlistName,
@@ -581,9 +581,9 @@ namespace uWebshop.Domain.Businesslogic
 					wishlist.Name = wishlistName;
 					wishlist.Status = OrderStatus.Wishlist;
 					wishlist.Name = requestParameters[wishlistQueryStringCollection.First()];
-					
 
-					var member = Membership.GetUser();
+
+					var member = UwebshopRequest.Current.User;
 
 					if (member == null)
 					{
@@ -1028,7 +1028,7 @@ namespace uWebshop.Domain.Businesslogic
 			var ignoreMemberexists = ignoreMemberexistsValue != null && (ignoreMemberexistsValue.ToLower() == "true" ||
 																		 ignoreMemberexistsValue.ToLower() == "ignorememberexistserror" ||
 																		 ignoreMemberexistsValue.ToLower() == "on" ||
-																		 ignoreMemberexistsValue == "1") || Membership.GetUser() != null;
+																		 ignoreMemberexistsValue == "1") || UwebshopRequest.Current.User != null;
 
 			var userName = requestParameters[userKey];
 
@@ -1394,7 +1394,7 @@ namespace uWebshop.Domain.Businesslogic
 			var validatePasswordValue = requestParameters[validatePasswordKey];
 			var generatePasswordValue = requestParameters[generatePasswordKey];
 
-			var memberShipUser = Membership.GetUser();
+			var memberShipUser = UwebshopRequest.Current.User;
 
 			if (!string.IsNullOrEmpty(currentPasswordValue) || !string.IsNullOrEmpty(newPasswordValue) || !string.IsNullOrEmpty(validatePasswordValue) || !string.IsNullOrEmpty(generatePasswordValue))
 			{
@@ -1509,7 +1509,7 @@ namespace uWebshop.Domain.Businesslogic
 			
 			var result = new Dictionary<string, string>();
 
-			var memberShipUser = Membership.GetUser();
+			var memberShipUser = UwebshopRequest.Current.User;
 
 			if (memberShipUser == null)
 			{
@@ -1914,6 +1914,12 @@ namespace uWebshop.Domain.Businesslogic
 			return handleObject;
 		}
 
+		/// <summary>
+		/// Adds the payment method.
+		/// </summary>
+		/// <param name="requestParameters">The request parameters.</param>
+		/// <param name="requestUri">The request URI.</param>
+		/// <returns></returns>
 		private HandleObject AddPaymentMethod(NameValueCollection requestParameters, Uri requestUri)
 		{
 			var handleObject = new HandleObject {Action = "AddPaymentMethod", Url = requestUri};

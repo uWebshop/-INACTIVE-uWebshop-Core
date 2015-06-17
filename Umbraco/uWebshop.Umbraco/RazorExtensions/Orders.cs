@@ -266,7 +266,7 @@ namespace uWebshop.RazorExtensions
 		[Obsolete("GetOrdersForCustomer(string loginName)")]
 		public static List<OrderInfo> GetOrdersForMember()
 		{
-			var member = Membership.GetUser();
+			var member = UwebshopRequest.Current.User;
 
 			return member != null ? GetOrdersForMember(member.UserName) : new List<OrderInfo>();
 		}

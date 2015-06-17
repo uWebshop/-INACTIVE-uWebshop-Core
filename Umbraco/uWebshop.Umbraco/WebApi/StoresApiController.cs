@@ -56,7 +56,7 @@ namespace uWebshop.Umbraco.WebApi
 		{
 			var order = Orders.GetOrder(guid);
 
-			var membershipUser = Membership.GetUser();
+			var membershipUser = UwebshopRequest.Current.User;
 
 			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || membershipUser != null && membershipUser.UserName == order.Customer.UserName || UwebshopRequest.Current.PaymentProvider != null || OrderHelper.IsCompletedOrderWithinValidLifetime(order))
 			{
@@ -82,26 +82,21 @@ namespace uWebshop.Umbraco.WebApi
 			{
 				return orders.Where(x => x.Status == orderStatus).Select(o => o as BasketOrderInfoAdaptor);
 			}
-
 			return null;
 		}
-
 		
 		public IEnumerable<BasketOrderInfoAdaptor> GetOrdersByDays(int days, string storeAlias = null)
 		{
 			var orders = Orders.GetOrders(days, storeAlias).Where(x => x.Status != OrderStatus.Incomplete && x.Status != OrderStatus.Wishlist);
-
 			return orders.Select(o => o as BasketOrderInfoAdaptor);
 		}
 		
 		public IEnumerable<BasketOrderInfoAdaptor> GetOrdersByStatus(string status, string storeAlias = null)
 		{
 			OrderStatus orderStatus;
-			Enum.TryParse(status, true, out orderStatus); 
+			Enum.TryParse(status, true, out orderStatus);
 
-			var orders = Orders.GetOrders(orderStatus, storeAlias);
-
-			return orders.Select(o => o as BasketOrderInfoAdaptor);
+			return Orders.GetOrders(orderStatus, storeAlias).Select(o => o as BasketOrderInfoAdaptor);
 		}
 		
 		/// <summary>
@@ -198,7 +193,7 @@ namespace uWebshop.Umbraco.WebApi
 			
 			var order = Orders.GetOrder(guid) as BasketOrderInfoAdaptor;
 
-			var membershipUser = Membership.GetUser();
+			var membershipUser = UwebshopRequest.Current.User;
 
 			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated ||
 				membershipUser != null && membershipUser.UserName == order.Customer.UserName ||

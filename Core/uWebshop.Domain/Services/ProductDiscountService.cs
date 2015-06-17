@@ -15,7 +15,7 @@ namespace uWebshop.Domain.Services
 
 		private IEnumerable<DiscountProduct> GetAllForProductAndCurrentUser(int productId, ILocalization localization)
 		{
-			return GetAll(localization).Where(discount => discount.IsActive && discount.Products.Any(x => x.Id == productId) && (!discount.MemberGroups.Any() || Membership.GetUser() != null && discount.MemberGroups.Intersect(Roles.GetRolesForUser(Membership.GetUser().UserName)).Any()));
+			return GetAll(localization).Where(discount => discount.IsActive && discount.Products.Any(x => x.Id == productId) && (!discount.MemberGroups.Any() || UwebshopRequest.Current.User != null && discount.MemberGroups.Intersect(Roles.GetRolesForUser(UwebshopRequest.Current.User.UserName)).Any()));
 		}
 		
 		public DiscountProduct GetDiscountByProductId(int productId, ILocalization localization, OrderInfo order = null)

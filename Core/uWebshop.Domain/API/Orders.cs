@@ -47,7 +47,7 @@ namespace uWebshop.API
 		{
 			var order = OrderHelper.GetOrder(guid);
 
-			var membershipUser = Membership.GetUser();
+			var membershipUser = UwebshopRequest.Current.User;
 		  
 			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || membershipUser != null && membershipUser.UserName == order.CustomerInfo.LoginName || UwebshopRequest.Current.PaymentProvider != null || OrderHelper.IsCompletedOrderWithinValidLifetime(order))
 			{
@@ -66,7 +66,7 @@ namespace uWebshop.API
 		{
 			var order = OrderHelper.GetOrder(transactionId);
 
-			var membershipUser = Membership.GetUser();
+			var membershipUser = UwebshopRequest.Current.User;
 
 			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || membershipUser != null && membershipUser.UserName == order.CustomerInfo.LoginName || UwebshopRequest.Current.PaymentProvider != null || OrderHelper.IsCompletedOrderWithinValidLifetime(order))
 			{
@@ -167,7 +167,7 @@ namespace uWebshop.API
 		/// <returns></returns>
 		public static IEnumerable<IOrder> GetOrdersForCustomer(int customerId, string storeAlias = null)
 		{
-			var membershipUser = Membership.GetUser();
+			var membershipUser = UwebshopRequest.Current.User;
 			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || membershipUser != null && membershipUser.ProviderUserKey == customerId.ToString() || UwebshopRequest.Current.PaymentProvider != null)
 			{
 				return OrderHelper.GetOrdersForCustomer(customerId, storeAlias).Select(CreateBasketFromOrderInfo);
@@ -185,7 +185,7 @@ namespace uWebshop.API
 		/// <returns></returns>
 		public static IEnumerable<IOrder> GetOrdersForCustomer(string userName, string storeAlias = null)
 		{
-			var membershipUser = Membership.GetUser();
+			var membershipUser = UwebshopRequest.Current.User;
 			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || membershipUser != null && membershipUser.UserName == userName || UwebshopRequest.Current.PaymentProvider != null)
 			{
 				return OrderHelper.GetOrdersForCustomer(userName, storeAlias).Select(CreateBasketFromOrderInfo);

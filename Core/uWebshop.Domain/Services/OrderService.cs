@@ -54,7 +54,7 @@ namespace uWebshop.Domain.Services
 
 			order.CustomerInfo.CountryCode = !string.IsNullOrEmpty(store.DefaultCountryCode) ? store.DefaultCountryCode : store.CountryCode;
 
-			var currentMember = Membership.GetUser(); // TODO: dip
+			var currentMember = UwebshopRequest.Current.User; // TODO: dip
 
 			if (currentMember != null)
 			{

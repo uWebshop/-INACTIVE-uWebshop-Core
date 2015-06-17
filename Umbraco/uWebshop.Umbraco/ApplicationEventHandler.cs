@@ -309,7 +309,7 @@ namespace uWebshop.Umbraco
 
 			var fileService = ApplicationContext.Current.Services.FileService;
 
-			var currentMember = Membership.GetUser();
+			var currentMember = UwebshopRequest.Current.User;
 
 			var currentorder = UwebshopRequest.Current.OrderInfo ?? OrderHelper.GetOrder();
 
@@ -412,7 +412,7 @@ namespace uWebshop.Umbraco
 					return;
 				}
 
-				if (Access.HasAccess(categoryFromUrl.Id, categoryFromUrl.GetUmbracoPath(), Membership.GetUser()))
+				if (Access.HasAccess(categoryFromUrl.Id, categoryFromUrl.GetUmbracoPath(), UwebshopRequest.Current.User))
 				{
 					if (categoryFromUrl.Template != 0)
 					{
@@ -456,7 +456,7 @@ namespace uWebshop.Umbraco
 				var productFromUrl = DomainHelper.GetProductById(productId);
 				if (productFromUrl == null) return;
 
-				if (Access.HasAccess(productFromUrl.Id, productFromUrl.Path(), Membership.GetUser()))
+				if (Access.HasAccess(productFromUrl.Id, productFromUrl.Path(), UwebshopRequest.Current.User))
 				{
 					if (productFromUrl.Template != 0)
 					{

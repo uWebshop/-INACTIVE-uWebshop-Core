@@ -62,7 +62,7 @@ namespace uWebshop.Domain
 		/// <summary>
 		///     Returns the CultureInfo based on the CurrencyCulture
 		/// </summary>
-        [XmlIgnore]
+		[XmlIgnore]
 		public CultureInfo CurrencyCultureInfo
 		{
 			get { return CurrencyCulture != null ? new CultureInfo(CurrencyCulture) : new CultureInfo("en-US"); }
@@ -71,7 +71,7 @@ namespace uWebshop.Domain
 		/// <summary>
 		///     store Culture
 		/// </summary>
-        [XmlIgnore]
+		[XmlIgnore]
 		public CultureInfo CultureInfo
 		{
 			get { return Culture != null ? new CultureInfo(Culture) : new CultureInfo("en-US"); }

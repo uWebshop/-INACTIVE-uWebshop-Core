@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Web.Security;
 using uWebshop.Common.Interfaces;
 using uWebshop.Domain.Interfaces;
 using uWebshop.Domain.Model;
@@ -77,6 +79,12 @@ namespace uWebshop.Domain
 		/// The localization.
 		/// </value>
 		public ILocalization Localization { get; set; }
+
+		private Lazy<MembershipUser> _user = new Lazy<MembershipUser>(Membership.GetUser);
+		public MembershipUser User
+		{
+			get { return _user.Value; }
+		}
 
 		/// <summary>
 		/// Gets the store URL for given store.
