@@ -68,7 +68,7 @@ namespace uWebshop.Umbraco.WebApi
 
 		public IEnumerable<BasketOrderInfoAdaptor> GetAllOrders(string status = "All")
 		{
-			var orders = Orders.GetAllOrders().Where(x => x.Status != OrderStatus.Incomplete && x.Status != OrderStatus.Wishlist);
+			var orders = Orders.GetAllOrders().Where(x => x.Status != OrderStatus.Incomplete && x.Status != OrderStatus.Wishlist && x.Status == OrderStatus.Scheduled);
 
 			if (string.IsNullOrEmpty(status) || status.ToLowerInvariant() == "all" || status.ToLowerInvariant() == "undefined")
 			{
@@ -87,13 +87,13 @@ namespace uWebshop.Umbraco.WebApi
 		
 		public IEnumerable<BasketOrderInfoAdaptor> GetOrdersByDays(int days, string storeAlias = null)
 		{
-			var orders = Orders.GetOrders(days, storeAlias).Where(x => x.Status != OrderStatus.Incomplete && x.Status != OrderStatus.Wishlist);
+			var orders = Orders.GetOrders(days, storeAlias).Where(x => x.Status != OrderStatus.Incomplete && x.Status != OrderStatus.Wishlist && x.Status == OrderStatus.Scheduled);
 			return orders.Select(o => o as BasketOrderInfoAdaptor);
 		}
 
 		public IEnumerable<BasketOrderInfoAdaptor> GetOrdersToDeliverToday(string storeAlias = null)
 		{
-			return OrderHelper.GetOrdersDeliveredBetweenTimes(DateTime.Today, DateTime.Today.AddDays(1), storeAlias)
+			return OrderHelper.GetOrdersDeliveredBetweenTimes(DateTime.Today.Date, DateTime.Today.AddDays(1).AddTicks(-1), storeAlias)
 				.Where(o => o.Status == OrderStatus.Confirmed || o.Status == OrderStatus.Scheduled)
 				.Select(o => Orders.CreateBasketFromOrderInfo(o) as BasketOrderInfoAdaptor);
 		}
@@ -137,12 +137,11 @@ namespace uWebshop.Umbraco.WebApi
 			return orders.Select(o => o as BasketOrderInfoAdaptor);
 		}
 
-		public IEnumerable<BasketOrderInfoAdaptor> GetOrdersToBeDelivered(int days, string storeAlias = null)
+		public IEnumerable<BasketOrderInfoAdaptor> GetOrdersToBeDelivered(int daysFromNow = 0, string storeAlias = null)
 		{
-			var startDate = DateTime.Now;
-			var endDate = DateTime.Now.AddDays(days);
+			var dateToShow = DateTime.Now.Date.AddDays(daysFromNow);
 
-			var orders = Orders.GetOrdersDeliveredBetweenTimes(startDate.Date, endDate.Date, storeAlias).Where(x => x.Status != OrderStatus.Incomplete && x.Status != OrderStatus.Wishlist);
+			var orders = Orders.GetOrdersDeliveredBetweenTimes(dateToShow.Date, dateToShow.Date.AddDays(1).AddTicks(-1), storeAlias).Where(x => x.Status != OrderStatus.Incomplete && x.Status != OrderStatus.Wishlist);
 
 			return orders.Select(o => o as BasketOrderInfoAdaptor);
 		}
