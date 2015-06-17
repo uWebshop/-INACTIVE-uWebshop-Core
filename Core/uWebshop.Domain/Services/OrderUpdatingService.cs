@@ -946,11 +946,11 @@ namespace uWebshop.Domain.Services
 				var propertyType = documentType.Properties.FirstOrDefault(prop => prop.Alias.ToLower() == field.Key.ToLower());
 
 				if (propertyType != null)
-					ClientErrorHandling.SetOrClearErrorMessage(propertyType.ValidationRegularExpression != null && new Regex(propertyType.ValidationRegularExpression).IsMatch(field.Value), "Error in field: " + field.Key, field.Key, field.Value);
+					ClientErrorHandling.SetOrClearErrorMessage(!string.IsNullOrEmpty(propertyType.ValidationRegularExpression) && new Regex(propertyType.ValidationRegularExpression).IsMatch(field.Value), "Error in field: " + field.Key, field.Key, field.Value);
 				// todo: customize error message
 			}
 
-			var xNodeList = fields.Where(field => documentType.Properties.Any(x => x.Alias.ToLower() == field.Key.ToLower())).Select(field => new XElement(field.Key, new XCData(field.Value))).Cast<XNode>().ToList();
+			var xNodeList = fields.Where(field => documentType.Properties.Any(x => x.Alias.ToLower() == field.Key.ToLower())).Select(field => field.Value != null ? new XElement(field.Key, new XCData(field.Value)) : null).Cast<XNode>().ToList();
 
 			if (xDoc.Root != null)
 			{

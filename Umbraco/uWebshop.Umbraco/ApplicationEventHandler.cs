@@ -732,7 +732,7 @@ namespace uWebshop.Umbraco
 								var dictionaryCustomer =
 									orderDoc.Properties.Where(x => x.Alias.StartsWith("customer"))
 										.ToDictionary(customerProperty => customerProperty.Alias,
-											customerProperty => customerProperty.Value.ToString());
+											customerProperty => customerProperty.Value != null ? customerProperty.Value.ToString() : null);
 
 								orderInfo.AddCustomerFields(dictionaryCustomer, CustomerDatatypes.Customer);
 

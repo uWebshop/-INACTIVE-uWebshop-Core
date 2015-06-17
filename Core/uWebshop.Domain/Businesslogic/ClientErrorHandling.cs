@@ -71,7 +71,10 @@ namespace uWebshop.Domain
 
 		private static void SetErrorMessages(List<ClientErrorHandling> messages)
 		{
-			HttpContext.Current.Session.Add(Constants.ErrorMessagesSessionKey, messages);
+			if (HttpContext.Current.Session != null)
+			{
+				HttpContext.Current.Session.Add(Constants.ErrorMessagesSessionKey, messages);
+			}
 		}
 
 		/// <summary>
@@ -80,7 +83,7 @@ namespace uWebshop.Domain
 		/// <returns></returns>
 		public static List<ClientErrorHandling> GetErrorMessages()
 		{
-			if (HttpContext.Current.Session[Constants.ErrorMessagesSessionKey] != null)
+			if (HttpContext.Current.Session != null && HttpContext.Current.Session[Constants.ErrorMessagesSessionKey] != null)
 				return (List<ClientErrorHandling>) HttpContext.Current.Session[Constants.ErrorMessagesSessionKey];
 			return new List<ClientErrorHandling>();
 		}
