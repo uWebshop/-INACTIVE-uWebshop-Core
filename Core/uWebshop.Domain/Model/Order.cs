@@ -97,13 +97,13 @@ namespace uWebshop.Domain
 		/// <value>
 		/// The unique order unique identifier.
 		/// </value>
-		[ContentPropertyType(Alias = "orderGuid", DataType = DataType.Label, Tab = ContentTypeTab.Global, Name = "#OrderGuid", Description = "#OrderGuidDescription", Umbraco6Only = true)]
+		[ContentPropertyType(Alias = "orderGuid", DataType = DataType.Label, Tab = ContentTypeTab.Global, Name = "#OrderGuid", Description = "#OrderGuidDescription")]
 		public Guid UniqueOrderId
 		{
 			get
 			{
 				Guid uniqueOrderId;
-				string value = StoreHelper.GetMultiStoreItem(Id, "orderGuid"); // todo: niet echt multistore, maar moet wel met Node en Document kunnen werken
+				string value = StoreHelper.GetMultiStoreItem(Id, "orderGuid"); // todo: no a multistore value, but this is used to make it work in both Content and PublishedContent.
 				Guid.TryParse(value, out uniqueOrderId);
 				return uniqueOrderId;
 			}
