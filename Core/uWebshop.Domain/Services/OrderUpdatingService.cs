@@ -537,8 +537,14 @@ namespace uWebshop.Domain.Services
 					if (deliveryDate != null)
 					{
 						var date = Common.Helpers.DateTimeMultiCultureParse(deliveryDate);
-						if (date == null) throw new ApplicationException("Could not parse delivery date string: " + deliveryDate);
-						order.DeliveryDate = date;
+						if (date == null)
+						{
+							Log.Instance.LogError("Could not parse delivery date string: " + deliveryDate);
+						}
+						else
+						{
+							order.DeliveryDate = date;
+						}
 					}
 				}
 
