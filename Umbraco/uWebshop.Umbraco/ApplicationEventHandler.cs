@@ -416,23 +416,13 @@ namespace uWebshop.Umbraco
 				{
 					if (categoryFromUrl.Template != 0)
 					{
-						//umbraco.cms.businesslogic.template.Template.GetTemplate(currentCategory.Template).TemplateFilePath
 						((UmbracoDefault) sender).MasterPageFile = template.GetMasterPageName(categoryFromUrl.Template);
-						//// get the template
-						//var t = template.GetMasterPageName(currentCategory.Template);
-						//// you did this and it works pre-4.10, right?
-						//page.MasterPageFile = t;
-						//// now this should work starting with 4.10
-						//e.Page.Template = t;
 					}
 
 					var altTemplate = HttpContext.Current.Request["altTemplate"];
 					if (!string.IsNullOrEmpty(altTemplate))
 					{
-						
-						
 						var altTemplateFile = fileService.GetTemplate(altTemplate);
-
 						if (altTemplateFile != null)
 						{
 							((UmbracoDefault) sender).MasterPageFile = template.GetMasterPageName(altTemplateFile.Id);

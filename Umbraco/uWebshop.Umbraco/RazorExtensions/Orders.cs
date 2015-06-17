@@ -6,13 +6,10 @@ using System.Linq;
 using System.Threading;
 using System.Web;
 using System.Web.Security;
-using uWebshop.Common.Interfaces;
 using uWebshop.Domain;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
 using umbraco.cms.businesslogic.member;
-using umbraco.cms.businesslogic.propertytype;
-using umbraco.cms.businesslogic.web;
 using uWebshop.Common;
 using Umbraco.Core;
 using Umbraco.Core.Services;
@@ -29,7 +26,6 @@ namespace uWebshop.RazorExtensions
 		/// Return the Order from a given unique order Id as GUID
 		/// </summary>
 		/// <param name="uniqueOrderId"></param>
-		/// <returns></returns>
 		public static OrderInfo GetOrder(Guid uniqueOrderId)
 		{
 			return OrderHelper.GetOrder(uniqueOrderId);
@@ -39,7 +35,6 @@ namespace uWebshop.RazorExtensions
 		/// Return the Order from a given unique order Id as String
 		/// </summary>
 		/// <param name="uniqueOrderId"></param>
-		/// <returns></returns>
 		public static OrderInfo GetOrder(string uniqueOrderId)
 		{
 			Guid guid;
@@ -50,13 +45,11 @@ namespace uWebshop.RazorExtensions
 		/// Return the Order from a given unique order Id as GUID
 		/// </summary>
 		/// <param name="overruleCopyOrderOnConfirmedOrder"></param>
-		/// <returns></returns>
 		public static OrderInfo GetOrder(bool overruleCopyOrderOnConfirmedOrder = false)
 		{
 			return OrderHelper.GetOrder(overruleCopyOrderOnConfirmedOrder);
 		}
 		
-
 		public static OrderInfo GetCurrentOrder(bool overruleCopyOrderOnConfirmedOrder = false)
 		{
 			return GetOrder(overruleCopyOrderOnConfirmedOrder);
@@ -65,29 +58,24 @@ namespace uWebshop.RazorExtensions
 		/// <summary>
 		/// Returns the order for the current customer, with check if the order is incomplete
 		/// </summary>
-		/// <returns></returns>
 		public static OrderInfo GetOrderForCurrentCustomer(bool overruleCopyOrderOnConfirmedOrder = false)
 		{
 			return GetOrder(overruleCopyOrderOnConfirmedOrder);
 		}
-
-
+		
 		/// <summary>
 		/// Get the full country node from a countrycode
 		/// </summary>
 		/// <param name="countryCode"></param>
-		/// <returns></returns>
 		public static string GetFullCountryNameFromCountry(string countryCode)
 		{
 			var country = StoreHelper.GetAllCountries().FirstOrDefault(x => x.Code == countryCode);
-
 			return country != null ? country.Name : string.Empty;
 		}
 
 		/// <summary>
 		/// Get a list of all the errors in the order
 		/// </summary>
-		/// <returns></returns>
 		public static List<ClientErrorHandling> GetOrderErrors()
 		{
 			return ClientErrorHandling.GetErrorMessages();
@@ -96,13 +84,10 @@ namespace uWebshop.RazorExtensions
 		/// <summary>
 		/// Get the customer property types of the order document type.
 		/// </summary>
-		/// <returns></returns>
 		public static List<PropertyType> CustomerPropertyTypes()
 		{
 			var orderDocType = ContentTypeService.GetContentType(Order.NodeAlias);
-
 			var customerTab = orderDocType.PropertyGroups.FirstOrDefault(x => x.Name == "Customer");
-
 			return customerTab != null ? customerTab.PropertyTypes.ToList() : new List<PropertyType>();
 		}
 
@@ -110,36 +95,28 @@ namespace uWebshop.RazorExtensions
 		/// Return the Order from a given unique order Id
 		/// </summary>
 		/// <param name="uniqueOrderId"></param>
-		/// <returns></returns>
 		public static OrderInfo GetOrderFromUniqueOrderId(Guid uniqueOrderId)
 		{
 			//Log.Instance.LogDebug(DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") + " RazorExtensions.Orders.GetOrderFromUniqueOrderId >>>>SQL<<<< SELECT orderInfo");
 			return OrderHelper.GetOrder(uniqueOrderId);
 		}
-
 		
-
 		/// <summary>
 		/// Return latest, non incomplete, order
 		/// </summary>
-		/// <returns></returns>
 		public static OrderInfo GetLatestOrder()
 		{
 			if (IO.Container.Resolve<ICMSApplication>().RequestIsInCMSBackend(HttpContext.Current))
 			{
 				return OrderHelper.GetAllOrders(StoreHelper.CurrentStoreAlias).LastOrDefault(x => x.Status != OrderStatus.Incomplete);
 			}
-
 			return null;
 		}
-
-
-
+		
 		/// <summary>
 		/// Does the order contain items that are out of stock or without enough stock
 		/// </summary>
 		/// <param name="uniqueOrderId"></param>
-		/// <returns></returns>
 		public static bool OrderContainsItemsOutOfStock(Guid uniqueOrderId)
 		{
 			return OrderHelper.OrderContainsOutOfStockItems(uniqueOrderId);
@@ -148,38 +125,29 @@ namespace uWebshop.RazorExtensions
 		/// <summary>
 		/// Returns the unique order id for the current customer, with check if order is  incomplete.
 		/// </summary>
-		/// <returns></returns>
 		public static string GetUniqueOrderIdForCurrentCustomer()
 		{
 			var currentOrder = OrderHelper.GetOrder();
-
 			if (currentOrder != null && currentOrder.Status == OrderStatus.Incomplete || currentOrder != null && currentOrder.Status == OrderStatus.PaymentFailed)
 			{
 				return currentOrder.UniqueOrderId.ToString();
 			}
-
 			return string.Empty;
 		}
-
 
 		/// <summary>
 		/// Get completed order for current customer
 		/// </summary>
-		/// <returns></returns>
 		public static OrderInfo GetCompletedOrderForCurrentCustomer()
 		{
 			var cookieName = "CompletedOrderId" + (UwebshopConfiguration.Current.ShareBasketBetweenStores ? string.Empty : StoreHelper.GetCurrentStore().Alias);
-
 			var orderIdCookie = HttpContext.Current.Request.Cookies[cookieName];
-
 			if (orderIdCookie != null && !string.IsNullOrEmpty(orderIdCookie.Value))
 			{
 				Guid uniqueOrderId;
 				Guid.TryParse(orderIdCookie.Value, out uniqueOrderId);
-
 				return GetOrderFromUniqueOrderId(uniqueOrderId);
 			}
-
 			return null;
 		}
 
@@ -187,7 +155,6 @@ namespace uWebshop.RazorExtensions
 		/// Copy over the order from a given order to a new one and set that as the current order
 		/// </summary>
 		/// <param name="orderinfo"></param>
-		/// <returns></returns>
 		public static OrderInfo CreateNewOrderFromExisting(OrderInfo orderinfo)
 		{
 			return OrderHelper.CreateNewOrderFromExisting(orderinfo);
@@ -196,7 +163,6 @@ namespace uWebshop.RazorExtensions
 		/// Return a list of orders for a customer Id
 		/// Return orders based on the customer Id
 		/// <param name="customerId"></param>
-		/// <returns></returns>
 		[Browsable(false)]
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		[Obsolete("GetOrdersForCustomer(string loginName)")]
@@ -208,7 +174,6 @@ namespace uWebshop.RazorExtensions
 		/// Return a list of orders for a customer LoginName
 		/// Return orders based on the customer LoginName
 		/// <param name="loginName"></param>
-		/// <returns></returns>
 		public static List<OrderInfo> GetOrdersForCustomer(string loginName)
 		{
 			return OrderHelper.GetOrdersForCustomer(loginName).ToList();
@@ -217,7 +182,6 @@ namespace uWebshop.RazorExtensions
 		/// <summary>
 		/// Retun a list of orders with a certain order status
 		/// </summary>
-		/// <returns></returns>
 		public static List<OrderInfo> GetAllOrders()
 		{
 			return OrderHelper.GetAllOrders().ToList();
@@ -227,7 +191,6 @@ namespace uWebshop.RazorExtensions
 		/// Retun a list of orders with a certain order status
 		/// </summary>
 		/// <param name="orderStatus"></param>
-		/// <returns></returns>
 		public static List<OrderInfo> GetOrdersWithStatus(OrderStatus orderStatus)
 		{
 			return OrderHelper.GetAllOrders().Where(x => x.Status == orderStatus).ToList();
@@ -236,7 +199,6 @@ namespace uWebshop.RazorExtensions
 		/// <summary>
 		/// Return orders related to current member
 		/// </summary>
-		/// <returns></returns>
 		[Browsable(false)]
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		[Obsolete("Use GetOrdersForMember()")]
@@ -253,32 +215,27 @@ namespace uWebshop.RazorExtensions
 				value = OrderHelper.GetOrdersForCustomer(member.Id).ToList();
 			}
 			Thread.CurrentThread.CurrentCulture = currentThread;
-
 			return value;
 		}
 
 		/// <summary>
 		/// Return orders related to current member
 		/// </summary>
-		/// <returns></returns>
 		[Browsable(false)]
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		[Obsolete("GetOrdersForCustomer(string loginName)")]
 		public static List<OrderInfo> GetOrdersForMember()
 		{
 			var member = UwebshopRequest.Current.User;
-
 			return member != null ? GetOrdersForMember(member.UserName) : new List<OrderInfo>();
 		}
 
 		/// <summary>
 		/// Return orders related to member logiNname
 		/// </summary>
-		/// <returns></returns>
 		public static List<OrderInfo> GetOrdersForMember(string userName)
 		{
 			var orders = new List<OrderInfo>();
-
 			if (string.IsNullOrEmpty(userName))
 			{
 				return orders;
@@ -288,32 +245,25 @@ namespace uWebshop.RazorExtensions
 			Thread.CurrentThread.CurrentCulture = StoreHelper.GetCurrentStore().CurrencyCultureInfo;
 
 			var member = Membership.GetUser(userName);
-
 			if (member != null)
 			{
 				orders = OrderHelper.GetOrdersForCustomer(member.UserName).ToList();
 			}
-
 			Thread.CurrentThread.CurrentCulture = currentThread;
-
 			return orders;
 		}
-
 
 		/// <summary>
 		/// Returns Shipping Providers for this order
 		/// </summary>
-		/// <returns></returns>
 		public static List<ShippingProvider> ShippingProviders(bool useCountry = true)
 		{
 			return ShippingProviderHelper.GetShippingProvidersForOrder(useCountry);
 		}
 
-
 		/// <summary>
 		/// Returns Shipping Providers for this order
 		/// </summary>
-		/// <returns></returns>
 		public static List<ShippingProvider> GetShippingProvidersForOrder(bool useCountry = true)
 		{
 			return ShippingProviderHelper.GetShippingProvidersForOrder(useCountry);
@@ -322,17 +272,14 @@ namespace uWebshop.RazorExtensions
 		/// <summary>
 		/// Get all the shipping providers in uWebshop
 		/// </summary>
-		/// <returns></returns>
 		public static List<ShippingProvider> GetAllShippingProviders()
 		{
 			return ShippingProviderHelper.GetAllShippingProviders().ToList();
 		}
 
-
 		/// <summary>
 		/// Returns Payment Providers for this order
 		/// </summary>
-		/// <returns></returns>
 		public static List<PaymentProvider> PaymentProviders()
 		{
 			return PaymentProviderHelper.GetPaymentProvidersForOrder();
@@ -341,7 +288,6 @@ namespace uWebshop.RazorExtensions
 		/// <summary>
 		/// Returns Payment Providers for this order
 		/// </summary>
-		/// <returns></returns>
 		public static List<PaymentProvider> GetPaymentProvidersForOrder(bool useCountry = true)
 		{
 			return PaymentProviderHelper.GetPaymentProvidersForOrder(useCountry);
@@ -350,7 +296,6 @@ namespace uWebshop.RazorExtensions
 		/// <summary>
 		/// Get all the payment providers in uWebshop
 		/// </summary>
-		/// <returns></returns>
 		public static List<PaymentProvider> GetAllPaymentProviders()
 		{
 			return PaymentProviderHelper.GetAllPaymentProviders().ToList();
@@ -361,7 +306,6 @@ namespace uWebshop.RazorExtensions
 		/// </summary>
 		/// <param name="orderInfo"></param>
 		/// <param name="alias"></param>
-		/// <returns></returns>
 		public static string CustomerInformationValue(OrderInfo orderInfo, string alias)
 		{
 			return OrderHelper.CustomerInformationValue(orderInfo, alias);
@@ -372,7 +316,6 @@ namespace uWebshop.RazorExtensions
 		/// </summary>
 		/// <param name="orderInfo"></param>
 		/// <param name="alias"></param>
-		/// <returns></returns>
 		public static string ShippingInformationValue(OrderInfo orderInfo, string alias)
 		{
 			return OrderHelper.ShippingInformationValue(orderInfo, alias);
@@ -383,7 +326,6 @@ namespace uWebshop.RazorExtensions
 		/// </summary>
 		/// <param name="orderInfo"></param>
 		/// <param name="alias"></param>
-		/// <returns></returns>
 		public static string ExtraInformationValue(OrderInfo orderInfo, string alias)
 		{
 			return OrderHelper.ExtraInformationValue(orderInfo, alias);
@@ -395,7 +337,6 @@ namespace uWebshop.RazorExtensions
 		/// <param name="orderInfo"></param>
 		/// <param name="orderLineId"></param>
 		/// <param name="alias"></param>
-		/// <returns></returns>
 		public static string CustomOrderLineValue(OrderInfo orderInfo, int orderLineId, string alias)
 		{
 			return OrderHelper.CustomOrderLineValue(orderInfo, orderLineId, alias);
@@ -419,15 +360,12 @@ namespace uWebshop.RazorExtensions
 				Log.Instance.LogDebug("UwbsPaymentHandler: PaymentProvider Not Found");
 				throw new Exception("PaymentProvider Not Found");
 			}
-
 			var paymentProviderNode = IO.Container.Resolve<IPaymentProviderService>().GetPaymentProviderWithName(paymentProvider, StoreHelper.CurrentLocalization);
-
 			if (paymentProviderNode == null)
 			{
 				Log.Instance.LogDebug("UwbsPaymentHandler: PaymentProvider " + paymentProvider + " Not Found");
 				throw new Exception("PaymentProvider " + paymentProvider + " Not Found");
 			}
-
 			new PaymentRequestHandler().HandleuWebshopPaymentRequest(paymentProviderNode);
 		}
 
@@ -436,7 +374,6 @@ namespace uWebshop.RazorExtensions
 		/// output = .ToString("F)
 		/// </summary>
 		/// <param name="priceInCents"></param>
-		/// <returns></returns>
 		public static string CentsToPrice(int priceInCents)
 		{
 			return CentsToPrice(priceInCents, null, false);
@@ -447,12 +384,10 @@ namespace uWebshop.RazorExtensions
 		/// output = .ToString("F)
 		/// </summary>
 		/// <param name="priceInCents"></param>
-		/// <returns></returns>
 		public static string CentsToPrice(string priceInCents)
 		{
 			int price;
 			int.TryParse(priceInCents, out price);
-
 			return CentsToPrice(price, null, false);
 		}
 
@@ -462,7 +397,6 @@ namespace uWebshop.RazorExtensions
 		/// </summary>
 		/// <param name="priceInCents"></param>
 		/// <param name="cultureInfo">The cultureInfo to use (ex: 'en-US')</param>
-		/// <returns></returns>
 		public static string CentsToPrice(int priceInCents, string cultureInfo)
 		{
 			return CentsToPrice(priceInCents, cultureInfo, true);
@@ -474,12 +408,10 @@ namespace uWebshop.RazorExtensions
 		/// </summary>
 		/// <param name="priceInCents"></param>
 		/// <param name="cultureInfo">The cultureInfo to use (ex: 'en-US')</param>
-		/// <returns></returns>
 		public static string CentsToPrice(string priceInCents, string cultureInfo)
 		{
 			int price;
 			int.TryParse(priceInCents, out price);
-
 			return CentsToPrice(price, cultureInfo, true);
 		}
 
@@ -489,7 +421,6 @@ namespace uWebshop.RazorExtensions
 		/// </summary>
 		/// <param name="priceInCents"></param>
 		/// <param name="useCurrencySign"></param>
-		/// <returns></returns>
 		public static string CentsToPrice(int priceInCents, bool useCurrencySign)
 		{
 			return CentsToPrice(priceInCents, null, useCurrencySign);
@@ -501,12 +432,10 @@ namespace uWebshop.RazorExtensions
 		/// </summary>
 		/// <param name="priceInCents"></param>
 		/// <param name="useCurrencySign"></param>
-		/// <returns></returns>
 		public static string CentsToPrice(string priceInCents, bool useCurrencySign)
 		{
 			int price;
 			int.TryParse(priceInCents, out price);
-
 			return CentsToPrice(price, null, useCurrencySign);
 		}
 
@@ -518,12 +447,10 @@ namespace uWebshop.RazorExtensions
 		/// <param name="priceInCents"></param>
 		/// <param name="cultureInfo">The cultureInfo to use (ex: 'en-US')</param>
 		/// <param name="useCurrencySign"> </param>
-		/// <returns></returns>
 		public static string CentsToPrice(string priceInCents, string cultureInfo, bool useCurrencySign)
 		{
 			int price;
 			int.TryParse(priceInCents, out price);
-
 			return CentsToPrice(price, cultureInfo, useCurrencySign);
 		}
 
@@ -535,7 +462,6 @@ namespace uWebshop.RazorExtensions
 		/// <param name="priceInCents"></param>
 		/// <param name="cultureInfo">The cultureInfo to use (ex: 'en-US')</param>
 		/// <param name="useCurrencySign"> </param>
-		/// <returns></returns>
 		public static string CentsToPrice(int priceInCents, string cultureInfo, bool useCurrencySign)
 		{
 			var currentCulture = Thread.CurrentThread.CurrentCulture;
@@ -574,7 +500,6 @@ namespace uWebshop.RazorExtensions
 				Thread.CurrentThread.CurrentCulture = currentCulture;
 				Thread.CurrentThread.CurrentUICulture = currentUICulture;
 			}
-
 			return outputString;
 		}
 	}
