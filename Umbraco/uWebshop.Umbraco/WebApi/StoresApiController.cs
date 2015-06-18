@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Threading;
 using System.Web.Security;
 using uWebshop.API;
 using uWebshop.Common;
@@ -569,6 +570,15 @@ namespace uWebshop.Umbraco.WebApi
 		public IEnumerable<string> GetOrderStatusses()
 		{
 			return Enum.GetNames(typeof(OrderStatus));
+		}
+
+		public string GetDictionaryValue(string key, string storeAlias = null, string currencyCode = null)
+		{
+			var localization = StoreHelper.GetLocalizationOrCurrent(storeAlias, currencyCode);
+
+			Thread.CurrentThread.CurrentUICulture = localization.Store.CultureInfo;
+
+			return Umbraco.GetDictionaryValue(key);
 		}
 
 		public class TemplateRequest
