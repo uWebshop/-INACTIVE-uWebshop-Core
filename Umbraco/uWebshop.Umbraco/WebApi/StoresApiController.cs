@@ -121,7 +121,7 @@ namespace uWebshop.Umbraco.WebApi
 			var endDate = DateTime.Now;
 			if (endDateTime != null) DateTime.TryParse(endDateTime, out endDate);
 
-			var orders = Orders.GetOrders(startDate, endDate, storeAlias);
+			var orders = Orders.GetOrders(startDate, endDate, storeAlias).Where(x => x.Status != OrderStatus.Incomplete && x.Status != OrderStatus.Wishlist && x.Status == OrderStatus.Scheduled); ;
 
 			return orders.Select(o => o as BasketOrderInfoAdaptor);
 		}

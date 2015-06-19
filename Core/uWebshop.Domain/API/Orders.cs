@@ -117,7 +117,7 @@ namespace uWebshop.API
 		{
 			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || UwebshopRequest.Current.PaymentProvider != null)
 			{
-				return GetOrders(DateTime.Now.AddDays(-days), DateTime.Now, storeAlias);
+				return GetOrders(DateTime.Now.Date.AddDays(-days), DateTime.Now, storeAlias);
 			}
 
 			return Enumerable.Empty<IOrder>();
