@@ -126,7 +126,7 @@ namespace uWebshop.Umbraco.WebApi
 			return orders.Select(o => o as BasketOrderInfoAdaptor);
 		}
 
-		public IEnumerable<BasketOrderInfoAdaptor> GetOrdersByDeliveryDateRange(string startDateTime, string endDateTime, string storeAlias = null)
+		public IEnumerable<BasketOrderInfoAdaptor> GetOrdersByDeliveryDateRange(string startDateTime, string endDateTime = null, string storeAlias = null)
 		{
 			DateTime startDate;
 			DateTime.TryParse(startDateTime, out startDate);

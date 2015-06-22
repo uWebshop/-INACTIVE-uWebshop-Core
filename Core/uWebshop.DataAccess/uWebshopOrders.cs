@@ -537,7 +537,7 @@ namespace uWebshop.DataAccess
 
 					var orderNumber = reader.Get<string>("orderNumber");
 
-					if (!string.IsNullOrEmpty(orderNumber) && !orderNumber.StartsWith("[INCOMPLETE]"))
+					if (!string.IsNullOrEmpty(orderNumber) && !orderNumber.StartsWith("[INCOMPLETE]") && !orderNumber.StartsWith("[SCHEDULED]"))
 					{
 						return orderNumber;
 					}
@@ -556,7 +556,7 @@ namespace uWebshop.DataAccess
 
 					var orderNumber = reader.Get<string>("orderNumber");
 
-					if (!string.IsNullOrEmpty(orderNumber) && !orderNumber.StartsWith("[INCOMPLETE]"))
+					if (!string.IsNullOrEmpty(orderNumber) && !orderNumber.StartsWith("[INCOMPLETE]") && !orderNumber.StartsWith("[SCHEDULED]"))
 					{
 						return orderNumber;
 					}

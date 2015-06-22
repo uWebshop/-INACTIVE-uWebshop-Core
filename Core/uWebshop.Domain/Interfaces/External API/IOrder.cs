@@ -46,6 +46,10 @@ namespace uWebshop.Domain.Interfaces
 		/// </value>
 		DateTime ConfirmDate { get; }
 		/// <summary>
+		/// get the delivery date
+		/// </summary>
+		DateTime DeliveryDate { get; }
+		/// <summary>
 		/// Gets the paid date.
 		/// </summary>
 		/// <value>

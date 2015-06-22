@@ -246,6 +246,10 @@ namespace uWebshop.API
 		
 		[DataMember]
 		public DateTime ConfirmDate { get { return _source.ConfirmDate.GetValueOrDefault(); } set { } }
+
+		[DataMember]
+		public DateTime DeliveryDate { get { return _source.DeliveryDate.GetValueOrDefault(); } set { } }
+
 		[DataMember]
 		public DateTime PaidDate { get { return _source.PaidDate.GetValueOrDefault(); } set { } }
 		[DataMember]

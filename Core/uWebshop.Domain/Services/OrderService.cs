@@ -611,7 +611,7 @@ namespace uWebshop.Domain.Services
 			const string prefix = "[INCOMPLETE]-";
 			return string.Format("{0}{1}", prefix, (lastOrderId + 1).ToString("0000"));
 		}
-
+		
 		private static List<OrderValidationError> ValidateInformationDoc(XDocument customerInformationdoc, IEnumerable<IDocumentProperty> customerProperties)
 		{
 			var errors = new List<OrderValidationError>();

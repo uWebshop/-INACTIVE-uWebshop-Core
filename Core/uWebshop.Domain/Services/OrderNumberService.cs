@@ -34,7 +34,7 @@ namespace uWebshop.Domain.Services
 			var nonTransactionalDatabase = _cmsApplication.UsesSQLCEDatabase() || _cmsApplication.UsesMySQLDatabase();
 			return new OrderNumberTransaction(order, o =>
 				{
-					if (order.StoreOrderReferenceId.HasValue && !order.OrderNumber.StartsWith("[INCOMPLETE]-")) return; // todo: is this necessary?
+					if (order.StoreOrderReferenceId.HasValue && !order.OrderNumber.StartsWith("[INCOMPLETE]-") && !order.OrderNumber.StartsWith("[SCHEDULED]-")) return; // todo: is this necessary?
 					if (nonTransactionalDatabase)
 					{
 						order.OrderNumber = GenerateOrderNumber(order.StoreInfo.Store, order, out id);
