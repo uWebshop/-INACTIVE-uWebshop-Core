@@ -884,22 +884,26 @@ namespace uWebshop.Domain.Services
 			// #confirmUnlessPayprovFailed + uniqueNumberButNotFinalToPayProv
 			//   PaymentProvider
 			//   IfSucceeded GenerateAndPersist
-			
-			using (var orderNrTransaction = _orderNumberService.GetTransaction(order))
-			{
-				// set final ordernumber for payment provider communication, but not yet save it in the database
-				orderNrTransaction.Generate();
 
-				var paymentRedirectUrl = OrderHelper.HandlePaymentRequest(order, confirmationNodeId); // todo: this may be inappropriate as it will worsen overall responsiveness (because of the transaction)
-				if (paymentRedirectUrl == "failed")
+			if (!(_uwebshopConfiguration.UseDeliveryDateAsConfirmDateForScheduledOrders && order.DeliveryDate.HasValue))
+			{
+				using (var orderNrTransaction = _orderNumberService.GetTransaction(order))
 				{
-					orderNrTransaction.Rollback();
-					return false;
+					// set final ordernumber for payment provider communication, but not yet save it in the database
+					orderNrTransaction.Generate();
+
+					var paymentRedirectUrl = OrderHelper.HandlePaymentRequest(order, confirmationNodeId);
+						// todo: this may be inappropriate as it will worsen overall responsiveness (because of the transaction)
+					if (paymentRedirectUrl == "failed")
+					{
+						orderNrTransaction.Rollback();
+						return false;
+					}
+
+					order.RedirectUrl = paymentRedirectUrl;
+
+					orderNrTransaction.Persist();
 				}
-			
-				order.RedirectUrl = paymentRedirectUrl;
-				
-				orderNrTransaction.Persist();
 			}
 
 			ScheduleOrdersOneYearInAdvance(order);
