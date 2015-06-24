@@ -234,10 +234,10 @@ namespace uWebshop.API
 
 				var email = new Email(emailNodeId);
 
-				var property = email.Node.GetProperty(propertyAlias);
-				if (property != null)
+				var propertyValue = email.GetProperty(propertyAlias);
+				if (!string.IsNullOrEmpty(propertyValue))
 				{
-					return EmailHelper.ReplaceStrings(property.Value, orderInfoXml);
+					return EmailHelper.ReplaceStrings(propertyValue, orderInfoXml);
 				}
 			}
 

@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Globalization;
+using System.Linq;
 using uWebshop.Common;
 using uWebshop.DataAccess;
 using uWebshop.Domain;
@@ -133,6 +135,38 @@ namespace uWebshop.Umbraco.Businesslogic
 					break;
 				case OrderStatus.Scheduled:
 					OrderHelper.SetCompletedOrderCookie(orderInfo); // todo inappropriate if it is an order from a series
+
+					// todo: this now sends emails for every order placed
+					if (e.SendEmails)
+					{
+						var dateTimeString = OrderHelper.ShippingInformationValue(orderInfo, "shippingDeliveryDateTime");
+						var firstShipDateTime = Common.Helpers.DateTimeMultiCultureParse(dateTimeString, orderInfo.StoreInfo.CultureInfo);
+
+						if (orderInfo.OrderSeries == null || orderInfo.OrderSeries != null && orderInfo.OrderSeries.Start == firstShipDateTime)
+						{
+							int customerEmailNodeId;
+
+							int.TryParse(orderInfo.StoreInfo.Store.ConfirmationEmailCustomer, out customerEmailNodeId);
+
+							if (customerEmailNodeId != 0)
+							{
+								EmailHelper.SendOrderEmailCustomer(customerEmailNodeId, orderInfo);
+							}
+
+							int storeEmailNodeId;
+							int.TryParse(orderInfo.StoreInfo.Store.ConfirmationEmailStore, out storeEmailNodeId);
+
+							if (storeEmailNodeId != 0)
+							{
+								EmailHelper.SendOrderEmailStore(storeEmailNodeId, orderInfo);
+							}
+						}
+					}
+					else
+					{
+						Log.Instance.LogDebug("AfterOrderStatusChanged Confirmed e.SendEmails == false");
+					}
+
 					break;
 				case OrderStatus.Cancelled:
 

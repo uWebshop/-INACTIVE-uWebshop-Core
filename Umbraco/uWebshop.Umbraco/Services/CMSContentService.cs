@@ -230,9 +230,9 @@ namespace uWebshop.Umbraco.Services
 
 		private class NodeProperty : ICMSProperty
 		{
-			private readonly IPublishedContentProperty _property;
+			private readonly IPublishedProperty _property;
 
-			public NodeProperty(IPublishedContentProperty property)
+			public NodeProperty(IPublishedProperty property)
 			{
 				this._property = property;
 			}
@@ -317,7 +317,7 @@ namespace uWebshop.Umbraco.Services
 
 			public ICMSProperty GetProperty(string propertyAlias)
 			{
-				return new NodeProperty(_node.Properties.FirstOrDefault(x => x.Alias == propertyAlias));
+				return new NodeProperty(_node.Properties.FirstOrDefault(x => x.PropertyTypeAlias == propertyAlias));
 			}
 
 			public ICMSProperty GetMultiStoreItem(string propertyAlias)

@@ -69,8 +69,9 @@
     <Reference Include="umbraco">
       <HintPath>..\..\Binary Dependencies umbraco6.1\umbraco.dll</HintPath>
     </Reference>
-    <Reference Include="Umbraco.Core">
-      <HintPath>..\..\Binary Dependencies umbraco6.1\Umbraco.Core.dll</HintPath>
+    <Reference Include="Umbraco.Core, Version=1.0.4902.15214, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Binary Dependencies umbraco7\Umbraco.Core.dll</HintPath>
     </Reference>
     <Reference Include="umbraco.DataLayer">
       <HintPath>..\..\Binary Dependencies umbraco6.1\umbraco.DataLayer.dll</HintPath>

@@ -17,6 +17,8 @@ using Umbraco.Core;
 using Umbraco.Core.Models;
 using DataTypeDefinition = umbraco.cms.businesslogic.datatype.DataTypeDefinition;
 using Log = uWebshop.Domain.Log;
+using MemberGroup = umbraco.cms.businesslogic.member.MemberGroup;
+using MemberType = umbraco.cms.businesslogic.member.MemberType;
 
 namespace uWebshop.Starterkits.DemoStore
 {

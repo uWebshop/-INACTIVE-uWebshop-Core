@@ -536,7 +536,7 @@ namespace uWebshop.Domain.Services
 					var deliveryDate = fields.TryGetValue("shippingDeliveryDateTime"); // 2015-05-26T16:03:35
 					if (deliveryDate != null)
 					{
-						var date = Common.Helpers.DateTimeMultiCultureParse(deliveryDate);
+						var date = Common.Helpers.DateTimeMultiCultureParse(deliveryDate, order.StoreInfo.CultureInfo);
 						if (date == null)
 						{
 							Log.Instance.LogError("Could not parse delivery date string: " + deliveryDate);
@@ -652,11 +652,11 @@ namespace uWebshop.Domain.Services
 			repeatDays = splitRepeatDays.Any(x => !string.IsNullOrEmpty(x)) ? string.Join(",", splitRepeatDays.Where(x=> !string.IsNullOrEmpty(x))) : string.Empty;
 			repeatTimes = splitRepeatTime.Any(x => !string.IsNullOrEmpty(x)) ? string.Join(",", splitRepeatDays.Where(x=> !string.IsNullOrEmpty(x))) : string.Empty;
 
-			var startDate = Common.Helpers.DateTimeMultiCultureParse(seriesStart);
+			var startDate = Common.Helpers.DateTimeMultiCultureParse(seriesStart, order.StoreInfo.CultureInfo);
 			if (startDate == null) throw new ApplicationException("Could not parse orderseries start date string: " + seriesStart);
 			order.OrderSeries.Start = startDate.Value;
 
-			var endDate = Common.Helpers.DateTimeMultiCultureParse(repeatEndDate);
+			var endDate = Common.Helpers.DateTimeMultiCultureParse(repeatEndDate, order.StoreInfo.CultureInfo);
 			if (!string.IsNullOrWhiteSpace(repeatEndDate) && endDate == null) throw new ApplicationException("Could not parse orderseries end date string: " + repeatEndDate);
 			order.OrderSeries.End = endDate;
 			order.OrderSeries.EndAfterInstances = int.TryParse(repeatEndAfterInstances, out intVal) ? intVal : 0;

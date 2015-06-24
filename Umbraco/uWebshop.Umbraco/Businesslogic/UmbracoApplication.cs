@@ -20,6 +20,8 @@ using Umbraco.Web;
 using Constants = uWebshop.Common.Constants;
 using library = umbraco.library;
 using Umbraco.Core.IO;
+using Member = umbraco.cms.businesslogic.member.Member;
+using MemberType = umbraco.cms.businesslogic.member.MemberType;
 
 namespace uWebshop.Umbraco
 {
@@ -110,12 +112,12 @@ namespace uWebshop.Umbraco
 
 		public bool MemberLoggedIn()
 		{
-			return Member.GetCurrentMember() != null;
+			return umbraco.cms.businesslogic.member.Member.GetCurrentMember() != null;
 		}
 
 		public int CurrentMemberId()
 		{
-			return Member.GetCurrentMember().Id;
+			return umbraco.cms.businesslogic.member.Member.GetCurrentMember().Id;
 		}
 
 		public bool UsesSQLCEDatabase()
@@ -234,7 +236,7 @@ namespace uWebshop.Umbraco
 			return string.Empty;
 		}
 
-		private static bool PropertyHasNonEmptyValue(IPublishedContentProperty property)
+		private static bool PropertyHasNonEmptyValue(IPublishedProperty property)
 		{
 			return (property != null && property.Value != null && !string.IsNullOrEmpty(property.Value.ToString()));
 		}

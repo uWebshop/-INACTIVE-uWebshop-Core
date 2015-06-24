@@ -141,9 +141,6 @@ namespace uWebshop.Umbraco.WebApi
 				}
 			}
 
-
-			
-
 			var orders = Orders.GetOrdersDeliveredBetweenTimes(startDate, endDate, storeAlias).Where(x => x.Status != OrderStatus.Incomplete && x.Status != OrderStatus.Wishlist);
 
 			return orders.Select(o => o as BasketOrderInfoAdaptor);
