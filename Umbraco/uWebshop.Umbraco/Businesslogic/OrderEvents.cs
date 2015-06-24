@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using uWebshop.Common;
+using uWebshop.DataAccess;
 using uWebshop.Domain;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
@@ -8,6 +9,14 @@ namespace uWebshop.Umbraco.Businesslogic
 {
 	internal class OrderEvents
 	{
+		public static void UpdateOrderNumberIfChangingFromIncompleteToScheduled(OrderInfo order, BeforeOrderStatusChangedEventArgs e)
+		{
+			if (e.OrderStatus == OrderStatus.Incomplete && e.NewStatus == OrderStatus.Scheduled)
+			{
+				uWebshopOrders.SetOrderNumber(order.UniqueOrderId, order.OrderNumber.Replace("[INCOMPLETE]", "[SCHEDULED]"), order.StoreInfo.Alias, order.StoreOrderReferenceId.GetValueOrDefault());
+			}
+		}
+
 		public static void OrderStatusChanged(OrderInfo orderInfo, AfterOrderStatusChangedEventArgs e)
 		{
 			Log.Instance.LogDebug("AfterOrderStatusChanged Start");
@@ -81,7 +90,6 @@ namespace uWebshop.Umbraco.Businesslogic
 
 						int storeEmailNodeId;
 						int.TryParse(orderInfo.StoreInfo.Store.ConfirmationEmailStore, out storeEmailNodeId);
-
 
 						if (storeEmailNodeId != 0)
 						{

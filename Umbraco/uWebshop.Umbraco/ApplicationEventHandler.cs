@@ -71,6 +71,7 @@ namespace uWebshop.Umbraco
 
 			content.AfterUpdateDocumentCache += ContentOnAfterUpdateDocumentCache;
 			OrderInfo.BeforeStatusChanged += OrderBeforeStatusChanged;
+			OrderInfo.BeforeStatusChanged += OrderEvents.UpdateOrderNumberIfChangingFromIncompleteToScheduled;
 			OrderInfo.AfterStatusChanged += OrderEvents.OrderStatusChanged;
 
 			UmbracoDefault.BeforeRequestInit += UmbracoDefaultBeforeRequestInit;

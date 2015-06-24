@@ -381,12 +381,13 @@ namespace uWebshop.Domain
 		/// <param name="sendEmails">if set to <c>true</c> [send emails].</param>
 		public void SetStatus(OrderStatus newStatus, bool sendEmails = true)
 		{
+			var oldStatus = _status;
 			if (EventsOn && BeforeStatusChanged != null)
 			{
-				BeforeStatusChanged(this, new BeforeOrderStatusChangedEventArgs { OrderInfo = this, OrderStatus = _status });
+				BeforeStatusChanged(this, new BeforeOrderStatusChangedEventArgs { OrderInfo = this, OrderStatus = oldStatus, NewStatus = newStatus });
 			}
 
-			if (_status == OrderStatus.Incomplete && newStatus != OrderStatus.Incomplete)
+			if (oldStatus == OrderStatus.Incomplete && newStatus != OrderStatus.Incomplete)
 			{
 				var discounts = Discounts.ToList();
 				OrderDiscountsFactory = () => discounts;
@@ -397,7 +398,7 @@ namespace uWebshop.Domain
 
 			if (EventsOn && AfterStatusChanged != null)
 			{
-				AfterStatusChanged(this, new AfterOrderStatusChangedEventArgs { OrderInfo = this, OrderStatus = _status, SendEmails = sendEmails });
+				AfterStatusChanged(this, new AfterOrderStatusChangedEventArgs { OrderInfo = this, OrderStatus = newStatus, OldStatus = oldStatus, SendEmails = sendEmails });
 			}
 		}
 
@@ -2057,12 +2058,14 @@ namespace uWebshop.Domain
 		public OrderInfo OrderInfo { get; set; }
 
 		/// <summary>
-		/// Gets or sets the order status.
+		/// The order status before the change.
 		/// </summary>
-		/// <value>
-		/// The order status.
-		/// </value>
 		public OrderStatus OrderStatus { get; set; }
+
+		/// <summary>
+		/// What will become the new status
+		/// </summary>
+		public OrderStatus NewStatus { get; set; }
 	}
 
 	/// <summary>
@@ -2079,12 +2082,14 @@ namespace uWebshop.Domain
 		public OrderInfo OrderInfo { get; set; }
 
 		/// <summary>
-		/// Gets or sets the order status.
+		/// The order status after the change.
 		/// </summary>
-		/// <value>
-		/// The order status.
-		/// </value>
 		public OrderStatus OrderStatus { get; set; }
+
+		/// <summary>
+		/// The order status before the change.
+		/// </summary>
+		public OrderStatus OldStatus { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether [send emails].
