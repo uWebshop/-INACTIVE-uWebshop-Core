@@ -242,7 +242,7 @@ namespace uWebshop.Domain
 							{
 								matchList.Add(true);
 							}
-							if (matchingShippingNode != null && matchingShippingNode.Value != customerNode.Value)
+							if (matchingShippingNode == null || matchingShippingNode.Value != customerNode.Value)
 							{
 								matchList.Add(false);
 							}
