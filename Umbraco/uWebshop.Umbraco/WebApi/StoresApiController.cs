@@ -131,7 +131,18 @@ namespace uWebshop.Umbraco.WebApi
 			DateTime startDate;
 			DateTime.TryParse(startDateTime, out startDate);
 			var endDate = DateTime.Now;
-			if (endDateTime != null) DateTime.TryParse(endDateTime, out endDate);
+			if (endDateTime != null)
+			{
+				DateTime.TryParse(endDateTime, out endDate);
+				// if endDateTime contains a time, there will be a :, if NOT then this check will use the whole day instead of only 00:00:00 (start of day)
+				if (!endDateTime.Contains(':'))
+				{
+					endDate = endDate.Date.AddDays(1).AddTicks(-1);
+				}
+			}
+
+
+			
 
 			var orders = Orders.GetOrdersDeliveredBetweenTimes(startDate, endDate, storeAlias).Where(x => x.Status != OrderStatus.Incomplete && x.Status != OrderStatus.Wishlist);
 

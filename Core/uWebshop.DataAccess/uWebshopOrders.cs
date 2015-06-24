@@ -198,7 +198,7 @@ namespace uWebshop.DataAccess
 
 			using (var reader = SQLHelper.ExecuteReader(
 				"SELECT * FROM uWebshopOrders left outer join uWebshopOrderSeries on seriesID = uWebshopOrderSeries.id " +
-				" WHERE deliveryDate >= @startTime and deliveryDate < @endTime",
+				" WHERE deliveryDate >= @startTime and deliveryDate <= @endTime",
 				SQLHelper.CreateParameter("@startTime", startTime),
 				SQLHelper.CreateParameter("@endTime", endTime)))
 			{
