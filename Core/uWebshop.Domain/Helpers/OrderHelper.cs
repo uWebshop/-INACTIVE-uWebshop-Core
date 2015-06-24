@@ -873,6 +873,7 @@ namespace uWebshop.Domain.Helpers
 
 				orderInfo.Save();
 			}
+
 		}
 
 		#region OrderService forwarding
