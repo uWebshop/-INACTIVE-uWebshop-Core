@@ -688,7 +688,7 @@ namespace uWebshop.Domain.Businesslogic
 			Uri redirect = null;
 			if (urlReferrer != null)
 			{
-				redirect = new Uri(urlReferrer, "#validation");
+				redirect = new Uri(urlReferrer, "?validation=false#validation");
 			}
 
 			handleObject.Url = redirect;
@@ -731,7 +731,7 @@ namespace uWebshop.Domain.Businesslogic
 			Uri redirect = null;
 			if (urlReferrer != null)
 			{
-				redirect = new Uri(urlReferrer, "#validation");
+				redirect = new Uri(urlReferrer, "?validation=false#validation");
 			}
 
 			handleObject.Url = redirect;
@@ -771,7 +771,7 @@ namespace uWebshop.Domain.Businesslogic
 			Uri redirect = null;
 			if (urlReferrer != null)
 			{
-				redirect = new Uri(urlReferrer, "#validation");
+				redirect = new Uri(urlReferrer, "?validation=false#validation");
 			}
 
 			handleObject.Url = redirect;
@@ -819,7 +819,7 @@ namespace uWebshop.Domain.Businesslogic
 			Uri redirect = null;
 			if (urlReferrer != null)
 			{
-				redirect = new Uri(urlReferrer, "#validation");
+				redirect = new Uri(urlReferrer, "?validation=false#validation");
 			}
 
 			Session.Add(Constants.ValidateStockResult, BasketActionResult.Failed);
@@ -862,7 +862,7 @@ namespace uWebshop.Domain.Businesslogic
 			Uri redirect = null;
 			if (urlReferrer != null)
 			{
-				redirect = new Uri(urlReferrer, "#validation");
+				redirect = new Uri(urlReferrer, "?validation=false#validation");
 			}
 
 			Session.Add(Constants.ValidateOrderlineResult, BasketActionResult.Failed);
@@ -1607,7 +1607,7 @@ namespace uWebshop.Domain.Businesslogic
 			Uri validateUri = null;
 			if (requestUri != null)
 			{
-				validateUri = new Uri(requestUri, "#validation");
+				validateUri = new Uri(requestUri, "?validation=false#validation");
 			}
 
 			int confirmOrderNodeId = 0;
