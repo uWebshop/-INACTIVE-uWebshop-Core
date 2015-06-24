@@ -21,12 +21,13 @@ namespace uWebshop.Domain.Helpers
 	public static class EmailHelper
 	{
 		/// <summary>
-		///     Sent an order email based on the emailNode and orderinfo
+		/// Send an order email based on the emailNode and orderinfo
 		/// </summary>
 		/// <param name="emailNodeId"></param>
 		/// <param name="orderInfo"></param>
 		/// <param name="parameters"> </param>
-		public static void SendOrderEmailCustomer(int emailNodeId, OrderInfo orderInfo, Dictionary<string, object> parameters = null)
+		/// <param name="emailAddress"></param>
+		public static void SendOrderEmailCustomer(int emailNodeId, OrderInfo orderInfo, Dictionary<string, object> parameters = null, string emailAddress = null)
 		{
 			if (emailNodeId != 0)
 			{
@@ -80,7 +81,7 @@ namespace uWebshop.Domain.Helpers
 					}
 				}
 
-				var emailTo = OrderHelper.CustomerInformationValue(orderInfo, "customerEmail");
+				var emailTo = emailAddress ?? OrderHelper.CustomerInformationValue(orderInfo, "customerEmail");
 				Log.Instance.LogDebug("SendOrderEmailCustomer emailTo: " + emailTo);
 				Log.Instance.LogDebug("SendOrderEmailCustomer EmailFrom: " + orderInfo.StoreInfo.Store.EmailAddressFrom);
 				Log.Instance.LogDebug("SendOrderEmailCustomer EmailFromName: " + orderInfo.StoreInfo.Store.EmailAddressFromName);

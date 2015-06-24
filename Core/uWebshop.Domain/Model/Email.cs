@@ -12,7 +12,7 @@ namespace uWebshop.Domain
 		internal static string NodeAlias;
 	}
 
-    [ContentType(ParentContentType = typeof(EmailCustomerSectionContentType), Name = "Customer Email", Description = "#CustomerEmailDescription", Alias = "uwbsEmailTemplateCustomer", IconClass = IconClass.envelope, Icon = ContentIcon.MailOpenDocumentText, Thumbnail = ContentThumbnail.Folder)]
+	[ContentType(ParentContentType = typeof(EmailCustomerSectionContentType), Name = "Customer Email", Description = "#CustomerEmailDescription", Alias = "uwbsEmailTemplateCustomer", IconClass = IconClass.envelope, Icon = ContentIcon.MailOpenDocumentText, Thumbnail = ContentThumbnail.Folder)]
 	internal class EmailCustomer : Email
 	{
 		internal static string NodeAlias;
