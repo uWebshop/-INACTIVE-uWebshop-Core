@@ -893,7 +893,7 @@ namespace uWebshop.Domain.Services
 					orderNrTransaction.Generate();
 
 					var paymentRedirectUrl = OrderHelper.HandlePaymentRequest(order, confirmationNodeId);
-						// todo: this may be inappropriate as it will worsen overall responsiveness (because of the transaction)
+					// todo: this may be inappropriate as it will worsen overall responsiveness (because of the transaction)
 					if (paymentRedirectUrl == "failed")
 					{
 						orderNrTransaction.Rollback();
@@ -904,6 +904,11 @@ namespace uWebshop.Domain.Services
 
 					orderNrTransaction.Persist();
 				}
+			}
+			else
+			{
+				var paymentRedirectUrl = OrderHelper.HandlePaymentRequest(order, confirmationNodeId);
+				order.RedirectUrl = paymentRedirectUrl;
 			}
 
 			ScheduleOrdersOneYearInAdvance(order);
