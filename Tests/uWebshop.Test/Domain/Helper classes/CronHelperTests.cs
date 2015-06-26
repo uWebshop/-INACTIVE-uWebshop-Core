@@ -22,7 +22,7 @@ namespace uWebshop.Test.Domain.Helper_classes
 			// functionality of NCronTab is assumed tested
 			//var cron = "0 15 * jan,feb mon,tue";
 			//var cron = "00 15 1-7 * thu";
-			var cron = "00 15 1-7 */3 thu";
+			var cron = "00 16 1-7 */3 thu";
 			//var cron = "00 15 * * 4L"; not supported
 			var a = CronHelper.GenerateDateTimeInstancesFromCrontabExpressionStartingNow(cron);
 			foreach (var dateTime in a)
@@ -36,7 +36,7 @@ namespace uWebshop.Test.Domain.Helper_classes
 		{
 			var series = new OrderSeries
 				{
-					CronInterval = "w2|00 15 * * mon|16:30",
+					CronInterval = "w2|00 15 * * *|16:30",
 					Start = DateTime.Now,
 					EndAfterInstances = 5,
 				};
@@ -46,6 +46,8 @@ namespace uWebshop.Test.Domain.Helper_classes
 			{
 				Console.WriteLine(dateTime);
 			}
+
+			Assert.AreEqual(9, a.Count());
 		}
 	}
 }

@@ -56,8 +56,23 @@ namespace uWebshop.Domain.Helpers
 			var instancesCount = series.EndAfterInstances;
 			if (instancesCount == 0) instancesCount = int.MaxValue;
 			var cron = cronParts.First();
-			var times = cronParts.Skip(1).FirstOrDefault();
+			var timesString = cronParts.Skip(1).FirstOrDefault() ?? string.Empty;
+			var times = timesString.Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).Select(time =>
+				{
+					var timeParts = time.Split(':');
+					var hour = int.Parse(timeParts[0]);
+					var minute = int.Parse(timeParts[1]);
+					return new TimeSpan(hour, minute, 0);
+				}).ToArray();
 			int weekCount = 0, previousweek = 0;
+
+			// the first instance is skipped, because the incomplete order will be the scheduled order, however, if there are additional
+			//   times, they will need to be yielded
+			foreach (var time in times)
+			{
+				yield return series.Start.Date + time;
+			}
+
 			foreach (var date in GenerateDateTimeInstancesFromCrontabExpression(series.Start, endDate, cron))
 			{
 				var week = GetWeekOfYear(date);
@@ -70,20 +85,11 @@ namespace uWebshop.Domain.Helpers
 				{
 					yield return date;
 
-					if (!string.IsNullOrWhiteSpace(times))
+					if (!string.IsNullOrWhiteSpace(timesString))
 					{
-						if (instancesCount-- > 0)
-							// there's a minor issue here; the times might not be ordered, which then leads to unexpected behaviour at the last day
+						foreach (var time in times)
 						{
-							foreach (var time in times.Split(','))
-							{
-
-								var timeParts = time.Split(':');
-								var hour = int.Parse(timeParts[0]);
-								var minute = int.Parse(timeParts[1]);
-								var ts = new TimeSpan(hour, minute, 0);
-								yield return date.Date + ts;
-							}
+							yield return date.Date + time;
 						}
 					}
 				}
