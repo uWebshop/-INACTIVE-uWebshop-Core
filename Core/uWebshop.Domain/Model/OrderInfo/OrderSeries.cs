@@ -10,6 +10,7 @@ namespace uWebshop.Domain
 	/// </summary>
 	[DataContract(Namespace = "")]
 	[Serializable]
+	[KnownType(typeof(OrderSeries))]
 	public class OrderSeries : IOrderSeries
 	{
 		public OrderSeries()
