@@ -650,7 +650,7 @@ namespace uWebshop.Domain.Services
 
 			// empty values
 			repeatDays = splitRepeatDays.Any(x => !string.IsNullOrEmpty(x)) ? string.Join(",", splitRepeatDays.Where(x=> !string.IsNullOrEmpty(x))) : string.Empty;
-			repeatTimes = splitRepeatTime.Any(x => !string.IsNullOrEmpty(x)) ? string.Join(",", splitRepeatDays.Where(x=> !string.IsNullOrEmpty(x))) : string.Empty;
+			repeatTimes = splitRepeatTime.Any(x => !string.IsNullOrEmpty(x)) ? string.Join(",", splitRepeatTime.Where(x => !string.IsNullOrEmpty(x))) : string.Empty;
 
 			var startDate = Common.Helpers.DateTimeMultiCultureParse(seriesStart, order.StoreInfo.CultureInfo);
 			if (startDate == null) throw new ApplicationException("Could not parse orderseries start date string: " + seriesStart);
@@ -659,7 +659,7 @@ namespace uWebshop.Domain.Services
 			var endDate = Common.Helpers.DateTimeMultiCultureParse(repeatEndDate, order.StoreInfo.CultureInfo);
 			if (!string.IsNullOrWhiteSpace(repeatEndDate) && endDate == null) throw new ApplicationException("Could not parse orderseries end date string: " + repeatEndDate);
 			order.OrderSeries.End = endDate;
-			order.OrderSeries.EndAfterInstances = int.TryParse(repeatEndAfterInstances, out intVal) ? intVal : 0;
+			order.OrderSeries.EndAfterInstances = int.TryParse(repeatEndAfterInstances, out intVal) ? intVal : 1;
 			var interval = int.TryParse(repeatInterval, out intVal) ? intVal : 0;
 
 			order.OrderSeries.CronInterval = CreateCronInterval(order.OrderSeries.Start, repeatOrder, repeatTimes, interval, repeatDays).Item1;
@@ -732,6 +732,7 @@ namespace uWebshop.Domain.Services
 			}
 			var days = "*";
 			var weekDays = "*";
+			var month = "*";
 			if (repeatNature == "monthly")
 			{
 				cronExplanation = cronExplanation ?? "Every month";
@@ -768,7 +769,7 @@ namespace uWebshop.Domain.Services
 					cronExplanation += " on the fifth " + dayOfWeek;
 				}
 			}
-			if (repeatNature == "weekly")
+			else if (repeatNature == "weekly")
 			{
 				if (string.IsNullOrWhiteSpace(repeatDays))
 				{
@@ -778,15 +779,21 @@ namespace uWebshop.Domain.Services
 				cronExplanation += " on " + repeatDays;
 				weekDays = repeatDays;
 			}
+			else
+			{
+				days = seriesStart.Day.ToString();
+				month = seriesStart.Month.ToString();
+				cronExplanation += "on " + days + " " + seriesStart.ToString("MMM");
+			}
 
 			cronExplanation += " at " + seriesStart.ToString("HH:mm");
-			var cronDatePart = " " + days + (repeatNature == "monthly" && repeatInterval > 1 ? " */" + repeatInterval + " " : " * ") + weekDays;
+			var cronDatePart = " " + days + (repeatNature == "monthly" && repeatInterval > 1 ? " */" + repeatInterval + " " : " " + month + " ") + weekDays;
 			cron += seriesStart.ToString("mm") + " " + seriesStart.ToString("HH") + cronDatePart;
 			
 			if (!string.IsNullOrWhiteSpace(repeatTimes))
 			{
 				cron += "|" + repeatTimes;
-				foreach (var time in repeatTimes.Split(','))
+				foreach (var time in repeatTimes.Split(new []{','},StringSplitOptions.RemoveEmptyEntries))
 				{
 					//var timeSplit = time.Split(':');
 					//cron += "|" + timeSplit[1] + " " + timeSplit[0] + cronDatePart;

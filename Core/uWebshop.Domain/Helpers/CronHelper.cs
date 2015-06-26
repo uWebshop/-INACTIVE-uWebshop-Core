@@ -69,13 +69,15 @@ namespace uWebshop.Domain.Helpers
 				if ((weekInterval == 1 || weekCount % weekInterval == 1) && instancesCount-- > 1 && date > today)
 				{
 					yield return date;
-					
+
 					if (!string.IsNullOrWhiteSpace(times))
 					{
-						foreach (var time in times.Split(','))
+						if (instancesCount-- > 0)
+							// there's a minor issue here; the times might not be ordered, which then leads to unexpected behaviour at the last day
 						{
-							if (instancesCount-- > 0) // there's a minor issue here; the times might not be ordered, which then leads to unexpected behaviour at the last day
+							foreach (var time in times.Split(','))
 							{
+
 								var timeParts = time.Split(':');
 								var hour = int.Parse(timeParts[0]);
 								var minute = int.Parse(timeParts[1]);
