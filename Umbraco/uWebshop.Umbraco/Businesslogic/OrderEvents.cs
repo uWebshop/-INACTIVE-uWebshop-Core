@@ -15,7 +15,8 @@ namespace uWebshop.Umbraco.Businesslogic
 		{
 			if (e.OrderStatus == OrderStatus.Incomplete && e.NewStatus == OrderStatus.Scheduled)
 			{
-				uWebshopOrders.SetOrderNumber(order.UniqueOrderId, order.OrderNumber.Replace("[INCOMPLETE]", "[SCHEDULED]"), order.StoreInfo.Alias, order.StoreOrderReferenceId.GetValueOrDefault());
+				order.OrderNumber = order.OrderNumber.Replace("[INCOMPLETE]", "[SCHEDULED]");
+				uWebshopOrders.SetOrderNumber(order.UniqueOrderId, order.OrderNumber, order.StoreInfo.Alias, order.StoreOrderReferenceId.GetValueOrDefault());
 			}
 		}
 
