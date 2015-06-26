@@ -918,11 +918,12 @@ namespace uWebshop.Domain.Services
 				order.RedirectUrl = paymentRedirectUrl;
 			}
 
-			ScheduleOrdersOneYearInAdvance(order);
-
 			order.Status = _uwebshopConfiguration.UseDeliveryDateAsConfirmDateForScheduledOrders && order.DeliveryDate.HasValue
 				? OrderStatus.Scheduled : OrderStatus.Confirmed;
 			Save(order, true);
+
+			ScheduleOrdersOneYearInAdvance(order);
+
 			return true;
 		}
 
