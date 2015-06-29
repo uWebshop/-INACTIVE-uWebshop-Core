@@ -25,9 +25,9 @@ namespace uWebshop.Domain.Helpers
 			var toReturn = GetShippingProvidersFromDLLs<IShippingProvider>();
 
 			// Add dummy providers from nodes
-			var paymentProviders = GetAllShippingProviders().Where(x => x.Type == ShippingProviderType.Pickup);
+			var shippingProviders = GetAllShippingProviders().Where(x => x.Type == ShippingProviderType.Pickup);
 
-			toReturn.AddRange(paymentProviders.Select(paymentProvider => new DummyShippingProvider(paymentProvider.Id)));
+			toReturn.AddRange(shippingProviders.Select(shippingProvider => new DummyShippingProvider(shippingProvider.Id)));
 
 			return toReturn;
 		}
@@ -88,7 +88,7 @@ namespace uWebshop.Domain.Helpers
 			var instances = new List<T>();
 
 			var targetType = typeof (T);
-
+			
 			foreach (var shippingProvider in GetAllShippingProviders())
 			{
 				//Log.Add(LogTypes.System, paymentProvider.Id, "GetInterfaces START");
