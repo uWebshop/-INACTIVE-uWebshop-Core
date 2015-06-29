@@ -69,7 +69,7 @@ namespace uWebshop.Umbraco.WebApi
 
 		public IEnumerable<BasketOrderInfoAdaptor> GetAllOrders(string status = "All")
 		{
-			var orders = Orders.GetAllOrders().Where(x => x.Status != OrderStatus.Incomplete && x.Status != OrderStatus.Wishlist && x.Status == OrderStatus.Scheduled);
+			var orders = Orders.GetAllOrders().Where(x => x.Status != OrderStatus.Incomplete && x.Status != OrderStatus.Wishlist && x.Status != OrderStatus.Scheduled);
 
 			if (string.IsNullOrEmpty(status) || status.ToLowerInvariant() == "all" || status.ToLowerInvariant() == "undefined")
 			{
