@@ -88,11 +88,11 @@ namespace uWebshop.Domain.Interfaces
 		/// <summary>
 		/// Confirms the order.
 		/// </summary>
-		/// <param name="orderInfo">The order information.</param>
+		/// <param name="order">The order information.</param>
 		/// <param name="termsAccepted">if set to <c>true</c> [terms accepted].</param>
 		/// <param name="confirmationNodeId">The confirmation node unique identifier.</param>
-		/// <returns></returns>
-		bool ConfirmOrder(OrderInfo orderInfo, bool termsAccepted, int confirmationNodeId);
+		/// <param name="dontScheduleAlwaysConfirm"></param>
+		bool ConfirmOrder(OrderInfo order, bool termsAccepted, int confirmationNodeId, bool dontScheduleAlwaysConfirm = false);
 
 		/// <summary>
 		/// Changes the store.

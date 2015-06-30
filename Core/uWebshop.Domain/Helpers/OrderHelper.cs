@@ -939,6 +939,11 @@ namespace uWebshop.Domain.Helpers
 			return order;
 		}
 
+		public static bool ConfirmScheduledOrder(OrderInfo order, int confirmationNodeId = 0)
+		{
+			return IO.Container.Resolve<IOrderUpdatingService>().ConfirmOrder(order, true, confirmationNodeId, true);
+		}
+
 		/// <summary>
 		/// Validates the order.
 		/// </summary>

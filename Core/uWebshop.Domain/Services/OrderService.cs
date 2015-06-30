@@ -565,7 +565,7 @@ namespace uWebshop.Domain.Services
 			if (orderInfo.ShippingInfo.Id != 0)
 			{
 				var shippingProvider = ShippingProviderHelper.GetShippingProvider(orderInfo.ShippingInfo.Id);
-
+				if (shippingProvider == null) throw new ApplicationException("ShippingProvider with contentId " + orderInfo.ShippingInfo.Id + " not found. Please publish this content and republish entire site.");
 				var shippingCountryCode = orderInfo.CustomerInfo.ShippingCountryCode;
 
 				// if shipping country is empty on the order, then use customercountry for validation

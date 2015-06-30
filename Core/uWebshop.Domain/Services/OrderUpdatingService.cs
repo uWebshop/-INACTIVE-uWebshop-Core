@@ -866,8 +866,9 @@ namespace uWebshop.Domain.Services
 			return false;
 		}
 
-		public bool ConfirmOrder(OrderInfo order, bool termsAccepted, int confirmationNodeId)
+		public bool ConfirmOrder(OrderInfo order, bool termsAccepted, int confirmationNodeId, bool dontScheduleAlwaysConfirm = false)
 		{
+			// todo: refactor, split into Schedule and Confirm
 			order.TermsAccepted = termsAccepted;
 
 			order.ConfirmValidationFailed = _orderService.ValidateOrder(order, true).Any();
@@ -892,7 +893,7 @@ namespace uWebshop.Domain.Services
 			//   PaymentProvider
 			//   IfSucceeded GenerateAndPersist
 
-			if (!(_uwebshopConfiguration.UseDeliveryDateAsConfirmDateForScheduledOrders && order.DeliveryDate.HasValue))
+			if (dontScheduleAlwaysConfirm || !(_uwebshopConfiguration.UseDeliveryDateAsConfirmDateForScheduledOrders && order.DeliveryDate.HasValue))
 			{
 				using (var orderNrTransaction = _orderNumberService.GetTransaction(order))
 				{
@@ -918,11 +919,14 @@ namespace uWebshop.Domain.Services
 				order.RedirectUrl = paymentRedirectUrl;
 			}
 
-			order.Status = _uwebshopConfiguration.UseDeliveryDateAsConfirmDateForScheduledOrders && order.DeliveryDate.HasValue
+			order.Status = !dontScheduleAlwaysConfirm && _uwebshopConfiguration.UseDeliveryDateAsConfirmDateForScheduledOrders && order.DeliveryDate.HasValue
 				? OrderStatus.Scheduled : OrderStatus.Confirmed;
 			Save(order, true);
 
-			ScheduleOrdersOneYearInAdvance(order);
+			if (!dontScheduleAlwaysConfirm)
+			{
+				ScheduleOrdersOneYearInAdvance(order);
+			}
 
 			return true;
 		}
