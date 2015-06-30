@@ -94,7 +94,7 @@ namespace uWebshop.Umbraco.WebApi
 
 		public IEnumerable<BasketOrderInfoAdaptor> GetOrdersToDeliverToday(string storeAlias = null)
 		{
-			return OrderHelper.GetOrdersDeliveredBetweenTimes(DateTime.Today.Date, DateTime.Today.AddDays(1).AddTicks(-1), storeAlias)
+			return OrderHelper.GetOrdersDeliveredBetweenTimes(DateTime.Today.Date, DateTime.Today.AddDays(1).AddSeconds(-1), storeAlias)
 				.Where(o => o.Status == OrderStatus.Confirmed || o.Status == OrderStatus.Scheduled)
 				.Select(o => Orders.CreateBasketFromOrderInfo(o) as BasketOrderInfoAdaptor);
 		}
@@ -137,7 +137,7 @@ namespace uWebshop.Umbraco.WebApi
 				// if endDateTime contains a time, there will be a :, if NOT then this check will use the whole day instead of only 00:00:00 (start of day)
 				if (!endDateTime.Contains(':'))
 				{
-					endDate = endDate.Date.AddDays(1).AddTicks(-1);
+					endDate = endDate.Date.AddDays(1).AddSeconds(-1);
 				}
 			}
 
@@ -150,7 +150,7 @@ namespace uWebshop.Umbraco.WebApi
 		{
 			var dateToShow = DateTime.Now.Date.AddDays(daysFromNow);
 
-			var orders = Orders.GetOrdersDeliveredBetweenTimes(dateToShow.Date, dateToShow.Date.AddDays(1).AddTicks(-1), storeAlias).Where(x => x.Status != OrderStatus.Incomplete && x.Status != OrderStatus.Wishlist);
+			var orders = Orders.GetOrdersDeliveredBetweenTimes(dateToShow.Date, dateToShow.Date.AddDays(1).AddSeconds(-1), storeAlias).Where(x => x.Status != OrderStatus.Incomplete && x.Status != OrderStatus.Wishlist);
 
 			return orders.Select(o => o as BasketOrderInfoAdaptor);
 		}
@@ -588,7 +588,7 @@ namespace uWebshop.Umbraco.WebApi
 
 			return Umbraco.GetDictionaryValue(key);
 		}
-
+		
 		public class TemplateRequest
 		{
 			public int id { get; set; }
