@@ -430,7 +430,7 @@ namespace uWebshop.DataAccess
 					[customerLastName] nvarchar (500) NULL,
 					[orderNumber] nvarchar (100) NULL,
 					[storeOrderReferenceID] int NULL,
-					[orderInfo] [ntext] NULL, 
+					[orderInfo] nvarchar (max) NULL, 
 					[orderStatus] nvarchar (100) NULL,
 					[transactionID] nvarchar (100) NULL,
 					[storeAlias] nvarchar (500) NULL,
