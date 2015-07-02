@@ -508,7 +508,7 @@ namespace uWebshop.Umbraco.WebApi
 
 			if (countries != null)
 			{
-				var value = countries.FirstOrDefault(x => x.Code.ToLowerInvariant() == countryCode.ToLowerInvariant());
+				var value = countries.FirstOrDefault(x => countryCode != null && x.Code.ToLowerInvariant() == countryCode.ToLowerInvariant());
 
 				return value;
 			}

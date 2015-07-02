@@ -61,7 +61,9 @@ namespace uWebshop.Umbraco
 				LogHelper.Error(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "Error while initializing uWebshop, most likely due to wrong umbraco.config, please republish the site " + ex.Message, ex);
 			}
 
+			
 			ContentService.Created += ContentService_Created;
+			ContentService.Saved += ContentService_Saved;
 			ContentService.Published += ContentService_Published;
 			ContentService.Publishing +=ContentService_Publishing;
 			ContentService.Trashed += ContentService_Trashed;
@@ -79,6 +81,132 @@ namespace uWebshop.Umbraco
 
 			var indexer = ExamineManager.Instance.IndexProviderCollection[UwebshopConfiguration.Current.ExamineIndexer];
 			indexer.GatheringNodeData += GatheringNodeDataHandler;
+		}
+
+		void ContentService_Saved(IContentService sender, SaveEventArgs<IContent> e)
+		{
+			var umbHelper = new UmbracoHelper(UmbracoContext.Current);
+			var contentService = ApplicationContext.Current.Services.ContentService;
+			var contents = e.SavedEntities.Where(c => c.ContentType.Alias.StartsWith(Order.NodeAlias));
+			
+			// when thinking about adding something here, consider ContentOnAfterUpdateDocumentCache!
+
+			foreach (var item in e.SavedEntities)
+			{
+				if (item.Level > 2)
+				{
+					if (item.ContentType.Alias == Order.NodeAlias ||
+					    item.Parent() != null &&
+					    (OrderedProduct.IsAlias(item.ContentType.Alias) ||
+					     item.Parent().Parent() != null && OrderedProductVariant.IsAlias(item.ContentType.Alias)))
+					{
+						var orderDoc = item.ContentType.Alias == Order.NodeAlias
+							? item
+							: (OrderedProduct.IsAlias(item.ContentType.Alias) && !OrderedProductVariant.IsAlias(item.ContentType.Alias)
+								? contentService.GetById(item.Parent().Id)
+								: contentService.GetById(item.Parent().Parent().Id));
+
+						if (orderDoc.ContentType.Alias != Order.NodeAlias)
+							throw new Exception("There was an error in the structure of the order documents");
+
+						// load existing orderInfo (why..? => possibly to preserve information not represented in the umbraco documents)
+
+						if (orderDoc.HasProperty("orderGuid"))
+						{
+							var orderGuidString = orderDoc.GetValue<string>("orderGuid");
+
+							if (orderDoc.HasProperty("orderGuid") && string.IsNullOrEmpty(orderGuidString))
+							{
+								Store store = null;
+								var storeDoc =
+									item.Ancestors().FirstOrDefault(x => x.ContentType.Alias == OrderStoreFolder.NodeAlias);
+
+								if (storeDoc != null)
+								{
+									store = StoreHelper.GetAllStores().FirstOrDefault(x => x.Name == storeDoc.Name);
+								}
+
+								if (store == null)
+								{
+									store = StoreHelper.GetAllStores().FirstOrDefault();
+								}
+
+								var orderInfo = OrderHelper.CreateOrder(store);
+								IO.Container.Resolve<IOrderNumberService>().GenerateAndPersistOrderNumber(orderInfo);
+								orderInfo.Status = OrderStatus.Confirmed;
+								orderInfo.Save();
+
+								item.SetValue("orderGuid", orderInfo.UniqueOrderId.ToString());
+								contentService.Save(item);
+							}
+							else
+							{
+								var orderGuid = orderDoc.GetValue<Guid>("orderGuid");
+
+								var orderInfo = OrderHelper.GetOrder(orderGuid);
+
+								var order = new Order(orderDoc.Id);
+								orderInfo.CustomerEmail = order.CustomerEmail;
+								orderInfo.CustomerFirstName = order.CustomerFirstName;
+								orderInfo.CustomerLastName = order.CustomerLastName;
+
+
+								var dictionaryCustomer =
+									orderDoc.Properties.Where(x => x.Alias.StartsWith("customer"))
+										.ToDictionary(customerProperty => customerProperty.Alias,
+											customerProperty => customerProperty.Value != null ? customerProperty.Value.ToString() : null);
+
+								orderInfo.AddCustomerFields(dictionaryCustomer, CustomerDatatypes.Customer);
+
+								var dictionaryShipping =
+									orderDoc.Properties.Where(x => x.Alias.StartsWith("shipping"))
+										.ToDictionary(property => property.Alias, property => property.Value.ToString());
+								orderInfo.AddCustomerFields(dictionaryShipping, CustomerDatatypes.Shipping);
+
+								var dictionarExtra =
+									orderDoc.Properties.Where(x => x.Alias.StartsWith("extra"))
+										.ToDictionary(property => property.Alias, property => property.Value.ToString());
+								orderInfo.AddCustomerFields(dictionarExtra, CustomerDatatypes.Extra);
+
+								//orderInfo.SetVATNumber(order.CustomerVATNumber); happens in AddCustomerFields
+								var orderPaidProperty = order.Document.getProperty("orderPaid");
+								if (orderPaidProperty != null && orderPaidProperty.Value != null)
+									orderInfo.Paid = orderPaidProperty.Value == "1";
+
+								// load data recursively from umbraco documents into order tree
+								orderInfo.OrderLines = orderDoc.Children().Select(d =>
+								{
+									var fields =
+										d.Properties.Where(x => !OrderedProduct.DefaultProperties.Contains(x.Alias))
+											.ToDictionary(s => s.Alias, s => d.GetValue<string>(s.Alias));
+
+									var xDoc = new XDocument(new XElement("Fields"));
+
+									OrderUpdatingService.AddFieldsToXDocumentBasedOnCMSDocumentType(xDoc, fields, d.ContentType.Alias);
+
+									var orderedProduct = new OrderedProduct(d.Id);
+
+									var productInfo = new ProductInfo(orderedProduct, orderInfo);
+									productInfo.ProductVariants =
+										d.Children()
+											.Select(cd => new ProductVariantInfo(new OrderedProductVariant(cd.Id), productInfo, productInfo.Vat))
+											.ToList();
+									return new OrderLine(productInfo, orderInfo) {_customData = xDoc};
+								}).ToList();
+
+								// store order
+								IO.Container.Resolve<IOrderRepository>().SaveOrderInfo(orderInfo);
+							}
+							
+							BasePage.Current.ClientTools.SyncTree(item.Parent().Path, false);
+							BasePage.Current.ClientTools.ChangeContentFrameUrl(string.Concat("editContent.aspx?id=", item.Id));
+
+							BasePage.Current.ClientTools.ShowSpeechBubble(BasePage.speechBubbleIcon.success, "Order Updated!",
+								"This order has been updated!");
+						}
+					}
+				}
+			}
 		}
 	
 		private void ContentService_Trashed(IContentService sender, MoveEventArgs<IContent> e)
@@ -662,133 +790,6 @@ namespace uWebshop.Umbraco
 
 			foreach (var sender in e.PublishedEntities)
 			{
-				if (sender.Level > 2)
-				{
-					if (sender.ContentType.Alias == Order.NodeAlias ||
-					    sender.Parent() != null &&
-					    (OrderedProduct.IsAlias(sender.ContentType.Alias) ||
-					     sender.Parent().Parent() != null && OrderedProductVariant.IsAlias(sender.ContentType.Alias)))
-					{
-						var orderDoc = sender.ContentType.Alias == Order.NodeAlias
-							? sender
-							: (OrderedProduct.IsAlias(sender.ContentType.Alias) && !OrderedProductVariant.IsAlias(sender.ContentType.Alias)
-								? contentService.GetById(sender.Parent().Id)
-								: contentService.GetById(sender.Parent().Parent().Id));
-
-						if (orderDoc.ContentType.Alias != Order.NodeAlias)
-							throw new Exception("There was an error in the structure of the order documents");
-
-						// load existing orderInfo (why..? => possibly to preserve information not represented in the umbraco documents)
-
-						if (orderDoc.HasProperty("orderGuid"))
-						{
-							var orderGuidString = orderDoc.GetValue<string>("orderGuid");
-
-							if (orderDoc.HasProperty("orderGuid") && string.IsNullOrEmpty(orderGuidString))
-							{
-								Store store = null;
-								var storeDoc =
-									sender.Ancestors().FirstOrDefault(x => x.ContentType.Alias == OrderStoreFolder.NodeAlias);
-
-								if (storeDoc != null)
-								{
-									store = StoreHelper.GetAllStores().FirstOrDefault(x => x.Name == storeDoc.Name);
-								}
-
-								if (store == null)
-								{
-									store = StoreHelper.GetAllStores().FirstOrDefault();
-								}
-
-								var orderInfo = OrderHelper.CreateOrder(store);
-								IO.Container.Resolve<IOrderNumberService>().GenerateAndPersistOrderNumber(orderInfo);
-								orderInfo.Status = OrderStatus.Confirmed;
-								orderInfo.Save();
-
-								sender.SetValue("orderGuid", orderInfo.UniqueOrderId.ToString());
-								contentService.Save(sender);
-							}
-							else
-							{
-								var orderGuid = orderDoc.GetValue<Guid>("orderGuid");
-
-								var orderInfo = OrderHelper.GetOrder(orderGuid);
-
-								var order = new Order(orderDoc.Id);
-								orderInfo.CustomerEmail = order.CustomerEmail;
-								orderInfo.CustomerFirstName = order.CustomerFirstName;
-								orderInfo.CustomerLastName = order.CustomerLastName;
-
-
-								var dictionaryCustomer =
-									orderDoc.Properties.Where(x => x.Alias.StartsWith("customer"))
-										.ToDictionary(customerProperty => customerProperty.Alias,
-											customerProperty => customerProperty.Value != null ? customerProperty.Value.ToString() : null);
-
-								orderInfo.AddCustomerFields(dictionaryCustomer, CustomerDatatypes.Customer);
-
-								var dictionaryShipping =
-									orderDoc.Properties.Where(x => x.Alias.StartsWith("shipping"))
-										.ToDictionary(property => property.Alias, property => property.Value.ToString());
-								orderInfo.AddCustomerFields(dictionaryShipping, CustomerDatatypes.Shipping);
-
-								var dictionarExtra =
-									orderDoc.Properties.Where(x => x.Alias.StartsWith("extra"))
-										.ToDictionary(property => property.Alias, property => property.Value.ToString());
-								orderInfo.AddCustomerFields(dictionarExtra, CustomerDatatypes.Extra);
-
-								//orderInfo.SetVATNumber(order.CustomerVATNumber); happens in AddCustomerFields
-								var orderPaidProperty = order.Document.getProperty("orderPaid");
-								if (orderPaidProperty != null && orderPaidProperty.Value != null)
-									orderInfo.Paid = orderPaidProperty.Value == "1";
-
-								// load data recursively from umbraco documents into order tree
-								orderInfo.OrderLines = orderDoc.Children().Select(d =>
-								{
-									var fields =
-										d.Properties.Where(x => !OrderedProduct.DefaultProperties.Contains(x.Alias))
-											.ToDictionary(s => s.Alias, s => d.GetValue<string>(s.Alias));
-
-									var xDoc = new XDocument(new XElement("Fields"));
-
-									OrderUpdatingService.AddFieldsToXDocumentBasedOnCMSDocumentType(xDoc, fields, d.ContentType.Alias);
-
-									var orderedProduct = new OrderedProduct(d.Id);
-
-									var productInfo = new ProductInfo(orderedProduct, orderInfo);
-									productInfo.ProductVariants =
-										d.Children()
-											.Select(cd => new ProductVariantInfo(new OrderedProductVariant(cd.Id), productInfo, productInfo.Vat))
-											.ToList();
-									return new OrderLine(productInfo, orderInfo) {_customData = xDoc};
-								}).ToList();
-
-								// store order
-								IO.Container.Resolve<IOrderRepository>().SaveOrderInfo(orderInfo);
-							}
-							// cancel does give a warning message balloon in Umbraco.
-							//e.Cancel = true;
-
-							//if (sender.ContentType.Alias != Order.NodeAlias)
-							//{
-							//	orderDoc.Publish(new User(0));
-							//}
-
-							//if (orderDoc.ParentId != 0)
-							//{
-							BasePage.Current.ClientTools.SyncTree(sender.Parent().Path, false);
-							BasePage.Current.ClientTools.ChangeContentFrameUrl(string.Concat("editContent.aspx?id=", sender.Id));
-							//}
-							//orderDoc.delete();
-							BasePage.Current.ClientTools.ShowSpeechBubble(BasePage.speechBubbleIcon.success, "Order Updated!",
-								"This order has been updated!");
-						}
-					}
-				}
-
-
-
-
 				var content = contentService.GetById(sender.Id);
 				//if (sender.ContentType.Alias.StartsWith("uwbs") && sender.ContentType.Alias != Order.NodeAlias)
 				//todo: work with aliasses from config

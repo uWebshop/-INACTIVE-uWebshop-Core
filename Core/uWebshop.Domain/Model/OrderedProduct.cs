@@ -271,8 +271,21 @@ namespace uWebshop.Domain
 		[ContentPropertyType(Alias = "orderedProductDiscountPercentage", DataType = DataType.String, Tab = ContentTypeTab.Price, Name = "#OrderedProductDiscountPercentage", Description = "#OrderedProductDiscountPercentageDescription")]
 		public decimal OrderedProductDiscountPercentage
 		{
-			get { return Document.GetProperty<decimal>("orderedProductDiscountPercentage"); }
-			set { Document.SetProperty("orderedProductDiscountPercentage", value); }
+			get
+			{
+				if (Document.GetProperty("orderedProductDiscountPercentage") != null && !string.IsNullOrEmpty(Document.GetProperty("orderedProductDiscountPercentage").Value))
+				{
+					return Document.GetProperty<int>("orderedProductDiscountPercentage");
+				}
+				return 0;
+			}
+			set
+			{
+				if (Document.GetProperty("orderedProductDiscountPercentage") != null)
+				{
+					Document.SetProperty("orderedProductDiscountPercentage", value);
+				}
+			}
 		}
 
 		/// <summary>
@@ -284,8 +297,21 @@ namespace uWebshop.Domain
 		[ContentPropertyType(Alias = "orderedProductDiscountAmount", DataType = DataType.String, Tab = ContentTypeTab.Price, Name = "#OrderedProductDiscountAmount", Description = "#OrderedProductDiscountAmountDescription")]
 		public int OrderedProductDiscountAmount
 		{
-			get { return Document.GetProperty<int>("orderedProductDiscountAmount"); }
-			set { Document.SetProperty("orderedProductDiscountAmount", value); }
+			get
+			{
+				if (Document.GetProperty("orderedProductDiscountAmount") != null && !string.IsNullOrEmpty(Document.GetProperty("orderedProductDiscountAmount").Value))
+				{
+					return Document.GetProperty<int>("orderedProductDiscountAmount");
+				}
+				return 0;
+			}
+			set
+			{
+				if (Document.GetProperty("orderedProductDiscountAmount") != null)
+				{
+					Document.SetProperty("orderedProductDiscountAmount", value);
+				}
+			}
 		}
 
 		/// <summary>
@@ -294,7 +320,15 @@ namespace uWebshop.Domain
 		[ContentPropertyType(Alias = "orderedProductDiscountExcludingVariants", DataType = DataType.TrueFalse, Tab = ContentTypeTab.Price, Name = "#OrderedProductDiscountExcludingVariants", Description = "#OrderedProductDiscountExcludingVariantsDescription")]
 		public bool OrderedProductDiscountExcludingVariants
 		{
-			get { return Document.GetProperty<bool>("orderedProductDiscountExcludingVariants"); }
+			get
+			{
+				if (Document.GetProperty("orderedProductDiscountExcludingVariants") != null && !string.IsNullOrEmpty(Document.GetProperty("orderedProductDiscountExcludingVariants").Value))
+				{
+					return Document.GetProperty<bool>("orderedProductDiscountAmount");
+				}
+				// todo: should this be false by default?
+				return false;
+			}
 			set { Document.SetProperty("orderedProductDiscountExcludingVariants", value); }
 		}
 
