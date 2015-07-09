@@ -129,7 +129,8 @@ namespace uWebshop.Umbraco.Repositories
 						IBooleanOperation query = searcher.Field("__NodeTypeAlias", nodeTypeAlias.ToLower().MultipleCharacterWildcard());
 
 						//Log.Instance.LogDebug(DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") + " EXAMINE GetObjectsByAlias<T> " + typeof(T).Name);
-						var searchResults = examineprovider.Search(query.Compile());
+						var compiledQuery = query.Compile();
+						var searchResults = examineprovider.Search(compiledQuery);
 						return searchResults.Where(examineNode => examineNode.Fields["__NodeId"] != null).Where(examineNode => CheckNodeTypeAliasForImproperOverlap(examineNode.Fields["__NodeTypeAlias"], nodeTypeAlias));
 					}
 				}

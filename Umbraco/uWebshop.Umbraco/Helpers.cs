@@ -123,7 +123,8 @@ namespace uWebshop.Umbraco
 				if (searcher != null)
 				{
 					var query = searcher.Field("__NodeTypeAlias", nodeTypeAlias.ToLower());
-					var searchResults = examineprovider.Search(query.Compile());
+					var compiledQuery = query.Compile();
+					var searchResults = examineprovider.Search(compiledQuery);
 					return searchResults.Where(examineNode => examineNode.Fields["__NodeId"] != null);
 				}
 			}

@@ -160,12 +160,12 @@ namespace uWebshop.Umbraco
 
 								var dictionaryShipping =
 									orderDoc.Properties.Where(x => x.Alias.StartsWith("shipping"))
-										.ToDictionary(property => property.Alias, property => property.Value.ToString());
+										.ToDictionary(property => property.Alias, property => property.Value != null ? property.Value.ToString() : null);
 								orderInfo.AddCustomerFields(dictionaryShipping, CustomerDatatypes.Shipping);
 
 								var dictionarExtra =
 									orderDoc.Properties.Where(x => x.Alias.StartsWith("extra"))
-										.ToDictionary(property => property.Alias, property => property.Value.ToString());
+										.ToDictionary(property => property.Alias, property => property.Value != null ? property.Value.ToString() : null);
 								orderInfo.AddCustomerFields(dictionarExtra, CustomerDatatypes.Extra);
 
 								//orderInfo.SetVATNumber(order.CustomerVATNumber); happens in AddCustomerFields
