@@ -531,9 +531,9 @@ namespace uWebshop.Domain.Services
 					}
 				}
 
-				if (field.Key == "shippingDeliveryDateTime")
+				if (field.Key.ToLower() == "shippingdeliverydatetime")
 				{
-					var deliveryDate = fields.TryGetValue("shippingDeliveryDateTime"); // 2015-05-26T16:03:35
+					var deliveryDate = field.Value; // 2015-05-26T16:03:35
 					if (deliveryDate != null)
 					{
 						var date = Common.Helpers.DateTimeMultiCultureParse(deliveryDate, order.StoreInfo.CultureInfo);
