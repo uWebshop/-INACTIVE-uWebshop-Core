@@ -65,7 +65,7 @@ namespace uWebshop.Umbraco
 			ContentService.Created += ContentService_Created;
 			ContentService.Saved += ContentService_Saved;
 			ContentService.Published += ContentService_Published;
-			ContentService.Publishing +=ContentService_Publishing;
+			ContentService.Publishing += ContentService_Publishing;
 			ContentService.Trashed += ContentService_Trashed;
 			ContentService.UnPublished += ContentService_UnPublished;
 			ContentService.Deleted += ContentService_Deleted;
@@ -221,7 +221,7 @@ namespace uWebshop.Umbraco
 		}
 
 
-	
+
 		protected void GatheringNodeDataHandler(object sender, IndexingNodeDataEventArgs e)
 		{
 			try
@@ -293,7 +293,7 @@ namespace uWebshop.Umbraco
 				"images", "files"};
 		}
 
-		
+
 		private void ContentService_Copied(IContentService sender, CopyEventArgs<IContent> e)
 		{
 			if (e.Original.Level > 2 && e.Original.ContentType.Alias == Order.NodeAlias)
@@ -328,7 +328,7 @@ namespace uWebshop.Umbraco
 		}
 		private void ContentOnAfterUpdateDocumentCache(Document document, DocumentCacheEventArgs documentCacheEventArgs)
 		{
-		
+
 		}
 
 		private void ContentService_UnPublished(IPublishingStrategy sender, PublishEventArgs<IContent> e)
@@ -348,7 +348,7 @@ namespace uWebshop.Umbraco
 			}
 		}
 
-	
+
 
 		private static void ClearCaches(IContent sender)
 		{
@@ -426,7 +426,7 @@ namespace uWebshop.Umbraco
 					if (category != null) HttpContext.Current.Response.RedirectPermanent( /* todo nicer */RazorExtensions.ExtensionMethods.NiceUrl(category), true);
 				}
 			}
-// ReSharper disable once EmptyGeneralCatchClause
+			// ReSharper disable once EmptyGeneralCatchClause
 			catch (Exception)
 			{
 				// intentionally left empty, because Umbraco will serve a 404
@@ -451,7 +451,7 @@ namespace uWebshop.Umbraco
 				if (currentMember.ProviderUserKey != null)
 				{
 					orderRepository.SetCustomerId(currentorder.UniqueOrderId, (int)currentMember.ProviderUserKey);
-					currentorder.CustomerInfo.CustomerId = (int) currentMember.ProviderUserKey;
+					currentorder.CustomerInfo.CustomerId = (int)currentMember.ProviderUserKey;
 				}
 
 
@@ -514,7 +514,7 @@ namespace uWebshop.Umbraco
 				new PaymentRequestHandler().HandleuWebshopPaymentRequest(paymentProvider);
 
 				Log.Instance.LogDebug("UmbracoDefaultAfterRequestInit paymentProvider: " + paymentProvider.Name);
-				
+
 				var paymentProviderTemplate = paymentProvider.Node.template;
 
 				((UmbracoDefault)sender).MasterPageFile = template.GetMasterPageName(paymentProviderTemplate);
@@ -545,7 +545,7 @@ namespace uWebshop.Umbraco
 				{
 					if (categoryFromUrl.Template != 0)
 					{
-						((UmbracoDefault) sender).MasterPageFile = template.GetMasterPageName(categoryFromUrl.Template);
+						((UmbracoDefault)sender).MasterPageFile = template.GetMasterPageName(categoryFromUrl.Template);
 					}
 
 					var altTemplate = HttpContext.Current.Request["altTemplate"];
@@ -554,7 +554,7 @@ namespace uWebshop.Umbraco
 						var altTemplateFile = fileService.GetTemplate(altTemplate);
 						if (altTemplateFile != null)
 						{
-							((UmbracoDefault) sender).MasterPageFile = template.GetMasterPageName(altTemplateFile.Id);
+							((UmbracoDefault)sender).MasterPageFile = template.GetMasterPageName(altTemplateFile.Id);
 						}
 					}
 				}
@@ -579,7 +579,7 @@ namespace uWebshop.Umbraco
 				{
 					if (productFromUrl.Template != 0)
 					{
-						((UmbracoDefault) sender).MasterPageFile = template.GetMasterPageName(productFromUrl.Template);
+						((UmbracoDefault)sender).MasterPageFile = template.GetMasterPageName(productFromUrl.Template);
 					}
 
 					var altTemplate = HttpContext.Current.Request["altTemplate"];
@@ -589,7 +589,7 @@ namespace uWebshop.Umbraco
 
 						if (altTemplateId != null)
 						{
-							((UmbracoDefault) sender).MasterPageFile = template.GetMasterPageName(altTemplateId.Id);
+							((UmbracoDefault)sender).MasterPageFile = template.GetMasterPageName(altTemplateId.Id);
 						}
 					}
 				}
@@ -701,7 +701,7 @@ namespace uWebshop.Umbraco
 
 		private static void SetAliasedPropertiesIfEnabled(IContentBase sender, string propertyName)
 		{
-			
+
 			var property = sender.Properties.FirstOrDefault(x => x.Alias == propertyName);
 			if (property == null) return;
 			property.Value = property.Value.ToString().ToUrlSegment();
@@ -720,7 +720,7 @@ namespace uWebshop.Umbraco
 				{
 					aliasedproperty.Value = property.Value.ToString().ToUrlSegment();
 				}
-					// test == bla --> niets doen
+				// test == bla --> niets doen
 				else if (!(aliasedproperty != null && !string.IsNullOrEmpty(aliasedproperty.Value.ToString())))
 				{
 					aliasedproperty.Value = aliasedproperty.Value.ToString().ToUrlSegment();
@@ -781,93 +781,101 @@ namespace uWebshop.Umbraco
 
 		private static void ContentService_Published(IPublishingStrategy strategy, PublishEventArgs<IContent> e)
 		{
-			var umbHelper = new UmbracoHelper(UmbracoContext.Current);
-			var contentService = ApplicationContext.Current.Services.ContentService;
-			var contents = e.PublishedEntities.Where(c => c.ContentType.Alias.StartsWith(Order.NodeAlias));
-			strategy.UnPublish(contents, 0);
-
-			// when thinking about adding something here, consider ContentOnAfterUpdateDocumentCache!
-
-			foreach (var sender in e.PublishedEntities)
+			try
 			{
-				var content = contentService.GetById(sender.Id);
-				//if (sender.ContentType.Alias.StartsWith("uwbs") && sender.ContentType.Alias != Order.NodeAlias)
-				//todo: work with aliasses from config
-				var alias = content.ContentType.Alias;
-				// todo: make a nice way for this block
-				if (Product.IsAlias(alias))
-				{
-					ResetAll(content.Id, alias);
-				}
-				else if (ProductVariant.IsAlias(alias))
-				{
-					ResetAll(content.Id, alias);
-				}
-				else if (Category.IsAlias(alias))
-				{
-					ResetAll(content.Id, alias);
-				}
-				else if (PaymentProvider.IsAlias(alias))
-				{
-					ResetAll(content.Id, alias);
-				}
-				else if (PaymentProviderMethod.IsAlias(alias))
-				{
-					ResetAll(content.Id, alias);
-				}
-				else if (DiscountProduct.IsAlias(alias))
-				{
-					ResetAll(content.Id, alias);
-				}
-				else if (DiscountOrder.IsAlias(alias))
-				{
-					ResetAll(content.Id, alias);
-				}
-				else if (ShippingProvider.IsAlias(alias))
-				{
-					ResetAll(content.Id, alias);
-				}
-				else if (ShippingProviderMethod.IsAlias(alias))
-				{
-					ResetAll(content.Id, alias);
-				}
-				else if (Store.IsAlias(alias))
-				{
-					ResetAll(content.Id, alias);
-				}
-				else if (alias.StartsWith("uwbs") && alias != Order.NodeAlias)
-				{
-					ResetAll(content.Id, alias);
-				}
+				var umbHelper = new UmbracoHelper(UmbracoContext.Current);
+				var contentService = ApplicationContext.Current.Services.ContentService;
+				var contents = e.PublishedEntities.Where(c => c.ContentType.Alias.StartsWith(Order.NodeAlias));
+				strategy.UnPublish(contents, 0);
 
-				if (content.HasProperty(Constants.StorePickerAlias))
-				{
-					var storeId = content.GetValue<int>(Constants.StorePickerAlias);
+				// when thinking about adding something here, consider ContentOnAfterUpdateDocumentCache!
 
-					var storeService = StoreHelper.StoreService;
-					var storeById = storeService.GetById(storeId, null);
-					if (storeById != null)
+				foreach (var sender in e.PublishedEntities)
+				{
+					var content = contentService.GetById(sender.Id);
+					//if (sender.ContentType.Alias.StartsWith("uwbs") && sender.ContentType.Alias != Order.NodeAlias)
+					//todo: work with aliasses from config
+					var alias = content.ContentType.Alias;
+					// todo: make a nice way for this block
+					if (Product.IsAlias(alias))
 					{
-						storeService.TriggerStoreChangedEvent(storeById);
+						ResetAll(content.Id, alias);
 					}
-				}
-
-				if (alias.StartsWith(Settings.NodeAlias))
-				{
-					IO.Container.Resolve<ISettingsService>().TriggerSettingsChangedEvent(SettingsLoader.GetSettings());
-				}
-
-				if (alias.StartsWith(Store.NodeAlias))
-				{
-					var storeService = StoreHelper.StoreService;
-					storeService.TriggerStoreChangedEvent(storeService.GetById(content.Id, null));
-					var node = umbHelper.TypedContent(content.Id);
-					if (!content.Name.Equals(node.Name))
+					else if (ProductVariant.IsAlias(alias))
 					{
-						StoreHelper.RenameStore(node.Name, content.Name);
+						ResetAll(content.Id, alias);
+					}
+					else if (Category.IsAlias(alias))
+					{
+						ResetAll(content.Id, alias);
+					}
+					else if (PaymentProvider.IsAlias(alias))
+					{
+						ResetAll(content.Id, alias);
+					}
+					else if (PaymentProviderMethod.IsAlias(alias))
+					{
+						ResetAll(content.Id, alias);
+					}
+					else if (DiscountProduct.IsAlias(alias))
+					{
+						ResetAll(content.Id, alias);
+					}
+					else if (DiscountOrder.IsAlias(alias))
+					{
+						ResetAll(content.Id, alias);
+					}
+					else if (ShippingProvider.IsAlias(alias))
+					{
+						ResetAll(content.Id, alias);
+					}
+					else if (ShippingProviderMethod.IsAlias(alias))
+					{
+						ResetAll(content.Id, alias);
+					}
+					else if (Store.IsAlias(alias))
+					{
+						ResetAll(content.Id, alias);
+					}
+					else if (alias.StartsWith("uwbs") && alias != Order.NodeAlias)
+					{
+						ResetAll(content.Id, alias);
+					}
+
+					if (content.HasProperty(Constants.StorePickerAlias))
+					{
+						var storeId = content.GetValue<int>(Constants.StorePickerAlias);
+
+						var storeService = StoreHelper.StoreService;
+						var storeById = storeService.GetById(storeId, null);
+						if (storeById != null)
+						{
+							storeService.TriggerStoreChangedEvent(storeById);
+						}
+					}
+
+					if (alias.StartsWith(Settings.NodeAlias))
+					{
+						IO.Container.Resolve<ISettingsService>().TriggerSettingsChangedEvent(SettingsLoader.GetSettings());
+					}
+
+					if (alias.StartsWith(Store.NodeAlias))
+					{
+						var storeService = StoreHelper.StoreService;
+						storeService.TriggerStoreChangedEvent(storeService.GetById(content.Id, null));
+						var node = umbHelper.TypedContent(content.Id);
+						if (!content.Name.Equals(node.Name))
+						{
+							StoreHelper.RenameStore(node.Name, content.Name);
+						}
 					}
 				}
 			}
+			catch (Exception exception)
+			{
+				LogHelper.Error<ApplicationEventHandler>("ContentService_Created", exception);
+			}
+
 		}
 	}
 }
