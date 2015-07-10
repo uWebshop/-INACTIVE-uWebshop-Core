@@ -23,6 +23,13 @@ namespace uWebshop.Umbraco.WebApi
 	[KnownType(typeof(BasketOrderInfoAdaptor))]
 	public class StoreApiController : UmbracoAuthorizedApiController
 	{
+		[System.Web.Http.AcceptVerbs("GET", "POST")]
+		[System.Web.Http.HttpGet]
+		public bool IsBackendUserLoggedIn()
+		{
+			return IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated;
+		}
+		
 		public IEnumerable<string> GetAllStoreAliasses()
 		{
 			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated)
@@ -579,6 +586,16 @@ namespace uWebshop.Umbraco.WebApi
 		{
 			return Enum.GetNames(typeof(OrderStatus));
 		}
+
+		[System.Web.Http.AcceptVerbs("GET", "POST")]
+		[System.Web.Http.HttpGet]
+		public string GetCurrentUsername()
+		{
+			var currentUser = Membership.GetUser();
+
+			return currentUser != null ? currentUser.UserName : string.Empty;
+		}
+
 
 		public string GetDictionaryValue(string key, string storeAlias = null, string currencyCode = null)
 		{
