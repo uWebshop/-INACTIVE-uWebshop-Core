@@ -183,11 +183,30 @@ namespace uWebshop.Domain
 					return;
 				}
 
-				foreach (var node in providerNode.Descendants())
+				// add config settings by name
+				foreach (var node in providerNode.Descendants().Where(x => x.Name.ToString().ToLowerInvariant() != "add"))
 				{
 					if (!_dictionary.ContainsKey(node.Name.ToString().ToLowerInvariant()))
 					{
 						_dictionary.Add(node.Name.ToString().ToLowerInvariant(), node.Value);
+					}
+				}
+				// add config like it would be in web.config with <add key="" value="" settings.
+				foreach (var node in providerNode.Descendants().Where(x => x.Name.ToString().ToLowerInvariant() == "add"))
+				{
+					var key = node.Attribute("key");
+
+					if (key != null && !string.IsNullOrEmpty(key.Value))
+					{
+						var value = node.Attribute("value");
+
+						if (value != null && !string.IsNullOrEmpty(value.Value))
+						{
+							if (!_dictionary.ContainsKey(value.Value.ToLowerInvariant()))
+							{
+								_dictionary.Add(key.Value.ToLowerInvariant(), value.Value);
+							}
+						}
 					}
 				}
 			}
