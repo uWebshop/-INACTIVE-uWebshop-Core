@@ -6,6 +6,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Web;
 using System.Web.Script.Services;
 using System.Web.Services;
@@ -27,6 +28,14 @@ namespace uWebshop.API.JSON
 		[RestExtensionMethod(AllowAll =  true, ReturnXml = false)]
 		public static void JSON(string classAndFuction)
 		{
+			var store = API.Store.GetStore();
+
+			if (store != null)
+			{
+				Thread.CurrentThread.CurrentCulture = store.CultureInfo;
+				Thread.CurrentThread.CurrentUICulture = store.CultureInfo;
+			}
+
 			string qs = null;
 
 			if (HttpContext.Current.Request.QueryString.AllKeys.Any())
@@ -45,6 +54,14 @@ namespace uWebshop.API.JSON
 		[RestExtensionMethod(AllowAll = true, ReturnXml = false)]
 		public static void Handle()
 		{
+			var store = API.Store.GetStore();
+
+			if (store != null)
+			{
+				Thread.CurrentThread.CurrentCulture = store.CultureInfo;
+				Thread.CurrentThread.CurrentUICulture = store.CultureInfo;
+			}
+
 			var successFailed = new Dictionary<string, object>();
 
 			try

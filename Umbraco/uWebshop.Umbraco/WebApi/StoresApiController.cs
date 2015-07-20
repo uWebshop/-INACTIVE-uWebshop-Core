@@ -496,11 +496,27 @@ namespace uWebshop.Umbraco.WebApi
 	{
 		public IEnumerable<CountryData> GetCountrySelector()
 		{
+			var store = API.Store.GetStore();
+
+			if (store != null)
+			{
+				Thread.CurrentThread.CurrentCulture = store.CultureInfo;
+				Thread.CurrentThread.CurrentUICulture = store.CultureInfo;
+			}
+
 			return StoreHelper.GetAllCountries().Select(country => new CountryData(country.Name, country.Code));
 		}
 
 		public IEnumerable<Product> GetAllProducts()
 		{
+			var store = API.Store.GetStore();
+
+			if (store != null)
+			{
+				Thread.CurrentThread.CurrentCulture = store.CultureInfo;
+				Thread.CurrentThread.CurrentUICulture = store.CultureInfo;
+			}
+
 			return DomainHelper.GetAllProducts().Cast<Product>();
 
 		}
@@ -542,6 +558,7 @@ namespace uWebshop.Umbraco.WebApi
 		
 		public IEnumerable<Language> GetLanguagePicker()
 		{
+
 			return umbraco.cms.businesslogic.language.Language.GetAllAsList().Select(language =>
 			{
 				var culture = new CultureInfo(language.CultureAlias);
