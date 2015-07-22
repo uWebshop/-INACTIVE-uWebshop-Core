@@ -253,12 +253,28 @@ namespace uWebshop.Umbraco.Services
 			public NodeBasedContent(int id)
 			{
 				var umbHelper = new UmbracoHelper(UmbracoContext.Current);
-				_node = umbHelper.TypedContent(id);
+				var node = umbHelper.TypedContent(id);
+
+				if (node != null)
+				{
+					_node = node;
+				}
+				else
+				{
+					Log.Instance.LogError("NodeBasedContent - IPublishedContent with Id: " + id + " was null or is not correctly in the cache (republish)");
+				}
 			}
 
 			private NodeBasedContent(IPublishedContent node)
 			{
-				_node = node;
+				if (node != null)
+				{
+					_node = node;
+				}
+				else
+				{
+					Log.Instance.LogError("NodeBasedContent - IPublishedContent: node was null");
+				}
 			}
 
 			public string Path
@@ -283,7 +299,9 @@ namespace uWebshop.Umbraco.Services
 
 			public string UrlName
 			{
-				get { return _node.UrlName; }
+				get { if (_node != null) return _node.UrlName;
+					return string.Empty;
+				}
 			}
 
 			public IUwebshopReadonlyContent Parent
