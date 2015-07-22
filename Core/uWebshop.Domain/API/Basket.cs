@@ -14,20 +14,33 @@ namespace uWebshop.API
 	public static class Basket
 	{
 		/// <summary>
+		/// Equal to GetOrCreateBasket() WARNING: expect this call to change to GetExistingBasket()
+		/// </summary>
+		public static IBasket GetBasket()
+		{
+			return GetOrCreateBasket();
+		}
+
+		/// <summary>
+		/// Gets the basket or creates a new basket if none exists.
+		/// </summary>
+		/// <returns></returns>
+		public static IBasket GetOrCreateBasket()
+		{
+			OrderHelper.LogThis("ENTRY GetOrCreateBasket()");
+			var order = OrderHelper.GetOrder() ?? OrderHelper.CreateOrder();
+			return CreateBasketFromOrderInfo(order);
+		}
+
+		/// <summary>
 		/// Gets the basket.
 		/// </summary>
 		/// <returns></returns>
-		public static IBasket GetBasket()
+		public static IBasket GetExistingBasket()
 		{
-			OrderHelper.LogThis("ENTRY GetBasket()");
+			OrderHelper.LogThis("ENTRY GetExistingBasket()");
 			var order = OrderHelper.GetOrder();
-
-			if (order == null)
-			{
-				order = OrderHelper.CreateOrder();
-			}
-			
-			return CreateBasketFromOrderInfo(order);
+			return order == null ? null : CreateBasketFromOrderInfo(order);
 		}
 
 		/// <summary>

@@ -18,7 +18,6 @@ using Umbraco.Web.WebApi;
 
 namespace uWebshop.Umbraco.WebApi
 {
-
 	[PluginController("uWebshop")]
 	[KnownType(typeof(BasketOrderInfoAdaptor))]
 	public class StoreApiController : UmbracoAuthorizedApiController
@@ -36,7 +35,6 @@ namespace uWebshop.Umbraco.WebApi
 			{
 				return StoreHelper.GetAllStores().Select(s => s.Alias);
 			}
-
 			return Enumerable.Empty<string>();
 		}
 
@@ -46,7 +44,6 @@ namespace uWebshop.Umbraco.WebApi
 			{
 				return StoreHelper.GetAllStores();
 			}
-
 			return Enumerable.Empty<IStore>();
 		}
 
@@ -56,21 +53,17 @@ namespace uWebshop.Umbraco.WebApi
 			{
 				return StoreHelper.GetAllStores().Where(x => x.UseStoreSpecificStock).Select(s => s.Alias);
 			}
-
 			return Enumerable.Empty<string>();
 		}
 
 		public BasketOrderInfoAdaptor GetOrderData(string guid)
 		{
 			var order = Orders.GetOrder(guid);
-
 			var membershipUser = UwebshopRequest.Current.User;
-
 			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || membershipUser != null && membershipUser.UserName == order.Customer.UserName || UwebshopRequest.Current.PaymentProvider != null || OrderHelper.IsCompletedOrderWithinValidLifetime(order))
 			{
 				return order as BasketOrderInfoAdaptor;
 			}
-
 			return null;
 		}
 
@@ -110,7 +103,6 @@ namespace uWebshop.Umbraco.WebApi
 		{
 			OrderStatus orderStatus;
 			Enum.TryParse(status, true, out orderStatus);
-
 			return Orders.GetOrders(orderStatus, storeAlias).Select(o => o as BasketOrderInfoAdaptor);
 		}
 		
@@ -129,7 +121,6 @@ namespace uWebshop.Umbraco.WebApi
 			if (endDateTime != null) DateTime.TryParse(endDateTime, out endDate);
 
 			var orders = Orders.GetOrders(startDate, endDate, storeAlias).Where(x => x.Status != OrderStatus.Incomplete && x.Status != OrderStatus.Wishlist && x.Status == OrderStatus.Scheduled); ;
-
 			return orders.Select(o => o as BasketOrderInfoAdaptor);
 		}
 
@@ -149,31 +140,24 @@ namespace uWebshop.Umbraco.WebApi
 			}
 
 			var orders = Orders.GetOrdersDeliveredBetweenTimes(startDate, endDate, storeAlias).Where(x => x.Status != OrderStatus.Incomplete && x.Status != OrderStatus.Wishlist);
-
 			return orders.Select(o => o as BasketOrderInfoAdaptor);
 		}
 
 		public IEnumerable<BasketOrderInfoAdaptor> GetOrdersToBeDelivered(int daysFromNow = 0, string storeAlias = null)
 		{
 			var dateToShow = DateTime.Now.Date.AddDays(daysFromNow);
-
 			var orders = Orders.GetOrdersDeliveredBetweenTimes(dateToShow.Date, dateToShow.Date.AddDays(1).AddSeconds(-1), storeAlias).Where(x => x.Status != OrderStatus.Incomplete && x.Status != OrderStatus.Wishlist);
-
 			return orders.Select(o => o as BasketOrderInfoAdaptor);
 		}
 
-
 		public IEnumerable<string> GetEmailTemplates()
 		{
-			var files = Directory.GetFiles(IOHelper.MapPath(SystemDirectories.Xslt), "*.xslt", SearchOption.AllDirectories).Select(file => file.Replace(IOHelper.MapPath(SystemDirectories.Xslt) + @"\", string.Empty)).ToList();
-
-			files.AddRange(Directory.GetFiles(IOHelper.MapPath(SystemDirectories.MacroScripts), "*.cshtml", SearchOption.AllDirectories).Select(file => file.Replace(IOHelper.MapPath(SystemDirectories.MacroScripts) + @"\", string.Empty)));
-
 			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated)
 			{
+				var files = Directory.GetFiles(IOHelper.MapPath(SystemDirectories.Xslt), "*.xslt", SearchOption.AllDirectories).Select(file => file.Replace(IOHelper.MapPath(SystemDirectories.Xslt) + @"\", string.Empty)).ToList();
+				files.AddRange(Directory.GetFiles(IOHelper.MapPath(SystemDirectories.MacroScripts), "*.cshtml", SearchOption.AllDirectories).Select(file => file.Replace(IOHelper.MapPath(SystemDirectories.MacroScripts) + @"\", string.Empty)));
 				return files.Where(x => x.ToLowerInvariant().Contains("email") || x.ToLowerInvariant().Contains("mail"));
 			}
-
 			return null;
 		}
 
@@ -204,7 +188,6 @@ namespace uWebshop.Umbraco.WebApi
 
 				return membershipRoles.Select(m => new CustomerGroup { Alias = m });
 			}
-
 			return Enumerable.Empty<CustomerGroup>();
 		}
 
@@ -224,44 +207,36 @@ namespace uWebshop.Umbraco.WebApi
 			{
 				return order;
 			}
-
 			return null;
 		}
 
-
 		public BasketOrderInfoAdaptor GetOrderByNumber(string orderNumber)
 		{
-			var order = Orders.GetAllOrders()
-				.FirstOrDefault(x => x.OrderReference.ToLowerInvariant() == orderNumber.ToLowerInvariant());
-
+			var order = Orders.GetAllOrders().FirstOrDefault(x => x.OrderReference.ToLowerInvariant() == orderNumber.ToLowerInvariant());
 			return order as BasketOrderInfoAdaptor;
 		}
 
 		public IEnumerable<BasketOrderInfoAdaptor> GetOrdersByFirstName(string customerFirstName)
 		{
 			var orders = Orders.GetAllOrders().Where(x => x.Customer.FirstName.ToLowerInvariant() == customerFirstName.ToLowerInvariant());
-
 			return orders.Select(o => o as BasketOrderInfoAdaptor);
 		}
 
 		public IEnumerable<BasketOrderInfoAdaptor> GetOrdersByLastName(string customerLastName)
 		{
 			var orders = Orders.GetAllOrders().Where(x => x.Customer.LastName.ToLowerInvariant() == customerLastName.ToLowerInvariant());
-
 			return orders.Select(o => o as BasketOrderInfoAdaptor);
 		}
 
 		public IEnumerable<BasketOrderInfoAdaptor> GetOrdersByEmail(string customerEmail)
 		{
 			var orders = Orders.GetAllOrders().Where(x => x.Customer.Email.ToLowerInvariant() == customerEmail.ToLowerInvariant());
-
 			return orders.Select(o => o as BasketOrderInfoAdaptor);
 		}
 
 		public IEnumerable<BasketOrderInfoAdaptor> GetOrdersByCustomerProperty(string property, string value)
 		{
 			var orders = Orders.GetAllOrders().Where(x => x.Customer.GetValue<string>(property) != null && x.Customer.GetValue<string>(property).ToLowerInvariant() == value.ToLowerInvariant());
-
 			return orders.Select(o => o as BasketOrderInfoAdaptor);
 		}
 
@@ -285,7 +260,6 @@ namespace uWebshop.Umbraco.WebApi
 			{
 				return extraValue;
 			}
-
 			return string.Empty;
 		}
 
@@ -293,7 +267,6 @@ namespace uWebshop.Umbraco.WebApi
 		{
 			public int id { get; set; }
 			public int stock { get; set; }
-
 			public string storealias { get; set; }
 		}
 
@@ -306,12 +279,9 @@ namespace uWebshop.Umbraco.WebApi
 				{
 					storeAlias = data.storealias;
 				}
-
 				IO.Container.Resolve<IStockService>().ReplaceStock(data.id, data.stock, false, storeAlias);
-
 				return data.stock;
 			}
-
 			return 0;
 		}
 
@@ -320,10 +290,7 @@ namespace uWebshop.Umbraco.WebApi
 			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated)
 			{
 				var couponCodes = IO.Container.Resolve<ICouponCodeService>().GetAllForDiscount(discountId);
-
-				return
-					couponCodes.Select(
-						coupon =>
+				return couponCodes.Select(coupon =>
 							new Coupon
 							{
 								CouponCode = coupon.CouponCode,
@@ -331,7 +298,6 @@ namespace uWebshop.Umbraco.WebApi
 								NumberAvailable = coupon.NumberAvailable
 							}).ToList();
 			}
-
 			return null;
 		}
 
@@ -351,16 +317,13 @@ namespace uWebshop.Umbraco.WebApi
 		{
 			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated)
 			{
-				var couponList =
-					data.Coupons.Select(
-						item =>
+				var couponList = data.Coupons.Select(item =>
 							new Coupon
 							{
 								DiscountId = data.DiscountId,
 								CouponCode = item.couponCode,
 								NumberAvailable = item.numberAvailable
 							}).Cast<ICoupon>().ToList();
-
 				if (couponList.Any())
 				{
 					IO.Container.Resolve<ICouponCodeService>().Save(data.DiscountId, couponList);
@@ -372,7 +335,6 @@ namespace uWebshop.Umbraco.WebApi
 		{
 			public string Alias { get; set; }
 		}
-
 
 		public class Coupon : ICoupon
 		{
@@ -402,7 +364,6 @@ namespace uWebshop.Umbraco.WebApi
 
 				return data.status;
 			}
-
 			return null;
 		}
 
@@ -424,7 +385,6 @@ namespace uWebshop.Umbraco.WebApi
 
 				return data.status;
 			}
-
 			return null;
 		}
 
@@ -454,7 +414,6 @@ namespace uWebshop.Umbraco.WebApi
 
 				return data.paid;
 			}
-
 			return false;
 		}
 
@@ -487,7 +446,6 @@ namespace uWebshop.Umbraco.WebApi
 		{
 			return Enum.GetNames(typeof(ShippingRangeType));
 		}
-
 	}
 
 	[PluginController("uWebshop")]
@@ -518,24 +476,18 @@ namespace uWebshop.Umbraco.WebApi
 			}
 
 			return DomainHelper.GetAllProducts().Cast<Product>();
-
 		}
 
 		public Country GetCountryFromCountryCode(string countryCode, string storeAlias, string currencyCode)
 		{
 			var localization = StoreHelper.GetLocalization(storeAlias, currencyCode);
 
-			var countries =
-				IO.Container.Resolve<ICountryRepository>()
-					.GetAllCountries(localization);
+			var countries = IO.Container.Resolve<ICountryRepository>().GetAllCountries(localization);
 
 			if (countries != null)
 			{
-				var value = countries.FirstOrDefault(x => countryCode != null && x.Code.ToLowerInvariant() == countryCode.ToLowerInvariant());
-
-				return value;
+				return countries.FirstOrDefault(x => countryCode != null && x.Code.ToLowerInvariant() == countryCode.ToLowerInvariant());
 			}
-
 			return null;
 		}
 
@@ -544,6 +496,7 @@ namespace uWebshop.Umbraco.WebApi
 			var currencies = GetImportantCurrencyregions().Union(GetAllCurrencyRegions());
 			return currencies.Select(c => new Currency { CurrencyEnglishName = c.CurrencyEnglishName, CurrencySymbol = c.CurrencySymbol, ISOCurrencySymbol = c.ISOCurrencySymbol });
 		}
+
 		private static IEnumerable<RegionInfo> GetAllCurrencyRegions()
 		{
 			return CultureInfo.GetCultures(CultureTypes.SpecificCultures).Select(c => new RegionInfo(c.LCID)).Distinct(ri => ri.ISOCurrencySymbol).OrderBy(ri => ri.ISOCurrencySymbol);
@@ -552,7 +505,6 @@ namespace uWebshop.Umbraco.WebApi
 		private static IEnumerable<RegionInfo> GetImportantCurrencyregions()
 		{
 			var allRegions = GetAllCurrencyRegions().ToDictionary(c => c.ISOCurrencySymbol, c => c);
-
 			return new[] { "EUR", "USD", "GBP", "DKK", "AUD", "NZD", "CHF", "CAD", "JPY" }.Select(c => allRegions[c]);
 		}
 		
@@ -595,7 +547,6 @@ namespace uWebshop.Umbraco.WebApi
 		public IEnumerable<TemplateRequest> GetTemplates(int id)
 		{
 			var content = Services.ContentService.GetById(id);
-
 			return content.ContentType.AllowedTemplates.Select(template => new TemplateRequest {id = template.Id, name = template.Name, alias = template.Alias}).ToList();
 		}
 
@@ -609,17 +560,13 @@ namespace uWebshop.Umbraco.WebApi
 		public string GetCurrentUsername()
 		{
 			var currentUser = Membership.GetUser();
-
 			return currentUser != null ? currentUser.UserName : string.Empty;
 		}
-
 
 		public string GetDictionaryValue(string key, string storeAlias = null, string currencyCode = null)
 		{
 			var localization = StoreHelper.GetLocalizationOrCurrent(storeAlias, currencyCode);
-
 			Thread.CurrentThread.CurrentUICulture = localization.Store.CultureInfo;
-
 			return Umbraco.GetDictionaryValue(key);
 		}
 		
