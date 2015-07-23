@@ -23,7 +23,7 @@ namespace uWebshop.DataAccess
 		
 		public static List<OrderData> GetAllOrderInfos(string where = null)
 		{
-			if (where == null) where = string.Empty;
+			if (where == null) where = "where not orderStatus = 'Incomplete' and not orderStatus = 'Wishlist'";
 
 			var orderInfos = new List<OrderData>();
 			using (var reader = SQLHelper.ExecuteReader("SELECT * FROM uWebshopOrders left outer join uWebshopOrderSeries on seriesID = uWebshopOrderSeries.id  " + where))
