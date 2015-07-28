@@ -119,14 +119,16 @@
 			alias: "uWebshop.ProductOverview",           
 			name: "uWebshop Product Overview",         
 			editor: {
-				view: "~/App_Plugins/uWebshop/DataTypes/ProductOverview/productoverview.html"
+				view: "~/App_Plugins/uWebshop/DataTypes/ProductOverview/productoverview.html",
+				hideLabel: true
 			}         
 		},			
 		{          
 			alias: "uWebshop.OrderSection",           
 			name: "uWebshop OrderSection",         
 			editor: {
-				view: "~/App_Plugins/uWebshop/DataTypes/OrderSection/ordersection.html"
+				view: "~/App_Plugins/uWebshop/DataTypes/OrderSection/ordersection.html",
+				hideLabel: true
 			}         
 		},			
 		{          
@@ -140,7 +142,8 @@
 			alias: "uWebshop.OrderInfoViewer",           
 			name: "uWebshop OrderDetails",         
 			editor: {
-				view: "~/App_Plugins/uWebshop/DataTypes/OrderDetails/orderdetails.html"
+				view: "~/App_Plugins/uWebshop/DataTypes/OrderDetails/orderdetails.html",
+				hideLabel: true
 			}         
 		},	
 		{

@@ -6,6 +6,10 @@
 	<div class="row-fluid" ng-switch-when="false">
 		<div class="umb-sub-header">
 
+            <div class="btn-group">
+                <select name="itemstatus" data-ng-options="status as status for status in StatusArray" ng-model="StatusFilter" ng-change="ChangeStatusFilter(StatusFilter)"></select>
+            </div>
+
 			<div class="btn-group" ng-show="listViewAllowedTypes">
 				<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
 					<localize key="actions_create">Create</localize>

@@ -48,4 +48,9 @@ angular.module("umbraco").controller("uWebshop.VatPicker", function ($scope, ass
 	$scope.update = function() {
 		$scope.model.value = $scope.selectedOption.value;
 	};
+
+
+	$scope.$on("formSubmitting", function () {
+	    $scope.model.value = $scope.selectedOption.value;
+	});
 });

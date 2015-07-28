@@ -31,7 +31,26 @@ function listViewController($rootScope, $scope, $routeParams, $injector, notific
 		orderDirection: "desc"
 	};
 
+
+
 	$scope.StatusArray = ["All"];
+
+	$scope.StatusFilter = "All";
+
+	$scope.ChangeStatusFilter = function (status) {
+
+	    $scope.model.value = status;
+
+	    $scope.StatusFilter = status;
+
+	    $scope.reloadView($scope.contentId);
+
+	};
+
+	if ($scope.model.value != null && $scope.model.value != "") {
+	    $scope.StatusFilter = $scope.model.value;
+	}
+
 
 	$http.get('/Umbraco/uWebshop/PublicApi/GetOrderStatusses').then(function (res) {
 
