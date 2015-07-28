@@ -770,10 +770,9 @@ namespace uWebshop.Domain.Services
 			var productInfo = productService.CreateProductInfoByProductId(productId, order, currentLocalization, itemCount);
 			if (variants != null && variants.Any())
 			{
-				var productVariantService = IO.Container.Resolve<IProductVariantService>();
-				var variantClasses = variants.Select(variant => productVariantService.GetById(variant, currentLocalization)).Where(variant => variant != null).GroupBy(a => a.Group).Select(g => g.FirstOrDefault()).Where(variant => variant != null);
+                productInfo.ProductVariants = variants.Select(
+                    variant => new ProductVariantInfo(DomainHelper.GetProductVariantById(variant), productInfo, itemCount)).ToList();
 
-				productInfo.ProductVariants = variantClasses.Select(variant => new ProductVariantInfo(variant, productInfo, itemCount)).ToList();
 			}
 			return new OrderLine(productInfo, order);
 		}
