@@ -162,7 +162,7 @@ namespace uWebshop.Test.Integration.Domain.Order
 
 
 			//Discounts.Any(discount => discount.DiscountType == DiscountType.FreeShipping);
-			Assert.AreEqual(discount.Type, Common.DiscountType.FreeShipping);
+			Assert.AreEqual(discount.Type, DiscountType.FreeShipping);
 			Assert.IsTrue(orderInfo.Discounts.Any(d => d.DiscountType == DiscountType.FreeShipping));
 
 			Assert.IsTrue(orderInfo.FreeShipping);

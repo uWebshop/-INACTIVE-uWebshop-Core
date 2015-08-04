@@ -213,13 +213,13 @@ namespace uWebshop.Domain.Services
 		public List<OrderValidationError> ValidateCustomer(OrderInfo orderInfo)
 		{
 			var errors = new List<OrderValidationError>();
-			if (string.IsNullOrEmpty(OrderHelper.CustomerInformationValue(orderInfo, "customerEmail")))
+			var shippingInformationValue = OrderHelper.ShippingInformationValue(orderInfo, "shippingDeliveryDateTime");
+			if (!string.IsNullOrEmpty(shippingInformationValue))
 			{
-				// no customer address available in the order
-				//ClientErrorHandling.uWebshopException(dicCustomerEmailEmpty);
-				//Log.Instance.LogDebug( "ORDERVALIDATIONERROR: customerEmail is Empty");
-
-				orderInfo.OrderValidationErrors.Add(new OrderValidationError { Key = "ValidationCustomerEmailEmpty", Value = "CustomerEmail Is Not Set" });
+				if (Common.Helpers.DateTimeMultiCultureParse(shippingInformationValue) == null)
+				{
+					errors.Add(new OrderValidationError { Key = "shippingDeliveryDateTimeError", Value = "DeliveryDateTime Is Not A Valid Value" });
+				}
 			}
 
 			var orderDocumentType = IO.Container.Resolve<ICMSDocumentTypeService>().GetByAlias(Order.NodeAlias);
@@ -227,7 +227,7 @@ namespace uWebshop.Domain.Services
 			errors.AddRange(ValidateInformationDoc(orderInfo.CustomerInfo.customerInformation, orderDocumentType.Properties.Where(property => property.Alias.StartsWith("customer"))));
 			errors.AddRange(ValidateInformationDoc(orderInfo.CustomerInfo.shippingInformation, orderDocumentType.Properties.Where(property => property.Alias.StartsWith("shipping"))));
 			errors.AddRange(ValidateInformationDoc(orderInfo.CustomerInfo.extraInformation, orderDocumentType.Properties.Where(property => property.Alias.StartsWith("extra"))));
-
+			
 			return errors;
 		}
 
