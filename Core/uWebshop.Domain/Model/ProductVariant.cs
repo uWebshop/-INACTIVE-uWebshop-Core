@@ -761,10 +761,10 @@ namespace uWebshop.Domain
 		{
 			if (!string.IsNullOrEmpty(propertyAlias))
 			{
-				if (Node != null)
+				var uwebshopReadonlyContent = Node;
+				if (uwebshopReadonlyContent != null)
 				{
-					var property = Node.GetMultiStoreItem(propertyAlias);
-
+					var property = uwebshopReadonlyContent.GetMultiStoreItem(propertyAlias);
 					if (property != null)
 					{
 						return property.Value;
