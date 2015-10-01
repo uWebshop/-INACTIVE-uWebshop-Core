@@ -12,9 +12,9 @@ using uWebshop.Domain;
 using uWebshop.Domain.Interfaces;
 using uWebshop.Domain.Helpers;
 using uWebshop.Umbraco.Businesslogic;
-using uWebshop.Umbraco.Services;
 using umbraco;
 using umbraco.NodeFactory;
+using Umbraco.Web;
 
 namespace uWebshop.Umbraco.Repositories
 {
@@ -44,10 +44,11 @@ namespace uWebshop.Umbraco.Repositories
 
 		private static UwbsNode LoadUwbsNodeFromNode(int id)
 		{
-			var node = new Node(id);
+            var umbracoHelper = new UmbracoHelper(UmbracoContext.Current);
+		    var node = umbracoHelper.TypedContent(id);
 			var n = new UwbsNode();
 			n.Path = node.Path;
-			n.NodeTypeAlias = node.NodeTypeAlias;
+			n.NodeTypeAlias = node.DocumentTypeAlias;
 			if (node.Name != null && node.Parent != null)
 				n.ParentId = node.Parent.Id;
 			n.Id = node.Id;
@@ -223,7 +224,9 @@ namespace uWebshop.Umbraco.Repositories
 		
 		public static IEnumerable<int> GetNodeIdsFromXMLStoreForNodeTypeAlias(string nodeTypeAlias, int startNodeId = 0)
 		{
-			var start = startNodeId > 0 ? string.Format("//{0}[@id = {1}]", new Node(startNodeId).NodeTypeAlias, startNodeId) : string.Empty;
+            var umbracoHelper = new UmbracoHelper(UmbracoContext.Current);
+
+			var start = startNodeId > 0 ? string.Format("//{0}[@id = {1}]", umbracoHelper.TypedContent(startNodeId).DocumentTypeAlias, startNodeId) : string.Empty;
 			XPathNodeIterator it = library.GetXmlNodeByXPath(string.Format(start + "//*[starts-with(name(),'{0}')]", nodeTypeAlias));
 			var objects = new List<int>();
 			while (it.MoveNext())

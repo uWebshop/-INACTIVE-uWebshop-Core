@@ -13,7 +13,6 @@ namespace uWebshop.Domain.Interfaces
 		public DataType DataType;
 		public string Alias;
 		public string KeyGuid;
-		public string DefinitionGuid;
 		public string Name;
 		public DatabaseType Type;
 		public List<string> PreValues;

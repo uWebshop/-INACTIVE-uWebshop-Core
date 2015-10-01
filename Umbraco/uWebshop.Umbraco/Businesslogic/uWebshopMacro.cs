@@ -12,7 +12,6 @@ using System.Web.Caching;
 using System.Web.SessionState;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.Web.WebPages;
 using System.Xml;
 using System.Xml.Xsl;
 using Microsoft.CSharp.RuntimeBinder;
@@ -21,7 +20,6 @@ using umbraco.BusinessLogic;
 using umbraco.cms.businesslogic.macro;
 using umbraco.cms.businesslogic.member;
 using umbraco.DataLayer;
-using umbraco.IO;
 using umbraco.NodeFactory;
 using umbraco.presentation.templateControls;
 using Umbraco.Core;
@@ -632,7 +630,7 @@ namespace uWebshop.Domain.Helpers
 
 					// extract the tag and parse it
 					var tag = text.Substring(tagStartPos, (tagEndPos + tagEnd.Length) - tagStartPos);
-					var attributes = helper.ReturnAttributes(tag);
+					var attributes = XmlHelper.GetAttributesFromElement(tag);
 
 					// create item with the parameters specified in the tag
 					var item = new Item {NodeId = helper.FindAttribute(attributes, "nodeid"), Field = helper.FindAttribute(attributes, "field"), Xslt = helper.FindAttribute(attributes, "xslt"), XsltDisableEscaping = helper.FindAttribute(attributes, "xsltdisableescaping") == "true"};

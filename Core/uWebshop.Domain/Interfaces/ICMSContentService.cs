@@ -18,14 +18,7 @@ namespace uWebshop.Domain.Interfaces
 		IUwebshopReadonlyContent GetReadonlyById(int id);
 
 		IEnumerable<IUwebshopReadonlyContent> GetAllRootNodes();
-
-		/// <summary>
-		/// Generates the domain URL for content with unique identifier.
-		/// </summary>
-		/// <param name="id">The unique identifier.</param>
-		/// <returns></returns>
-		string GenerateDomainUrlForContent(int id);
-
+		
 		/// <summary>
 		/// Gets the by unique identifier.
 		/// </summary>

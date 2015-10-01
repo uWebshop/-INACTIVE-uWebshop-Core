@@ -16,7 +16,7 @@ using umbraco.BusinessLogic;
 using uWebshop.Domain;
 using uWebshop.Domain.BaseClasses;
 using uWebshop.Domain.ContentTypes;
-using uWebshop.Umbraco6;
+using uWebshop.Umbraco.Services;
 using Umbraco.Core;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Models;
@@ -232,16 +232,17 @@ namespace uWebshop.Umbraco.Businesslogic
 		{
 			try
 			{
-				var MediaService = ApplicationContext.Current.Services.MediaService;
-				var media = MediaService.GetById(id);
+				var mediaService = ApplicationContext.Current.Services.MediaService;
+				var media = mediaService.GetById(id);
 				var file = new File();
 				LoadMediaBase(file, media);
 				file.FileName = media.Name;
 				file.MultilanguageFileName = media.HasProperty("title") ? media.GetValue<string>("title") : media.Name;
 				return file;
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
+                LogHelper.Error<string>("LoadFileWithId:", ex);
 				return null;
 			}
 		}
@@ -250,16 +251,17 @@ namespace uWebshop.Umbraco.Businesslogic
 		{
 			try
 			{
-				var MediaService = ApplicationContext.Current.Services.MediaService;
-				var media = MediaService.GetById(id);
+				var mediaService = ApplicationContext.Current.Services.MediaService;
+				var media = mediaService.GetById(id);
 				var image = new Image();
 				LoadMediaBase(image, media);
 				image.Width = media.GetValue<int>("umbracoWidth");
 				image.Height = media.GetValue<int>("umbracoHeight");
 				return image;
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
+                LogHelper.Error<string>("LoadImageWithId:", ex);
 				return null;
 			}
 		}

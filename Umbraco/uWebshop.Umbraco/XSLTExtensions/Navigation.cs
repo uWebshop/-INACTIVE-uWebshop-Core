@@ -1,9 +1,9 @@
 ﻿using uWebshop.Domain.Helpers;
-using umbraco;
+using Umbraco.Core.Macros;
 
 namespace uWebshop.XSLTExtensions
 {
-	[XsltExtension("uWebshop.Navigation")]
+    [XsltExtension("uWebshop.Navigation")]
 	public class Navigation
 	{
 		/// <summary>

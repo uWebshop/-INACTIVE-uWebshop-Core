@@ -2,11 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Web;
-using System.Web.Security;
-using System.Xml;
+using System.Web.Mvc;
 using System.Xml.Linq;
 using Examine;
 using umbraco;
@@ -16,6 +15,7 @@ using umbraco.cms.businesslogic.web;
 using uWebshop.API;
 using uWebshop.Common;
 using uWebshop.Common.Interfaces;
+using uWebshop.DataAccess.Pocos;
 using uWebshop.Domain;
 using uWebshop.Domain.Core;
 using uWebshop.Domain.Helpers;
@@ -27,6 +27,7 @@ using Umbraco.Core;
 using Umbraco.Core.Events;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Models;
+using Umbraco.Core.Persistence;
 using Umbraco.Core.Publishing;
 using Umbraco.Core.Services;
 using Umbraco.Web;
@@ -37,7 +38,7 @@ using Store = uWebshop.Domain.Store;
 
 namespace uWebshop.Umbraco
 {
-	public class NewApplicationEventHandler : IApplicationEventHandler
+	public class ApplicationEventHandler : IApplicationEventHandler
 	{
 		public void OnApplicationInitialized(UmbracoApplicationBase umbracoApplication, ApplicationContext applicationContext)
 		{
@@ -50,7 +51,43 @@ namespace uWebshop.Umbraco
 		}
 
 		public void OnApplicationStarted(UmbracoApplicationBase umbracoApplication, ApplicationContext applicationContext)
-		{
+        {
+            #region check for uWebshop Database tables
+            //Get the Umbraco Database context
+            var db = applicationContext.DatabaseContext.Database;
+
+		    if (db.Connection == null)
+		    {
+		        return;
+		    }
+            //Check if the DB table does NOT exist
+		    if (!db.TableExist("uWebshopOrders"))
+		    {
+		        //Create DB table - and set overwrite to false
+		        db.CreateTable<uWebshopOrders>(false);
+		    }
+            //Check if the DB table does NOT exist
+            if (!db.TableExist("uWebshopOrderSeries"))
+		    {
+		        //Create DB table - and set overwrite to false
+                db.CreateTable<uWebshopOrderSeries>(false);
+		    }
+
+            //Check if the DB table does NOT exist
+            if (!db.TableExist("uWebshopCoupons"))
+            {
+                //Create DB table - and set overwrite to false
+                db.CreateTable<uWebshopCoupons>(false);
+            }
+
+            //Check if the DB table does NOT exist
+            if (!db.TableExist("uWebshopStock"))
+            {
+                //Create DB table - and set overwrite to false
+                db.CreateTable<uWebshopStock>(false);
+            }
+            #endregion
+
 			try
 			{
 				Initialize.ContinueInitialization();
@@ -72,7 +109,6 @@ namespace uWebshop.Umbraco
 			ContentService.Copied += ContentService_Copied;
 
 			content.AfterUpdateDocumentCache += ContentOnAfterUpdateDocumentCache;
-			OrderInfo.BeforeStatusChanged += OrderBeforeStatusChanged;
 			OrderInfo.BeforeStatusChanged += OrderEvents.UpdateOrderNumberIfChangingFromIncompleteToScheduled;
 			OrderInfo.AfterStatusChanged += OrderEvents.OrderStatusChanged;
 
@@ -501,8 +537,10 @@ namespace uWebshop.Umbraco
 
 				if (categoryFromUrl.Disabled)
 				{
-					httpContext.Response.StatusCode = 404;
-					httpContext.Response.Redirect(library.NiceUrl(int.Parse(GetCurrentNotFoundPageId())), true);
+                    var result = new HttpStatusCodeResult(HttpStatusCode.NotFound);
+                    HttpContext.Current.Response.StatusCode = result.StatusCode;
+                    HttpContext.Current.Response.Flush();
+                    HttpContext.Current.Response.End();
 					return;
 				}
 
@@ -568,46 +606,7 @@ namespace uWebshop.Umbraco
 				}
 			}
 		}
-
-		internal static string GetCurrentNotFoundPageId()
-		{
-			library.GetCurrentDomains(1);
-			var error404 = "";
-			var error404Node = UmbracoSettings.GetKeyAsNode("/settings/content/errors/error404");
-			if (error404Node.ChildNodes.Count > 0 && error404Node.ChildNodes[0].HasChildNodes)
-			{
-				// try to get the 404 based on current culture (via domain)
-				XmlNode cultureErrorNode;
-				if (umbraco.cms.businesslogic.web.Domain.Exists(HttpContext.Current.Request.ServerVariables["SERVER_NAME"]))
-				{
-					var d = umbraco.cms.businesslogic.web.Domain.GetDomain(HttpContext.Current.Request.ServerVariables["SERVER_NAME"]);
-					// test if a 404 page exists with current culture
-					cultureErrorNode = error404Node.SelectSingleNode(string.Format("errorPage [@culture = '{0}']", d.Language.CultureAlias));
-					if (cultureErrorNode != null && cultureErrorNode.FirstChild != null)
-						error404 = cultureErrorNode.FirstChild.Value;
-				}
-				else if (error404Node.SelectSingleNode(string.Format("errorPage [@culture = '{0}']", Thread.CurrentThread.CurrentUICulture.Name)) != null)
-				{
-					cultureErrorNode = error404Node.SelectSingleNode(string.Format("errorPage [@culture = '{0}']", Thread.CurrentThread.CurrentUICulture.Name));
-					if (cultureErrorNode.FirstChild != null)
-						error404 = cultureErrorNode.FirstChild.Value;
-				}
-				else
-				{
-					cultureErrorNode = error404Node.SelectSingleNode("errorPage [@culture = 'default']");
-					if (cultureErrorNode != null && cultureErrorNode.FirstChild != null)
-						error404 = cultureErrorNode.FirstChild.Value;
-				}
-			}
-			else
-				error404 = UmbracoSettings.GetKey("/settings/content/errors/error404");
-			return error404;
-		}
-		
-		protected void OrderBeforeStatusChanged(OrderInfo orderInfo, BeforeOrderStatusChangedEventArgs e)
-		{
-		}
-
+        
 		public static SortedDictionary<string, string> GetCountryList()
 		{
 			//create a new Generic list to hold the country names returned

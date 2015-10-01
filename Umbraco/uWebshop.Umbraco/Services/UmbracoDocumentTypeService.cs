@@ -2,7 +2,6 @@
 using System.Linq;
 using uWebshop.Domain.Businesslogic;
 using uWebshop.Domain.Interfaces;
-using umbraco.cms.businesslogic.web;
 using Umbraco.Core;
 using Umbraco.Core.Models;
 using Umbraco.Core.Services;

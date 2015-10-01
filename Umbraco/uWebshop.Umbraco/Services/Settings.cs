@@ -1,9 +1,10 @@
 ﻿using System;
 using uWebshop.Domain;
-using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
 using uWebshop.Umbraco.Repositories;
 using umbraco.NodeFactory;
+using Umbraco.Core.Models;
+using Umbraco.Web;
 
 namespace uWebshop.Umbraco.Services
 {
@@ -11,10 +12,14 @@ namespace uWebshop.Umbraco.Services
 	{
 		internal static ISettings GetSettings()
 		{
-			return CreateSettingsFromNode(new Node(Helpers.GetNodeIdForDocument(Settings.NodeAlias, "Settings")));
+            // todo umbracohelper optimize
+            var helper = new UmbracoHelper(UmbracoContext.Current);
+		    var settingNodeId = Helpers.GetNodeIdForDocument(Settings.NodeAlias, "Settings");
+		    var node = helper.TypedContent(settingNodeId);
+			return CreateSettingsFromNode(node);
 		}
 
-		internal static Settings CreateSettingsFromNode(Node node)
+		internal static Settings CreateSettingsFromNode(IPublishedContent node)
 		{
 			if (node == null) throw new Exception("Trying to load data from null node");
 
@@ -23,7 +28,7 @@ namespace uWebshop.Umbraco.Services
 			return product;
 		}
 
-		internal static void LoadDataFromNode(Settings settings, Node node)
+		internal static void LoadDataFromNode(Settings settings, IPublishedContent node)
 		{
 			Helpers.LoadUwebshopEntityPropertiesFromNode(settings, node);
 			LoadDataFromPropertiesDictionary(settings, new UmbracoNodePropertyProvider(node));

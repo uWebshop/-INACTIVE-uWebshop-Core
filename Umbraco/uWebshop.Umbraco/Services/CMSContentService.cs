@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using umbraco;
-using umbraco.interfaces;
-using umbraco.NodeFactory;
 using uWebshop.Domain;
 using uWebshop.Domain.Interfaces;
 using uWebshop.Umbraco.Businesslogic;
 using Umbraco.Core;
 using Umbraco.Core.Models;
 using Umbraco.Web;
-using Umbraco.Web.Security;
 using File = uWebshop.Domain.File;
 using Log = uWebshop.Domain.Log;
 
@@ -26,59 +21,11 @@ namespace uWebshop.Umbraco.Services
 
 		public IEnumerable<IUwebshopReadonlyContent> GetAllRootNodes()
 		{
-			return new Node(-1).Children.Cast<INode>().Select(n => new NodeBasedContent(n.Id));
+            // todo: test
+            var contentService = new UmbracoHelper(UmbracoContext.Current);
+		    return contentService.TypedContentAtRoot().Select(n => new NodeBasedContent(n.Id));
 		}
-
-		// todo: this functionality might be a double of the Store url functionality
-		public string GenerateDomainUrlForContent(int id = 0)
-		{
-			try
-			{
-				if (id == 0) id = Node.GetCurrent().Id;
-			}
-			catch (Exception)
-			{
-				// intentional empty catch
-			}
-
-			string baseUrl = string.Empty;
-
-			string http = "http://";
-			if (HttpContext.Current.Request.IsSecureConnection)
-			{
-				http = "https://";
-			}
-
-			if (false) //id != 0)
-			{
-				if (library.GetCurrentDomains(id) != null && library.GetCurrentDomains(id).Any())
-				{
-					umbraco.cms.businesslogic.web.Domain firstOrDefaultDomain = library.GetCurrentDomains(id).FirstOrDefault();
-
-					if (firstOrDefaultDomain != null && string.IsNullOrEmpty(firstOrDefaultDomain.Name))
-					{
-						baseUrl = string.Format("{0}{1}", http, firstOrDefaultDomain.Name);
-
-						baseUrl = baseUrl.Substring(0, baseUrl.LastIndexOf("/", StringComparison.Ordinal));
-					}
-				}
-			}
-			else
-			{
-				string currentDomain = HttpContext.Current.Request.Url.Authority;
-				baseUrl = string.Format("{0}{1}", http, currentDomain);
-			}
-
-			if (baseUrl == string.Empty || baseUrl == "http:/" || baseUrl == "https:/" || baseUrl == "http://" || baseUrl == "https://")
-			{
-				baseUrl = string.Format("{0}{1}", http, HttpContext.Current.Request.Url.Authority);
-			}
-
-			Log.Instance.LogDebug("baseUrl to return" + baseUrl);
-
-			return baseUrl;
-		}
-
+        
 		public IUwebshopContent GetById(int id)
 		{
 			return new DocumentBasedContent(id);

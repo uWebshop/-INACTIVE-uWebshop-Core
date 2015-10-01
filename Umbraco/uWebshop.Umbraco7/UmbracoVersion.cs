@@ -10,12 +10,12 @@ namespace uWebshop.Umbraco7
 {
 	internal class UmbracoVersion : IUmbracoVersion
 	{
-		public IDataTypeDefinition CreateDataTypeDefinition(int parentId, string alias, Guid legacyGuid)
+		public IDataTypeDefinition CreateDataTypeDefinition(int parentId, string alias)
 		{
 			return new DataTypeDefinition(parentId, alias);
 		}
 
-		public IDataTypeDefinition GetDataTypeDefinition(string alias, Guid legacyGuid)
+		public IDataTypeDefinition GetDataTypeDefinition(string alias)
 		{
 			var dataTypeService = ApplicationContext.Current.Services.DataTypeService;
 			return dataTypeService.GetDataTypeDefinitionByPropertyEditorAlias(alias).FirstOrDefault();

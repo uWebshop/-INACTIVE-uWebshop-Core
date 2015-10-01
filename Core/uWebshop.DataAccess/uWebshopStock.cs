@@ -231,25 +231,25 @@ namespace uWebshop.DataAccess
 			return orderCount;
 		}
 
-		public static void InstallStockTable()
-		{
-			try
-			{
-				uWebshopOrders.SQLHelper.ExecuteNonQuery(@"CREATE TABLE 
-					[uWebshopStock](
-					[id] [int] IDENTITY(1,1) PRIMARY KEY NOT NULL,
-					[Stock] [int] NOT NULL,
-					[NodeId] [int] NULL,
-					[OrderCount] [int] NOT NULL, 
-					[StoreAlias] nvarchar (500) NULL, 
-					[createDate] [datetime] NULL,
-					[updateDate] [datetime] NULL)");
-			}
-			catch (Exception ex)
-			{
-				LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "InstallStockTable Catch: Already Exists?");
-			}
-		}
+//        public static void InstallStockTable()
+//        {
+//            try
+//            {
+//                uWebshopOrders.SQLHelper.ExecuteNonQuery(@"CREATE TABLE 
+//					[uWebshopStock](
+//					[id] [int] IDENTITY(1,1) PRIMARY KEY NOT NULL,
+//					[Stock] [int] NOT NULL,
+//					[NodeId] [int] NULL,
+//					[OrderCount] [int] NOT NULL, 
+//					[StoreAlias] nvarchar (500) NULL, 
+//					[createDate] [datetime] NULL,
+//					[updateDate] [datetime] NULL)");
+//            }
+//            catch (Exception ex)
+//            {
+//                LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "InstallStockTable Catch: Already Exists? " + ex);
+//            }
+//        }
 
 		/// <summary>
 		/// Updates the stock to a specific value, replaces the current stock with the given value  

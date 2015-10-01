@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.IO;
-using System.IO.Compression;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading;
 using System.Web;
 using System.Web.Script.Services;
 using System.Web.Services;
-using System.Web.Services.Description;
 using umbraco;
 using Umbraco.Web.BaseRest;
 using uWebshop.Domain.Businesslogic;

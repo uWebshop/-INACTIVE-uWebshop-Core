@@ -12,6 +12,7 @@ using uWebshop.Common.Interfaces;
 using uWebshop.Domain;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
+using uWebshop.Umbraco.Services;
 using Umbraco.Core.IO;
 using Umbraco.Web.Mvc;
 using Umbraco.Web.WebApi;
@@ -170,6 +171,8 @@ namespace uWebshop.Umbraco.WebApi
 		{
 			Guid orderGuid;
 			Guid.TryParse(uniqueOrderId, out orderGuid);
+
+		    new DocumentTypeInstaller().RunT4Code();
 
 			var order = OrderHelper.GetOrder(orderGuid);
 

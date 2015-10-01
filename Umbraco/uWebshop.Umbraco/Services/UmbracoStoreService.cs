@@ -6,7 +6,6 @@ using Examine;
 using uWebshop.Domain.Model;
 using uWebshop.Domain.Services;
 using umbraco;
-using umbraco.cms.businesslogic.web;
 using uWebshop.Common.Interfaces;
 using uWebshop.Domain;
 using uWebshop.Domain.Helpers;

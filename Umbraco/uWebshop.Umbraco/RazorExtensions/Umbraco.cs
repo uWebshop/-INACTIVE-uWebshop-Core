@@ -12,7 +12,6 @@ using uWebshop.Domain.Interfaces;
 using uWebshop.Umbraco.Interfaces;
 using Umbraco.Core;
 using Umbraco.Core.Services;
-using Umbraco.Web;
 
 namespace uWebshop.API
 {
@@ -138,13 +137,8 @@ namespace uWebshop.API
 				if (nodeId != 0)
 				{
 					var publish = false;
-
-					//var contentService = ApplicationContext.Current.Services.ContentService;
-
-					var doc = IO.Container.Resolve<ICMSChangeContentService>().GetById(nodeId);
-
-					//var doc = new Document(nodeId);//contentService.GetById(nodeId);
-
+                    var doc = IO.Container.Resolve<ICMSChangeContentService>().GetById(nodeId);
+                    
 					foreach (var key in HttpContext.Current.Request.Form.AllKeys)
 					{
 						if (key != null && !key.StartsWith("ctl00$") && !key.StartsWith("body_TabView") && !key.StartsWith("__EVENT") && !key.StartsWith("__VIEWSTATE") && !key.StartsWith("__ASYNCPOST") && doc.HasProperty(key))

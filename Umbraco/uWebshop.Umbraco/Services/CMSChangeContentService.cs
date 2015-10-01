@@ -2,7 +2,7 @@
 using Umbraco.Core.Models;
 using uWebshop.Umbraco.Interfaces;
 
-namespace uWebshop.Umbraco6
+namespace uWebshop.Umbraco.Services
 {
 	internal class CMSChangeContentService : ICMSChangeContentService
 	{

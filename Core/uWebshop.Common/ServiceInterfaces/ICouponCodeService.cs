@@ -54,7 +54,5 @@ namespace uWebshop.Domain.Interfaces
 		void Save(int discountId, IEnumerable<ICoupon> coupons);
 
 		void DecreaseCountByOneFor(IEnumerable<ICoupon> coupons);
-
-		void InstallCouponsTable();
 	}
 }

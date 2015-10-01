@@ -1,6 +1,5 @@
 ﻿using System;
 using uWebshop.Domain;
-using uWebshop.Domain.BaseClasses;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
 

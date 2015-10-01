@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Linq;
 using uWebshop.Domain.Helpers;
 
 namespace uWebshop.RazorExtensions

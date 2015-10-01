@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using uWebshop.Domain.BaseClasses;
 using umbraco;
 using umbraco.BasePages;
 using Umbraco.Core;
@@ -13,7 +12,7 @@ using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
 using Log = uWebshop.Domain.Log;
 
-namespace uWebshop.Umbraco6
+namespace uWebshop.Umbraco.Services
 {
 	internal class UmbracoDocumentTypeInstaller : IUmbracoDocumentTypeInstaller
 	{

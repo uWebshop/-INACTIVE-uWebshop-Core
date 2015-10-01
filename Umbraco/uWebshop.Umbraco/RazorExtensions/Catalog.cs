@@ -6,7 +6,6 @@ using uWebshop.API;
 using uWebshop.Domain;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
-using uWebshop.Umbraco;
 using uWebshop.Umbraco.Businesslogic;
 using Helpers = uWebshop.Umbraco.Helpers;
 using IOrderDiscount = uWebshop.Domain.Interfaces.IOrderDiscount;

@@ -5,18 +5,14 @@ using System.Text.RegularExpressions;
 using System.Web.Configuration;
 using System.Xml.XPath;
 using Examine;
-using Examine.Providers;
 using Examine.SearchCriteria;
 using umbraco.BusinessLogic;
-using umbraco.cms.businesslogic.web;
 using uWebshop.Domain;
 using uWebshop.Domain.BaseClasses;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
 using umbraco;
-using umbraco.NodeFactory;
 using umbraco.interfaces;
-using umbraco.presentation;
 using uWebshop.Umbraco.Businesslogic;
 using Umbraco.Core;
 using Umbraco.Core.Models;
@@ -33,12 +29,12 @@ namespace uWebshop.Umbraco
 		public static readonly IContentService ContentService = ApplicationContext.Current.Services.ContentService;
 		public static readonly IContentTypeService ContentTypeService = ApplicationContext.Current.Services.ContentTypeService;
 
-		internal static void LoadUwebshopEntityPropertiesFromNode(uWebshopEntity entity, Node node)
+		internal static void LoadUwebshopEntityPropertiesFromNode(uWebshopEntity entity, IPublishedContent node)
 		{
 			if (entity.Id == 0) entity.Id = node.Id;
 			entity.ParentId = node.Parent != null ? node.Parent.Id : -1;
 			entity.SortOrder = node.SortOrder;
-			entity.NodeTypeAlias = node.NodeTypeAlias;
+			entity.NodeTypeAlias = node.DocumentTypeAlias;
 			entity.Name = node.Name;
 			entity.Path = node.Path;
 			entity.CreateDate = node.CreateDate;
@@ -108,12 +104,7 @@ namespace uWebshop.Umbraco
 				}
 			return text;
 		}
-
-		public static List<UmbracoNode> GetNodesWithAliasUsingExamine(string nodeTypeAlias)
-		{
-			return GetExamineResultsForNodeTypeAlias(nodeTypeAlias).Select(searchResult => new UmbracoNode(searchResult)).ToList();
-		}
-
+        
 		public static IEnumerable<SearchResult> GetExamineResultsForNodeTypeAlias(string nodeTypeAlias)
 		{
 			try
@@ -242,8 +233,11 @@ namespace uWebshop.Umbraco
 			{
 				return;
 			}
-			if (language != null) storeDocument.SetValue("currencyCulture", language.id.ToString());
-			ContentService.Save(storeDocument);
+		    if (storeDocument.HasProperty("currencyCulture"))
+		    {
+		        if (language != null) storeDocument.SetValue("currencyCulture", language.id.ToString());
+		    }
+		    ContentService.Save(storeDocument);
 
 			//InstallProductUrlRewritingRules(storeAlias);
 		}

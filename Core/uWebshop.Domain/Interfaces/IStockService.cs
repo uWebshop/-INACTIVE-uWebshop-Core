@@ -7,12 +7,13 @@ namespace uWebshop.Domain.Interfaces
 	/// </summary>
 	public interface IStockService
 	{
-		/// <summary>
-		/// Gets the stock for uwebshop entity with unique identifier.
-		/// </summary>
-		/// <param name="id">The unique identifier.</param>
-		/// <returns></returns>
-		int GetStockForUwebshopEntityWithId(int id, string storeAlias = null);
+	    /// <summary>
+	    /// Gets the stock for uwebshop entity with unique identifier.
+	    /// </summary>
+	    /// <param name="id">The unique identifier.</param>
+	    /// <param name="storeAlias"></param>
+	    /// <returns></returns>
+	    int GetStockForUwebshopEntityWithId(int id, string storeAlias = null);
 
 		[Obsolete("Use SubstractStock")]
 		void SetStock(int productId, int delta, bool updateOrderCount = true, string storeAlias = null);

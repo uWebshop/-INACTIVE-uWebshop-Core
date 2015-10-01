@@ -2,7 +2,6 @@
 using uWebshop.API;
 using uWebshop.Domain;
 using uWebshop.Domain.Helpers;
-using uWebshop.Domain.Interfaces;
 using uWebshop.Domain.Services;
 
 namespace uWebshop.RazorExtensions

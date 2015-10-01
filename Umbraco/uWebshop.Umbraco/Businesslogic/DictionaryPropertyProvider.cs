@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Examine;
+﻿using Examine;
 using uWebshop.Domain.Interfaces;
 using System.Linq;
 
@@ -10,8 +9,7 @@ namespace uWebshop.Domain
 	/// </summary>
 	public class DictionaryPropertyProvider : IPropertyProvider
 	{
-		private readonly IDictionary<string, string> _properties;
-		private readonly SearchResult _searchResult;
+	    private readonly SearchResult _searchResult;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DictionaryPropertyProvider"/> class.

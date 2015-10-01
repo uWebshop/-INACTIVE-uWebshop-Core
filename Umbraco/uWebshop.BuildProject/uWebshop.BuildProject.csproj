@@ -58,10 +58,6 @@
       <Project>{d08e0834-b25a-40a5-9c8e-31d4fb050df4}</Project>
       <Name>uWebshop.Services</Name>
     </ProjectReference>
-    <ProjectReference Include="..\uWebshop.Umbraco6\uWebshop.Umbraco6.csproj">
-      <Project>{9edfd59c-eaa5-4cb4-9642-8b6eda6b4469}</Project>
-      <Name>uWebshop.Umbraco6</Name>
-    </ProjectReference>
     <ProjectReference Include="..\uWebshop.Umbraco7\uWebshop.Umbraco7.csproj">
       <Project>{b63c9a57-9b26-4e51-8d24-e799fef3555c}</Project>
       <Name>uWebshop.Umbraco7</Name>
@@ -84,45 +80,39 @@
 echo Rendering packages as version %25UWBSVER%25
 
 IF EXIST "$(SolutionDir)builds\package\" DEL /s /f /q "$(SolutionDir)builds\package\*.*"
-IF EXIST "$(SolutionDir)builds\package.v6\" DEL /s /f /q "$(SolutionDir)builds\package.v6\*.*"
 IF EXIST "$(SolutionDir)builds\package.v7\" DEL /s /f /q "$(SolutionDir)builds\package.v7\*.*"
 
 SET umbracoDir=$(SolutionDir)Umbraco\uWebshop.Umbraco\
 
+XCOPY "$(TargetDir)uWebshop*.dll" "$(SolutionDir)builds\nuget\lib\" /Y /R
+XCOPY /E "%25umbracoDir%25Installer\package.nuspec" "$(SolutionDir)builds\nuget\" /Y /R
+XCOPY /E "%25umbracoDir%25Installer\content\*.*" "$(SolutionDir)builds\nuget\content\" /Y /R
+XCOPY "$(SolutionDir)Umbraco\uWebshop.Umbraco\Modules\Configurable aliasses\ContentMapping.config" "$(SolutionDir)builds\nuget\content\App_Plugins\uWebshop\config\" /Y /R
+
+DEL "$(SolutionDir)builds\nuget\content\App_Plugins\uWebshop\dashboardcontrols\uWebshopInstaller.ascx.cs"
+DEL "$(SolutionDir)builds\nuget\content\App_Plugins\uWebshop\dashboardcontrols\uWebshopInstaller.ascx.designer.cs"
+
+nuget spec
+
 XCOPY "$(SolutionDir)Umbraco\uWebshop.Umbraco\Modules\Configurable aliasses\ContentMapping.config" "$(SolutionDir)builds\package\" /Y /R
-XCOPY "$(SolutionDir)Binary Dependencies\Umbraco.Licensing.dll" "$(SolutionDir)builds\package\" /Y /R
-XCOPY "$(SolutionDir)Binary Dependencies\PackageGarden.Licensing.dll" "$(SolutionDir)builds\package\" /Y /R
 DEL "$(TargetDir)uWebshop.BuildProject.dll"
-DEL "$(TargetDir)uWebshop.Starterkits*.dll"
 XCOPY "$(TargetDir)uWebshop*.dll" "$(SolutionDir)builds\package\" /Y /R
-XCOPY "%25umbracoDir%25Installer\icons\*.*" "$(SolutionDir)builds\package\" /Y /R
 XCOPY "%25umbracoDir%25Installer\iconfont\*.*" "$(SolutionDir)builds\package\" /Y /R
 XCOPY "%25umbracoDir%25Installer\xml\*.*" "$(SolutionDir)builds\package\" /Y /R
-XCOPY "%25umbracoDir%25Installer\xslt\*.*" "$(SolutionDir)builds\package\" /Y /R
 XCOPY "%25umbracoDir%25Installer\js\*.*" "$(SolutionDir)builds\package\" /Y /R
 XCOPY "%25umbracoDir%25Installer\razor\*.*" "$(SolutionDir)builds\package\" /Y /R
 XCOPY "%25umbracoDir%25Installer\uWebshopInstaller.ascx" "$(SolutionDir)builds\package\" /Y /R
-XCOPY "%25umbracoDir%25Installer\uWebshopDashBoard.ascx" "$(SolutionDir)builds\package\" /Y /R
-XCOPY "%25umbracoDir%25Usercontrols\uwbsBasketHandler.ascx" "$(SolutionDir)builds\package\" /Y /R
 
 for /R "%25umbracoDir%25DataTypesv7\" %25%25f in (*.*) do copy %25%25f  "$(SolutionDir)builds\package.v7\"
 
-XCOPY "$(SolutionDir)builds\package\*.*" "$(SolutionDir)builds\package.v6\" /Y /R
 XCOPY "$(SolutionDir)builds\package\*.*" "$(SolutionDir)builds\package.v7\" /Y /R
 
-DEL "$(SolutionDir)builds\package.v7\uWebshop.Umbraco6*.dll"
-DEL "$(SolutionDir)builds\package.v6\uWebshop.Umbraco7*.dll"
+XCOPY "%25umbracoDir%25Installer\package.xml" "$(SolutionDir)builds\package.v7\" /Y /R
 
-XCOPY "%25umbracoDir%25Installer\package6.xml" "$(SolutionDir)builds\package.v6\" /Y /R
-REN "$(SolutionDir)builds\package.v6\package6.xml" package.xml
-XCOPY "%25umbracoDir%25Installer\package7.xml" "$(SolutionDir)builds\package.v7\" /Y /R
-REN "$(SolutionDir)builds\package.v7\package7.xml" package.xml
-
-SET package6dir=$(SolutionDir)builds\Umbraco Packages\uWebshop%25UWBSVER%25.Foundation.Umbraco61.Package.Installer\
 SET package7dir=$(SolutionDir)builds\Umbraco Packages\uWebshop%25UWBSVER%25.Foundation.Umbraco7.Package.Installer\
 
-XCOPY "$(SolutionDir)builds\package.v6\*.*" "%25package6dir%25" /Y /R
 XCOPY "$(SolutionDir)builds\package.v7\*.*" "%25package7dir%25" /Y /R
+
 </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

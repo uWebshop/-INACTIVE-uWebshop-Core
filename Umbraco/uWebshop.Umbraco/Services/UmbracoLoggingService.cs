@@ -3,7 +3,7 @@ using uWebshop.Common.Interfaces;
 using Umbraco.Core.Logging;
 using umbraco;
 
-namespace uWebshop.Umbraco6
+namespace uWebshop.Umbraco.Services
 {
 	internal class UmbracoLoggingService : ILoggingService
 	{

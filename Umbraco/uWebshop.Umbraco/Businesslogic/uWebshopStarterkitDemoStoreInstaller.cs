@@ -2,20 +2,15 @@
 using System.Configuration;
 using System.Linq;
 using System.Web.Configuration;
-using System.Web.Security;
 using System.Web.UI;
-using System.Xml;
-using umbraco;
 using umbraco.BasePages;
 using umbraco.BusinessLogic;
-using umbraco.cms.businesslogic.member;
 using umbraco.cms.businesslogic.web;
 using uWebshop.Domain;
 using uWebshop.Domain.Interfaces;
 using uWebshop.Umbraco.Interfaces;
 using Umbraco.Core;
 using Umbraco.Core.Models;
-using DataTypeDefinition = umbraco.cms.businesslogic.datatype.DataTypeDefinition;
 using Log = uWebshop.Domain.Log;
 using MemberGroup = umbraco.cms.businesslogic.member.MemberGroup;
 using MemberType = umbraco.cms.businesslogic.member.MemberType;
@@ -169,9 +164,9 @@ namespace uWebshop.Starterkits.DemoStore
 				
 
 				// todo V7 version!
-				var stringDataType = umbracoVersion.GetDataTypeDefinition("Umbraco.Textbox", new Guid("0cc0eba1-9960-42c9-bf9b-60e150b429ae"));
+				var stringDataType = umbracoVersion.GetDataTypeDefinition("Umbraco.Textbox");
 				var stringDataTypeDef = dataTypeService.GetDataTypeDefinitionById(stringDataType.Id);
-				var textboxMultipleDataType = umbracoVersion.GetDataTypeDefinition("Umbraco.TextboxMultiple", new Guid("c6bac0dd-4ab9-45b1-8e30-e4b619ee5da3"));
+				var textboxMultipleDataType = umbracoVersion.GetDataTypeDefinition("Umbraco.TextboxMultiple");
 				var textboxMultipleDataTypeDef = dataTypeService.GetDataTypeDefinitionById(textboxMultipleDataType.Id);
 
 				foreach (var propertyKey in profileSection.PropertySettings.AllKeys)

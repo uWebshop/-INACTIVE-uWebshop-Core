@@ -10,7 +10,6 @@ using uWebshop.Domain.Interfaces;
 using uWebshop.Umbraco.Interfaces;
 using Umbraco.Core;
 using Umbraco.Core.Services;
-using Umbraco.Web;
 
 namespace uWebshop.RazorExtensions
 {

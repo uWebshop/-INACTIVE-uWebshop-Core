@@ -38,9 +38,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="businesslogic">
-      <HintPath>..\..\Binary Dependencies umbraco6\businesslogic.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
@@ -503,7 +500,6 @@
     <Compile Include="Services\MultiStoreEntityService.cs" />
     <Compile Include="Services\ProductService.cs" />
     <Compile Include="Services\ProductVariantService.cs" />
-    <Compile Include="Upgrading\OrderTableUpdater.cs" />
     <Compile Include="Repositories\UwebshopApplicationCachedCountriesRepository.cs" />
     <Compile Include="Businesslogic\VATChecking\VATchecker.cs" />
   </ItemGroup>

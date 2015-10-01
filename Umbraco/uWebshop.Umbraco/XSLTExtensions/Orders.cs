@@ -4,9 +4,8 @@ using System.Threading;
 using System.Xml;
 using System.Xml.XPath;
 using uWebshop.Domain.Helpers;
-using umbraco;
+using Umbraco.Core.Macros;
 using System.Globalization;
-using umbraco.BusinessLogic;
 
 namespace uWebshop.XSLTExtensions
 {

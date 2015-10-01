@@ -17,7 +17,7 @@ using Constants = uWebshop.Common.Constants;
 using DataTypeDefinition = Umbraco.Core.Models.DataTypeDefinition;
 using Language = umbraco.cms.businesslogic.language.Language;
 
-namespace uWebshop.Umbraco6
+namespace uWebshop.Umbraco.Services
 {
 	public class DocumentTypeInstaller
 	{
@@ -78,14 +78,15 @@ namespace uWebshop.Umbraco6
 			var dataTypeDefinitions = IO.Container.Resolve<IDataTypeDefinitions>();
 			if (dataTypeDefinitions == null) throw new Exception("IDataTypeDefinitions not declare, DLL missing?");
 			var dataTypesToGenerate = dataTypeDefinitions.LoadDataTypeDefinitions();
+            
 			foreach (var def in dataTypesToGenerate.OrderBy(d => d.Name))
 			{
-				Write("var " + def.DataType + "DataTypeDef = umbracoVersion.GetDataTypeDefinition(\"" + def.Alias + "\", new Guid(\"" + (def.Name == null ? def.DefinitionGuid : def.KeyGuid) + "\"));\r\n");
+				Write("var " + def.DataType + "DataTypeDef = umbracoVersion.GetDataTypeDefinition(\"" + def.Alias + "\");\r\n");
 				if (def.Name != null)
 				{
 					Write(@"			if (" + def.DataType + @"DataTypeDef == null)
 			{				
-				" + def.DataType + @"DataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, """ + def.Alias + @""", new Guid(""" + def.DefinitionGuid + @"""));
+				" + def.DataType + @"DataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, """ + def.Alias + @""");
 				" + def.DataType + @"DataTypeDef.Name = """ + def.Name + @""";
 				" + def.DataType + @"DataTypeDef.Key = new Guid(""" + def.KeyGuid + @""");
 				" + def.DataType + @"DataTypeDef.DatabaseType = DataTypeDatabaseType." + def.Type + @";
@@ -248,7 +249,7 @@ namespace uWebshop.Umbraco6
 		{
 			var dataTypeService = ApplicationContext.Current.Services.DataTypeService;
 			var newDataTypesList = new List<IDataTypeDefinition>();
-			var storePickerDataTypeDef = _umbracoVersion.GetDataTypeDefinition("uWebshop.StorePicker", new Guid("1e8cdc0b-436e-46f5-bfec-57be45745771"));
+			var storePickerDataTypeDef = _umbracoVersion.GetDataTypeDefinition("uWebshop.StorePicker");
 			if (storePickerDataTypeDef == null)
 			{
 				storePickerDataTypeDef = new DataTypeDefinition(-1, new Guid("5fa345e3-9352-45d6-adaa-2da6cdc9aca3"));
@@ -260,7 +261,7 @@ namespace uWebshop.Umbraco6
 			}
 			if (newDataTypesList.Any()) dataTypeService.Save(newDataTypesList);
 
-			storePickerDataTypeDef = _umbracoVersion.GetDataTypeDefinition("uWebshop.StorePicker", new Guid("1e8cdc0b-436e-46f5-bfec-57be45745771"));
+			storePickerDataTypeDef = _umbracoVersion.GetDataTypeDefinition("uWebshop.StorePicker");
 			return storePickerDataTypeDef;
 		}
 
@@ -273,10 +274,10 @@ namespace uWebshop.Umbraco6
             var contentTypeService = ApplicationContext.Current.Services.ContentTypeService;
             var fileService = ApplicationContext.Current.Services.FileService;
 
-            var stringDataTypeDef = umbracoVersion.GetDataTypeDefinition("Umbraco.Textbox", new Guid("0cc0eba1-9960-42c9-bf9b-60e150b429ae"));
-            var richTextDataTypeDef = umbracoVersion.GetDataTypeDefinition("Umbraco.TinyMCEv3", new Guid("ca90c950-0aff-4e72-b976-a30b1ac57dad"));
-            var storePickerDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.StorePicker", new Guid("1e8cdc0b-436e-46f5-bfec-57be45745771"));
-            var trueFalseDataTypeDef = umbracoVersion.GetDataTypeDefinition("Umbraco.TrueFalse", new Guid("92897bc6-a5f3-4ffe-ae27-f2e7e33dda49"));
+            var stringDataTypeDef = umbracoVersion.GetDataTypeDefinition("Umbraco.Textbox");
+            var richTextDataTypeDef = umbracoVersion.GetDataTypeDefinition("Umbraco.TinyMCEv3");
+            var storePickerDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.StorePicker");
+            var trueFalseDataTypeDef = umbracoVersion.GetDataTypeDefinition("Umbraco.TrueFalse");
 
             var homepageTemplate = fileService.GetTemplate("uwbsHomepage");
             var basketTemplate = fileService.GetTemplate("uwbsBasket");
@@ -671,7 +672,7 @@ namespace uWebshop.Umbraco6
                 logoutPage.SetValue("bodyText", "<p>You are now logged-out.</p>");
             }
             contentService.Save(contentList);
-            contentService.PublishWithChildren(homePage);
+            contentService.PublishWithChildrenWithStatus(homePage);
 
 	        return true;
 	    }
@@ -800,8 +801,8 @@ namespace uWebshop.Umbraco6
 				var productDoctype = contentTypeService.GetContentType(Product.NodeAlias);
 
 				var version = IO.Container.Resolve<IUmbracoVersion>();
-				var textboxMultipleDataTypeDef = version.GetDataTypeDefinition("Umbraco.TextboxMultiple", new Guid("c6bac0dd-4ab9-45b1-8e30-e4b619ee5da3"));
-				var RTEDataTypeDef = version.GetDataTypeDefinition("Umbraco.TinyMCEv3", new Guid("ca90c950-0aff-4e72-b976-a30b1ac57dad"));
+				var textboxMultipleDataTypeDef = version.GetDataTypeDefinition("Umbraco.TextboxMultiple");
+				var RTEDataTypeDef = version.GetDataTypeDefinition("Umbraco.TinyMCEv3");
 
 				if (textboxMultipleDataTypeDef == null) throw new Exception("Umbraco.TextboxMultiple DataType not found");
 				if (RTEDataTypeDef == null) throw new Exception("Umbraco.TinyMCEv3 DataType not found");
@@ -952,11 +953,11 @@ namespace uWebshop.Umbraco6
 				}
 				homepage.SortOrder = 1;
 				//contentToSaveAndPublish.Add(homepage);
-				contentService.PublishWithChildren(homepage);
+				contentService.PublishWithChildrenWithStatus(homepage);
 			}
 
 			contentService.Save(contentToSaveAndPublish);
-			contentToSaveAndPublish.ForEach(content => contentService.Publish(content));
+			contentToSaveAndPublish.ForEach(content => contentService.PublishWithStatus(content));
 
             
 

@@ -1,5 +1,4 @@
-﻿using uWebshop.Domain.Businesslogic;
-using umbraco;
+﻿using Umbraco.Core.Macros;
 using uWebshop.Umbraco;
 using Umbraco.Web;
 

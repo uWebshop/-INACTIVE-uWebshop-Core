@@ -1,20 +1,11 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Threading;
-using System.Xml.Serialization;
-using umbraco.presentation.install.utills;
-using uWebshop.Common.Interfaces;
 using uWebshop.Domain;
-using uWebshop.Domain.BaseClasses;
-using uWebshop.Domain.Businesslogic;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
-using uWebshop.Domain.Services;
 using uWebshop.Umbraco.Businesslogic;
-using Umbraco.Web;
 
 namespace uWebshop.Umbraco.Repositories
 {

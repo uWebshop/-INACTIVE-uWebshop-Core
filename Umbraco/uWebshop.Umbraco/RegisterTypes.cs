@@ -1,20 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Web;
 using uWebshop.Common;
 using uWebshop.Domain.Core;
 using uWebshop.Umbraco.Interfaces;
 using uWebshop.Domain.Services;
 using uWebshop.Common.Interfaces;
 using uWebshop.Domain;
+using uWebshop.Domain.ContentTypes;
 using uWebshop.Domain.Interfaces;
 using uWebshop.Umbraco.Repositories;
 using uWebshop.Umbraco.Services;
-using uWebshop.Umbraco6;
 using HttpContextWrapper = uWebshop.Domain.Businesslogic.HttpContextWrapper;
 
 namespace uWebshop.Umbraco
@@ -62,8 +57,8 @@ namespace uWebshop.Umbraco
 			container.RegisterType<ISettingsService, SettingsService>();
 
 			container.RegisterType<IHttpContextWrapper, HttpContextWrapper>();
-
-			container.RegisterType<IDataTypeDefinitions, uWebshop.DataTypes.DataTypes>();
+            
+            container.RegisterType<IDataTypeDefinitions, DataTypes.DataTypes>();
 			container.RegisterType<ILoggingService, UmbracoLoggingService>();
 			container.RegisterType<ICMSInstaller, CMSInstaller>();
 			container.RegisterType<IUmbracoDocumentTypeInstaller, UmbracoDocumentTypeInstaller>();

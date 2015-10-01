@@ -1,14 +1,15 @@
 ﻿using uWebshop.Domain.Interfaces;
 using umbraco.NodeFactory;
 using System.Linq;
+using Umbraco.Core.Models;
 
 namespace uWebshop.Umbraco.Repositories
 {
 	public class UmbracoNodePropertyProvider : IPropertyProvider
 	{
-		private readonly Node _node;
+        private readonly IPublishedContent _node;
 
-		public UmbracoNodePropertyProvider(Node node)
+		public UmbracoNodePropertyProvider(IPublishedContent node)
 		{
 			_node = node;
 		}
@@ -17,17 +18,17 @@ namespace uWebshop.Umbraco.Repositories
 		{
 			property = property.ToLowerInvariant();
 			// todo: check efficiency
-			return _node.PropertiesAsList.Any(p => p.Alias.ToLowerInvariant() == property);
+			return _node.Properties.Any(p => p.PropertyTypeAlias.ToLowerInvariant() == property);
 		}
 
 		public bool UpdateValueIfPropertyPresent(string property, ref string value)
 		{
 			property = property.ToLowerInvariant();
 			// todo: check efficiency
-			var prop = _node.PropertiesAsList.FirstOrDefault(p => p.Alias.ToLowerInvariant() == property);
+            var prop = _node.Properties.FirstOrDefault(p => p.PropertyTypeAlias.ToLowerInvariant() == property);
 			if (prop != null)
 			{
-				value = prop.Value;
+				value = prop.Value.ToString();
 				return true;
 			}
 			return false;
@@ -37,8 +38,8 @@ namespace uWebshop.Umbraco.Repositories
 		{
 			property = property.ToLowerInvariant();
 			// todo: check efficiency
-			var prop = _node.PropertiesAsList.FirstOrDefault(p => p.Alias.ToLowerInvariant() == property);
-			return prop != null ? prop.Value : null;
+			var prop = _node.Properties.FirstOrDefault(p => p.PropertyTypeAlias.ToLowerInvariant() == property);
+			return prop != null ? prop.Value.ToString() : null;
 		}
 	}
 }

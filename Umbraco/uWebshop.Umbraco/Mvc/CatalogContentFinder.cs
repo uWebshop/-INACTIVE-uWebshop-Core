@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Web;
-using System.Web.Security;
 using Umbraco.Core;
 using Umbraco.Web.Routing;
 using uWebshop.Common.Interfaces;

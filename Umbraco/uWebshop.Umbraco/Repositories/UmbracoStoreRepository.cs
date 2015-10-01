@@ -4,8 +4,6 @@ using System.Globalization;
 using System.Linq;
 using System.Web;
 using umbraco.cms.businesslogic.language;
-using umbraco.cms.businesslogic.web;
-using umbraco.cms.helpers;
 using umbraco.NodeFactory;
 using uWebshop.Domain;
 using uWebshop.Domain.Helpers;
@@ -59,20 +57,23 @@ namespace uWebshop.Umbraco.Repositories
 
 		public Store TryGetStoreFromCurrentNode()
 		{
+            var umbracoHelper = new UmbracoHelper(UmbracoContext.Current);
+
 			//var currencyCode = UwebshopRequest.Current.CurrentCurrencyCode;
 			if (_cmsApplication.RequestIsInCMSBackend(HttpContext.Current)) return null;
 			try
 			{
-				var n = Node.GetCurrent();
+
+			    var n = umbracoHelper.AssignedContentItem;
 				if (n != null)
 				{
-					while (n.Parent != null && (n.GetProperty(Constants.StorePickerAlias) == null || string.IsNullOrEmpty(n.GetProperty(Constants.StorePickerAlias).Value)))
-						n = new Node(n.Parent.Id);
+					while (n.Parent != null && (!n.HasProperty(Constants.StorePickerAlias) || n.HasProperty(Constants.StorePickerAlias) && string.IsNullOrEmpty(n.GetPropertyValue<string>(Constants.StorePickerAlias))))
+						n = umbracoHelper.TypedContent(n.Parent.Id);
 					//Log.Instance.LogDebug(DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") + " StoreHelper.GetCurrentStore 7");
-					var pickerProperty = n.GetProperty(Constants.StorePickerAlias);
-					if (pickerProperty != null && pickerProperty.Value != "0")
+
+                    if (n.HasProperty(Constants.StorePickerAlias) && n.GetPropertyValue<string>(Constants.StorePickerAlias) != "0")
 					{
-						var value = pickerProperty.Value;
+                        var value = n.GetPropertyValue<string>(Constants.StorePickerAlias);
 						if (!string.IsNullOrEmpty(value) && value != "0")
 						{
 							//Log.Instance.LogDebug(DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") + " StoreHelper.GetCurrentStore maakt new Store object (=Examine call)");
@@ -96,8 +97,10 @@ namespace uWebshop.Umbraco.Repositories
 		
 		public Store GetById(int id, ILocalization localization)
 		{
+		    var helper = new UmbracoHelper(UmbracoContext.Current);
+		    var node = helper.TypedContent(helper);
 			var store = new Store();
-			_storeRepo.LoadDataFromNode(store, new Node(id), localization);
+            _storeRepo.LoadDataFromNode(store, node, localization);
 			return store;
 		}
 

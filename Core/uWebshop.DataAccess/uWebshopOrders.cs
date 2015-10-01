@@ -417,83 +417,64 @@ namespace uWebshop.DataAccess
 			SQLHelper.ExecuteNonQuery("update uWebshopOrders set customerUsername = @newCustomerUserName, updateDate = @updateDate where customerUsername = @oldCustomerUserName", SQLHelper.CreateParameter("@newCustomerUserName", newCustomerUsername), SQLHelper.CreateParameter("@oldCustomerUserName", oldCustomerUsername), SQLHelper.CreateParameter("@updateDate", DateTime.Now));
 		}
 
-		public static void InstallOrderTable()
-		{
-			try
-			{
-				SQLHelper.ExecuteNonQuery(@"CREATE TABLE 
-					[uWebshopOrders](
-					[id] [int] IDENTITY(1,1) PRIMARY KEY NOT NULL,
-					[uniqueID] [uniqueidentifier] NULL,
-					[customerEmail] nvarchar (500) NULL, 
-					[customerFirstName] nvarchar (500) NULL, 
-					[customerLastName] nvarchar (500) NULL,
-					[orderNumber] nvarchar (100) NULL,
-					[storeOrderReferenceID] int NULL,
-					[orderInfo] nvarchar (max) NULL, 
-					[orderStatus] nvarchar (100) NULL,
-					[transactionID] nvarchar (100) NULL,
-					[storeAlias] nvarchar (500) NULL,
-					[customerID] int NULL,
-					[customerUsername] nvarchar (500) NULL,
-					[createDate] [datetime] NULL,
-					[updateDate] [datetime] NULL,
-					[deliveryDate] [datetime] NULL,
-					[seriesID] [int] NULL)");
-			}
-			catch (Exception ex)
-			{
-				LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "InstallOrderTable Catch: Already Exists? Exception: " + ex);
-				try
-				{
-					SQLHelper.ExecuteNonQuery(@"ALTER TABLE [uWebshopOrders]
-						ADD [customerUsername] nvarchar (500) NULL");
-				}
-				catch
-				{
-					LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "InstallOrderTable Catch adding customerUsername column: Already Exists? Exception: " + ex);
-				}
-				try
-				{
-					SQLHelper.ExecuteNonQuery(@"ALTER TABLE [uWebshopOrders]
-						ADD [storeOrderReferenceID] int NULL");
-				}
-				catch
-				{
-					LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "InstallOrderTable Catch adding storeOrderReferenceID column: Already Exists? Exception: " + ex);
-				}
-				try
-				{
-					SQLHelper.ExecuteNonQuery(@"ALTER TABLE [uWebshopOrders]
-						ADD [deliveryDate] [datetime] NULL");
-					SQLHelper.ExecuteNonQuery(@"ALTER TABLE [uWebshopOrders]
-						ADD [seriesID] [int] NULL");
-				}
-				catch
-				{
-					LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "InstallOrderTable Catch adding deliveryDate,seriesID columns: Already Exists? Exception: " + ex);
-				}
-			}
-		}
-
-		public static void InstallOrderSeriesTable()
-		{
-			try
-			{
-				SQLHelper.ExecuteNonQuery(@"CREATE TABLE 
-					[uWebshopOrderSeries](
-					[id] [int] IDENTITY(1,1) PRIMARY KEY NOT NULL,
-					[cronInterval] [varchar](100) NOT NULL,
-					[start] [datetime] NOT NULL,
-					[end] [datetime] NULL,
-					[endAfterInstances] [int] NOT NULL)");
-			}
-			catch (Exception ex)
-			{
-				LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "InstallOrderSeriesTable Catch: Already Exists? Exception: " + ex);
-			}
-		}
-
+//        public static void InstallOrderTable()
+//        {
+//            try
+//            {
+//                SQLHelper.ExecuteNonQuery(@"CREATE TABLE 
+//					[uWebshopOrders](
+//					[id] [int] IDENTITY(1,1) PRIMARY KEY NOT NULL,
+//					[uniqueID] [uniqueidentifier] NULL,
+//					[customerEmail] nvarchar (500) NULL, 
+//					[customerFirstName] nvarchar (500) NULL, 
+//					[customerLastName] nvarchar (500) NULL,
+//					[orderNumber] nvarchar (100) NULL,
+//					[storeOrderReferenceID] int NULL,
+//					[orderInfo] nvarchar (max) NULL, 
+//					[orderStatus] nvarchar (100) NULL,
+//					[transactionID] nvarchar (100) NULL,
+//					[storeAlias] nvarchar (500) NULL,
+//					[customerID] int NULL,
+//					[customerUsername] nvarchar (500) NULL,
+//					[createDate] [datetime] NULL,
+//					[updateDate] [datetime] NULL,
+//					[deliveryDate] [datetime] NULL,
+//					[seriesID] [int] NULL)");
+//            }
+//            catch (Exception ex)
+//            {
+//                LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "InstallOrderTable Catch: Already Exists? Exception: " + ex);
+//                try
+//                {
+//                    SQLHelper.ExecuteNonQuery(@"ALTER TABLE [uWebshopOrders]
+//						ADD [customerUsername] nvarchar (500) NULL");
+//                }
+//                catch
+//                {
+//                    LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "InstallOrderTable Catch adding customerUsername column: Already Exists? Exception: " + ex);
+//                }
+//                try
+//                {
+//                    SQLHelper.ExecuteNonQuery(@"ALTER TABLE [uWebshopOrders]
+//						ADD [storeOrderReferenceID] int NULL");
+//                }
+//                catch
+//                {
+//                    LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "InstallOrderTable Catch adding storeOrderReferenceID column: Already Exists? Exception: " + ex);
+//                }
+//                try
+//                {
+//                    SQLHelper.ExecuteNonQuery(@"ALTER TABLE [uWebshopOrders]
+//						ADD [deliveryDate] [datetime] NULL");
+//                    SQLHelper.ExecuteNonQuery(@"ALTER TABLE [uWebshopOrders]
+//						ADD [seriesID] [int] NULL");
+//                }
+//                catch
+//                {
+//                    LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "InstallOrderTable Catch adding deliveryDate,seriesID columns: Already Exists? Exception: " + ex);
+//                }
+//            }
+//        }
 		public static void SetCustomerInfo(Guid orderId, XElement element)
 		{
 			if (element.Name == "customerEmail")

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Linq;
-using System.Threading;
 using System.Web.UI;
-using uWebshop.Domain;
 using uWebshop.Domain.Businesslogic;
 using System.Web;
 

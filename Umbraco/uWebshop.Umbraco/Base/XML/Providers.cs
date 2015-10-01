@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Xml.Linq;
 using System.Xml.XPath;
-using umbraco;
+using Umbraco.Core.Macros;
 using uWebshop.Domain.NewtonsoftJsonNet;
 
 namespace uWebshop.API.XML

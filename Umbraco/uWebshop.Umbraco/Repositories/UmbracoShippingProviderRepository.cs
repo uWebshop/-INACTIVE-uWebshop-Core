@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using uWebshop.Common;
-using uWebshop.Common.Interfaces;
 using uWebshop.Domain;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Globalization;
-using System.Linq;
+﻿using System.Linq;
 using uWebshop.Common;
 using uWebshop.DataAccess;
 using uWebshop.Domain;

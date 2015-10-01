@@ -4,7 +4,6 @@ using uWebshop.Domain;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
 using uWebshop.Umbraco.Businesslogic;
-using Umbraco.Web;
 
 namespace uWebshop.Umbraco.Repositories
 {

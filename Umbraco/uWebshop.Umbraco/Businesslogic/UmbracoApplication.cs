@@ -11,7 +11,6 @@ using uWebshop.Common.Interfaces;
 using uWebshop.Domain;
 using uWebshop.Domain.Helpers;
 using umbraco.DataLayer;
-using umbraco.cms.businesslogic.member;
 using uWebshop.Domain.Interfaces;
 using uWebshop.Umbraco.Businesslogic;
 using uWebshop.Umbraco.Interfaces;
@@ -19,7 +18,6 @@ using Umbraco.Core.Models;
 using Umbraco.Web;
 using Constants = uWebshop.Common.Constants;
 using library = umbraco.library;
-using Umbraco.Core.IO;
 using Member = umbraco.cms.businesslogic.member.Member;
 using MemberType = umbraco.cms.businesslogic.member.MemberType;
 

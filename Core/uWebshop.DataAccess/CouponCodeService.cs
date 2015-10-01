@@ -110,20 +110,20 @@ namespace uWebshop.DataAccess
 			}
 		}
 
-		public void InstallCouponsTable()
-		{
-			try
-			{
-				uWebshopOrders.SQLHelper.ExecuteNonQuery(@"CREATE TABLE 
-					[uWebshopCoupons](
-					[DiscountId] [int] NOT NULL,
-					[CouponCode] nvarchar (500) NOT NULL, 
-					[NumberAvailable] [int] NOT NULL)");
-			}
-			catch (Exception ex)
-			{
-				LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "InstallCouponsTable Catch: Already Exists?");
-			}
-		}
+//        public void InstallCouponsTable()
+//        {
+//            try
+//            {
+//                uWebshopOrders.SQLHelper.ExecuteNonQuery(@"CREATE TABLE 
+//					[uWebshopCoupons](
+//					[DiscountId] [int] NOT NULL,
+//					[CouponCode] nvarchar (500) NOT NULL, 
+//					[NumberAvailable] [int] NOT NULL)");
+//            }
+//            catch (Exception ex)
+//            {
+//                LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "InstallCouponsTable Catch: Already Exists? " + ex);
+//            }
+//        }
 	}
 }

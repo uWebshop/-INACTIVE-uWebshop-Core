@@ -1368,6 +1368,7 @@ internal interface IStoreAliassesService
 	string storeEmailTo { get; }
 	string accountEmailCreated { get; }
 	string accountForgotPassword { get; }
+	string AccountChangePasswordNode { get; }
 	string confirmationEmailStore { get; }
 	string confirmationEmailCustomer { get; }
 	string onlinePaymentEmailStore { get; }
@@ -1421,6 +1422,7 @@ public string storeEmailFromName { get { return _xml.storeEmailFromName ?? "stor
 public string storeEmailTo { get { return _xml.storeEmailTo ?? "storeEmailTo"; } }
 public string accountEmailCreated { get { return _xml.accountEmailCreated ?? "accountEmailCreated"; } }
 public string accountForgotPassword { get { return _xml.accountForgotPassword ?? "accountForgotPassword"; } }
+public string AccountChangePasswordNode { get { return _xml.AccountChangePasswordNode ?? "AccountChangePasswordNode"; } }
 public string confirmationEmailStore { get { return _xml.confirmationEmailStore ?? "confirmationEmailStore"; } }
 public string confirmationEmailCustomer { get { return _xml.confirmationEmailCustomer ?? "confirmationEmailCustomer"; } }
 public string onlinePaymentEmailStore { get { return _xml.onlinePaymentEmailStore ?? "onlinePaymentEmailStore"; } }
@@ -1467,6 +1469,7 @@ public string ContentTypeAlias;
 	public string storeEmailTo;
 	public string accountEmailCreated;
 	public string accountForgotPassword;
+	public string AccountChangePasswordNode;
 	public string confirmationEmailStore;
 	public string confirmationEmailCustomer;
 	public string onlinePaymentEmailStore;
@@ -1887,6 +1890,7 @@ xml.Store.storeEmailFromName = "storeEmailFromName";
 xml.Store.storeEmailTo = "storeEmailTo";
 xml.Store.accountEmailCreated = "accountEmailCreated";
 xml.Store.accountForgotPassword = "accountForgotPassword";
+xml.Store.AccountChangePasswordNode = "AccountChangePasswordNode";
 xml.Store.confirmationEmailStore = "confirmationEmailStore";
 xml.Store.confirmationEmailCustomer = "confirmationEmailCustomer";
 xml.Store.onlinePaymentEmailStore = "onlinePaymentEmailStore";

@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Web;
 using uWebshop.Umbraco;
-using umbraco;
-using uWebshop.ActionHandlers;
 using uWebshop.Domain;
 using uWebshop.Domain.Interfaces;
 using uWebshop.Umbraco.Businesslogic;

@@ -55,9 +55,7 @@ namespace uWebshop.Test.Integration.Domain.Order
 			Assert.AreEqual(39000, Price.CreateDiscountedRanged(40000, null, false, 10m, null, i => i - 1000, null).WithoutVat.ValueInCents);
 		}
 
-		private IDiscountCalculationService _discountCalculationService;
-
-		[Test]
+	    [Test]
 		public void ExtensiveOrderAmountDiscountTest()
 		{
 			// Product 400 euro

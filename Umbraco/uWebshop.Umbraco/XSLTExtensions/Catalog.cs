@@ -7,7 +7,7 @@ using System.Xml.XPath;
 using uWebshop.Domain;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
-using umbraco;
+using Umbraco.Core.Macros;
 
 namespace uWebshop.XSLTExtensions
 {

@@ -1,6 +1,4 @@
 ﻿using System;
-using Examine;
-using uWebshop.Domain;
 using uWebshop.Domain.Interfaces;
 
 namespace uWebshop.Umbraco.Services

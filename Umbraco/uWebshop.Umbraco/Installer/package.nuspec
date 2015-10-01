@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>uWebshop</id>
+    <version>2.7.0.0</version>
+    <title>uWebshop</title>
+    <authors>Arnold Visser</authors>
+    <owners>Arnold Visser</owners>
+    <projectUrl>http://uWebshop.com</projectUrl>
+    <iconUrl>http://uwebshop.com/img/uWebshop-logo-white.svg</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>uWebshop E-Commerce Package for Umbraco</description>
+    <summary>uWebshop E-Commerce Package for Umbraco</summary>
+    <copyright>Copyright 2015 - uWebshop / Arnold Visser</copyright>
+    <licenseUrl>http://uwebshop.com/terms-conditions</licenseUrl>
+    <language>English</language>
+    <tags></tags>
+    <dependencies>
+      <dependency id="UmbracoCms.Core" version="7.0.0" />
+    </dependencies>
+  </metadata>
+</package>

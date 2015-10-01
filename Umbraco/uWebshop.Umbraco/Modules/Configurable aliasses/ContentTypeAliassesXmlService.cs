@@ -1,5 +1,4 @@
 using System.Web;
-using uWebshop.Domain;
 using uWebshop.Domain.Helpers;
 using uWebshop.Umbraco.Repositories;
 

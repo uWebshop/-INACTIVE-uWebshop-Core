@@ -24,16 +24,10 @@ namespace uWebshop.Umbraco7
 				control.NotNow();
 				return;
 			}
-			try
-			{
+			
 				control.RegisterInstance<IContentService, IContentService>(ApplicationContext.Current.Services.ContentService);
 				control.RegisterInstance<IContentTypeService, IContentTypeService>(ApplicationContext.Current.Services.ContentTypeService);
-			}
-			catch (Exception)
-			{
-				control.NotNow();
-				return;
-			}
+			
 
 			UmbracoAddon.VersionSpecificTypesConfiguredInIOCContainer = true;
 		}

@@ -49,13 +49,14 @@ namespace uWebshop.Domain.Interfaces
 		/// <param name="orderInfo">The order.</param>
 		void SaveOrderInfo(OrderInfo orderInfo);
 
-		/// <summary>
-		/// Gets the orders from customer.
-		/// </summary>
-		/// <param name="customerId">The customer unique identifier.</param>
-		/// <param name="storeAlias">The store alias.</param>
-		/// <returns></returns>
-		IEnumerable<OrderInfo> GetOrdersFromCustomer(int customerId, string storeAlias = null, bool includeIncomplete = false);
+	    /// <summary>
+	    /// Gets the orders from customer.
+	    /// </summary>
+	    /// <param name="customerId">The customer unique identifier.</param>
+	    /// <param name="storeAlias">The store alias.</param>
+	    /// <param name="includeIncomplete"></param>
+	    /// <returns></returns>
+	    IEnumerable<OrderInfo> GetOrdersFromCustomer(int customerId, string storeAlias = null, bool includeIncomplete = false);
 
 		/// <summary>
 		/// Gets the wishlists from customer.
@@ -65,15 +66,16 @@ namespace uWebshop.Domain.Interfaces
 		/// <returns></returns>
 		IEnumerable<OrderInfo> GetWishlistsFromCustomer(int customerId, string storeAlias = null);
 
-		/// <summary>
-		/// Get the orders based on the customer username
-		/// </summary>
-		/// <param name="customerUsername">The customer username.</param>
-		/// <param name="storeAlias">The store alias.</param>
-		/// <returns>
-		/// All the orders for the customer
-		/// </returns>
-		IEnumerable<OrderInfo> GetOrdersFromCustomer(string customerUsername, string storeAlias = null, bool includeIncomplete = false);
+	    /// <summary>
+	    /// Get the orders based on the customer username
+	    /// </summary>
+	    /// <param name="customerUsername">The customer username.</param>
+	    /// <param name="storeAlias">The store alias.</param>
+	    /// <param name="includeIncomplete"></param>
+	    /// <returns>
+	    /// All the orders for the customer
+	    /// </returns>
+	    IEnumerable<OrderInfo> GetOrdersFromCustomer(string customerUsername, string storeAlias = null, bool includeIncomplete = false);
 
 		/// <summary>
 		/// Get the wishlists based on the customer username

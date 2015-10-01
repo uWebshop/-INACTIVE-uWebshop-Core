@@ -6,6 +6,8 @@ using uWebshop.Domain;
 using uWebshop.Domain.BaseClasses;
 using uWebshop.Domain.Interfaces;
 using umbraco.NodeFactory;
+using Umbraco.Core.Models;
+using Umbraco.Web;
 
 namespace uWebshop.Umbraco.Repositories
 {
@@ -15,7 +17,11 @@ namespace uWebshop.Umbraco.Repositories
 	{
 		public T1 GetById(int id, ILocalization localization)
 		{
-			return CreateEntityFromNode(new Node(id), localization);
+            var helper = new UmbracoHelper(UmbracoContext.Current);
+
+		    var node = helper.TypedContent(id);
+
+            return CreateEntityFromNode(node, localization);
 		}
 
 		public List<T1> GetAll(ILocalization localization)
@@ -24,7 +30,11 @@ namespace uWebshop.Umbraco.Repositories
 
 			var examineResults = UmbracoStaticCachedEntityRepository.GetExamineResultsForNodeTypeAlias(TypeAlias);
 			if (examineResults != null && examineResults.Any()) return examineResults.Select(e => CreateEntityFromExamineData(e, localization)).ToList();
-			return UmbracoStaticCachedEntityRepository.GetNodeIdsFromXMLStoreForNodeTypeAlias(TypeAlias).Select(id => CreateEntityFromNode(new Node(id), localization)).Where(e => e != null).ToList();
+
+            // todo: optimize UmbracoHelper
+            var helper = new UmbracoHelper(UmbracoContext.Current);
+
+			return UmbracoStaticCachedEntityRepository.GetNodeIdsFromXMLStoreForNodeTypeAlias(TypeAlias).Select(id => CreateEntityFromNode(helper.TypedContent(id), localization)).Where(e => e != null).ToList();
 		}
 
 		private T1 CreateEntityFromExamineData(SearchResult examineNode, ILocalization localization)
@@ -42,10 +52,10 @@ namespace uWebshop.Umbraco.Repositories
 			return entity;
 		}
 
-		internal T1 CreateEntityFromNode(Node node, ILocalization localization)
+		internal T1 CreateEntityFromNode(IPublishedContent node, ILocalization localization)
 		{
 			if (node == null) throw new Exception("Trying to load data from null node");
-			if (node.NodeTypeAlias == null || (node.NodeTypeAlias != TypeAlias && !node.NodeTypeAlias.StartsWith(TypeAlias))) return null;
+            if (node.DocumentTypeAlias == null || (node.DocumentTypeAlias != TypeAlias && !node.DocumentTypeAlias.StartsWith(TypeAlias))) return null;
 
 			var entity = Activator.CreateInstance<T2>();
 			LoadDataFromNode(entity, node, localization);
@@ -56,7 +66,7 @@ namespace uWebshop.Umbraco.Repositories
 			return null;
 		}
 
-		internal void LoadDataFromNode(T2 entity, Node node, ILocalization localization)
+		internal void LoadDataFromNode(T2 entity, IPublishedContent node, ILocalization localization)
 		{
 			Helpers.LoadUwebshopEntityPropertiesFromNode(entity, node);
 			LoadDataFromPropertiesDictionary(entity, new UmbracoNodePropertyProvider(node), localization);
@@ -65,7 +75,12 @@ namespace uWebshop.Umbraco.Repositories
 		public void ReloadData(T1 entity, ILocalization localization)
 		{
 			var e = entity as T2; // todo: this will break
-			LoadDataFromNode(e, new Node(e.Id), localization);
+
+            var helper = new UmbracoHelper(UmbracoContext.Current);
+
+            var node = helper.TypedContent(e.Id);
+
+            LoadDataFromNode(e, node, localization);
 		}
 
 		public abstract void LoadDataFromPropertiesDictionary(T2 entity, IPropertyProvider fields, ILocalization localization);

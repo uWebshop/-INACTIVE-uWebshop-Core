@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Xml.Linq;
 using System.Xml.XPath;
-using umbraco;
+using Umbraco.Core.Macros;
 using uWebshop.Common;
-using uWebshop.Domain;
 using uWebshop.Domain.NewtonsoftJsonNet;
-using Order = uWebshop.Domain.OrderDTO.Order;
 
 namespace uWebshop.API.XML
 {

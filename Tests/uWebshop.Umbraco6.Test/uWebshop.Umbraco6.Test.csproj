@@ -75,10 +75,6 @@
       <Project>{30AC1FB6-EB29-4E4E-92C4-0481C503215C}</Project>
       <Name>uWebshop.Domain</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Umbraco\uWebshop.Umbraco6\uWebshop.Umbraco6.csproj">
-      <Project>{9EDFD59C-EAA5-4CB4-9642-8B6EDA6B4469}</Project>
-      <Name>uWebshop.Umbraco6</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Umbraco\uWebshop.Umbraco\uWebshop.Umbraco.csproj">
       <Project>{2C03A3A4-3380-4F6D-8C68-24E60A77E989}</Project>
       <Name>uWebshop.Umbraco</Name>
