@@ -75,7 +75,7 @@ namespace uWebshop.Umbraco.Services
 			//var umbracoVersionCode = IO.Container.Resolve<IUmbracoVersion>();
 			//var umbracoVersion = UmbracoVersion.Current.Major;
 
-			var dataTypeDefinitions = IO.Container.Resolve<IDataTypeDefinitions>();
+		    var dataTypeDefinitions = new DataTypes.DataTypes(); // todo should use dependency injection but currently fails: IO.Container.Resolve<IDataTypeDefinitions>();
 			if (dataTypeDefinitions == null) throw new Exception("IDataTypeDefinitions not declare, DLL missing?");
 			var dataTypesToGenerate = dataTypeDefinitions.LoadDataTypeDefinitions();
             

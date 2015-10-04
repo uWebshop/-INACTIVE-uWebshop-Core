@@ -6,369 +6,369 @@ using Umbraco.Core.Models;
 using uWebshop.Umbraco.Interfaces;
 using Umbraco.Core.Configuration;
 
-namespace uWebshop.Umbraco6
+namespace uWebshop.Umbraco.Services
 {
 	internal partial class CMSInstaller
 	{
 		partial void InstallGenerated(IUmbracoVersion umbracoVersion)
 		{
-var contentTypeService = ApplicationContext.Current.Services.ContentTypeService;
+			var contentTypeService = ApplicationContext.Current.Services.ContentTypeService;
 var dataTypeService = ApplicationContext.Current.Services.DataTypeService;
 var contentTypeList = new List<IContentType>();
 var newDataTypesList = new List<IDataTypeDefinition>();
 var umbracoVersionMajor = UmbracoVersion.Current.Major;
-var TrueFalseDataTypeDef = umbracoVersion.GetDataTypeDefinition("Umbraco.TrueFalse", new Guid("92897bc6-a5f3-4ffe-ae27-f2e7e33dda49"));
+var TrueFalseDataTypeDef = umbracoVersion.GetDataTypeDefinition("Umbraco.TrueFalse");
 if (TrueFalseDataTypeDef == null) throw new Exception("Could not load default umbraco TrueFalse datatype");
-var StringDataTypeDef = umbracoVersion.GetDataTypeDefinition("Umbraco.Textbox", new Guid("0cc0eba1-9960-42c9-bf9b-60e150b429ae"));
+var StringDataTypeDef = umbracoVersion.GetDataTypeDefinition("Umbraco.Textbox");
 if (StringDataTypeDef == null) throw new Exception("Could not load default umbraco String datatype");
-var NumericDataTypeDef = umbracoVersion.GetDataTypeDefinition("Umbraco.Integer", new Guid("2e6d3631-066e-44b8-aec4-96f09099b2b5"));
+var NumericDataTypeDef = umbracoVersion.GetDataTypeDefinition("Umbraco.Integer");
 if (NumericDataTypeDef == null) throw new Exception("Could not load default umbraco Numeric datatype");
-var TagsDataTypeDef = umbracoVersion.GetDataTypeDefinition("Umbraco.Tags", new Guid("b6b73142-b9c1-4bf8-a16d-e1c23320b549"));
+var TagsDataTypeDef = umbracoVersion.GetDataTypeDefinition("Umbraco.Tags");
 if (TagsDataTypeDef == null) throw new Exception("Could not load default umbraco Tags datatype");
-var LabelDataTypeDef = umbracoVersion.GetDataTypeDefinition("Umbraco.NoEdit", new Guid("f0bc4bfb-b499-40d6-ba86-058885a5178c"));
+var LabelDataTypeDef = umbracoVersion.GetDataTypeDefinition("Umbraco.NoEdit");
 if (LabelDataTypeDef == null) throw new Exception("Could not load default umbraco Label datatype");
-var RichTextDataTypeDef = umbracoVersion.GetDataTypeDefinition("Umbraco.TinyMCEv3", new Guid("ca90c950-0aff-4e72-b976-a30b1ac57dad"));
+var RichTextDataTypeDef = umbracoVersion.GetDataTypeDefinition("Umbraco.TinyMCEv3");
 if (RichTextDataTypeDef == null) throw new Exception("Could not load default umbraco RichText datatype");
-var TextboxMultipleDataTypeDef = umbracoVersion.GetDataTypeDefinition("Umbraco.TextboxMultiple", new Guid("c6bac0dd-4ab9-45b1-8e30-e4b619ee5da3"));
+var TextboxMultipleDataTypeDef = umbracoVersion.GetDataTypeDefinition("Umbraco.TextboxMultiple");
 if (TextboxMultipleDataTypeDef == null) throw new Exception("Could not load default umbraco TextboxMultiple datatype");
-var ContentPickerDataTypeDef = umbracoVersion.GetDataTypeDefinition("Umbraco.ContentPickerAlias", new Guid("a6857c73-d6e9-480c-b6e6-f15f6ad11125"));
+var ContentPickerDataTypeDef = umbracoVersion.GetDataTypeDefinition("Umbraco.ContentPickerAlias");
 if (ContentPickerDataTypeDef == null) throw new Exception("Could not load default umbraco ContentPicker datatype");
-var MediaPickerDataTypeDef = umbracoVersion.GetDataTypeDefinition("Umbraco.MediaPicker", new Guid("93929b9a-93a2-4e2a-b239-d99334440a59"));
+var MediaPickerDataTypeDef = umbracoVersion.GetDataTypeDefinition("Umbraco.MediaPicker");
 if (MediaPickerDataTypeDef == null) throw new Exception("Could not load default umbraco MediaPicker datatype");
-var EnableDisableDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.EnableDisable", new Guid("63c6fa9a-975f-4474-9155-62a229bafaef"));
+var EnableDisableDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.EnableDisable");
 			if (EnableDisableDataTypeDef == null)
 			{				
-				EnableDisableDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.EnableDisable", new Guid("6e62bca5-8d73-435e-8a26-78ef0e7b6c58"));
+				EnableDisableDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.EnableDisable");
 				EnableDisableDataTypeDef.Name = "Enable/Disable";
 				EnableDisableDataTypeDef.Key = new Guid("63c6fa9a-975f-4474-9155-62a229bafaef");
 				EnableDisableDataTypeDef.DatabaseType = DataTypeDatabaseType.Ntext;
 				
 				newDataTypesList.Add(EnableDisableDataTypeDef);
 			}
-			var MultiContentPickerCatalogDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.MultiContentPickerCatalog", new Guid("ea745beb-271c-4542-a5be-5fba2be86f07"));
+			var MultiContentPickerCatalogDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.MultiContentPickerCatalog");
 			if (MultiContentPickerCatalogDataTypeDef == null)
 			{				
-				MultiContentPickerCatalogDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.MultiContentPickerCatalog", new Guid("7e062c13-7c41-4ad9-b389-41d88aeef87c"));
+				MultiContentPickerCatalogDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.MultiContentPickerCatalog");
 				MultiContentPickerCatalogDataTypeDef.Name = "uWebshop Catalog Picker";
 				MultiContentPickerCatalogDataTypeDef.Key = new Guid("ea745beb-271c-4542-a5be-5fba2be86f07");
 				MultiContentPickerCatalogDataTypeDef.DatabaseType = DataTypeDatabaseType.Ntext;
 				
 				newDataTypesList.Add(MultiContentPickerCatalogDataTypeDef);
 			}
-			var MultiContentPickerCategoriesDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.MultiContentPickerCategories", new Guid("c0d85cb4-6e4d-4f10-9107-abdee89b5d7d"));
+			var MultiContentPickerCategoriesDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.MultiContentPickerCategories");
 			if (MultiContentPickerCategoriesDataTypeDef == null)
 			{				
-				MultiContentPickerCategoriesDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.MultiContentPickerCategories", new Guid("7e062c13-7c41-4ad9-b389-41d88aeef87c"));
+				MultiContentPickerCategoriesDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.MultiContentPickerCategories");
 				MultiContentPickerCategoriesDataTypeDef.Name = "uWebshop Category Picker";
 				MultiContentPickerCategoriesDataTypeDef.Key = new Guid("c0d85cb4-6e4d-4f10-9107-abdee89b5d7d");
 				MultiContentPickerCategoriesDataTypeDef.DatabaseType = DataTypeDatabaseType.Ntext;
 				
 				newDataTypesList.Add(MultiContentPickerCategoriesDataTypeDef);
 			}
-			var CountriesDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.Countries", new Guid("a6d19ee8-ab93-42d6-a61a-8d4aaa759207"));
+			var CountriesDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.Countries");
 			if (CountriesDataTypeDef == null)
 			{				
-				CountriesDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.Countries", new Guid("cdf9f220-ea26-4f37-9505-4b65dfdd59e8"));
+				CountriesDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.Countries");
 				CountriesDataTypeDef.Name = "uWebshop Country Selector";
 				CountriesDataTypeDef.Key = new Guid("a6d19ee8-ab93-42d6-a61a-8d4aaa759207");
 				CountriesDataTypeDef.DatabaseType = DataTypeDatabaseType.Ntext;
 				
 				newDataTypesList.Add(CountriesDataTypeDef);
 			}
-			var CouponCodesDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.CouponCodes", new Guid("0dbc0113-a084-44d1-8fef-f8ef0cd8453b"));
+			var CouponCodesDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.CouponCodes");
 			if (CouponCodesDataTypeDef == null)
 			{				
-				CouponCodesDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.CouponCodes", new Guid("4db2a111-36e1-4f96-a021-fd98be96aeaf"));
+				CouponCodesDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.CouponCodes");
 				CouponCodesDataTypeDef.Name = "uWebshop Couponcode Editor";
 				CouponCodesDataTypeDef.Key = new Guid("0dbc0113-a084-44d1-8fef-f8ef0cd8453b");
 				CouponCodesDataTypeDef.DatabaseType = DataTypeDatabaseType.Ntext;
 				
 				newDataTypesList.Add(CouponCodesDataTypeDef);
 			}
-			var CurrenciesDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.Currencies", new Guid("7e6cab81-528d-4b00-8321-72c36f131eea"));
+			var CurrenciesDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.Currencies");
 			if (CurrenciesDataTypeDef == null)
 			{				
-				CurrenciesDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.Currencies", new Guid("9dbebe55-72b2-4573-b16c-9bfe3c4d24f6"));
+				CurrenciesDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.Currencies");
 				CurrenciesDataTypeDef.Name = "uWebshop Currencies";
 				CurrenciesDataTypeDef.Key = new Guid("7e6cab81-528d-4b00-8321-72c36f131eea");
 				CurrenciesDataTypeDef.DatabaseType = DataTypeDatabaseType.Ntext;
 				
 				newDataTypesList.Add(CurrenciesDataTypeDef);
 			}
-			var DiscountOrderConditionDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.DiscountOrderCondition", new Guid("e159f935-d7f4-4277-b5d0-adf74b003849"));
+			var DiscountOrderConditionDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.DiscountOrderCondition");
 			if (DiscountOrderConditionDataTypeDef == null)
 			{				
-				DiscountOrderConditionDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.DiscountOrderCondition", new Guid("2b946d78-256c-48f6-98f5-435ac946a220"));
+				DiscountOrderConditionDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.DiscountOrderCondition");
 				DiscountOrderConditionDataTypeDef.Name = "uWebshop Discount Condition Picker";
 				DiscountOrderConditionDataTypeDef.Key = new Guid("e159f935-d7f4-4277-b5d0-adf74b003849");
 				DiscountOrderConditionDataTypeDef.DatabaseType = DataTypeDatabaseType.Ntext;
 				
 				newDataTypesList.Add(DiscountOrderConditionDataTypeDef);
 			}
-			var DiscountTypeDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.DiscountType", new Guid("2d89188e-33a7-4885-a6d0-1caef40320a7"));
+			var DiscountTypeDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.DiscountType");
 			if (DiscountTypeDataTypeDef == null)
 			{				
-				DiscountTypeDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.DiscountType", new Guid("c66b5dea-00f7-49df-bc5a-074e5802bce2"));
+				DiscountTypeDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.DiscountType");
 				DiscountTypeDataTypeDef.Name = "uWebshop Discount Picker";
 				DiscountTypeDataTypeDef.Key = new Guid("2d89188e-33a7-4885-a6d0-1caef40320a7");
 				DiscountTypeDataTypeDef.DatabaseType = DataTypeDatabaseType.Ntext;
 				
 				newDataTypesList.Add(DiscountTypeDataTypeDef);
 			}
-			var TemplatePickerDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.TemplatePicker", new Guid("0a10d9dd-ebbc-48f5-be93-9fac239ac876"));
+			var TemplatePickerDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.TemplatePicker");
 			if (TemplatePickerDataTypeDef == null)
 			{				
-				TemplatePickerDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.TemplatePicker", new Guid("20e19862-f52d-4c56-88c3-244238eafffc"));
+				TemplatePickerDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.TemplatePicker");
 				TemplatePickerDataTypeDef.Name = "uWebshop Email Template Picker";
 				TemplatePickerDataTypeDef.Key = new Guid("0a10d9dd-ebbc-48f5-be93-9fac239ac876");
 				TemplatePickerDataTypeDef.DatabaseType = DataTypeDatabaseType.Nvarchar;
 				
 				newDataTypesList.Add(TemplatePickerDataTypeDef);
 			}
-			var EmailDetailsDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.EmailDetails", new Guid("9d87378c-5864-4ae2-bd83-1cd14b0c3290"));
+			var EmailDetailsDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.EmailDetails");
 			if (EmailDetailsDataTypeDef == null)
 			{				
-				EmailDetailsDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.EmailDetails", new Guid("77345447-e3b4-4891-907f-bc0e0d5831a7"));
+				EmailDetailsDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.EmailDetails");
 				EmailDetailsDataTypeDef.Name = "uWebshop EmailDetails";
 				EmailDetailsDataTypeDef.Key = new Guid("9d87378c-5864-4ae2-bd83-1cd14b0c3290");
 				EmailDetailsDataTypeDef.DatabaseType = DataTypeDatabaseType.Ntext;
 				
 				newDataTypesList.Add(EmailDetailsDataTypeDef);
 			}
-			var MultiContentPickerFilesDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.MultiContentPickerFiles", new Guid("83c13f11-95d8-4f10-b510-581983fe8c19"));
+			var MultiContentPickerFilesDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.MultiContentPickerFiles");
 			if (MultiContentPickerFilesDataTypeDef == null)
 			{				
-				MultiContentPickerFilesDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.MultiContentPickerFiles", new Guid("7e062c13-7c41-4ad9-b389-41d88aeef87c"));
+				MultiContentPickerFilesDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.MultiContentPickerFiles");
 				MultiContentPickerFilesDataTypeDef.Name = "uWebshop File Picker";
 				MultiContentPickerFilesDataTypeDef.Key = new Guid("83c13f11-95d8-4f10-b510-581983fe8c19");
 				MultiContentPickerFilesDataTypeDef.DatabaseType = DataTypeDatabaseType.Ntext;
 				
 				newDataTypesList.Add(MultiContentPickerFilesDataTypeDef);
 			}
-			var MultiNodePickerDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.MultiNodePicker", new Guid("97600235-acf7-4ade-9ba9-6cad4743cb6d"));
+			var MultiNodePickerDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.MultiNodePicker");
 			if (MultiNodePickerDataTypeDef == null)
 			{				
-				MultiNodePickerDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.MultiNodePicker", new Guid("7e062c13-7c41-4ad9-b389-41d88aeef87c"));
+				MultiNodePickerDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.MultiNodePicker");
 				MultiNodePickerDataTypeDef.Name = "uWebshop Global Picker";
 				MultiNodePickerDataTypeDef.Key = new Guid("97600235-acf7-4ade-9ba9-6cad4743cb6d");
 				MultiNodePickerDataTypeDef.DatabaseType = DataTypeDatabaseType.Ntext;
 				
 				newDataTypesList.Add(MultiNodePickerDataTypeDef);
 			}
-			var MultiContentPickerImagesDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.MultiContentPickerImages", new Guid("d61cbc2c-87d3-49d9-8e58-87996d22d97f"));
+			var MultiContentPickerImagesDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.MultiContentPickerImages");
 			if (MultiContentPickerImagesDataTypeDef == null)
 			{				
-				MultiContentPickerImagesDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.MultiContentPickerImages", new Guid("7e062c13-7c41-4ad9-b389-41d88aeef87c"));
+				MultiContentPickerImagesDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.MultiContentPickerImages");
 				MultiContentPickerImagesDataTypeDef.Name = "uWebshop Image Picker";
 				MultiContentPickerImagesDataTypeDef.Key = new Guid("d61cbc2c-87d3-49d9-8e58-87996d22d97f");
 				MultiContentPickerImagesDataTypeDef.DatabaseType = DataTypeDatabaseType.Ntext;
 				
 				newDataTypesList.Add(MultiContentPickerImagesDataTypeDef);
 			}
-			var OrderedCountDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.OrderedCount", new Guid("2f6e0aa8-8291-4544-8aeb-db78cfb42b07"));
+			var OrderedCountDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.OrderedCount");
 			if (OrderedCountDataTypeDef == null)
 			{				
-				OrderedCountDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.OrderedCount", new Guid("1779c16d-1b5d-4312-974b-782590caca3e"));
+				OrderedCountDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.OrderedCount");
 				OrderedCountDataTypeDef.Name = "uWebshop Item Ordered Count";
 				OrderedCountDataTypeDef.Key = new Guid("2f6e0aa8-8291-4544-8aeb-db78cfb42b07");
 				OrderedCountDataTypeDef.DatabaseType = DataTypeDatabaseType.Integer;
 				
 				newDataTypesList.Add(OrderedCountDataTypeDef);
 			}
-			var CulturesDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.Cultures", new Guid("4235f880-64cc-4d78-8fc2-6e6e5ee72010"));
+			var CulturesDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.Cultures");
 			if (CulturesDataTypeDef == null)
 			{				
-				CulturesDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.Cultures", new Guid("24a53e42-4bb4-4c9a-a16c-3651e3083f30"));
+				CulturesDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.Cultures");
 				CulturesDataTypeDef.Name = "uWebshop Language Picker";
 				CulturesDataTypeDef.Key = new Guid("4235f880-64cc-4d78-8fc2-6e6e5ee72010");
 				CulturesDataTypeDef.DatabaseType = DataTypeDatabaseType.Ntext;
 				
 				newDataTypesList.Add(CulturesDataTypeDef);
 			}
-			var MemberGroupsDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.MemberGroups", new Guid("a99d5614-8b33-4a63-891a-a254c87af481"));
+			var MemberGroupsDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.MemberGroups");
 			if (MemberGroupsDataTypeDef == null)
 			{				
-				MemberGroupsDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.MemberGroups", new Guid("bd6054bc-86ec-4f2c-bcc8-447766f1d569"));
+				MemberGroupsDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.MemberGroups");
 				MemberGroupsDataTypeDef.Name = "uWebshop MemberGroup Picker";
 				MemberGroupsDataTypeDef.Key = new Guid("a99d5614-8b33-4a63-891a-a254c87af481");
 				MemberGroupsDataTypeDef.DatabaseType = DataTypeDatabaseType.Ntext;
 				
 				newDataTypesList.Add(MemberGroupsDataTypeDef);
 			}
-			var OrderStatusPickerDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.OrderStatusPicker", new Guid("8fa38a1b-7854-43ce-b03e-c7cc2ffd3d20"));
+			var OrderStatusPickerDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.OrderStatusPicker");
 			if (OrderStatusPickerDataTypeDef == null)
 			{				
-				OrderStatusPickerDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.OrderStatusPicker", new Guid("f1ad9252-933b-4c44-8496-b24318dac2ed"));
+				OrderStatusPickerDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.OrderStatusPicker");
 				OrderStatusPickerDataTypeDef.Name = "uWebshop Order Status Picker";
 				OrderStatusPickerDataTypeDef.Key = new Guid("8fa38a1b-7854-43ce-b03e-c7cc2ffd3d20");
 				OrderStatusPickerDataTypeDef.DatabaseType = DataTypeDatabaseType.Ntext;
 				
 				newDataTypesList.Add(OrderStatusPickerDataTypeDef);
 			}
-			var OrderInfoViewerDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.OrderInfoViewer", new Guid("6f455770-3677-4c6c-843d-2c76d7b33893"));
+			var OrderInfoViewerDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.OrderInfoViewer");
 			if (OrderInfoViewerDataTypeDef == null)
 			{				
-				OrderInfoViewerDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.OrderInfoViewer", new Guid("3c148cf9-de63-4bc6-860e-81fe9546fa61"));
+				OrderInfoViewerDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.OrderInfoViewer");
 				OrderInfoViewerDataTypeDef.Name = "uWebshop OrderDetails";
 				OrderInfoViewerDataTypeDef.Key = new Guid("6f455770-3677-4c6c-843d-2c76d7b33893");
 				OrderInfoViewerDataTypeDef.DatabaseType = DataTypeDatabaseType.Ntext;
 				
 				newDataTypesList.Add(OrderInfoViewerDataTypeDef);
 			}
-			var OrderSectionDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.OrderSection", new Guid("de47d313-9364-472b-8ee7-9b002cc204b9"));
+			var OrderSectionDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.OrderSection");
 			if (OrderSectionDataTypeDef == null)
 			{				
-				OrderSectionDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.OrderSection", new Guid("3c148cf9-de63-4bc6-860e-81fe9546fa61"));
+				OrderSectionDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.OrderSection");
 				OrderSectionDataTypeDef.Name = "uWebshop OrderOverview";
 				OrderSectionDataTypeDef.Key = new Guid("de47d313-9364-472b-8ee7-9b002cc204b9");
 				OrderSectionDataTypeDef.DatabaseType = DataTypeDatabaseType.Ntext;
 				
 				newDataTypesList.Add(OrderSectionDataTypeDef);
 			}
-			var PaymentProviderAmountTypeDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.PaymentProviderAmountType", new Guid("fb79c76e-8ccc-406d-a3ad-39c1f939a38d"));
+			var PaymentProviderAmountTypeDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.PaymentProviderAmountType");
 			if (PaymentProviderAmountTypeDataTypeDef == null)
 			{				
-				PaymentProviderAmountTypeDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.PaymentProviderAmountType", new Guid("85c8f557-cf82-4450-856f-79492a02f55d"));
+				PaymentProviderAmountTypeDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.PaymentProviderAmountType");
 				PaymentProviderAmountTypeDataTypeDef.Name = "uWebshop Payment Provider Amount Type";
 				PaymentProviderAmountTypeDataTypeDef.Key = new Guid("fb79c76e-8ccc-406d-a3ad-39c1f939a38d");
 				PaymentProviderAmountTypeDataTypeDef.DatabaseType = DataTypeDatabaseType.Ntext;
 				
 				newDataTypesList.Add(PaymentProviderAmountTypeDataTypeDef);
 			}
-			var PaymentProviderTypeDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.PaymentProviderType", new Guid("bbaf3c0e-fc22-4d33-b884-7b87d8dc3c8c"));
+			var PaymentProviderTypeDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.PaymentProviderType");
 			if (PaymentProviderTypeDataTypeDef == null)
 			{				
-				PaymentProviderTypeDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.PaymentProviderType", new Guid("e2e9e8da-f7dc-43f4-806c-8a27fa738971"));
+				PaymentProviderTypeDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.PaymentProviderType");
 				PaymentProviderTypeDataTypeDef.Name = "uWebshop Payment Provider Type";
 				PaymentProviderTypeDataTypeDef.Key = new Guid("bbaf3c0e-fc22-4d33-b884-7b87d8dc3c8c");
 				PaymentProviderTypeDataTypeDef.DatabaseType = DataTypeDatabaseType.Ntext;
 				
 				newDataTypesList.Add(PaymentProviderTypeDataTypeDef);
 			}
-			var MultiContentPickerPaymentZonesDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.MultiContentPickerPaymentZones", new Guid("406a4f2d-dd31-43be-9114-8077f43a6151"));
+			var MultiContentPickerPaymentZonesDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.MultiContentPickerPaymentZones");
 			if (MultiContentPickerPaymentZonesDataTypeDef == null)
 			{				
-				MultiContentPickerPaymentZonesDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.MultiContentPickerPaymentZones", new Guid("7e062c13-7c41-4ad9-b389-41d88aeef87c"));
+				MultiContentPickerPaymentZonesDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.MultiContentPickerPaymentZones");
 				MultiContentPickerPaymentZonesDataTypeDef.Name = "uWebshop Payment Zone Picker";
 				MultiContentPickerPaymentZonesDataTypeDef.Key = new Guid("406a4f2d-dd31-43be-9114-8077f43a6151");
 				MultiContentPickerPaymentZonesDataTypeDef.DatabaseType = DataTypeDatabaseType.Ntext;
 				
 				newDataTypesList.Add(MultiContentPickerPaymentZonesDataTypeDef);
 			}
-			var PriceDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.Price", new Guid("40e2736a-8ecd-41b3-bb27-7d11909f0a21"));
+			var PriceDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.Price");
 			if (PriceDataTypeDef == null)
 			{				
-				PriceDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.Price", new Guid("efe95454-4982-4bd8-a5dc-3fdfa24e5b5b"));
+				PriceDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.Price");
 				PriceDataTypeDef.Name = "uWebshop Price Editor";
 				PriceDataTypeDef.Key = new Guid("40e2736a-8ecd-41b3-bb27-7d11909f0a21");
 				PriceDataTypeDef.DatabaseType = DataTypeDatabaseType.Ntext;
 				
 				newDataTypesList.Add(PriceDataTypeDef);
 			}
-			var MultiContentPickerProductsDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.MultiContentPickerProducts", new Guid("23806a76-6a36-468c-8188-f25308a71cdb"));
+			var MultiContentPickerProductsDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.MultiContentPickerProducts");
 			if (MultiContentPickerProductsDataTypeDef == null)
 			{				
-				MultiContentPickerProductsDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.MultiContentPickerProducts", new Guid("7e062c13-7c41-4ad9-b389-41d88aeef87c"));
+				MultiContentPickerProductsDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.MultiContentPickerProducts");
 				MultiContentPickerProductsDataTypeDef.Name = "uWebshop Product Picker";
 				MultiContentPickerProductsDataTypeDef.Key = new Guid("23806a76-6a36-468c-8188-f25308a71cdb");
 				MultiContentPickerProductsDataTypeDef.DatabaseType = DataTypeDatabaseType.Ntext;
 				
 				newDataTypesList.Add(MultiContentPickerProductsDataTypeDef);
 			}
-			var ProductOverviewDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.ProductOverview", new Guid("3873106b-fbb8-4d55-8e91-a07680e796d7"));
+			var ProductOverviewDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.ProductOverview");
 			if (ProductOverviewDataTypeDef == null)
 			{				
-				ProductOverviewDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.ProductOverview", new Guid("3c148cf9-de63-4bc6-860e-81fe9546fa61"));
+				ProductOverviewDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.ProductOverview");
 				ProductOverviewDataTypeDef.Name = "uWebshop ProductOverview";
 				ProductOverviewDataTypeDef.Key = new Guid("3873106b-fbb8-4d55-8e91-a07680e796d7");
 				ProductOverviewDataTypeDef.DatabaseType = DataTypeDatabaseType.Ntext;
 				
 				newDataTypesList.Add(ProductOverviewDataTypeDef);
 			}
-			var RangesDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.Ranges", new Guid("09dfbeec-2681-42af-b07c-0ed56a575d48"));
+			var RangesDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.Ranges");
 			if (RangesDataTypeDef == null)
 			{				
-				RangesDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.Ranges", new Guid("d5065baa-bb03-437f-9b25-46aa363e1b1c"));
+				RangesDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.Ranges");
 				RangesDataTypeDef.Name = "uWebshop Range Selector";
 				RangesDataTypeDef.Key = new Guid("09dfbeec-2681-42af-b07c-0ed56a575d48");
 				RangesDataTypeDef.DatabaseType = DataTypeDatabaseType.Ntext;
 				
 				newDataTypesList.Add(RangesDataTypeDef);
 			}
-			var ShippingProviderTypeDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.ShippingProviderType", new Guid("c035ada7-5413-48de-8e62-b4b61e2e934f"));
+			var ShippingProviderTypeDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.ShippingProviderType");
 			if (ShippingProviderTypeDataTypeDef == null)
 			{				
-				ShippingProviderTypeDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.ShippingProviderType", new Guid("2cdfc385-15dd-4165-84d9-b5e4b2aca970"));
+				ShippingProviderTypeDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.ShippingProviderType");
 				ShippingProviderTypeDataTypeDef.Name = "uWebshop Shipping Provider Type";
 				ShippingProviderTypeDataTypeDef.Key = new Guid("c035ada7-5413-48de-8e62-b4b61e2e934f");
 				ShippingProviderTypeDataTypeDef.DatabaseType = DataTypeDatabaseType.Ntext;
 				
 				newDataTypesList.Add(ShippingProviderTypeDataTypeDef);
 			}
-			var ShippingProviderRangeTypeDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.ShippingProviderRangeType", new Guid("34c70cbf-ee1b-465e-941f-ddcd097f7912"));
+			var ShippingProviderRangeTypeDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.ShippingProviderRangeType");
 			if (ShippingProviderRangeTypeDataTypeDef == null)
 			{				
-				ShippingProviderRangeTypeDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.ShippingProviderRangeType", new Guid("c0737154-5d14-4820-bcb1-98ed82363f7c"));
+				ShippingProviderRangeTypeDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.ShippingProviderRangeType");
 				ShippingProviderRangeTypeDataTypeDef.Name = "uWebshop Shipping Range Type";
 				ShippingProviderRangeTypeDataTypeDef.Key = new Guid("34c70cbf-ee1b-465e-941f-ddcd097f7912");
 				ShippingProviderRangeTypeDataTypeDef.DatabaseType = DataTypeDatabaseType.Ntext;
 				
 				newDataTypesList.Add(ShippingProviderRangeTypeDataTypeDef);
 			}
-			var MultiContentPickerShippingZonesDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.MultiContentPickerShippingZones", new Guid("18ee35a7-7931-4d80-822c-ffe2bfb40f6e"));
+			var MultiContentPickerShippingZonesDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.MultiContentPickerShippingZones");
 			if (MultiContentPickerShippingZonesDataTypeDef == null)
 			{				
-				MultiContentPickerShippingZonesDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.MultiContentPickerShippingZones", new Guid("7e062c13-7c41-4ad9-b389-41d88aeef87c"));
+				MultiContentPickerShippingZonesDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.MultiContentPickerShippingZones");
 				MultiContentPickerShippingZonesDataTypeDef.Name = "uWebshop Shipping Zone Picker";
 				MultiContentPickerShippingZonesDataTypeDef.Key = new Guid("18ee35a7-7931-4d80-822c-ffe2bfb40f6e");
 				MultiContentPickerShippingZonesDataTypeDef.DatabaseType = DataTypeDatabaseType.Ntext;
 				
 				newDataTypesList.Add(MultiContentPickerShippingZonesDataTypeDef);
 			}
-			var StockDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.Stock", new Guid("5744ead8-977b-44c1-b362-fe8bebca7098"));
+			var StockDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.Stock");
 			if (StockDataTypeDef == null)
 			{				
-				StockDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.Stock", new Guid("8b5da1fc-4c8a-4e8f-b314-ae19a850dae8"));
+				StockDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.Stock");
 				StockDataTypeDef.Name = "uWebshop Stock";
 				StockDataTypeDef.Key = new Guid("5744ead8-977b-44c1-b362-fe8bebca7098");
 				StockDataTypeDef.DatabaseType = DataTypeDatabaseType.Ntext;
 				
 				newDataTypesList.Add(StockDataTypeDef);
 			}
-			var StorePickerDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.StorePicker", new Guid("1e8cdc0b-436e-46f5-bfec-57be45745771"));
+			var StorePickerDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.StorePicker");
 			if (StorePickerDataTypeDef == null)
 			{				
-				StorePickerDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.StorePicker", new Guid("5fa345e3-9352-45d6-adaa-2da6cdc9aca3"));
+				StorePickerDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.StorePicker");
 				StorePickerDataTypeDef.Name = "uWebshop Store Picker";
 				StorePickerDataTypeDef.Key = new Guid("1e8cdc0b-436e-46f5-bfec-57be45745771");
 				StorePickerDataTypeDef.DatabaseType = DataTypeDatabaseType.Integer;
 				
 				newDataTypesList.Add(StorePickerDataTypeDef);
 			}
-			var StoreTemplatePickerDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.StoreTemplatePicker", new Guid("a20c7c00-09f1-448d-9656-f5cb012107af"));
+			var StoreTemplatePickerDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.StoreTemplatePicker");
 			if (StoreTemplatePickerDataTypeDef == null)
 			{				
-				StoreTemplatePickerDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.StoreTemplatePicker", new Guid("2ad05995-470e-47d9-956d-dd2ec892343d"));
+				StoreTemplatePickerDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.StoreTemplatePicker");
 				StoreTemplatePickerDataTypeDef.Name = "uWebshop Template Picker";
 				StoreTemplatePickerDataTypeDef.Key = new Guid("a20c7c00-09f1-448d-9656-f5cb012107af");
 				StoreTemplatePickerDataTypeDef.DatabaseType = DataTypeDatabaseType.Integer;
 				
 				newDataTypesList.Add(StoreTemplatePickerDataTypeDef);
 			}
-			var VatPickerDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.VatPicker", new Guid("69d3f953-b565-4269-9d68-4b39e13c70e5"));
+			var VatPickerDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.VatPicker");
 			if (VatPickerDataTypeDef == null)
 			{				
-				VatPickerDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.VatPicker", new Guid("a74ea9c9-8e18-4d2a-8cf6-73c6206c5da6"));
+				VatPickerDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.VatPicker");
 				VatPickerDataTypeDef.Name = "uWebshop Vat Picker";
 				VatPickerDataTypeDef.Key = new Guid("69d3f953-b565-4269-9d68-4b39e13c70e5");
 				VatPickerDataTypeDef.DatabaseType = DataTypeDatabaseType.Integer;
 				
 				newDataTypesList.Add(VatPickerDataTypeDef);
 			}
-			var ZonesDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.Zones", new Guid("8bc628dd-fe95-4a73-bdde-a7f4b620c170"));
+			var ZonesDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.Zones");
 			if (ZonesDataTypeDef == null)
 			{				
-				ZonesDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.Zones", new Guid("4ee1243a-889b-4ffa-8f44-59cc1fc73be2"));
+				ZonesDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.Zones");
 				ZonesDataTypeDef.Name = "uWebshop Zone Selector";
 				ZonesDataTypeDef.Key = new Guid("8bc628dd-fe95-4a73-bdde-a7f4b620c170");
 				ZonesDataTypeDef.DatabaseType = DataTypeDatabaseType.Ntext;
@@ -983,7 +983,7 @@ GetOrAddPropertyGroup(uwbsOrderContentType, "Global").PropertyTypes.Add(new Prop
 if (uwbsOrderContentType.PropertyTypes.All(p => p.Alias != "orderDetails")){
 GetOrAddPropertyGroup(uwbsOrderContentType, "Global").PropertyTypes.Add(new PropertyType(OrderInfoViewerDataTypeDef) { Alias = "orderDetails", Name = "#OrderDetails", Description = "#OrderDetailsDescription",});
 }
-if (uwbsOrderContentType.PropertyTypes.All(p => p.Alias != "orderGuid")&& umbracoVersionMajor == 6){
+if (uwbsOrderContentType.PropertyTypes.All(p => p.Alias != "orderGuid")){
 GetOrAddPropertyGroup(uwbsOrderContentType, "Global").PropertyTypes.Add(new PropertyType(LabelDataTypeDef) { Alias = "orderGuid", Name = "#OrderGuid", Description = "#OrderGuidDescription",});
 }
 if (uwbsOrderContentType.PropertyTypes.All(p => p.Alias != "customerEmail")){
@@ -1675,6 +1675,9 @@ GetOrAddPropertyGroup(uwbsStoreContentType, "Email").PropertyTypes.Add(new Prope
 if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "accountForgotPassword")){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Email").PropertyTypes.Add(new PropertyType(ContentPickerDataTypeDef) { Alias = "accountForgotPassword", Name = "#AccountForgotPassword", Description = "#AccountForgotPasswordDescription",});
 }
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "AccountChangePasswordNode")){
+GetOrAddPropertyGroup(uwbsStoreContentType, "Email").PropertyTypes.Add(new PropertyType(ContentPickerDataTypeDef) { Alias = "AccountChangePasswordNode", Name = "#AccountChangePasswordNode", Description = "#AccountChangePasswordNodeDescription",});
+}
 if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "confirmationEmailStore")){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Email").PropertyTypes.Add(new PropertyType(ContentPickerDataTypeDef) { Alias = "confirmationEmailStore", Name = "#ConfirmationEmailStore", Description = "#ConfirmationEmailStoreDescription",});
 }
@@ -1847,7 +1850,8 @@ uwbsShippingProviderZoneSectionContentType.AllowedContentTypes = new List<Conten
 uwbsStoreRepositoryContentType.AllowedContentTypes = new List<ContentTypeSort> { new ContentTypeSort { Alias = "uwbsStore", Id = new Lazy<int>(() => uwbsStoreContentType.Id) },};
 uWebshopContentType.AllowedContentTypes = new List<ContentTypeSort> { new ContentTypeSort { Alias = "uwbsCatalog", Id = new Lazy<int>(() => uwbsCatalogContentType.Id) },new ContentTypeSort { Alias = "uwbsSettings", Id = new Lazy<int>(() => uwbsSettingsContentType.Id) },new ContentTypeSort { Alias = "uwbsPaymentProviderRepository", Id = new Lazy<int>(() => uwbsPaymentProviderRepositoryContentType.Id) },new ContentTypeSort { Alias = "uwbsShippingProviderRepository", Id = new Lazy<int>(() => uwbsShippingProviderRepositoryContentType.Id) },new ContentTypeSort { Alias = "uwbsStoreRepository", Id = new Lazy<int>(() => uwbsStoreRepositoryContentType.Id) },new ContentTypeSort { Alias = "uwbsOrderRepository", Id = new Lazy<int>(() => uwbsOrderRepositoryContentType.Id) },new ContentTypeSort { Alias = "uwbsDiscountRepository", Id = new Lazy<int>(() => uwbsDiscountRepositoryContentType.Id) },new ContentTypeSort { Alias = "uwbsEmailRepository", Id = new Lazy<int>(() => uwbsEmailRepositoryContentType.Id) },};
 
-contentTypeService.Save(contentTypeList);			ContentInstaller.InstallContent();
+contentTypeService.Save(contentTypeList);			
+			ContentInstaller.InstallContent();
 		}
 	}
 }

@@ -50,8 +50,16 @@ namespace uWebshop.Umbraco
 
 		}
 
-		public void OnApplicationStarted(UmbracoApplicationBase umbracoApplication, ApplicationContext applicationContext)
+        private static void DoLogged(Action action, string message)
         {
+            LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, message + " start: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
+            action();
+            LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, message + " end: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
+        }
+
+		public void OnApplicationStarted(UmbracoApplicationBase umbracoApplication, ApplicationContext applicationContext)
+		{
+		    var newInstall = false;
             #region check for uWebshop Database tables
             //Get the Umbraco Database context
             var db = applicationContext.DatabaseContext.Database;
@@ -63,6 +71,7 @@ namespace uWebshop.Umbraco
             //Check if the DB table does NOT exist
 		    if (!db.TableExist("uWebshopOrders"))
 		    {
+		        newInstall = true;
 		        //Create DB table - and set overwrite to false
 		        db.CreateTable<uWebshopOrders>(false);
 		    }
@@ -88,7 +97,14 @@ namespace uWebshop.Umbraco
             }
             #endregion
 
-			try
+            // after database creation, install uWebshop
+		    if (newInstall)
+		    {
+		        DoLogged(Initialize.Reboot, "uWebshop Installer initialize uWebshop internal state");
+		        DoLogged(() => IO.Container.Resolve<IInstaller>().Install(), "uWebshop Installer Umbraco installer.Install()");
+		    }
+
+		    try
 			{
 				Initialize.ContinueInitialization();
 				Log.Instance.LogDebug("uWebshop initialized");

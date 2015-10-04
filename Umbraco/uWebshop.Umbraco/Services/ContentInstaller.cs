@@ -72,7 +72,7 @@ namespace uWebshop.Umbraco.Services
 			}
 
 			contentService.Save(contentList);
-			contentService.PublishWithChildren(uWebshop);
+			contentService.PublishWithChildrenWithStatus(uWebshop);
 
 			// hack republish all to make sure examine is properly filled
 			// todo: maybe not with updates?

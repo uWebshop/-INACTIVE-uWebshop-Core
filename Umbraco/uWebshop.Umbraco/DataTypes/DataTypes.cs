@@ -177,10 +177,6 @@ namespace uWebshop.Umbraco.DataTypes
                 shippingproviderzoneXpath = "//uwbsShippingProviderZoneSection";
             }
 
-
-            Define(DataType.MultiContentPickerCatalog, new Guid("ea745beb-271c-4542-a5be-5fba2be86f07"),
-                "uWebshop Catalog Picker", DatabaseType.Ntext, GetPrevaluesForMultiNodeTreePicker(catalogXPath));
-
             Define(DataType.MultiContentPickerCatalog, new Guid("ea745beb-271c-4542-a5be-5fba2be86f07"),
                 "uWebshop Catalog Picker", DatabaseType.Ntext, GetPrevaluesForMultiNodeTreePicker(catalogXPath));
             Define(DataType.MultiContentPickerCategories, new Guid("c0d85cb4-6e4d-4f10-9107-abdee89b5d7d"),
