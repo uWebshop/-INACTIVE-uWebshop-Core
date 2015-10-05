@@ -1,5 +1,5 @@
 {      css: [
-	   '~/App_Plugins/uWebshop/iconfont/uWebshop.css'
+	   '~/App_Plugins/uWebshop/resources/iconfont/uWebshop.css'
 	]
 	,  
 	propertyEditors: [

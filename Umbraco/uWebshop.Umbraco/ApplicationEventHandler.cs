@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Web;
+using System.Web.Configuration;
 using System.Web.Mvc;
 using System.Xml.Linq;
 using Examine;
@@ -59,49 +62,28 @@ namespace uWebshop.Umbraco
 
 		public void OnApplicationStarted(UmbracoApplicationBase umbracoApplication, ApplicationContext applicationContext)
 		{
-		    var newInstall = false;
-            #region check for uWebshop Database tables
-            //Get the Umbraco Database context
-            var db = applicationContext.DatabaseContext.Database;
-
-		    if (db.Connection == null)
+            var umbracoonfigurationStatus = ConfigurationManager.AppSettings["umbracoConfigurationStatus"];
+		    if (umbracoonfigurationStatus == null)
 		    {
+                // umbraco is not installed > don't do anything uWebshop related
 		        return;
 		    }
-            //Check if the DB table does NOT exist
-		    if (!db.TableExist("uWebshopOrders"))
-		    {
-		        newInstall = true;
-		        //Create DB table - and set overwrite to false
-		        db.CreateTable<uWebshopOrders>(false);
-		    }
-            //Check if the DB table does NOT exist
-            if (!db.TableExist("uWebshopOrderSeries"))
-		    {
-		        //Create DB table - and set overwrite to false
-                db.CreateTable<uWebshopOrderSeries>(false);
-		    }
+            var uWebshopDomainAssembly = Assembly.GetExecutingAssembly();
+            var uWebshopVersionFromDomain = uWebshopDomainAssembly.GetName().Version;
 
-            //Check if the DB table does NOT exist
-            if (!db.TableExist("uWebshopCoupons"))
-            {
-                //Create DB table - and set overwrite to false
-                db.CreateTable<uWebshopCoupons>(false);
-            }
+            var uWebshopConfigurationStatus = ConfigurationManager.AppSettings["uWebshopConfigurationStatus"];
 
-            //Check if the DB table does NOT exist
-            if (!db.TableExist("uWebshopStock"))
-            {
-                //Create DB table - and set overwrite to false
-                db.CreateTable<uWebshopStock>(false);
-            }
-            #endregion
-
-            // after database creation, install uWebshop
-		    if (newInstall)
+		    if (uWebshopConfigurationStatus == null || uWebshopConfigurationStatus != uWebshopVersionFromDomain.ToString())
 		    {
+                var config = WebConfigurationManager.OpenWebConfiguration("~");
+
+		        // umbracoConfigurationStatus not yet added to web config or not equal to current version -> Install uWebhsop
 		        DoLogged(Initialize.Reboot, "uWebshop Installer initialize uWebshop internal state");
 		        DoLogged(() => IO.Container.Resolve<IInstaller>().Install(), "uWebshop Installer Umbraco installer.Install()");
+		        // update web.config
+                config.AppSettings.Settings.Remove("uWebshopConfigurationStatus");
+		        config.AppSettings.Settings.Add("uWebshopConfigurationStatus", uWebshopVersionFromDomain.ToString());
+                config.Save();
 		    }
 
 		    try

@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Umbraco.Core;
-using Umbraco.Core.Models;
+using uWebshop.DataAccess.Pocos;
 using uWebshop.Umbraco.Interfaces;
+using Umbraco.Core;
 using Umbraco.Core.Configuration;
+using Umbraco.Core.Models;
+using Umbraco.Core.Persistence;
+using Umbraco.Web;
 
 namespace uWebshop.Umbraco.Services
 {
@@ -12,6 +15,39 @@ namespace uWebshop.Umbraco.Services
 	{
 		partial void InstallGenerated(IUmbracoVersion umbracoVersion)
 		{
+				#region check for uWebshop Database tables
+
+		        //Get the Umbraco Database context
+		        var db = UmbracoContext.Current.Application.DatabaseContext.Database;
+
+		        //Check if the DB table does NOT exist
+		        if (!db.TableExist("uWebshopOrders"))
+		        {
+                    //Create DB table - and set overwrite to false
+		            db.CreateTable<uWebshopOrders>(false);
+		        }
+		        //Check if the DB table does NOT exist
+		        if (!db.TableExist("uWebshopOrderSeries"))
+		        {
+		            //Create DB table - and set overwrite to false
+		            db.CreateTable<uWebshopOrderSeries>(false);
+		        }
+
+		        //Check if the DB table does NOT exist
+		        if (!db.TableExist("uWebshopCoupons"))
+		        {
+		            //Create DB table - and set overwrite to false
+		            db.CreateTable<uWebshopCoupons>(false);
+		        }
+
+		        //Check if the DB table does NOT exist
+		        if (!db.TableExist("uWebshopStock"))
+		        {
+		            //Create DB table - and set overwrite to false
+		            db.CreateTable<uWebshopStock>(false);
+		        }
+
+		        #endregion
 			var contentTypeService = ApplicationContext.Current.Services.ContentTypeService;
 var dataTypeService = ApplicationContext.Current.Services.DataTypeService;
 var contentTypeList = new List<IContentType>();

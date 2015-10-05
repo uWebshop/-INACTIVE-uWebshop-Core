@@ -111,9 +111,7 @@ XCOPY "%25umbracoDir%25Installer\package.xml" "$(SolutionDir)builds\package.v7\"
 
 SET package7dir=$(SolutionDir)builds\Umbraco Packages\uWebshop%25UWBSVER%25.Foundation.Umbraco7.Package.Installer\
 
-XCOPY "$(SolutionDir)builds\package.v7\*.*" "%25package7dir%25" /Y /R
-
-</PostBuildEvent>
+XCOPY "$(SolutionDir)builds\package.v7\*.*" "%25package7dir%25" /Y /R</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
