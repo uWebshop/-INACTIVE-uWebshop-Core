@@ -2187,7 +2187,7 @@ namespace uWebshop.Domain.Businesslogic
 
 			currentOrder.Status = OrderStatus.Incomplete;
 
-			foreach (var line in renewOrder.OrderLines)
+			foreach (var line in renewOrder.OrderLines.Where(ol => API.Catalog.GetProduct(ol.ProductInfo.Id) != null))
 			{
 				Dictionary<string, string> dictionary = null;
 				var xElement = line.CustomData.Element("fields");
