@@ -7,6 +7,8 @@ using umbraco.BusinessLogic;
 using umbraco.DataLayer;
 using Umbraco.Core;
 using Umbraco.Core.Logging;
+using Umbraco.Core.Persistence;
+using Umbraco.Web;
 
 namespace uWebshop.DataAccess
 {
@@ -21,6 +23,11 @@ namespace uWebshop.DataAccess
 	public class UWebshopStock
 	{
 		public const string AllStockCacheKey = "AllStockCacheKey";
+
+        internal static UmbracoDatabase Database
+        {
+            get { return UmbracoContext.Current.Application.DatabaseContext.Database; }
+        }
 
 		private static List<StockInfo> LoadAllStockInfo()
 		{
@@ -128,6 +135,8 @@ namespace uWebshop.DataAccess
 			var currentStock = 0;
 			var orderedCount = 0;
 			var currentNodeId = 0;
+
+            var stockItem = Database.SingleOrDefault<StockInfo>("SELECT * FROM uWebshopStock WHERE NodeId=@0 AND StoreAlias=@1", productId, storeAlias);
 
 			var currentReader = sqlHelper.ExecuteReader("SELECT * FROM uWebshopStock WHERE NodeId = @pricingId AND StoreAlias = @storeAlias", sqlHelper.CreateParameter("@pricingId", productId), sqlHelper.CreateParameter("@storeAlias", storeAlias));
 

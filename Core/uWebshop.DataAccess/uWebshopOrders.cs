@@ -9,6 +9,8 @@ using umbraco.BusinessLogic;
 using umbraco.DataLayer;
 using Umbraco.Core;
 using Umbraco.Core.Logging;
+using Umbraco.Core.Persistence;
+using Umbraco.Web;
 
 namespace uWebshop.DataAccess
 {
@@ -18,15 +20,24 @@ namespace uWebshop.DataAccess
 
 		internal static ISqlHelper SQLHelper
 		{
-			get { return DataLayerHelper.CreateSqlHelper(ConnectionString); } // todo: test if this object can be reused
+			get { return DataLayerHelper.CreateSqlHelper(ConnectionString); } 
 		}
+
+        internal static UmbracoDatabase Database
+        {
+            get { return UmbracoContext.Current.Application.DatabaseContext.Database; } 
+        }
 		
 		public static List<OrderData> GetAllOrderInfos(string where = null)
 		{
+		    var orderInfoList = new List<OrderData>();
 			if (where == null) where = "where not orderStatus = 'Incomplete' and not orderStatus = 'Wishlist'";
 
+           var orderInfo = Database.Query<OrderData>("SELECT * FROM uWebshopOrders left outer join uWebshopOrderSeries on seriesID = uWebshopOrderSeries.id  " + where);
+
+
 			var orderInfos = new List<OrderData>();
-			using (var reader = SQLHelper.ExecuteReader("SELECT * FROM uWebshopOrders left outer join uWebshopOrderSeries on seriesID = uWebshopOrderSeries.id  " + where))
+			using (var reader =  SQLHelper.ExecuteReader("SELECT * FROM uWebshopOrders left outer join uWebshopOrderSeries on seriesID = uWebshopOrderSeries.id  " + where))
 			{
 				while (reader.Read())
 				{
