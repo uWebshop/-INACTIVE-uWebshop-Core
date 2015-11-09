@@ -14,7 +14,7 @@ namespace uWebshop.Domain.Interfaces
 		/// Gets all.
 		/// </summary>
 		/// <returns></returns>
-		IEnumerable<ICoupon> GetAll();
+		IEnumerable<ICoupon> GetAll(string where= null);
 
 		/// <summary>
 		/// Gets all for discount.

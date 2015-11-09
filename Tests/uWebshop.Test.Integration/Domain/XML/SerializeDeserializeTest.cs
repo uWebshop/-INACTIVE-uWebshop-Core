@@ -5,6 +5,7 @@ using Moq;
 using NUnit.Framework;
 using uWebshop.Common;
 using uWebshop.DataAccess;
+using uWebshop.DataAccess.Pocos;
 using uWebshop.Domain;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
@@ -47,7 +48,7 @@ namespace uWebshop.Test.Integration
 		public void ThatReadingBackXMLDoenstChangeValuesFromNewXMLFromClientWithFailingGrandTotal()
 		{
 			IOC.SettingsService.InclVat();
-			var deserializedOrderInfo = OrderInfo.CreateOrderInfoFromOrderData(new OrderData { OrderXML = newXMLFromClientWithFailingGrandTotal, });
+			var deserializedOrderInfo = OrderInfo.CreateOrderInfoFromOrderData(new uWebshopOrderData() { OrderInfo = newXMLFromClientWithFailingGrandTotal, });
 			Assert.NotNull(deserializedOrderInfo);
 
 			Console.WriteLine(deserializedOrderInfo.VatCalculationStrategy.GetType().Name);
@@ -185,7 +186,7 @@ namespace uWebshop.Test.Integration
 			IOC.VatCalculationStrategy.OverTotal();
 
 			//var deserializedOrderInfo = DomainHelper.DeserializeXmlStringToObject<OrderInfo>(oldOrderXMLV21);
-			var deserializedOrderInfo = OrderInfo.CreateOrderInfoFromOrderData(new OrderData {OrderXML = oldOrderXMLV21});
+			var deserializedOrderInfo = OrderInfo.CreateOrderInfoFromOrderData(new uWebshopOrderData() { OrderInfo = oldOrderXMLV21 });
 			Assert.NotNull(deserializedOrderInfo);
 
 			Assert.AreEqual(11355, deserializedOrderInfo.SubtotalInCents);
@@ -389,7 +390,7 @@ namespace uWebshop.Test.Integration
 		public void ThatReadingBackXMLDoenstChangeValuesFrompreV21()
 		{
 			IOC.SettingsService.ExclVat();
-			var deserializedOrderInfo = OrderInfo.CreateOrderInfoFromOrderData(new OrderData {OrderXML = oldOrderXMLpreV21});
+			var deserializedOrderInfo = OrderInfo.CreateOrderInfoFromOrderData(new uWebshopOrderData() { OrderInfo = oldOrderXMLpreV21 });
 			Assert.NotNull(deserializedOrderInfo);
 
 			Assert.AreEqual(4000, deserializedOrderInfo.SubtotalInCents);
@@ -537,7 +538,7 @@ namespace uWebshop.Test.Integration
 		public void ThatReadingBackXMLDoenstChangeValuesFrompreV21vanKlant()
 		{
 			IOC.SettingsService.InclVat();
-			var deserializedOrderInfo = OrderInfo.CreateOrderInfoFromOrderData(new OrderData {OrderXML = oldOrderXMLpre21vanKlant});
+			var deserializedOrderInfo = OrderInfo.CreateOrderInfoFromOrderData(new uWebshopOrderData() { OrderInfo = oldOrderXMLpre21vanKlant });
 			Assert.NotNull(deserializedOrderInfo);
 			var orderline = deserializedOrderInfo.OrderLines.First();
 			var product = orderline.ProductInfo;
@@ -760,7 +761,7 @@ namespace uWebshop.Test.Integration
 		public void ThatReadingBackXMLDoenstChangeValuesFrompreV21FalendeDemoShop()
 		{
 			IOC.SettingsService.InclVat();
-			var deserializedOrderInfo = OrderInfo.CreateOrderInfoFromOrderData(new OrderData { OrderXML = xmlThatReadingBackXMLDoenstChangeValuesFrompreV21FalendeDemoShop });
+			var deserializedOrderInfo = OrderInfo.CreateOrderInfoFromOrderData(new uWebshopOrderData() { OrderInfo = xmlThatReadingBackXMLDoenstChangeValuesFrompreV21FalendeDemoShop });
 
 			Assert.NotNull(deserializedOrderInfo);
 
@@ -995,7 +996,7 @@ namespace uWebshop.Test.Integration
 			orderInfo.Status = OrderStatus.ReadyForDispatch;
 
 			var serializedString = DomainHelper.SerializeObjectToXmlString(orderInfo);
-			var deserializedOrderInfo = OrderInfo.CreateOrderInfoFromOrderData(new OrderData {OrderXML = serializedString});
+			var deserializedOrderInfo = OrderInfo.CreateOrderInfoFromOrderData(new uWebshopOrderData() { OrderInfo = serializedString });
 			//var deserializedOrderInfo = DomainHelper.DeserializeXmlStringToObject<OrderInfo>(serializedString);
 
 			Assert.AreEqual(100, deserializedOrderInfo.DiscountAmountInCents);
@@ -1008,7 +1009,7 @@ namespace uWebshop.Test.Integration
 		{
 			// ORDER IS ACTUALLY BROKEN!!! NOT A TRUE 2.0 ORDER
 			IOC.SettingsService.InclVat();
-			var deserializedOrderInfo = OrderInfo.CreateOrderInfoFromOrderData(new OrderData {OrderXML = oldOrderXMLpreV21WithVariantsAndDiscount});
+			var deserializedOrderInfo = OrderInfo.CreateOrderInfoFromOrderData(new uWebshopOrderData() { OrderInfo = oldOrderXMLpreV21WithVariantsAndDiscount });
 			Assert.NotNull(deserializedOrderInfo);
 
 
@@ -1238,7 +1239,7 @@ namespace uWebshop.Test.Integration
 			IOC.SettingsService.InclVat();
 			IOC.OrderDiscountService.Actual();
 			IOC.DiscountCalculationService.Actual();
-			var deserializedOrderInfo = OrderInfo.CreateOrderInfoFromOrderData(new OrderData {OrderXML = xmlWithFailingCouponDiscount});
+			var deserializedOrderInfo = OrderInfo.CreateOrderInfoFromOrderData(new uWebshopOrderData() {OrderInfo = xmlWithFailingCouponDiscount});
 			Assert.NotNull(deserializedOrderInfo);
 
 			Assert.AreEqual(1000, deserializedOrderInfo.DiscountAmountInCents);
@@ -1495,7 +1496,10 @@ namespace uWebshop.Test.Integration
 			IOC.SettingsService.InclVat();
 			IOC.VatCalculationStrategy.OverTotal();
 
-			var deserializedOrderInfo = OrderInfo.CreateOrderInfoFromOrderData(new OrderData {OrderXML = orderInfo20OwnDB});
+			var deserializedOrderInfo = OrderInfo.CreateOrderInfoFromOrderData(new uWebshopOrderData()
+		    {
+		        OrderInfo = orderInfo20OwnDB
+		    });
 			Assert.NotNull(deserializedOrderInfo);
 
 

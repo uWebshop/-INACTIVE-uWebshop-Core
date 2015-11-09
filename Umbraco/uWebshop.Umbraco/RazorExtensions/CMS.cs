@@ -157,7 +157,7 @@ namespace uWebshop.RazorExtensions
 						{
 							int newStockInt;
 							int.TryParse(value, out newStockInt);
-							UWebshopStock.UpdateStock(nodeId, newStockInt, false, storeAlias);
+							UWebshopStock.ReplaceStock(nodeId, newStockInt, false, storeAlias);
 						}
 					}
 				}

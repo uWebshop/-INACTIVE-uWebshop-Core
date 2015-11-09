@@ -24,7 +24,7 @@ namespace uWebshop.Umbraco.Services
 		        if (!db.TableExist("uWebshopOrders"))
 		        {
                     //Create DB table - and set overwrite to false
-		            db.CreateTable<uWebshopOrders>(false);
+		            db.CreateTable<uWebshopOrderData>(false);
 		        }
 		        //Check if the DB table does NOT exist
 		        if (!db.TableExist("uWebshopOrderSeries"))
@@ -37,7 +37,7 @@ namespace uWebshop.Umbraco.Services
 		        if (!db.TableExist("uWebshopCoupons"))
 		        {
 		            //Create DB table - and set overwrite to false
-		            db.CreateTable<uWebshopCoupons>(false);
+		            db.CreateTable<uWebshopCoupon>(false);
 		        }
 
 		        //Check if the DB table does NOT exist

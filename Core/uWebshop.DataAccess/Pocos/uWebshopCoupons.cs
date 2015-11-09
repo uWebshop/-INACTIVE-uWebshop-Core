@@ -5,7 +5,7 @@ namespace uWebshop.DataAccess.Pocos
 
     [TableName("uWebshopCoupons")]
     [ExplicitColumns]
-    public class uWebshopCoupons
+    public class uWebshopCoupon
     {
         [Column("DiscountId")]
         public int DiscountId { get; set; }

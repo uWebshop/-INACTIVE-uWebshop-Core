@@ -5,125 +5,98 @@ using umbraco;
 using umbraco.BusinessLogic;
 using umbraco.DataLayer;
 using uWebshop.Common.Interfaces;
+using uWebshop.DataAccess.Pocos;
 using uWebshop.Domain.Interfaces;
 using uWebshop.Domain.Model;
 using Umbraco.Core;
 using Umbraco.Core.Logging;
+using Umbraco.Core.Persistence;
+using Umbraco.Web;
 
 namespace uWebshop.DataAccess
 {
-	internal class CouponCodeService : ICouponCodeService
-	{
-		public IEnumerable<ICoupon> GetAll()
-		{
-			var coupons = new List<Coupon>();
-			using (var reader = uWebshopOrders.SQLHelper.ExecuteReader("SELECT * FROM uWebshopCoupons " + null))
-			{
-				while (reader.Read())
-				{
-					coupons.Add(new Coupon(reader));
-				}
-			}
-			return coupons;
-		}
+    internal class CouponCodeService : ICouponCodeService
+    {
+        internal static UmbracoDatabase Database
+        {
+            get { return UmbracoContext.Current.Application.DatabaseContext.Database; }
+        }
 
-		public IEnumerable<ICoupon> GetAllForDiscount(int discountId)
-		{
-			var coupons = new List<Coupon>();
-			using (var reader = uWebshopOrders.SQLHelper.ExecuteReader("SELECT * FROM uWebshopCoupons WHERE DiscountId = @discountId", uWebshopOrders.SQLHelper.CreateParameter("@discountId", discountId)))
-			{
-				while (reader.Read())
-				{
-					coupons.Add(new Coupon(reader));
-				}
-			}
-			return coupons;
-		}
 
-		public ICoupon Get(int discountId, string couponCode)
-		{
-			using (var reader = uWebshopOrders.SQLHelper.ExecuteReader("SELECT * FROM uWebshopCoupons WHERE DiscountId = @discountId AND CouponCode = @couponCode", uWebshopOrders.SQLHelper.CreateParameter("@discountId", discountId), uWebshopOrders.SQLHelper.CreateParameter("@couponCode", couponCode)))
-			{
-				while (reader.Read())
-				{
-					var orderInfo = reader.GetString("orderInfo");
-					if (!string.IsNullOrEmpty(orderInfo))
-					{
-						return new Coupon(reader);
-					}
-				}
-				return null;
-			}
-		}
-		
-		public IEnumerable<ICoupon> GetAllWithCouponcode(string couponCode)
-		{
-			var coupons = new List<Coupon>();
-			using (var reader = uWebshopOrders.SQLHelper.ExecuteReader("SELECT * FROM uWebshopCoupons WHERE CouponCode = @couponCode", uWebshopOrders.SQLHelper.CreateParameter("@couponCode", couponCode)))
-			{
-				while (reader.Read())
-				{
-					coupons.Add(new Coupon(reader));
-				}
-			}
-			return coupons;
-		}
+        public IEnumerable<ICoupon> GetAll(string where = null)
+        {
+            var coupons = Database.Query<uWebshopCoupon>("SELECT * FROM uWebshopCoupons " + where);
 
-		public IEnumerable<ICoupon> GetAllWithCouponcodes(IEnumerable<string> couponCodes)
-		{
-			var codes = couponCodes.ToList();
-			return GetAll().Where(c => codes.Contains(c.CouponCode));
-		}
+            return coupons.Select(coupon => new Coupon(coupon.DiscountId, coupon.CouponCode, coupon.NumberAvailable));
+        }
 
-		public void Save(ICoupon coupon)
-		{
-			uWebshopOrders.SQLHelper.ExecuteNonQuery("update [uWebshopCoupons] set NumberAvailable = @NumberAvailable WHERE DiscountId = @DiscountId and CouponCode = @CouponCode", uWebshopOrders.SQLHelper.CreateParameter("@DiscountId", coupon.DiscountId), uWebshopOrders.SQLHelper.CreateParameter("@CouponCode", coupon.CouponCode), uWebshopOrders.SQLHelper.CreateParameter("@NumberAvailable", coupon.NumberAvailable));
-		}
+        public IEnumerable<ICoupon> GetAllForDiscount(int discountId)
+        {
+            return GetAll("WHERE DiscountId = " + discountId);
+        }
 
-		public void Save(int discountId, IEnumerable<ICoupon> coupons)
-		{
-			uWebshopOrders.SQLHelper.ExecuteNonQuery("delete from [uWebshopCoupons] WHERE DiscountId = @discountId", uWebshopOrders.SQLHelper.CreateParameter("@discountId", discountId));
+        public ICoupon Get(int discountId, string couponCode)
+        {
+            var coupon =
+                Database.SingleOrDefault<uWebshopCoupon>("WHERE DiscountId = " + discountId + "AND CouponCode =" +
+                                                         couponCode);
 
-			if (coupons.Any())
-			{
-				var connectionString = uWebshopOrders.ConnectionString;
-				if (uWebshopOrders.SQLHelper.ConnectionString.Contains("|DataDirectory|") || DataLayerHelper.IsEmbeddedDatabase(connectionString) || connectionString.ToLower().Contains("mysql"))
-				{
-					foreach (var coupon in coupons)
-					{
-						uWebshopOrders.SQLHelper.ExecuteNonQuery(@"INSERT into uWebshopCoupons(DiscountId, CouponCode, NumberAvailable) values(@discountId, @couponcode, @numberavailable)", uWebshopOrders.SQLHelper.CreateParameter("@discountId", coupon.DiscountId), uWebshopOrders.SQLHelper.CreateParameter("@couponcode", coupon.CouponCode), uWebshopOrders.SQLHelper.CreateParameter("@numberavailable", coupon.NumberAvailable));
-					}
-				}
-				else
-				{
-					uWebshopOrders.SQLHelper.ExecuteNonQuery("insert into [uWebshopCoupons] (DiscountId, CouponCode, NumberAvailable) VALUES " + string.Join(", ", coupons.Select(c => "(" + c.DiscountId + ", '" + c.CouponCode + "', " + c.NumberAvailable + ")").ToArray()));
-				}
-			}
-		}
+            return new Coupon(coupon.DiscountId, coupon.CouponCode, coupon.NumberAvailable);
+        }
 
-		public void DecreaseCountByOneFor(IEnumerable<ICoupon> coupons)
-		{
-			foreach (var coupon in coupons.Where(c => c != null).Cast<Coupon>()) // in theory the cast might be wrong
-			{
-				coupon.NumberAvailable--;
-				Save(coupon);
-			}
-		}
+        public IEnumerable<ICoupon> GetAllWithCouponcode(string couponCode)
+        {
+            return GetAll("WHERE CouponCode = " + couponCode);
+        }
 
-//        public void InstallCouponsTable()
-//        {
-//            try
-//            {
-//                uWebshopOrders.SQLHelper.ExecuteNonQuery(@"CREATE TABLE 
-//					[uWebshopCoupons](
-//					[DiscountId] [int] NOT NULL,
-//					[CouponCode] nvarchar (500) NOT NULL, 
-//					[NumberAvailable] [int] NOT NULL)");
-//            }
-//            catch (Exception ex)
-//            {
-//                LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "InstallCouponsTable Catch: Already Exists? " + ex);
-//            }
-//        }
-	}
+        public IEnumerable<ICoupon> GetAllWithCouponcodes(IEnumerable<string> couponCodes)
+        {
+            var codes = couponCodes.ToList();
+            return GetAll().Where(c => codes.Contains(c.CouponCode));
+        }
+
+        public void Save(ICoupon coupon)
+        {
+            var saveCoupon = new uWebshopCoupon
+            {
+                DiscountId = coupon.DiscountId,
+                CouponCode = coupon.CouponCode,
+                NumberAvailable = coupon.NumberAvailable
+            };
+
+            Database.Update(saveCoupon);
+        }
+
+        public void Save(int discountId, IEnumerable<ICoupon> coupons)
+        {
+            var couponDiscounts = GetAllForDiscount(discountId);
+
+            foreach (var coupon in couponDiscounts)
+            {
+                Database.Delete(coupon);
+            }
+
+            if (coupons.Any())
+            {
+                foreach (var newCoupon in coupons.Select(coupon => new uWebshopCoupon
+                {
+                    DiscountId = coupon.DiscountId,
+                    CouponCode = coupon.CouponCode,
+                    NumberAvailable = coupon.NumberAvailable
+                }))
+                {
+                    Database.Insert(newCoupon);
+                }
+            }
+        }
+
+        public void DecreaseCountByOneFor(IEnumerable<ICoupon> coupons)
+        {
+            foreach (var coupon in coupons.Where(c => c != null).Cast<Coupon>()) // in theory the cast might be wrong
+            {
+                coupon.NumberAvailable--;
+                Save(coupon);
+            }
+        }
+    }
 }

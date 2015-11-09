@@ -150,14 +150,14 @@ namespace uWebshop.Domain.Repositories
 
 		public void RemoveTestOrders()
 		{
-			var orders = GetAllOrders().Select(order => order.UniqueOrderId).ToList();
+			var orders = GetAllOrders().Select(order => order.UniqueOrderId);
 
 			uWebshopOrders.Delete(orders);
 		}
 
 		public void RemoveOrders(IEnumerable<IOrder> orderList)
 		{
-			var orders = orderList.Select(order => order.UniqueId).ToList();
+			var orders = orderList.Select(order => order.UniqueId);
 
 			uWebshopOrders.Delete(orders);
 		}

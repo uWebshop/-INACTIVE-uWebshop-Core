@@ -5,6 +5,7 @@ using System.Linq;
 using umbraco;
 using umbraco.BusinessLogic;
 using umbraco.DataLayer;
+using uWebshop.DataAccess.Pocos;
 using Umbraco.Core;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Persistence;
@@ -12,307 +13,301 @@ using Umbraco.Web;
 
 namespace uWebshop.DataAccess
 {
-	/// <summary>
-	/// uWebshopStock dbtable contains the following columns:
-	/// id
-	/// NodeId = the Id of the pricing node this stockrow if for
-	/// Stock = the stock count for this pricing
-	/// Ordered = the total order count for this pricing todo: multi-shop support
-	/// updateDate = the datetime value when the stock/ordered was last updated
-	/// </summary>
-	public class UWebshopStock
-	{
-		public const string AllStockCacheKey = "AllStockCacheKey";
+    /// <summary>
+    /// uWebshopStock dbtable contains the following columns:
+    /// id
+    /// NodeId = the Id of the pricing node this stockrow if for
+    /// Stock = the stock count for this pricing
+    /// Ordered = the total order count for this pricing todo: multi-shop support
+    /// updateDate = the datetime value when the stock/ordered was last updated
+    /// </summary>
+    public class UWebshopStock
+    {
+        public const string AllStockCacheKey = "AllStockCacheKey";
 
         internal static UmbracoDatabase Database
         {
             get { return UmbracoContext.Current.Application.DatabaseContext.Database; }
         }
 
-		private static List<StockInfo> LoadAllStockInfo()
-		{
-			// todo: improve caching, use Dictionary<int, StockInfo>
-			List<StockInfo> stocks;
-			if (HttpContext.Current.Items.Contains(AllStockCacheKey))
-			{
-				stocks = ((List<StockInfo>) HttpContext.Current.Items[AllStockCacheKey]);
-			}
-			else
-			{
-				stocks = new List<StockInfo>();
-				var reader = uWebshopOrders.SQLHelper.ExecuteReader("SELECT NodeId, Stock, StoreAlias, OrderCount FROM uWebshopStock");
-				while (reader.Read())
-				{
-					stocks.Add(new StockInfo {NodeId = reader.GetInt("NodeId"), Stock = reader.GetInt("Stock"), StoreAlias = reader.GetString("StoreAlias"), OrderCount = reader.GetInt("OrderCount")});
-				}
-				HttpContext.Current.Items[AllStockCacheKey] = stocks;
-			}
-			return stocks;
-		}
+        private static IEnumerable<uWebshopStock> LoadAllStockInfo()
+        {
+            // todo: improve caching, use Dictionary<int, StockInfo>
+            IEnumerable<uWebshopStock> stocks;
+            if (HttpContext.Current.Items.Contains(AllStockCacheKey))
+            {
+                stocks = ((IEnumerable<uWebshopStock>) HttpContext.Current.Items[AllStockCacheKey]);
+            }
+            else
+            {
+                stocks = Database.Query<uWebshopStock>("SELECT NodeId, Stock, StoreAlias, OrderCount FROM uWebshopStock");
 
-		public static Guid GetCacheGuid()
-		{
-			var reader = uWebshopOrders.SQLHelper.ExecuteReader("SELECT cacheGuid FROM uWebshop");
-			while (reader.Read())
-			{
-				reader.GetString("cacheGuid");
-				//stocks.Add(new StockInfo { NodeId = reader.GetInt("NodeId"), Stock = reader.GetInt("Stock"), StoreAlias = reader.GetString("StoreAlias"), OrderCount = reader.GetInt("OrderCount") });
-			}
+                HttpContext.Current.Items[AllStockCacheKey] = stocks;
+            }
 
-			return Guid.Empty;
-		}
+            return stocks;
+        }
 
-		/// <summary>
-		/// Returns the current stock of the given pricing
-		/// </summary>
-		/// <param name="nodeId">the nodeId of the product this stock applies to</param>
-		/// <param name="storeAlias">the store alias to get the stock for this node for</param>
-		/// <returns></returns>
-		public static int GetStock(int nodeId, string storeAlias = null)
-		{
-			var stocks = LoadAllStockInfo();
-			var firstOrDefault = stocks.FirstOrDefault(stock => stock.NodeId == nodeId && stock.StoreAlias == storeAlias);
+        //todo: still needed?
+        //public static Guid GetCacheGuid()
+        //{
+        //	var reader = uWebshopOrders.SQLHelper.ExecuteReader("SELECT cacheGuid FROM uWebshop");
+        //	while (reader.Read())
+        //	{
+        //		reader.GetString("cacheGuid");
+        //		//stocks.Add(new StockInfo { NodeId = reader.GetInt("NodeId"), Stock = reader.GetInt("Stock"), StoreAlias = reader.GetString("StoreAlias"), OrderCount = reader.GetInt("OrderCount") });
+        //	}
 
-			if (firstOrDefault != null)
-			{
-				return firstOrDefault.Stock;
-			}
+        //	return Guid.Empty;
+        //}
 
-			var globalFallback = stocks.FirstOrDefault(stock => stock.NodeId == nodeId && stock.StoreAlias == string.Empty);
+        /// <summary>
+        /// Returns the current stock of the given pricing
+        /// </summary>
+        /// <param name="nodeId">the nodeId of the product this stock applies to</param>
+        /// <param name="storeAlias">the store alias to get the stock for this node for</param>
+        /// <returns></returns>
+        public static int GetStock(int nodeId, string storeAlias = null)
+        {
+            var stocks = LoadAllStockInfo();
+            var firstOrDefault = stocks.FirstOrDefault(stock => stock.NodeId == nodeId && stock.StoreAlias == storeAlias);
 
-			if (globalFallback != null)
-			{
-				return globalFallback.Stock;
-			}
+            if (firstOrDefault != null)
+            {
+                return firstOrDefault.Stock;
+            }
 
-			return 0;
-		}
+            var globalFallback =
+                stocks.FirstOrDefault(stock => stock.NodeId == nodeId && stock.StoreAlias == string.Empty);
 
-		/// <summary>
-		/// Returns the count of how many times the pricing was ordered
-		/// </summary>
-		/// <param name="nodeId">the nodeId of the pricing this OrderCount applies to</param>
-		/// <param name="storeAlias">the store alias to get the orderedcount for this node for</param>
-		/// <returns></returns>
-		public static int GetOrderCount(int nodeId, string storeAlias = null)
-		{
-			var stocks = LoadAllStockInfo();
-			var firstOrDefault = stocks.FirstOrDefault(stock => stock.NodeId == nodeId && stock.StoreAlias == storeAlias);
+            if (globalFallback != null)
+            {
+                return globalFallback.Stock;
+            }
 
-			if (firstOrDefault != null)
-			{
-				return firstOrDefault.OrderCount;
-			}
+            return 0;
+        }
 
-			var globalFallback = stocks.FirstOrDefault(stock => stock.NodeId == nodeId && stock.StoreAlias == string.Empty);
+        /// <summary>
+        /// Returns the count of how many times the pricing was ordered
+        /// </summary>
+        /// <param name="nodeId">the nodeId of the pricing this OrderCount applies to</param>
+        /// <param name="storeAlias">the store alias to get the orderedcount for this node for</param>
+        /// <returns></returns>
+        public static int GetOrderCount(int nodeId, string storeAlias = null)
+        {
+            var stocks = LoadAllStockInfo();
+            var firstOrDefault = stocks.FirstOrDefault(stock => stock.NodeId == nodeId && stock.StoreAlias == storeAlias);
 
-			if (globalFallback != null)
-			{
-				return globalFallback.OrderCount;
-			}
+            if (firstOrDefault != null)
+            {
+                return firstOrDefault.OrderCount;
+            }
 
-			return 0;
-		}
+            var globalFallback =
+                stocks.FirstOrDefault(stock => stock.NodeId == nodeId && stock.StoreAlias == string.Empty);
+
+            if (globalFallback != null)
+            {
+                return globalFallback.OrderCount;
+            }
+
+            return 0;
+        }
 
 
-		public static int SubstractStock(int productId, int stockToUpdate, string storeAlias = null)
-		{
-			return SubstractStock(productId, stockToUpdate, true, storeAlias);
-		}
+        public static int SubstractStock(int productId, int stockToUpdate, string storeAlias = null)
+        {
+            return SubstractStock(productId, stockToUpdate, true, storeAlias);
+        }
 
-		/// <summary>
-		/// substracts the stock and orderedCount of the product
-		/// </summary>
-		/// <param name="productId">the nodeId of the pricing this stock applies to</param>
-		/// <param name="stockToSubtract">the amount of stock to subtract from the current stock</param>
-		public static int SubstractStock(int productId, int stockToSubtract, bool updateOrderCount, string storeAlias = null)
-		{
-			var setOrderCount = updateOrderCount;
+        /// <summary>
+        /// substracts the stock and orderedCount of the product
+        /// </summary>
+        /// <param name="productId">the nodeId of the pricing this stock applies to</param>
+        /// <param name="stockToSubtract">the amount of stock to subtract from the current stock</param>
+        public static int SubstractStock(int productId, int stockToSubtract, bool updateOrderCount,
+            string storeAlias = null)
+        {
+            storeAlias = storeAlias ?? string.Empty;
 
-			var sqlHelper = uWebshopOrders.SQLHelper;
-			storeAlias = storeAlias ?? string.Empty;
+            var currentStock = 0;
+            var orderedCount = 0;
+            var currentNodeId = 0;
 
-			var currentStock = 0;
-			var orderedCount = 0;
-			var currentNodeId = 0;
+            var stockItem =
+                Database.SingleOrDefault<uWebshopStock>(
+                    "SELECT * FROM uWebshopStock WHERE NodeId=@0 AND StoreAlias=@1", productId, storeAlias);
 
-            var stockItem = Database.SingleOrDefault<StockInfo>("SELECT * FROM uWebshopStock WHERE NodeId=@0 AND StoreAlias=@1", productId, storeAlias);
+            if (stockItem != null)
+            {
+                stockItem.UpdateDateTime = DateTime.Now;
+                currentStock = stockItem.Stock;
+                orderedCount = stockItem.OrderCount;
 
-			var currentReader = sqlHelper.ExecuteReader("SELECT * FROM uWebshopStock WHERE NodeId = @pricingId AND StoreAlias = @storeAlias", sqlHelper.CreateParameter("@pricingId", productId), sqlHelper.CreateParameter("@storeAlias", storeAlias));
+                stockItem.Stock = currentStock - stockToSubtract;
+                if (updateOrderCount)
+                {
+                    stockItem.OrderCount = orderedCount + stockToSubtract;
+                }
+                Database.Update(stockItem);
+            }
+            else
+            {
+                stockItem = new uWebshopStock
+                {
+                    // todo: should this be 1?
+                    Stock = 1,
+                    NodeId = currentNodeId,
+                    UpdateDateTime = DateTime.Now
+                };
 
-			while (currentReader.Read())
-			{
-				currentStock = currentReader.GetInt("Stock");
-				orderedCount = currentReader.GetInt("OrderCount");
-				currentNodeId = currentReader.GetInt("NodeId");
-			}
+                if (updateOrderCount)
+                {
+                    stockItem.OrderCount = orderedCount + stockToSubtract;
+                }
 
-			var newStock = currentStock - stockToSubtract;
-			var orderCount = orderedCount + stockToSubtract;
+                Database.Insert(stockItem);
+            }
 
-			sqlHelper.ExecuteNonQuery(currentNodeId == 0 ? @"INSERT into uWebshopStock(NodeId, Stock, OrderCount, StoreAlias, createDate, updateDate) values(@pricingId, @stock, @orderCount, @storeAlias, @createDate, @updateDate)" : @"UPDATE uWebshopStock set Stock = @stock, OrderCount = @orderCount, StoreAlias = @storeAlias, updateDate = @updateDate WHERE NodeId = @pricingId AND StoreAlias = @storeAlias", sqlHelper.CreateParameter("@pricingId", productId), sqlHelper.CreateParameter("@stock", newStock), sqlHelper.CreateParameter("@orderCount", setOrderCount ? orderCount : orderedCount), sqlHelper.CreateParameter("@storeAlias", storeAlias), sqlHelper.CreateParameter("@createDate", DateTime.Now), sqlHelper.CreateParameter("@updateDate", DateTime.Now));
+            return stockItem.Stock;
+        }
 
-			currentReader.Close();
 
-			return newStock;
-		}
+        public static int ReturnStock(int productId, int stockToReturn, bool updateOrderCount, string storeAlias = null)
+        {
+            // todo: not thread safe (no transaction)
 
-		[Obsolete("use SubstractStock")]
-		public static int SetStock(int productId, int stockToUpdate, string storeAlias = null)
-		{
-			return SubstractStock(productId, stockToUpdate, true, storeAlias);
-		}
+            var currentStock = 0;
+            var orderedCount = 0;
+            var currentNodeId = 0;
 
-		/// <summary>
-		/// Substracts the given stock and updates the orderedCount of the product/variant with the given stock value
-		/// </summary>
-		/// <param name="productId">the nodeId of the pricing this stock applies to</param>
-		/// <param name="stockToSubtract">the amount of stock to subtract from the current stock</param>
-		/// <param name="updateOrderCount">Update orderCount; default = true</param>
-		/// <param name="storeAlias"> </param>
-		[Obsolete("use SubstractStock")]
-		public static int SetStock(int productId, int stockToSubtract, bool updateOrderCount, string storeAlias = null)
-		{
-			return SubstractStock(productId, stockToSubtract, updateOrderCount, storeAlias);
-		}
+            var stockItem =
+                Database.SingleOrDefault<uWebshopStock>(
+                    "SELECT * FROM uWebshopStock WHERE NodeId=@0 AND StoreAlias=@1", productId, storeAlias);
 
-		public static int ReturnStock(int productId, int stockToReturn, bool updateOrderCount, string storeAlias = null)
-		{
-			// todo: not thread safe (no transaction)
+            if (stockItem != null)
+            {
+                stockItem.UpdateDateTime = DateTime.Now;
+                currentStock = stockItem.Stock;
+                orderedCount = stockItem.OrderCount;
 
-			var setOrderCount = updateOrderCount;
+                stockItem.Stock = currentStock + stockToReturn;
+                if (updateOrderCount)
+                {
+                    stockItem.OrderCount = orderedCount - stockToReturn;
+                }
+                Database.Update(stockItem);
+            }
+            else
+            {
+                stockItem = new uWebshopStock
+                {
+                    Stock = stockToReturn,
+                    NodeId = currentNodeId,
+                    UpdateDateTime = DateTime.Now
+                };
 
-			var sqlHelper = uWebshopOrders.SQLHelper;
+                if (updateOrderCount)
+                {
+                    stockItem.OrderCount = orderedCount - stockToReturn;
+                }
 
-			var currentStock = 0;
-			var orderedCount = 0;
-			var currentNodeId = 0;
+                Database.Insert(stockItem);
+            }
 
-			var currentReader = sqlHelper.ExecuteReader("SELECT * FROM uWebshopStock WHERE NodeId = @pricingId AND StoreAlias = @storeAlias", sqlHelper.CreateParameter("@pricingId", productId), sqlHelper.CreateParameter("@storeAlias", storeAlias));
+            return stockItem.Stock;
+        }
 
-			while (currentReader.Read())
-			{
-				currentStock = currentReader.GetInt("Stock");
-				orderedCount = currentReader.GetInt("OrderCount");
-				currentNodeId = currentReader.GetInt("NodeId");
-			}
+        /// <summary>
+        /// Updates the stock and orderedCount of the product
+        /// </summary>
+        /// <param name="productId">the nodeId of the pricing this stock applies to</param>
+        /// <param name="orderCountToUpdate">the ordercount to add to current oirdercount</param>
+        /// <param name="storeAlias"> </param>
+        public static int SetOrderCount(int productId, int orderCountToUpdate, string storeAlias = null)
+        {
+            var currentStock = 0;
+            var orderedCount = 0;
+            var currentNodeId = 0;
 
-			var newStock = currentStock + stockToReturn;
-			var orderCount = orderedCount - stockToReturn;
+            var stockItem =
+                Database.SingleOrDefault<uWebshopStock>(
+                    "SELECT * FROM uWebshopStock WHERE NodeId=@0 AND StoreAlias=@1", productId, storeAlias);
 
-			sqlHelper.ExecuteNonQuery(currentNodeId == 0 ? @"INSERT into uWebshopStock(NodeId, Stock, OrderCount, StoreAlias, createDate, updateDate) values(@pricingId, @stock, @orderCount, @storeAlias, @createDate, @updateDate)" : @"UPDATE uWebshopStock set Stock = @stock, OrderCount = @orderCount, StoreAlias = @storeAlias, updateDate = @updateDate WHERE NodeId = @pricingId AND StoreAlias = @storeAlias", sqlHelper.CreateParameter("@pricingId", productId), sqlHelper.CreateParameter("@stock", newStock), sqlHelper.CreateParameter("@orderCount", setOrderCount ? orderCount : orderedCount), sqlHelper.CreateParameter("@storeAlias", storeAlias), sqlHelper.CreateParameter("@createDate", DateTime.Now), sqlHelper.CreateParameter("@updateDate", DateTime.Now));
+            if (stockItem != null)
+            {
+                stockItem.UpdateDateTime = DateTime.Now;
+                orderedCount = stockItem.OrderCount;
 
-			currentReader.Close();
+                stockItem.OrderCount = orderedCount + orderCountToUpdate;
 
-			return newStock;
-		}
-		
-		/// <summary>
-		/// Updates the stock and orderedCount of the product
-		/// </summary>
-		/// <param name="productId">the nodeId of the pricing this stock applies to</param>
-		/// <param name="orderCountToUpdate">the ordercount to add to current oirdercount</param>
-		/// <param name="storeAlias"> </param>
-		public static int SetOrderCount(int productId, int orderCountToUpdate, string storeAlias = null)
-		{
-			var sqlHelper = uWebshopOrders.SQLHelper;
-			storeAlias = storeAlias ?? string.Empty;
+                Database.Update(stockItem);
+            }
+            else
+            {
+                stockItem = new uWebshopStock
+                {
+                    NodeId = currentNodeId,
+                    UpdateDateTime = DateTime.Now,
+                    OrderCount = orderedCount + orderCountToUpdate
+                };
 
-			var orderedCount = 0;
-			var currentNodeId = 0;
-			var stockCount = 0;
+                Database.Insert(stockItem);
+            }
 
-			var currentReader = sqlHelper.ExecuteReader("SELECT * FROM uWebshopStock WHERE NodeId = @pricingId AND StoreAlias = @storeAlias", sqlHelper.CreateParameter("@pricingId", productId), sqlHelper.CreateParameter("@storeAlias", storeAlias));
+            return stockItem.OrderCount;
+        }
 
-			while (currentReader.Read())
-			{
-				orderedCount = currentReader.GetInt("OrderCount");
-				currentNodeId = currentReader.GetInt("NodeId");
-				stockCount = currentReader.GetInt("Stock");
-			}
+        /// <summary>
+        /// Updates the stock to a specific value, replaces the current stock with the given value  
+        /// </summary>
+        /// <param name="productId">the nodeId of the pricing this stock applies to</param>
+        /// <param name="newStock">the stock value to be set (overwrites the current stock value, does not update it!)</param>
+        /// <param name="updateOrderCount">Update orderCount; default = true</param>
+        /// <param name="storeAlias"></param>
+        public static void ReplaceStock(int productId, int newStock, bool updateOrderCount, string storeAlias = null)
+        {
+            // todo: not thread safe (no transaction)
 
-			var orderCount = orderedCount + orderCountToUpdate;
-			
-			sqlHelper.ExecuteNonQuery(currentNodeId == 0 ? @"INSERT into uWebshopStock(NodeId, Stock, OrderCount, StoreAlias, createDate, updateDate) values(@pricingId,  @stock, @orderCount, @storeAlias, @createDate, @updateDate)" : @"UPDATE uWebshopStock set Stock = @stock, OrderCount = @orderCount, StoreAlias = @storeAlias, updateDate = @updateDate WHERE NodeId = @pricingId AND StoreAlias = @storeAlias", sqlHelper.CreateParameter("@pricingId", productId), sqlHelper.CreateParameter("@stock", stockCount), sqlHelper.CreateParameter("@orderCount", orderCount), sqlHelper.CreateParameter("@storeAlias", storeAlias), sqlHelper.CreateParameter("@createDate", DateTime.Now), sqlHelper.CreateParameter("@updateDate", DateTime.Now));
-			
-			currentReader.Close();
+            var currentStock = 0;
+            var orderedCount = 0;
+            var currentNodeId = 0;
 
-			return orderCount;
-		}
+            var stockItem =
+                Database.SingleOrDefault<uWebshopStock>(
+                    "SELECT * FROM uWebshopStock WHERE NodeId=@0 AND StoreAlias=@1", productId, storeAlias);
 
-//        public static void InstallStockTable()
-//        {
-//            try
-//            {
-//                uWebshopOrders.SQLHelper.ExecuteNonQuery(@"CREATE TABLE 
-//					[uWebshopStock](
-//					[id] [int] IDENTITY(1,1) PRIMARY KEY NOT NULL,
-//					[Stock] [int] NOT NULL,
-//					[NodeId] [int] NULL,
-//					[OrderCount] [int] NOT NULL, 
-//					[StoreAlias] nvarchar (500) NULL, 
-//					[createDate] [datetime] NULL,
-//					[updateDate] [datetime] NULL)");
-//            }
-//            catch (Exception ex)
-//            {
-//                LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "InstallStockTable Catch: Already Exists? " + ex);
-//            }
-//        }
+            if (stockItem != null)
+            {
+                stockItem.UpdateDateTime = DateTime.Now;
+                currentStock = stockItem.Stock;
+                orderedCount = stockItem.OrderCount;
 
-		/// <summary>
-		/// Updates the stock to a specific value, replaces the current stock with the given value  
-		/// </summary>
-		/// <param name="productId">the nodeId of the pricing this stock applies to</param>
-		/// <param name="newStock">the stock value to be set (overwrites the current stock value, does not update it!)</param>
-		/// <param name="updateOrderCount">Update orderCount; default = true</param>
-		/// <param name="storeAlias"></param>
-		public static void ReplaceStock(int productId, int newStock, bool updateOrderCount, string storeAlias = null)
-		{
-			var setOrderCount = updateOrderCount;
+                stockItem.Stock = newStock;
+                if (updateOrderCount)
+                {
+                    stockItem.OrderCount = orderedCount - (currentStock - newStock);
+                }
+                Database.Update(stockItem);
+            }
+            else
+            {
+                stockItem = new uWebshopStock
+                {
+                    Stock = newStock,
+                    NodeId = currentNodeId,
+                    UpdateDateTime = DateTime.Now
+                };
 
-			var sqlHelper = uWebshopOrders.SQLHelper;
-			if (string.IsNullOrEmpty(storeAlias))
-			{
-				storeAlias = string.Empty;
-			}
+                if (updateOrderCount)
+                {
+                    stockItem.OrderCount = orderedCount - (currentStock - newStock);
+                }
 
-			var currentStock = 0;
-			var orderedCount = 0;
-			var currentNodeId = 0;
+                Database.Insert(stockItem);
+            }
+        }
 
-			var currentReader = sqlHelper.ExecuteReader("SELECT * FROM uWebshopStock WHERE NodeId = @pricingId AND StoreAlias = @storeAlias", sqlHelper.CreateParameter("@pricingId", productId), sqlHelper.CreateParameter("@storeAlias", storeAlias));
-
-			while (currentReader.Read())
-			{
-				currentStock = currentReader.GetInt("Stock");
-				orderedCount = currentReader.GetInt("OrderCount");
-				currentNodeId = currentReader.GetInt("NodeId");
-			}
-
-			var orderCount = orderedCount + (newStock - currentStock);
-
-			if (orderCount < 0)
-			{
-				orderCount = 0;
-			}
-
-			sqlHelper.ExecuteNonQuery(currentNodeId == 0 ? @"INSERT into uWebshopStock(NodeId, Stock, OrderCount, StoreAlias, createDate, updateDate) values(@pricingId, @stock, @orderCount, @storeAlias, @createDate, @updateDate)" : @"UPDATE uWebshopStock set Stock = @stock, OrderCount = @orderCount, StoreAlias = @storeAlias, updateDate = @updateDate WHERE NodeId = @pricingId AND StoreAlias = @storeAlias", sqlHelper.CreateParameter("@pricingId", productId), sqlHelper.CreateParameter("@stock", newStock), sqlHelper.CreateParameter("@orderCount", setOrderCount ? orderCount : orderedCount), sqlHelper.CreateParameter("@storeAlias", storeAlias), sqlHelper.CreateParameter("@createDate", DateTime.Now), sqlHelper.CreateParameter("@updateDate", DateTime.Now));
-			currentReader.Close();
-		}
-		
-		[Obsolete("Use ReplaceStock")]
-		public static void UpdateStock(int productId, int newStock, bool updateOrderCount, string storeAlias = null)
-		{
-			ReplaceStock(productId, newStock, updateOrderCount, storeAlias);
-		}
-	}
-
-	public class StockInfo
-	{
-		public int NodeId;
-		public string StoreAlias;
-		public int Stock;
-		public int OrderCount;
-	}
+    }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using uWebshop.DataAccess;
+using uWebshop.DataAccess.Pocos;
 using uWebshop.Domain.Interfaces;
 
 namespace uWebshop.Domain
@@ -17,7 +18,7 @@ namespace uWebshop.Domain
 		{
 			
 		}
-		public OrderSeries(OrderData orderData)
+		public OrderSeries(uWebshopOrderData orderData)
 		{
 			Id = orderData.SeriesId;
 			CronInterval = orderData.SeriesCronInterval;

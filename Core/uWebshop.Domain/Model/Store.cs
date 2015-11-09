@@ -177,8 +177,16 @@ namespace uWebshop.Domain
 		{
 			get
 			{
-				var firstOrDefault = Currencies.FirstOrDefault(x => x.Ratio == 1);
-				return firstOrDefault != null ? firstOrDefault.ISOCurrencySymbol : CurrencyCodes.FirstOrDefault();
+			    if (Currencies != null)
+			    {
+			        var firstOrDefault = Currencies.FirstOrDefault(x => x.Ratio == 1);
+			        return firstOrDefault != null ? firstOrDefault.ISOCurrencySymbol : CurrencyCodes.FirstOrDefault();
+			    }
+			    else
+			    {
+                    Log.Instance.LogError("DefaultCurrencyCultureSymbol Error: Currencies not set on store?");
+			        return "EUR";
+			    }
 			}
 		}
 

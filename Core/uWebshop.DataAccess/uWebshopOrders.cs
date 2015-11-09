@@ -7,6 +7,7 @@ using uWebshop.Common;
 using umbraco;
 using umbraco.BusinessLogic;
 using umbraco.DataLayer;
+using uWebshop.DataAccess.Pocos;
 using Umbraco.Core;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Persistence;
@@ -18,216 +19,141 @@ namespace uWebshop.DataAccess
 	{
 		public static string ConnectionString;
 
-		internal static ISqlHelper SQLHelper
-		{
-			get { return DataLayerHelper.CreateSqlHelper(ConnectionString); } 
-		}
+        internal static ISqlHelper SQLHelper
+        {
+            get { return DataLayerHelper.CreateSqlHelper(ConnectionString); }
+        }
 
         internal static UmbracoDatabase Database
         {
             get { return UmbracoContext.Current.Application.DatabaseContext.Database; } 
         }
 		
-		public static List<OrderData> GetAllOrderInfos(string where = null)
+		public static IEnumerable<uWebshopOrderData> GetAllOrderInfos(string where = null)
 		{
-		    var orderInfoList = new List<OrderData>();
 			if (where == null) where = "where not orderStatus = 'Incomplete' and not orderStatus = 'Wishlist'";
 
-           var orderInfo = Database.Query<OrderData>("SELECT * FROM uWebshopOrders left outer join uWebshopOrderSeries on seriesID = uWebshopOrderSeries.id  " + where);
-
-
-			var orderInfos = new List<OrderData>();
-			using (var reader =  SQLHelper.ExecuteReader("SELECT * FROM uWebshopOrders left outer join uWebshopOrderSeries on seriesID = uWebshopOrderSeries.id  " + where))
-			{
-				while (reader.Read())
-				{
-					orderInfos.Add(new OrderData(reader));
-				}
-				return orderInfos;
-			}
+		    return
+		        Database.Query<uWebshopOrderData>(
+		            "SELECT * FROM uWebshopOrders left outer join uWebshopOrderSeries on seriesID = uWebshopOrderSeries.id " +
+		            where);
 		}
 
-		public static OrderData GetOrderInfo(Guid orderId)
-		{
-			using (var reader = SQLHelper.ExecuteReader("SELECT * FROM uWebshopOrders left outer join uWebshopOrderSeries on seriesID = uWebshopOrderSeries.id  WHERE uniqueID = @uniqueId", SQLHelper.CreateParameter("@uniqueId", orderId)))
-			{
-				while (reader.Read())
-				{
-					var orderInfo = reader.GetString("orderInfo");
-	
-					if (!string.IsNullOrEmpty(orderInfo))
-					{
-						return new OrderData(reader);
-					}
-				}
+	    public static uWebshopOrderData GetOrderInfo(Guid orderId)
+	    {
+            var orderData = GetAllOrderInfos("WHERE uniqueID = " + orderId);
+          
+	        if (orderData != null && orderData.FirstOrDefault() != null)
+	        {
+	            return orderData.FirstOrDefault();
+	        }
+            
+	        LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType,
+	            DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") +
+	            " uWebshopOrders FAIL to get/read from Database with uniqueId: " + orderId);
+	        return null;
 
-				LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") + " uWebshopOrders FAIL to get/read from Database with uniqueId: " + orderId);
-				return null;
-			}
+	    }
+
+	    public static uWebshopOrderData GetOrderInfo(string transactionId)
+	    {
+            var orderData = GetAllOrderInfos("WHERE transactionID = " + transactionId);
+
+            if (orderData != null && orderData.FirstOrDefault() != null)
+            {
+                return orderData.FirstOrDefault();
+            }
+
+            LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType,
+                DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") +
+                " uWebshopOrders FAIL to get/read from Database with transactionId: " + transactionId);
+            return null;
+        }
+
+		public static uWebshopOrderData GetOrderInfo(int id)
+		{
+            var orderData = GetAllOrderInfos("WHERE uWebshopOrders.id = " + id);
+
+            if (orderData != null && orderData.FirstOrDefault() != null)
+            {
+                return orderData.FirstOrDefault();
+            }
+
+            LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType,
+                DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") +
+                " uWebshopOrders FAIL to get/read from Database with  uWebshopOrders.id: " + id);
+            return null;
+        }
+
+	    public static IEnumerable<uWebshopOrderData> GetOrdersFromCustomer(int customerId, bool includeIncomplete = false)
+	    {
+	        if (customerId == 0)
+	        {
+	            return new List<uWebshopOrderData>();
+	        }
+
+            var orderData = GetAllOrderInfos("WHERE customerID = " +
+                    customerId +
+                    (includeIncomplete ? "" : " and not orderStatus = 'Incomplete' and not orderStatus = 'Wishlist'"));
+
+	        return orderData;
+	    }
+
+	    public static IEnumerable<uWebshopOrderData> GetOrdersFromCustomer(string customerUsername, bool includeIncomplete = false)
+		{
+            if (string.IsNullOrEmpty(customerUsername))
+            {
+                return new List<uWebshopOrderData>();
+            }
+
+            var orderData = GetAllOrderInfos("WHERE customerUsername = " +
+                    customerUsername +
+                    (includeIncomplete ? "" : " and not orderStatus = 'Incomplete' and not orderStatus = 'Wishlist'"));
+
+            return orderData;
 		}
 
-		public static OrderData GetOrderInfo(string transactionId)
+		public static IEnumerable<uWebshopOrderData> GetWishlistsFromCustomer(int customerId)
 		{
-			using (var reader = SQLHelper.ExecuteReader("SELECT * FROM uWebshopOrders left outer join uWebshopOrderSeries on seriesID = uWebshopOrderSeries.id WHERE transactionID = @transactionID", SQLHelper.CreateParameter("@transactionID", transactionId)))
-			{
-				while (reader.Read())
-				{
-					var orderInfo = reader.GetString("orderInfo");
-					if (!string.IsNullOrEmpty(orderInfo))
-					{
-						return new OrderData(reader);
-					}
-				}
-				return null;
-			}
+            if (customerId == 0)
+            {
+                return new List<uWebshopOrderData>();
+            }
+
+            var orderData = GetAllOrderInfos("WHERE customerID = " +
+                    customerId + " and orderStatus = 'Wishlist'");
+
+            return orderData;
 		}
 
-		public static OrderData GetOrderInfo(int id)
+		public static IEnumerable<uWebshopOrderData> GetWishlistsFromCustomer(string customerUsername)
 		{
-			using (var reader = SQLHelper.ExecuteReader("SELECT * FROM uWebshopOrders left outer join uWebshopOrderSeries on seriesID = uWebshopOrderSeries.id WHERE uWebshopOrders.id = @orderId", SQLHelper.CreateParameter("@orderId", id)))
-			{
-				while (reader.Read())
-				{
-					var orderInfo = reader.GetString("orderInfo");
-					if (!string.IsNullOrEmpty(orderInfo))
-					{
-						return new OrderData(reader);
-					}
-				}
-				return null;
-			}
+
+            if (string.IsNullOrEmpty(customerUsername))
+            {
+                return new List<uWebshopOrderData>();
+            }
+
+            var orderData = GetAllOrderInfos("WHERE customerUsername = " +
+                    customerUsername + " and orderStatus = 'Wishlist'");
+
+            return orderData;
 		}
 
-		public static List<OrderData> GetOrdersFromCustomer(int customerId, bool includeIncomplete = false)
+	    public static IEnumerable<uWebshopOrderData> GetOrdersDeliveredBetweenTimes(DateTime startTime, DateTime endTime)
+	    {
+	        if (startTime >= endTime)
+	        {
+	            return new List<uWebshopOrderData>();
+	        }
+
+	        return GetAllOrderInfos("WHERE and not orderStatus = 'Incomplete' and not orderStatus = 'Wishlist' and deliveryDate >= " + startTime + " and deliveryDate <= " + endTime);
+	    }
+
+	    public static void StoreOrder(uWebshopOrderData orderData)
 		{
-			var orderInfos = new List<OrderData>();
-			if (customerId == 0)
-			{
-				return orderInfos;
-			}
-
-			using (var reader = SQLHelper.ExecuteReader("SELECT * FROM uWebshopOrders left outer join uWebshopOrderSeries on seriesID = uWebshopOrderSeries.id  WHERE customerID = @customerID"
-					+ (includeIncomplete ? "" : " and not orderStatus = 'Incomplete' and not orderStatus = 'Wishlist'")
-				, SQLHelper.CreateParameter("@customerID", customerId)))
-			{
-				while (reader.Read())
-				{
-					var orderInfo = reader.GetString("orderInfo");
-					if (!string.IsNullOrEmpty(orderInfo))
-					{
-						orderInfos.Add(new OrderData(reader));
-					}
-				}
-			}
-
-			return orderInfos;
-		}
-
-		public static List<OrderData> GetOrdersFromCustomer(string customerUsername, bool includeIncomplete = false)
-		{
-			var orderInfos = new List<OrderData>();
-
-			if (string.IsNullOrEmpty(customerUsername))
-			{
-				return orderInfos;
-			}
-
-			using (var reader = SQLHelper.ExecuteReader(
-				"SELECT * FROM uWebshopOrders left outer join uWebshopOrderSeries on seriesID = uWebshopOrderSeries.id  WHERE customerUsername = @customerUsername"
-					+ (includeIncomplete ? "" : " and not orderStatus = 'Incomplete' and not orderStatus = 'Wishlist'"),
-				SQLHelper.CreateParameter("@customerUsername", customerUsername)))
-			{
-				while (reader.Read())
-				{
-					var orderInfo = reader.GetString("orderInfo");
-					if (!string.IsNullOrEmpty(orderInfo))
-					{
-						orderInfos.Add(new OrderData(reader));
-					}
-				}
-			}
-			return orderInfos;
-		}
-
-		public static List<OrderData> GetWishlistsFromCustomer(int customerId)
-		{
-			var orderInfos = new List<OrderData>();
-			if (customerId == 0)
-			{
-				return orderInfos;
-			}
-
-			using (var reader = SQLHelper.ExecuteReader("SELECT * FROM uWebshopOrders left outer join uWebshopOrderSeries on seriesID = uWebshopOrderSeries.id  WHERE customerID = @customerID and orderStatus = 'Wishlist'",
-				SQLHelper.CreateParameter("@customerID", customerId)))
-			{
-				while (reader.Read())
-				{
-					var orderInfo = reader.GetString("orderInfo");
-					if (!string.IsNullOrEmpty(orderInfo))
-					{
-						orderInfos.Add(new OrderData(reader));
-					}
-				}
-			}
-
-			return orderInfos;
-		}
-
-		public static List<OrderData> GetWishlistsFromCustomer(string customerUsername)
-		{
-			var orderInfos = new List<OrderData>();
-
-			if (string.IsNullOrEmpty(customerUsername))
-			{
-				return orderInfos;
-			}
-
-			using (var reader = SQLHelper.ExecuteReader(
-				"SELECT * FROM uWebshopOrders left outer join uWebshopOrderSeries on seriesID = uWebshopOrderSeries.id  WHERE customerUsername = @customerUsername and orderStatus = 'Wishlist'",
-				SQLHelper.CreateParameter("@customerUsername", customerUsername)))
-			{
-				while (reader.Read())
-				{
-					var orderInfo = reader.GetString("orderInfo");
-					if (!string.IsNullOrEmpty(orderInfo))
-					{
-						orderInfos.Add(new OrderData(reader));
-					}
-				}
-			}
-			return orderInfos;
-		}
-
-		public static List<OrderData> GetOrdersDeliveredBetweenTimes(DateTime startTime, DateTime endTime)
-		{
-			var orderInfos = new List<OrderData>();
-
-			if (startTime >= endTime)
-			{
-				return orderInfos;
-			}
-
-			using (var reader = SQLHelper.ExecuteReader(
-				"SELECT * FROM uWebshopOrders left outer join uWebshopOrderSeries on seriesID = uWebshopOrderSeries.id " +
-				" WHERE deliveryDate >= @startTime and deliveryDate <= @endTime",
-				SQLHelper.CreateParameter("@startTime", startTime),
-				SQLHelper.CreateParameter("@endTime", endTime)))
-			{
-				while (reader.Read())
-				{
-					var orderInfo = reader.GetString("orderInfo");
-					if (!string.IsNullOrEmpty(orderInfo))
-					{
-						orderInfos.Add(new OrderData(reader));
-					}
-				}
-			}
-			return orderInfos;
-		}
-
-		public static void StoreOrder(OrderData orderData)
-		{
-			if (string.IsNullOrWhiteSpace(orderData.OrderXML))
+            // todo: lots of code removed on 28-10-2015 so TEST TEST TEST
+			if (string.IsNullOrWhiteSpace(orderData.OrderInfo))
 				throw new Exception("Saving order without XML");
 			// id, storeOrderReferenceID and orderNumber are either generated or delicate to manage
 
@@ -235,292 +161,137 @@ namespace uWebshop.DataAccess
 			{
 				// todo create or update
 			}
-
-			if (SQLHelper.ConnectionString.Contains("|DataDirectory|") || DataLayerHelper.IsEmbeddedDatabase(ConnectionString) || ConnectionString.ToLower().Contains("mysql"))
-			{
-				// todo: orderseries on SQLCE
-
-				// SQLCE might get a performance hit (extra query)
-				var orderExists = orderData.DatabaseId > 0 || GetOrderInfo(orderData.UniqueId) != null;
-				SQLHelper.ExecuteNonQuery(orderExists ? @"UPDATE uWebshopOrders set orderInfo = @orderInfo, orderStatus = @orderStatus, updateDate = @updateDate,
-								storeAlias = @storeAlias, customerID = @customerID, customerUsername = @customerUsername,
-								customerEmail = @customerEmail, customerFirstName = @customerFirstName, orderNumber = @orderNumber,
-								customerLastName = @customerLastName, transactionID = @transactionID, deliveryDate = @deliveryDate, seriesID = @seriesID where uniqueID = @uniqueID" : @"insert into uWebshopOrders(uniqueID, orderInfo, orderStatus, createDate, updateDate, storeAlias, customerID, customerUsername, customerEmail, customerFirstName, customerLastName, transactionID, orderNumber, storeOrderReferenceID, deliveryDate, seriesID)
-							values(@uniqueID, @orderInfo, @orderStatus, @createDate, @updateDate, @storeAlias, @customerID, @customerUsername, @customerEmail, @customerFirstName, @customerLastName, @transactionID, @orderNumber, @storeOrderReferenceID, @deliveryDate, @seriesID)", 
-						SQLHelper.CreateParameter("@orderInfo", orderData.OrderXML), 
-						SQLHelper.CreateParameter("@uniqueID", orderData.UniqueId),
-						CreateParameterFromNullableValue("@storeOrderReferenceID", orderData.StoreOrderReferenceId),
-						CreateDbNullStringParameter("@orderNumber", orderData.OrderReferenceNumber),
-						CreateDbNullStringParameter("@orderStatus", orderData.OrderStatus), 
-						SQLHelper.CreateParameter("@createDate", DateTime.Now), 
-						SQLHelper.CreateParameter("@updateDate", DateTime.Now),
-						CreateDbNullStringParameter("@storeAlias", orderData.StoreAlias),
-						CreateParameterFromNullableValue("@customerID", orderData.CustomerId),
-						CreateDbNullStringParameter("@customerUsername", orderData.CustomerUsername),
-						CreateDbNullStringParameter("@customerEmail", orderData.CustomerEmail),
-						CreateDbNullStringParameter("@customerFirstName", orderData.CustomerFirstName),
-						CreateDbNullStringParameter("@customerLastName", orderData.CustomerLastName),
-						CreateDbNullStringParameter("@transactionID", orderData.TransactionId),
-						CreateParameterFromNullableValue("@deliveryDate", orderData.DeliveryDate),
-						SQLHelper.CreateParameter("@seriesID", orderData.SeriesId));
-				if (!orderExists)
-				{
-					// another performance hit for sqlCE, select identity not possible within same command
-					var insertedId = SQLHelper.ExecuteScalar<int>("select id from uWebshopOrders where uniqueID = @uniqueID", SQLHelper.CreateParameter("@uniqueID", orderData.UniqueId));
-					if (orderData.DatabaseId == 0 && insertedId > 0)
-					{
-						orderData.SetGeneratedDatabaseId(insertedId);
-					}
-				}
-			}
-			else
-			{
-				//Log.Instance.LogDebug(DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") + " >>>>SQL<<<< combined INSERTorUPDATE orderInfo");
-				var insertedId = SQLHelper.ExecuteScalar<int>(
-					@"
-					IF (@seriesID > 0 and @seriesCronInterval is not null)
-					BEGIN
-						update uWebshopOrderSeries 
-							set cronInterval = @seriesCronInterval, [start] = @seriesStart, [end] = @seriesEnd, endAfterInstances = @seriesEndAfterInstances
-							where id = @seriesID
-					END 
-					ELSE IF (@seriesID = 0 and @seriesCronInterval is not null)
-					BEGIN
-						insert into uWebshopOrderSeries(cronInterval,[start],[end],endAfterInstances)
-						values(@seriesCronInterval,@seriesStart,@seriesEnd,@seriesEndAfterInstances)
-						select @seriesID = @@IDENTITY
-					END
-					ELSE IF (@seriesID > 0)
-					BEGIN
-						delete from uWebshopOrderSeries where id = @seriesID
-						select @seriesID = 0
-					END
-
-					IF (SELECT Count(ID) FROM uWebshopOrders WHERE uniqueID = @uniqueId)=0 
-					BEGIN 
-						insert into uWebshopOrders(uniqueID, orderInfo, orderStatus, createDate, updateDate, storeAlias, customerID, customerUsername, customerEmail, customerFirstName, customerLastName, transactionID, orderNumber, storeOrderReferenceID, deliveryDate, seriesID)
-						values(@uniqueID, @orderInfo, @orderStatus, @createDate, @updateDate, @storeAlias, @customerID, @customerUsername, @customerEmail, @customerFirstName, @customerLastName, @transactionID, @orderNumber, @storeOrderReferenceID, @deliveryDate, @seriesID) 
-						select @@IDENTITY
-					END 
-					ELSE 
-					BEGIN 
-						update uWebshopOrders set orderInfo = @orderInfo, orderStatus = @orderStatus, updateDate = @updateDate,
-							storeAlias = @storeAlias, customerID = @customerID, customerUsername = @customerUsername,
-							customerEmail = @customerEmail, customerFirstName = @customerFirstName, orderNumber = @orderNumber, storeOrderReferenceID = @storeOrderReferenceID,
-							customerLastName = @customerLastName, transactionID = @transactionID, deliveryDate = @deliveryDate, seriesID = @seriesID	where uniqueID = @uniqueID 
-						select -1
-					END", 
-						SQLHelper.CreateParameter("@orderInfo", orderData.OrderXML), 
-						SQLHelper.CreateParameter("@uniqueID", orderData.UniqueId),
-						CreateParameterFromNullableValue("@storeOrderReferenceID", orderData.StoreOrderReferenceId),
-						CreateDbNullStringParameter("@orderNumber", orderData.OrderReferenceNumber),
-						CreateDbNullStringParameter("@orderStatus", orderData.OrderStatus),
-						SQLHelper.CreateParameter("@createDate", DateTime.Now), 
-						SQLHelper.CreateParameter("@updateDate", DateTime.Now),
-						CreateDbNullStringParameter("@storeAlias", orderData.StoreAlias),
-						CreateParameterFromNullableValue("@customerID", orderData.CustomerId),
-						CreateDbNullStringParameter("@customerUsername", orderData.CustomerUsername),
-						CreateDbNullStringParameter("@customerEmail", orderData.CustomerEmail),
-						CreateDbNullStringParameter("@customerFirstName", orderData.CustomerFirstName),
-						CreateDbNullStringParameter("@customerLastName", orderData.CustomerLastName),
-						CreateDbNullStringParameter("@transactionID", orderData.TransactionId),
-						CreateParameterFromNullableValue("@deliveryDate", orderData.DeliveryDate),
-						SQLHelper.CreateParameter("@seriesID", orderData.SeriesId),
-						CreateDbNullStringParameter("@seriesCronInterval", orderData.SeriesCronInterval),
-						CreateParameterFromNullableValue("@seriesStart", orderData.SeriesStart),
-						CreateParameterFromNullableValue("@seriesEnd", orderData.SeriesEnd),
-						SQLHelper.CreateParameter("@seriesEndAfterInstances", orderData.SeriesEndAfterInstances)
-					);
-				if (orderData.DatabaseId == 0 && insertedId > 0)
-				{
-					orderData.SetGeneratedDatabaseId(insertedId);
-				}
-				if (!string.IsNullOrWhiteSpace(orderData.SeriesCronInterval))
-				{
-					var newSeriesId = SQLHelper.ExecuteScalar<int>("select seriesId from uWebshopOrders where id = @orderId", SQLHelper.CreateParameter("@orderId", orderData.DatabaseId));
-					if (newSeriesId < 1) throw new ApplicationException("Did not create orderSeries in database or no id");
-					orderData.SetGeneratedDatabaseSeriesId(newSeriesId);
-				}
-			}
-		}
-		private static IParameter CreateDbNullStringParameter(string parameterName, string field)
-		{
-			return SQLHelper.CreateParameter(parameterName, string.IsNullOrWhiteSpace(field) ? DBNull.Value : (object)field);
-		}
-		private static IParameter CreateParameterFromNullableValue<T>(string parameterName, T? value) where T : struct, IComparable
-		{
-			return SQLHelper.CreateParameter(parameterName, value == null ? DBNull.Value : (object)value.Value);
+            Database.Insert(orderData);
 		}
 
-		public static void SetOrderInfo(Guid orderId, string serializedOrderInfoObject, OrderStatus orderStatus)
+
+        public static void SetOrderInfo(Guid orderId, string serializedOrderInfoObject, OrderStatus orderStatus)
 		{
 			SetOrderInfo(orderId, serializedOrderInfoObject, orderStatus.ToString());
 		}
 
 		public static void SetOrderInfo(Guid orderId, string serializedOrderInfoObject, string orderStatus)
 		{
-			if (SQLHelper.ConnectionString.Contains("|DataDirectory|") || DataLayerHelper.IsEmbeddedDatabase(ConnectionString) || ConnectionString.ToLower().Contains("mysql"))
-			{
-				// SQLCE gets a performance hit (extra query, no way around it)
-				var orderExists = GetOrderInfo(orderId) != null;
-				//if (orderExists)
-				//    Log.Instance.LogDebug(DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") + " >>>>SQL<<<< UPDATE orderInfo");
-				//else
-				//    Log.Instance.LogDebug(DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") + " >>>>SQL<<<< INSERT orderInfo");
-				SQLHelper.ExecuteNonQuery(orderExists ? @"UPDATE uWebshopOrders set orderInfo = @orderInfo, orderStatus = @orderStatus, updateDate = @updateDate where uniqueID = @uniqueID" : @"INSERT into uWebshopOrders(uniqueID, orderInfo, orderStatus, createDate, updateDate) values(@uniqueID, @orderInfo, @orderStatus, @createDate, @updateDate)", SQLHelper.CreateParameter("@orderInfo", serializedOrderInfoObject), SQLHelper.CreateParameter("@uniqueID", orderId), SQLHelper.CreateParameter("@orderStatus", orderStatus), SQLHelper.CreateParameter("@createDate", DateTime.Now), SQLHelper.CreateParameter("@updateDate", DateTime.Now));
-			}
-			else
-			{
-				//Log.Instance.LogDebug(DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") + " >>>>SQL<<<< combined INSERTorUPDATE orderInfo");
-				SQLHelper.ExecuteNonQuery("IF (SELECT Count(ID) FROM uWebshopOrders WHERE uniqueID = @uniqueId)=0 BEGIN insert into uWebshopOrders(uniqueID, orderInfo, orderStatus, createDate, updateDate) " + "values(@uniqueID, @orderInfo, @orderStatus, @createDate, @updateDate) END ELSE BEGIN update uWebshopOrders set orderInfo = @orderInfo, orderStatus = @orderStatus, updateDate = @updateDate where uniqueID = @uniqueID END", SQLHelper.CreateParameter("@orderInfo", serializedOrderInfoObject), SQLHelper.CreateParameter("@uniqueID", orderId), SQLHelper.CreateParameter("@orderStatus", orderStatus), SQLHelper.CreateParameter("@createDate", DateTime.Now), SQLHelper.CreateParameter("@updateDate", DateTime.Now));
-			}
+            var order = GetOrderInfo(orderId);
+            var dateTime = DateTime.Now;
+
+		    if (order != null)
+		    {
+		        order.OrderInfo = serializedOrderInfoObject;
+		        order.OrderStatus = orderStatus;
+		        order.UpdateDate = dateTime;
+		        Database.Update(order);
+		    }
+		    else
+		    {
+		        var newOrder = new uWebshopOrderData
+		        {
+		            OrderInfo = serializedOrderInfoObject,
+		            OrderStatus = orderStatus,
+		            CreateDate = dateTime,
+		            UpdateDate = dateTime
+		        };
+		        Database.Insert(newOrder);
+            }
 		}
 
-		public static void ChangeOrderStatus(Guid orderId, OrderStatus orderStatus)
-		{
-			SQLHelper.ExecuteNonQuery("update uWebshopOrders set orderStatus = @orderStatus, updateDate = @updateDate where uniqueID = @uniqueID", SQLHelper.CreateParameter("@uniqueID", orderId), SQLHelper.CreateParameter("@orderStatus", orderStatus), SQLHelper.CreateParameter("@updateDate", DateTime.Now));
-		}
 
-		public static void SetTransactionId(Guid orderId, string transactionId)
-		{
-			SQLHelper.ExecuteNonQuery("update uWebshopOrders set transactionID = @transactionID, updateDate = @updateDate where uniqueID = @uniqueID", SQLHelper.CreateParameter("@uniqueID", orderId), SQLHelper.CreateParameter("@transactionID", transactionId), SQLHelper.CreateParameter("@updateDate", DateTime.Now));
-		}
+	    public static void ChangeOrderStatus(Guid orderId, OrderStatus orderStatus)
+	    {
+	        var order = GetOrderInfo(orderId);
 
-		/// <summary>
-		/// Set the Umbraco Member Id (when using umbraco members)
-		/// </summary>
-		/// <param name="orderId">The order unique identifier.</param>
-		/// <param name="customerId">The customer unique identifier.</param>
-		public static void SetCustomerId(Guid orderId, int customerId)
-		{
-			SQLHelper.ExecuteNonQuery("update uWebshopOrders set customerID = @customerID, updateDate = @updateDate where uniqueID = @uniqueID", SQLHelper.CreateParameter("@uniqueID", orderId), SQLHelper.CreateParameter("@customerID", customerId), SQLHelper.CreateParameter("@updateDate", DateTime.Now));
-		}
-		
-		/// <summary>
-		/// Set the .Net Membership Loginname
-		/// </summary>
-		/// <param name="orderId">The order unique identifier.</param>
-		/// <param name="userName">Name of the user.</param>
-		public static void SetCustomer(Guid orderId, string userName)
-		{
-			SQLHelper.ExecuteNonQuery("update uWebshopOrders set customerUsername = @customerUsername, updateDate = @updateDate where uniqueID = @uniqueID", SQLHelper.CreateParameter("@uniqueID", orderId), SQLHelper.CreateParameter("@customerUsername", userName), SQLHelper.CreateParameter("@updateDate", DateTime.Now));
-		}
+	        order.OrderStatus = orderStatus.ToString();
 
-		public static void UpdateCustomerUsername(Guid orderId, string newCustomerUsername)
-		{
-			SQLHelper.ExecuteNonQuery("update uWebshopOrders set customerUsername = @customerUsername, updateDate = @updateDate where uniqueID = @uniqueID", SQLHelper.CreateParameter("@uniqueID", orderId), SQLHelper.CreateParameter("@customerUsername", newCustomerUsername), SQLHelper.CreateParameter("@updateDate", DateTime.Now));
-		}
+	        Database.Update("uWebshopOrders", "id", order);
+	    }
 
-		[Browsable(false)]
-		[Obsolete("use UpdateCustomerUsername(Guid orderId, string newCustomerUsername)")]
-		public static void UpdateCustomerId(Guid orderId, int newCustomerId)
-		{
-			SQLHelper.ExecuteNonQuery("update uWebshopOrders set customerID = @customerID, updateDate = @updateDate where uniqueID = @uniqueID", SQLHelper.CreateParameter("@uniqueID", orderId), SQLHelper.CreateParameter("@customerID", newCustomerId), SQLHelper.CreateParameter("@updateDate", DateTime.Now));
-		}
+	    public static void SetTransactionId(Guid orderId, string transactionId)
+	    {
+	        var order = GetOrderInfo(orderId);
 
-		public static void UpdateCustomerId(int oldCustomerId, int newCustomerId)
-		{
-			SQLHelper.ExecuteNonQuery("update uWebshopOrders set customerID = @newcustomerID, updateDate = @updateDate where customerID = @oldCustomerID", SQLHelper.CreateParameter("@newcustomerID", newCustomerId), SQLHelper.CreateParameter("@oldCustomerID", oldCustomerId), SQLHelper.CreateParameter("@updateDate", DateTime.Now));
-		}
+	        order.TransactionId = transactionId;
 
-		public static void UpdateCustomerUsername(string oldCustomerUsername, string newCustomerUsername)
-		{
-			SQLHelper.ExecuteNonQuery("update uWebshopOrders set customerUsername = @newCustomerUserName, updateDate = @updateDate where customerUsername = @oldCustomerUserName", SQLHelper.CreateParameter("@newCustomerUserName", newCustomerUsername), SQLHelper.CreateParameter("@oldCustomerUserName", oldCustomerUsername), SQLHelper.CreateParameter("@updateDate", DateTime.Now));
-		}
+	        Database.Update(order);
+	    }
 
-//        public static void InstallOrderTable()
-//        {
-//            try
-//            {
-//                SQLHelper.ExecuteNonQuery(@"CREATE TABLE 
-//					[uWebshopOrders](
-//					[id] [int] IDENTITY(1,1) PRIMARY KEY NOT NULL,
-//					[uniqueID] [uniqueidentifier] NULL,
-//					[customerEmail] nvarchar (500) NULL, 
-//					[customerFirstName] nvarchar (500) NULL, 
-//					[customerLastName] nvarchar (500) NULL,
-//					[orderNumber] nvarchar (100) NULL,
-//					[storeOrderReferenceID] int NULL,
-//					[orderInfo] nvarchar (max) NULL, 
-//					[orderStatus] nvarchar (100) NULL,
-//					[transactionID] nvarchar (100) NULL,
-//					[storeAlias] nvarchar (500) NULL,
-//					[customerID] int NULL,
-//					[customerUsername] nvarchar (500) NULL,
-//					[createDate] [datetime] NULL,
-//					[updateDate] [datetime] NULL,
-//					[deliveryDate] [datetime] NULL,
-//					[seriesID] [int] NULL)");
-//            }
-//            catch (Exception ex)
-//            {
-//                LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "InstallOrderTable Catch: Already Exists? Exception: " + ex);
-//                try
-//                {
-//                    SQLHelper.ExecuteNonQuery(@"ALTER TABLE [uWebshopOrders]
-//						ADD [customerUsername] nvarchar (500) NULL");
-//                }
-//                catch
-//                {
-//                    LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "InstallOrderTable Catch adding customerUsername column: Already Exists? Exception: " + ex);
-//                }
-//                try
-//                {
-//                    SQLHelper.ExecuteNonQuery(@"ALTER TABLE [uWebshopOrders]
-//						ADD [storeOrderReferenceID] int NULL");
-//                }
-//                catch
-//                {
-//                    LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "InstallOrderTable Catch adding storeOrderReferenceID column: Already Exists? Exception: " + ex);
-//                }
-//                try
-//                {
-//                    SQLHelper.ExecuteNonQuery(@"ALTER TABLE [uWebshopOrders]
-//						ADD [deliveryDate] [datetime] NULL");
-//                    SQLHelper.ExecuteNonQuery(@"ALTER TABLE [uWebshopOrders]
-//						ADD [seriesID] [int] NULL");
-//                }
-//                catch
-//                {
-//                    LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "InstallOrderTable Catch adding deliveryDate,seriesID columns: Already Exists? Exception: " + ex);
-//                }
-//            }
-//        }
+	    /// <summary>
+	    /// Set the Umbraco Member Id (when using umbraco members)
+	    /// </summary>
+	    /// <param name="orderId">The order unique identifier.</param>
+	    /// <param name="customerId">The customer unique identifier.</param>
+	    public static void SetCustomerId(Guid orderId, int customerId)
+	    {
+	        var order = GetOrderInfo(orderId);
+
+	        order.CustomerId = customerId;
+
+	        Database.Update(order);
+	    }
+
+	    /// <summary>
+	    /// Set the .Net Membership Loginname
+	    /// </summary>
+	    /// <param name="orderId">The order unique identifier.</param>
+	    /// <param name="userName">Name of the user.</param>
+	    public static void SetCustomer(Guid orderId, string userName)
+	    {
+	        var order = GetOrderInfo(orderId);
+
+            order.UpdateDate = DateTime.Now;
+            order.CustomerUsername = userName;
+
+	        Database.Update(order);
+	    }
+
+	    public static void UpdateCustomerId(int oldCustomerId, int newCustomerId)
+	    {
+            Database.Update<uWebshopOrderData>("SET customerID=@0 WHERE customerID=@1", newCustomerId, oldCustomerId);
+        }
+
+	    public static void UpdateCustomerUsername(string oldCustomerUsername, string newCustomerUsername)
+	    {
+	        Database.Update<uWebshopOrderData>("SET customerUsername=@0 WHERE customerUsername=@1", newCustomerUsername,
+	            oldCustomerUsername);
+	    }
+        
 		public static void SetCustomerInfo(Guid orderId, XElement element)
 		{
-			if (element.Name == "customerEmail")
-			{
-				//Log.Instance.LogDebug(DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") + " >>>>SQL<<<< UPDATE customerEmail");
-				SQLHelper.ExecuteNonQuery("update uWebshopOrders set customerEmail = @customerEmail, updateDate = @updateDate where uniqueID = @uniqueID", SQLHelper.CreateParameter("@uniqueID", orderId), SQLHelper.CreateParameter("@customerEmail", element.Value), SQLHelper.CreateParameter("@updateDate", DateTime.Now));
+            var order = GetOrderInfo(orderId);
+		    order.UpdateDate = DateTime.Now;
+
+            if (element.Name == "customerEmail")
+            {
+                order.CustomerEmail = element.Value;
 			}
-			if (element.Name == "customerFirstName")
-			{
-				//Log.Instance.LogDebug(DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") + " >>>>SQL<<<< UPDATE customerFirstName");
-				SQLHelper.ExecuteNonQuery("update uWebshopOrders set customerFirstName = @customerFirstName, updateDate = @updateDate where uniqueID = @uniqueID", SQLHelper.CreateParameter("@uniqueID", orderId), SQLHelper.CreateParameter("@customerFirstName", element.Value), SQLHelper.CreateParameter("@updateDate", DateTime.Now));
-			}
-			if (element.Name == "customerLastName")
-			{
-				//Log.Instance.LogDebug(DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") + " >>>>SQL<<<< UPDATE customerLastName");
-				SQLHelper.ExecuteNonQuery("update uWebshopOrders set customerLastName = @customerLastName, updateDate = @updateDate where uniqueID = @uniqueID", SQLHelper.CreateParameter("@uniqueID", orderId), SQLHelper.CreateParameter("@customerLastName", element.Value), SQLHelper.CreateParameter("@updateDate", DateTime.Now));
-			}
+		    if (element.Name == "customerFirstName")
+		    {
+		        order.CustomerFirstName = element.Value;
+		    }
+		    if (element.Name == "customerLastName")
+		    {
+		        order.CustomerLastName = element.Value;
+		    }
+		    Database.Update(order);
 		}
 		public static void SetCustomerInfo(Guid orderId, string customerEmail, string customerFirstName, string customerLastName)
 		{
-			customerFirstName = customerFirstName ?? string.Empty;
-			customerLastName = customerLastName ?? string.Empty;
-			customerEmail = customerEmail ?? string.Empty;
-			SQLHelper.ExecuteNonQuery("update uWebshopOrders set customerEmail = @customerEmail, " +
-				"customerFirstName = @customerFirstName, customerLastName = @customerLastName, " +
-				"updateDate = @updateDate where uniqueID = @uniqueID",
-				SQLHelper.CreateParameter("@uniqueID", orderId),
-				SQLHelper.CreateParameter("@customerEmail", customerEmail),
-				SQLHelper.CreateParameter("@customerFirstName", customerFirstName),
-				SQLHelper.CreateParameter("@customerLastName", customerLastName),
-				SQLHelper.CreateParameter("@updateDate", DateTime.Now));
-		}
+            customerFirstName = customerFirstName ?? string.Empty;
+            customerLastName = customerLastName ?? string.Empty;
+            customerEmail = customerEmail ?? string.Empty;
+
+            var order = GetOrderInfo(orderId);
+            order.UpdateDate = DateTime.Now;
+
+		    order.CustomerFirstName = customerFirstName;
+		    order.CustomerLastName = customerLastName;
+		    order.CustomerEmail = customerEmail;
+
+            Database.Update(order);
+        }
 
 		public static string GetHighestOrderNumberForStore(string storeAlias, ref int referenceId)
 		{
+            // todo: use PetaPoco
 			using (var reader = SQLHelper.ExecuteReader("SELECT orderNumber, storeOrderReferenceID FROM uWebshopOrders WHERE StoreAlias = @storeAlias ORDER BY id DESC", SQLHelper.CreateParameter("@storeAlias", storeAlias)))
 			{
 				while (reader.Read())
@@ -540,7 +311,8 @@ namespace uWebshop.DataAccess
 
 		public static string GetHighestOrderNumber(ref int referenceId)
 		{
-			using (var reader = SQLHelper.ExecuteReader("SELECT orderNumber, storeOrderReferenceID FROM uWebshopOrders ORDER BY id DESC"))
+            // todo: use PetaPoco
+            using (var reader = SQLHelper.ExecuteReader("SELECT orderNumber, storeOrderReferenceID FROM uWebshopOrders ORDER BY id DESC"))
 			{
 				while (reader.Read())
 				{
@@ -559,16 +331,21 @@ namespace uWebshop.DataAccess
 
 		public static void SetOrderNumber(Guid uniqueOrderId, string orderNumber, string storeAlias, int storeOrderReferenceID)
 		{
-			LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "SetOrderNumber orderNumber: " + orderNumber + " storeOrderReferenceID: " + storeOrderReferenceID);
+            LogHelper.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "SetOrderNumber orderNumber: " + orderNumber + " storeOrderReferenceID: " + storeOrderReferenceID);
+            
+            var order = GetOrderInfo(uniqueOrderId);
+            order.UpdateDate = DateTime.Now;
+		    order.OrderNumber = orderNumber;
+		    order.StoreOrderReferenceId = storeOrderReferenceID;
+		    order.StoreAlias = storeAlias;
 
-			SQLHelper.ExecuteNonQuery("update uWebshopOrders set orderNumber = @orderNumber, storeOrderReferenceID = @storeOrderReferenceID, storeAlias = @storeAlias, updateDate = @updateDate where uniqueID = @uniqueID", SQLHelper.CreateParameter("@uniqueID", uniqueOrderId), SQLHelper.CreateParameter("@storeOrderReferenceID", storeOrderReferenceID), SQLHelper.CreateParameter("@orderNumber", orderNumber), SQLHelper.CreateParameter("@storeAlias", storeAlias), SQLHelper.CreateParameter("@updateDate", DateTime.Now));
+		    Database.Update(order);
 		}
 
 		public static int AssignNewOrderNumberToOrder(int databaseId, string alias, int orderNumberStartNumber)
 		{
-			if (databaseId <= 0) throw new Exception("No valid database id");
-
-			return SQLHelper.ExecuteScalar<int>(@"begin tran
+            // todo: use PetaPoco
+            return SQLHelper.ExecuteScalar<int>(@"begin tran
 
 declare @storeOrderReferenceID int
 set @storeOrderReferenceID =  coalesce((SELECT top 1 storeOrderReferenceID FROM uWebshopOrders WHERE StoreAlias = @storeAlias ORDER BY storeOrderReferenceID DESC),0) + 1
@@ -583,7 +360,8 @@ commit tran", SQLHelper.CreateParameter("@id", databaseId), SQLHelper.CreatePara
 
 		public static int AssignNewOrderNumberToOrderSharedBasket(int databaseId, string alias, int orderNumberStartNumber)
 		{
-			if (databaseId <= 0) throw new Exception("No valid database id");
+            // todo: use PetaPoco
+            if (databaseId <= 0) throw new Exception("No valid database id");
 
 			return SQLHelper.ExecuteScalar<int>(@"begin tran
 
@@ -602,44 +380,45 @@ commit tran", SQLHelper.CreateParameter("@id", databaseId), SQLHelper.CreatePara
 		{
 			var lastOrderNumber = 0;
 
-			if (ConnectionString.ToLower().Contains("mysql"))
-			{
-				// MySQL: SELECT * FROM uWebshopOrders ORDER BY id desc LIMIT 0,1
-				var mySqLreader = SQLHelper.ExecuteReader("SELECT * FROM uWebshopOrders ORDER BY id desc LIMIT 0,1");
+			var reader = Database.Fetch<uWebshopOrderData>("SELECT TOP(1) id FROM uWebshopOrders ORDER BY id DESC");
 
-				while (mySqLreader.Read())
-				{
-					lastOrderNumber = mySqLreader.GetInt("id");
-				}
-			}
-			else
-			{
-				var reader = SQLHelper.ExecuteReader("SELECT TOP(1) id FROM uWebshopOrders ORDER BY id DESC");
+		    var firstOrDefault = reader.FirstOrDefault();
+		    if (firstOrDefault != null)
+		    {
+		        lastOrderNumber = firstOrDefault.StoreOrderReferenceId;
+		    }
 
-				while (reader.Read())
-				{
-					lastOrderNumber = reader.GetInt("id");
-				}
-			}
-			return lastOrderNumber;
+		    return lastOrderNumber;
 		}
-
-		public static void Delete(IEnumerable<OrderData> orders)
+        
+		public static void Delete(IEnumerable<uWebshopOrderData> orders)
 		{
-			Delete(orders.Select(order => order.UniqueId));
+			foreach (var order in orders)
+		    {
+		        Database.Delete<uWebshopOrderData>(order);
+		    }
 		}
 
-		public static void Delete(IEnumerable<Guid> orderGuids)
-		{
-			if (!orderGuids.Any()) return;
 
-			SQLHelper.ExecuteNonQuery("DELETE from uWebshopOrders where uniqueID in (" + string.Join(",", orderGuids.Select(g => g.ToString()).ToArray()) + ")");
-		}
+        public static void Delete(IEnumerable<Guid> orderGuids)
+        {
+            // todo: optimize!
+            foreach (var orderGuid in orderGuids)
+            {
+                Database.Delete(GetOrderInfo(orderGuid));
+            }
+        }
 
-		public static void RemoveScheduledOrdersWithSeriesId(int seriesId)
-		{
-			if (seriesId <= 0) throw new ArgumentOutOfRangeException("seriesId");
-			SQLHelper.ExecuteNonQuery("DELETE from uWebshopOrders where seriesID = @seriesId and orderStatus = 'Scheduled'", SQLHelper.CreateParameter("@seriesId", seriesId));
-		}
+        public static void RemoveScheduledOrdersWithSeriesId(int seriesId)
+	    {
+	        if (seriesId <= 0) throw new ArgumentOutOfRangeException("seriesId");
+
+	        var orders = GetAllOrderInfos("where seriesID = @seriesId and orderStatus = 'Scheduled'");
+
+	        foreach (var order in orders)
+	        {
+	            Database.Delete(order);
+	        }
+	    }
 	}
 }

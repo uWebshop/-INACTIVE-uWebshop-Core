@@ -29,15 +29,23 @@ namespace uWebshop.Domain.Model
 
 		public static ILocalization CreateLocalization(IStore store, string currencyCode = null)
 		{
-			// todo: if no defaultstore currency is set (should not be possible), fallback to EUR (since most customers are EUR based)
-			if (store.DefaultCurrencyCultureSymbol != null)
-			{
-				currencyCode = currencyCode != null ? currencyCode.ToUpperInvariant() : store.DefaultCurrencyCultureSymbol.ToUpperInvariant();
-				var currency = store.Currencies.SingleOrDefault(c => c.ISOCurrencySymbol == currencyCode) ?? new DefaultStoreCurrency {ISOCurrencySymbol = store.DefaultCurrencyCultureSymbol, Ratio = 1, CurrencySymbol = API.Store.GetCurrencySymbol(store.DefaultCurrencyCultureSymbol)};
-				return new Localization {Store = store, Currency = currency};
-			}
+			currencyCode = currencyCode != null ? currencyCode.ToUpperInvariant() : store.DefaultCurrencyCultureSymbol.ToUpperInvariant();
 
-			return new Localization {Store = store, Currency = new DefaultStoreCurrency { ISOCurrencySymbol = "EUR", Ratio = 1, CurrencySymbol = "€"}};
+		    if (store.Currencies != null)
+		    {
+		        var currenciesOnStore = store.Currencies.SingleOrDefault(c => c.ISOCurrencySymbol == currencyCode);
+		        return new Localization {Store = store, Currency = currenciesOnStore};
+		    }
+            
+		    var fallbackCurrency = new DefaultStoreCurrency
+		    {
+		        ISOCurrencySymbol = store.DefaultCurrencyCultureSymbol,
+		        Ratio = 1,
+		        CurrencySymbol = API.Store.GetCurrencySymbol(store.DefaultCurrencyCultureSymbol)
+		    };
+
+		    return new Localization {Store = store, Currency = fallbackCurrency };
+			
 		}
 		// todo: name/location check
 		internal static ILocalization ForceCreateLocalization(Store store, string currencyCode = null)

@@ -13,6 +13,7 @@ using uWebshop.API;
 using uWebshop.Common;
 using uWebshop.Common.Interfaces;
 using uWebshop.DataAccess;
+using uWebshop.DataAccess.Pocos;
 using uWebshop.Domain.Businesslogic.VATChecking;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
@@ -114,13 +115,13 @@ namespace uWebshop.Domain
 		/// <param name="orderInfo">The order information.</param>
 		/// <param name="e">The <see cref="OrderPaidChangedEventArgs"/> instance containing the event data.</param>
 		public delegate void OrderPaidChangedEventHandler(OrderInfo orderInfo, OrderPaidChangedEventArgs e);
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="orderInfo">The order information.</param>
-		/// <param name="e">The <see cref="OrderFulfilledChangedEventArgs"/> instance containing the event data.</param>
-		public delegate void OrderFulfilledChangedEventHandler(OrderInfo orderInfo, OrderFulfillChangedEventArgs e);
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="orderInfo">The order information.</param>
+        /// <param name="e">The <see cref="OrderFulfilledChangedEventArgs"/> instance containing the event data.</param>
+        public delegate void OrderFulfilledChangedEventHandler(OrderInfo orderInfo, OrderFulfillChangedEventArgs e);
 
 		/// <summary>
 		/// Occurs when [before order updated].
@@ -983,25 +984,25 @@ namespace uWebshop.Domain
 		}
 
 		// todo: move to orderservice
-		internal static OrderInfo CreateOrderInfoFromOrderData(OrderData orderData)
+		internal static OrderInfo CreateOrderInfoFromOrderData(uWebshopOrderData orderData)
 		{
 			var cmsApplication = IO.Container.Resolve<ICMSApplication>();
 
-			if (orderData == null || string.IsNullOrEmpty(orderData.OrderXML))
+			if (orderData == null || string.IsNullOrEmpty(orderData.OrderInfo))
 			{
-				throw new Exception("Trying to load order without data (xml), id: " + (orderData == null ? "no data!" : orderData.DatabaseId.ToString()) + ", ordernumber: " + (orderData == null ? "no data!" : orderData.OrderReferenceNumber));
+				throw new Exception("Trying to load order without data (xml), id: " + (orderData == null ? "no data!" : orderData.Id.ToString()) + ", ordernumber: " + (orderData == null ? "no data!" : orderData.OrderNumber));
 			}
 
 			OrderInfo orderInfo;
 			try
 			{
-				orderInfo = orderData.OrderXML.Contains("<OrderInfo ")
-					? CreateOrderInfoFromLegacyXmlString(orderData.OrderXML)
-					: CreateOrderInfoFromOrderDataObject<OrderDTO.Order>(orderData.OrderXML);
+				orderInfo = orderData.OrderInfo.Contains("<OrderInfo ")
+					? CreateOrderInfoFromLegacyXmlString(orderData.OrderInfo)
+					: CreateOrderInfoFromOrderDataObject<OrderDTO.Order>(orderData.OrderInfo);
 			}
 			catch (Exception ex)
 			{
-				var message = "Failed to load order data, id: " + orderData.DatabaseId + ", ordernumber: " + orderData.OrderReferenceNumber;
+				var message = "Failed to load order data, id: " + orderData.Id + ", ordernumber: " + orderData.OrderNumber;
 				Log.Instance.LogError(ex, message);
 				throw new Exception(message);
 			}
@@ -1011,12 +1012,12 @@ namespace uWebshop.Domain
 			if (orderInfo.PaymentInfo == null) throw new Exception("Problem with parsing order from database xml, no PaymentInfo");
 			if (orderInfo.StoreInfo == null) throw new Exception("Problem with parsing order from database xml, no StoreInfo");
 
-			orderInfo.DatabaseId = orderData.DatabaseId;
-			orderInfo.UniqueOrderId = orderData.UniqueId;
+			orderInfo.DatabaseId = orderData.Id;
+			orderInfo.UniqueOrderId = Guid.Parse(orderData.UniqueId.ToString());
 
 			orderInfo.StoreInfo.Alias = orderData.StoreAlias; // todo: create a fallback for when a store has been deleted or renamed
 			orderInfo.StoreOrderReferenceId = orderData.StoreOrderReferenceId;
-			orderInfo.OrderNumber = orderData.OrderReferenceNumber;
+			orderInfo.OrderNumber = orderData.OrderNumber;
 
 			orderInfo.DeliveryDate = orderData.DeliveryDate;
 
@@ -1097,7 +1098,7 @@ namespace uWebshop.Domain
 				orderInfo.Status = orderStatus;
 			}
 
-			orderInfo.CustomerInfo.CustomerId = orderData.CustomerId.GetValueOrDefault();
+			orderInfo.CustomerInfo.CustomerId = orderData.CustomerId;
 
 			if (orderData.CustomerUsername != null) orderInfo.CustomerInfo.LoginName = orderData.CustomerUsername;
 			if (orderData.CustomerEmail != null) orderInfo.CustomerEmail = orderData.CustomerEmail;
@@ -1110,40 +1111,28 @@ namespace uWebshop.Domain
 			return orderInfo;
 		}
 
-		internal OrderData ToOrderData()
-		{
-			var orderData = new OrderData();
-			orderData.Order = this;
-			orderData.DatabaseId = DatabaseId;
-			orderData.UniqueId = UniqueOrderId;
-			orderData.StoreAlias = StoreInfo.Alias;
-			orderData.StoreOrderReferenceId = StoreOrderReferenceId;
-			orderData.OrderReferenceNumber = OrderNumber;
-			orderData.OrderStatus = Status.ToString();
-			orderData.CustomerId = CustomerInfo.CustomerId;
-			orderData.CustomerUsername = CustomerInfo.LoginName;
-			orderData.CustomerEmail = CustomerEmail;
-			orderData.CustomerFirstName = CustomerFirstName;
-			orderData.CustomerLastName = CustomerLastName;
-			orderData.TransactionId = PaymentInfo.TransactionId;
+        internal uWebshopOrderData ToOrderData()
+        {
+            var orderData = new uWebshopOrderData
+            {
+                Id = DatabaseId,
+                UniqueId = UniqueOrderId,
+                StoreAlias = StoreInfo.Alias,
+                StoreOrderReferenceId = StoreOrderReferenceId.GetValueOrDefault(),
+                OrderNumber = OrderNumber,
+                OrderStatus = Status.ToString(),
+                CustomerId = CustomerInfo.CustomerId,
+                CustomerUsername = CustomerInfo.LoginName,
+                CustomerEmail = CustomerEmail,
+                CustomerFirstName = CustomerFirstName,
+                CustomerLastName = CustomerLastName,
+                TransactionId = PaymentInfo.TransactionId,
+                OrderInfo = DomainHelper.SerializeObjectToXmlString(new OrderDTO.Order(this))
+            };
+            return orderData;
+        }
 
-			orderData.DeliveryDate = DeliveryDate;
-
-			if (OrderSeries != null)
-			{
-				orderData.SeriesId = OrderSeries.Id;
-				orderData.SeriesCronInterval = OrderSeries.CronInterval;
-				orderData.SeriesStart = OrderSeries.Start;
-				orderData.SeriesEnd = OrderSeries.End;
-				orderData.SeriesEndAfterInstances = OrderSeries.EndAfterInstances;
-			}
-
-			orderData.OrderXML = DomainHelper.SerializeObjectToXmlString(new OrderDTO.Order(this));
-
-			return orderData;
-		}
-
-		internal void ClearCachedValues()
+        internal void ClearCachedValues()
 		{
 			_regionalVatInCents = null;
 		}

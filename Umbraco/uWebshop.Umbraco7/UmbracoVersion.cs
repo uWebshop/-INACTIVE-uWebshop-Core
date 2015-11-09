@@ -18,8 +18,9 @@ namespace uWebshop.Umbraco7
 		public IDataTypeDefinition GetDataTypeDefinition(string alias)
 		{
 			var dataTypeService = ApplicationContext.Current.Services.DataTypeService;
+
 			return dataTypeService.GetDataTypeDefinitionByPropertyEditorAlias(alias).FirstOrDefault();
-		}
+        }
 
 		public bool IsBackendUserAuthenticated
 		{
