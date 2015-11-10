@@ -221,6 +221,16 @@ namespace uWebshop.Domain
 		[DataMember]
 		public string OrderDate;
 
+        /// <summary>
+        /// [Obsolete!! Use CreateDate] Gets the unique orderdate for the order
+        /// </summary>
+        //[Obsolete("Use CreateDate")] can't use [Obsolete] because of serialization
+        [Browsable(false)]
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		[DataMember]
+		public string DateCreated;
+
 		internal Func<List<IOrderDiscount>> OrderDiscountsFactory;
 
 		/// <summary>
@@ -354,7 +364,8 @@ namespace uWebshop.Domain
 
 		internal IVATCheckService VATCheckService;
 		private DateTime? _confirmDate;
-		private bool? _pricesAreIncludingVAT;
+	    private DateTime? _createDate;
+        private bool? _pricesAreIncludingVAT;
 		internal int? _regionalVatInCents;
 		private bool? _vatCharged;
 
@@ -446,10 +457,25 @@ namespace uWebshop.Domain
 			}
 		}
 
-		/// <summary>
-		/// Gets or sets whether this order is paid.
+        /// <summary>
+		/// Gets the unique createDate for the order
 		/// </summary>
-		[DataMember(IsRequired = false)]
+		[DataMember]
+        public DateTime? CreateDate
+        {
+            get { return _createDate; }
+            set
+            {
+                DateCreated = value.GetValueOrDefault().ToString("f");
+                _createDate = value;
+            }
+        }
+
+
+        /// <summary>
+        /// Gets or sets whether this order is paid.
+        /// </summary>
+        [DataMember(IsRequired = false)]
 		public bool? Paid
 		{
 			get { return PaidDate.HasValue; }
@@ -1116,6 +1142,7 @@ namespace uWebshop.Domain
             var orderData = new uWebshopOrderData
             {
                 Id = DatabaseId,
+                CreateDate = CreateDate.GetValueOrDefault(),
                 UniqueId = UniqueOrderId,
                 StoreAlias = StoreInfo.Alias,
                 StoreOrderReferenceId = StoreOrderReferenceId.GetValueOrDefault(),

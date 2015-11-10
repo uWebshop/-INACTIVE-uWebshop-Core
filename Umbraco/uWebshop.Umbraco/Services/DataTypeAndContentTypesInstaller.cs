@@ -25,6 +25,13 @@ namespace uWebshop.Umbraco.Services
 		        {
                     //Create DB table - and set overwrite to false
 		            db.CreateTable<uWebshopOrderData>(false);
+					// Alter the OrderInfo (XML) column to NVarChar(MAX)
+					try {
+						db.Execute("ALTER TABLE uWebshopOrders ALTER COLUMN orderInfo NVARCHAR(MAX)");
+					}
+					catch {
+						// this fails on SQL-CE and is fine because it will stay NTEXT
+					}
 		        }
 		        //Check if the DB table does NOT exist
 		        if (!db.TableExist("uWebshopOrderSeries"))
@@ -34,7 +41,7 @@ namespace uWebshop.Umbraco.Services
 		        }
 
 		        //Check if the DB table does NOT exist
-		        if (!db.TableExist("uWebshopCoupons"))
+		        if (!db.TableExist("uWebshopCoupon"))
 		        {
 		            //Create DB table - and set overwrite to false
 		            db.CreateTable<uWebshopCoupon>(false);

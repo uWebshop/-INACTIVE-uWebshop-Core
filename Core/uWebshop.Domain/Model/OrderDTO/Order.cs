@@ -31,6 +31,7 @@ namespace uWebshop.Domain.OrderDTO
 		public string Name;
 		public int ChargedAmount;
 		public DateTime? ConfirmDate = DateTime.Now;
+	    public DateTime? CreateDate;
 		public int? CorrespondingOrderDocumentId;
 		public List<string> CouponCodes = new List<string>();
 		public CustomerInfo CustomerInfo;
@@ -68,6 +69,7 @@ namespace uWebshop.Domain.OrderDTO
 			PaidDate = orderInfo.PaidDate;
 		    FulfillDate = orderInfo.FulfillDate;
 			ConfirmDate = orderInfo.ConfirmDate;
+		    CreateDate = orderInfo.CreateDate;
 			OrderLines = orderInfo.OrderLines.Select(line => new OrderLine(line)).ToList();
 			CouponCodes = orderInfo.CouponCodesData;
 			CustomerInfo = orderInfo.CustomerInfo;
@@ -116,6 +118,7 @@ namespace uWebshop.Domain.OrderDTO
 			orderInfo.CreatedInTestMode = CreatedInTestMode.GetValueOrDefault();
 			orderInfo.PaidDate = PaidDate;
 		    orderInfo.FulfillDate = FulfillDate;
+		    orderInfo.CreateDate = CreateDate;
 			orderInfo.ConfirmDate = ConfirmDate;
 			orderInfo.OrderLines = OrderLines.Select(line => line.ToOrderLine(orderInfo)).ToList();
 			orderInfo.SetOrderReferenceOnOrderLinesAndProductInfos();

@@ -35,13 +35,14 @@ namespace uWebshop.DataAccess
 
 		    return
 		        Database.Query<uWebshopOrderData>(
-		            "SELECT * FROM uWebshopOrders left outer join uWebshopOrderSeries on seriesID = uWebshopOrderSeries.id " +
+		            "SELECT * FROM uWebshopOrders left outer join uWebshopOrderSeries on seriesID= uWebshopOrderSeries.id " +
 		            where);
-		}
+
+        }
 
 	    public static uWebshopOrderData GetOrderInfo(Guid orderId)
 	    {
-            var orderData = GetAllOrderInfos("WHERE uniqueID = " + orderId);
+            var orderData = GetAllOrderInfos("WHERE uniqueID = '" + orderId + "'");
           
 	        if (orderData != null && orderData.FirstOrDefault() != null)
 	        {
@@ -152,16 +153,22 @@ namespace uWebshop.DataAccess
 
 	    public static void StoreOrder(uWebshopOrderData orderData)
 		{
-            // todo: lots of code removed on 28-10-2015 so TEST TEST TEST
-			if (string.IsNullOrWhiteSpace(orderData.OrderInfo))
-				throw new Exception("Saving order without XML");
-			// id, storeOrderReferenceID and orderNumber are either generated or delicate to manage
-
+            
 			if (!string.IsNullOrWhiteSpace(orderData.SeriesCronInterval))
 			{
-				// todo create or update
-			}
-            Database.Insert(orderData);
+                // todo create or update
+            }
+            
+            orderData.UpdateDate = DateTime.Now;
+
+	        if (GetOrderInfo(orderData.UniqueId) == null)
+	        {
+	            Database.Insert(orderData);
+	        }
+	        else
+	        {
+	            Database.Update(orderData);
+	        }
 		}
 
 
@@ -377,7 +384,7 @@ commit tran", SQLHelper.CreateParameter("@id", databaseId), SQLHelper.CreatePara
 		}
 
 		public static int DetermineLastOrderId()
-		{
+		{ 
 			var lastOrderNumber = 0;
 
 			var reader = Database.Fetch<uWebshopOrderData>("SELECT TOP(1) id FROM uWebshopOrders ORDER BY id DESC");

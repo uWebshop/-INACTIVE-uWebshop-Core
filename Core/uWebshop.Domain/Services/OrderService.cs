@@ -42,7 +42,8 @@ namespace uWebshop.Domain.Services
 			}
 
 			var order = new OrderInfo();
-
+            order.CreateDate = DateTime.Now;
+		    
 			order.CreatedInTestMode = store.EnableTestmode;
 			order.CustomerInfo.CustomerIPAddress = HttpContext.Current.Request.UserHostAddress;
 

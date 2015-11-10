@@ -176,21 +176,23 @@ namespace uWebshop.Domain.Helpers
 				}
 				
 				orderInfo = GetOrder(cookieGuid);
+			    if (orderInfo != null)
+			    {
+			        if (IsCompletedOrderWithinValidLifetime(orderInfo) &&
+			            orderInfo.PaymentInfo.PaymentType == PaymentProviderType.OnlinePayment &&
+			            orderInfo.Paid == true)
+			        {
+			            return null;
+			        }
 
-				if (IsCompletedOrderWithinValidLifetime(orderInfo) &&
-				  orderInfo.PaymentInfo.PaymentType == PaymentProviderType.OnlinePayment &&
-				  orderInfo.Paid == true)
-				{
-					return null;
-				}
+			        if (IsCompletedOrderWithinValidLifetime(orderInfo) &&
+			            orderInfo.PaymentInfo.PaymentType != PaymentProviderType.OnlinePayment)
+			        {
+			            return null;
+			        }
 
-				if (IsCompletedOrderWithinValidLifetime(orderInfo) &&
-				  orderInfo.PaymentInfo.PaymentType != PaymentProviderType.OnlinePayment)
-				{
-					return null;
-				}
-
-				uwebshopRequest.OrderInfo = orderInfo;
+			        uwebshopRequest.OrderInfo = orderInfo;
+			    }
 			}
 			else
 			{
