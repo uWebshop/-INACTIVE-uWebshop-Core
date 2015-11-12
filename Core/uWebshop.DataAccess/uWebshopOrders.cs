@@ -299,7 +299,6 @@ namespace uWebshop.DataAccess
 
 		public static string GetHighestOrderNumberForStore(string storeAlias, ref int referenceId)
 		{
-
             var sql = Builder.Select("*")
                         .From("uWebshopOrders")
                         .Where("StoreAlias = @0", storeAlias)
@@ -313,23 +312,15 @@ namespace uWebshop.DataAccess
 
 		public static string GetHighestOrderNumber(ref int referenceId)
 		{
-            // todo: use PetaPoco
-            using (var reader = SQLHelper.ExecuteReader("SELECT orderNumber, storeOrderReferenceID FROM uWebshopOrders ORDER BY id DESC"))
-			{
-				while (reader.Read())
-				{
-					referenceId = reader.Get<int>("storeOrderReferenceID");
+            var sql = Builder.Select("*")
+                         .From("uWebshopOrders")
+                         .Where("orderNumber NOT like @0", "[INCOMPLETE]%")
+                         .Where("orderNumber NOT like @0", "[SCHEDULED]%")
+                         .OrderBy("id DESC");
 
-					var orderNumber = reader.Get<string>("orderNumber");
-
-					if (!string.IsNullOrEmpty(orderNumber) && !orderNumber.StartsWith("[INCOMPLETE]") && !orderNumber.StartsWith("[SCHEDULED]"))
-					{
-						return orderNumber;
-					}
-				}
-			}
-			return null;
-		}
+            var orderResult = Database.FirstOrDefault<uWebshopOrderData>(sql);
+            return orderResult != null ? orderResult.OrderNumber : null;
+        }
 
 		public static void SetOrderNumber(Guid uniqueOrderId, string orderNumber, string storeAlias, int storeOrderReferenceID)
 		{
