@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Xml.Linq;
 using uWebshop.Common;
-using umbraco;
-using umbraco.BusinessLogic;
 using umbraco.DataLayer;
 using uWebshop.DataAccess.Pocos;
-using Umbraco.Core;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Persistence;
-using Umbraco.Core.Persistence.Mappers;
 using Umbraco.Web;
 using static Umbraco.Core.Persistence.Sql;
 
@@ -20,18 +15,18 @@ namespace uWebshop.DataAccess
 	public class uWebshopOrders
 	{
 		public static string ConnectionString;
-
-        internal static ISqlHelper SQLHelper
-        {
-            get { return DataLayerHelper.CreateSqlHelper(ConnectionString); }
-        }
-
+        
         internal static UmbracoDatabase Database
         {
             get { return UmbracoContext.Current.Application.DatabaseContext.Database; } 
         }
-		
-		public static IEnumerable<uWebshopOrderData> GetAllOrderInfos(string where = null)
+
+        private static ISqlHelper SQLHelper
+        {
+            get { return DataLayerHelper.CreateSqlHelper(ConnectionString); }
+        }
+
+        public static IEnumerable<uWebshopOrderData> GetAllOrderInfos(string where = null)
 		{
 			if (where == null) where = "where not orderStatus = 'Incomplete' and not orderStatus = 'Wishlist'";
 
@@ -335,21 +330,10 @@ namespace uWebshop.DataAccess
 		    Database.Update(order);
 		}
 
-		public static int AssignNewOrderNumberToOrder(int databaseId, string alias, int orderNumberStartNumber)
+		public static int AssignNewOrderNumberToOrder(int databaseId, string storeAlias, int orderNumberStartNumber)
 		{
-
-            //var order = new uWebshopOrderData();
-
-            //using (var scope = Database.GetTransaction())
-            //{
-            //    order = Database.SingleOrDefault<uWebshopOrderData>("SELECT orderNumber, storeOrderReferenceID FROM uWebshopOrders WHERE StoreAlias = @0 ORDER BY id DESC", storeAlias);
-
-            //    scope.Complete();
-            //}
-
-
-            // todo: use PetaPoco
-            return SQLHelper.ExecuteScalar<int>(@"begin tran
+            // todo PETAPOCO
+            return Database.ExecuteScalar<int>(@"begin tran
 
 declare @storeOrderReferenceID int
 set @storeOrderReferenceID =  coalesce((SELECT top 1 storeOrderReferenceID FROM uWebshopOrders WHERE StoreAlias = @storeAlias ORDER BY storeOrderReferenceID DESC),0) + 1
@@ -359,15 +343,15 @@ update uWebshopOrders set storeOrderReferenceID = @storeOrderReferenceID, storeA
 
 select @storeOrderReferenceID
 
-commit tran", SQLHelper.CreateParameter("@id", databaseId), SQLHelper.CreateParameter("@orderNumberStartNumber", orderNumberStartNumber), SQLHelper.CreateParameter("@storeAlias", alias), SQLHelper.CreateParameter("@updateDate", DateTime.Now));
+commit tran", SQLHelper.CreateParameter("@id", databaseId), SQLHelper.CreateParameter("@orderNumberStartNumber", orderNumberStartNumber), SQLHelper.CreateParameter("@storeAlias", storeAlias), SQLHelper.CreateParameter("@updateDate", DateTime.Now));
 		}
 
 		public static int AssignNewOrderNumberToOrderSharedBasket(int databaseId, string alias, int orderNumberStartNumber)
 		{
-            // todo: use PetaPoco
+            // todo: PetaPoco
             if (databaseId <= 0) throw new Exception("No valid database id");
 
-			return SQLHelper.ExecuteScalar<int>(@"begin tran
+			return Database.ExecuteScalar<int>(@"begin tran
 
 declare @storeOrderReferenceID int
 set @storeOrderReferenceID =  coalesce((SELECT top 1 storeOrderReferenceID FROM uWebshopOrders ORDER BY storeOrderReferenceID DESC),0) + 1
@@ -417,7 +401,8 @@ commit tran", SQLHelper.CreateParameter("@id", databaseId), SQLHelper.CreatePara
 	    {
 	        if (seriesId <= 0) throw new ArgumentOutOfRangeException("seriesId");
 
-	        var orders = GetAllOrderInfos("where seriesID = @seriesId and orderStatus = 'Scheduled'");
+            // todo: test
+	        var orders = GetAllOrderInfos("where seriesID = "+ seriesId + " and orderStatus = 'Scheduled'");
 
 	        foreach (var order in orders)
 	        {

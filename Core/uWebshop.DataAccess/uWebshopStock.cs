@@ -40,27 +40,17 @@ namespace uWebshop.DataAccess
             }
             else
             {
-                stocks = Database.Query<uWebshopStock>("SELECT NodeId, Stock, StoreAlias, OrderCount FROM uWebshopStock");
+                var sql = Sql.Builder.Select("NodeId, Stock, StoreAlias, OrderCount")
+                    .From("uWebshopStock");
+
+                stocks = Database.Query<uWebshopStock>(sql);
 
                 HttpContext.Current.Items[AllStockCacheKey] = stocks;
             }
 
             return stocks;
         }
-
-        //todo: still needed?
-        //public static Guid GetCacheGuid()
-        //{
-        //	var reader = uWebshopOrders.SQLHelper.ExecuteReader("SELECT cacheGuid FROM uWebshop");
-        //	while (reader.Read())
-        //	{
-        //		reader.GetString("cacheGuid");
-        //		//stocks.Add(new StockInfo { NodeId = reader.GetInt("NodeId"), Stock = reader.GetInt("Stock"), StoreAlias = reader.GetString("StoreAlias"), OrderCount = reader.GetInt("OrderCount") });
-        //	}
-
-        //	return Guid.Empty;
-        //}
-
+        
         /// <summary>
         /// Returns the current stock of the given pricing
         /// </summary>
@@ -135,9 +125,13 @@ namespace uWebshop.DataAccess
             var orderedCount = 0;
             var currentNodeId = 0;
 
+            var sql = Sql.Builder.Select("*")
+                .From("uWebshopStock")
+                .Where("NodeId = @0", productId)
+                .Where("StoreAlias @0", storeAlias);
+
             var stockItem =
-                Database.SingleOrDefault<uWebshopStock>(
-                    "SELECT * FROM uWebshopStock WHERE NodeId=@0 AND StoreAlias=@1", productId, storeAlias);
+                Database.SingleOrDefault<uWebshopStock>(sql);
 
             if (stockItem != null)
             {
@@ -182,9 +176,13 @@ namespace uWebshop.DataAccess
             var orderedCount = 0;
             var currentNodeId = 0;
 
+            var sql = Sql.Builder.Select("*")
+                .From("uWebshopStock")
+                .Where("NodeId = @0", productId)
+                .Where("StoreAlias @0", storeAlias);
+
             var stockItem =
-                Database.SingleOrDefault<uWebshopStock>(
-                    "SELECT * FROM uWebshopStock WHERE NodeId=@0 AND StoreAlias=@1", productId, storeAlias);
+                Database.SingleOrDefault<uWebshopStock>(sql);
 
             if (stockItem != null)
             {
@@ -231,9 +229,13 @@ namespace uWebshop.DataAccess
             var orderedCount = 0;
             var currentNodeId = 0;
 
+            var sql = Sql.Builder.Select("*")
+                .From("uWebshopStock")
+                .Where("NodeId = @0", productId)
+                .Where("StoreAlias @0", storeAlias);
+
             var stockItem =
-                Database.SingleOrDefault<uWebshopStock>(
-                    "SELECT * FROM uWebshopStock WHERE NodeId=@0 AND StoreAlias=@1", productId, storeAlias);
+                Database.SingleOrDefault<uWebshopStock>(sql);
 
             if (stockItem != null)
             {
@@ -268,15 +270,19 @@ namespace uWebshop.DataAccess
         /// <param name="storeAlias"></param>
         public static void ReplaceStock(int productId, int newStock, bool updateOrderCount, string storeAlias = null)
         {
-            // todo: not thread safe (no transaction)
+            // todo: Transactions?
 
             var currentStock = 0;
             var orderedCount = 0;
             var currentNodeId = 0;
 
+            var sql = Sql.Builder.Select("*")
+                .From("uWebshopStock")
+                .Where("NodeId = @0", productId)
+                .Where("StoreAlias @0", storeAlias);
+
             var stockItem =
-                Database.SingleOrDefault<uWebshopStock>(
-                    "SELECT * FROM uWebshopStock WHERE NodeId=@0 AND StoreAlias=@1", productId, storeAlias);
+                Database.SingleOrDefault<uWebshopStock>(sql);
 
             if (stockItem != null)
             {

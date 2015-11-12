@@ -60,7 +60,6 @@
     <Compile Include="CouponCode.cs" />
     <Compile Include="CouponCodeService.cs" />
     <Compile Include="LegacyDataAccessModule.cs" />
-    <Compile Include="OrderData.cs" />
     <Compile Include="Pocos\uWebshopCoupons.cs" />
     <Compile Include="Pocos\uWebshopOrders.cs" />
     <Compile Include="Pocos\uWebshopOrderSeries.cs" />

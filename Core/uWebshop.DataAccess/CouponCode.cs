@@ -14,13 +14,6 @@ namespace uWebshop.Domain.Model
 	/// </summary>
 	internal class Coupon : ICoupon
 	{
-		internal Coupon(IRecordsReader reader)
-		{
-			DiscountId = reader.GetInt("DiscountId");
-			CouponCode = reader.GetString("CouponCode");
-			NumberAvailable = reader.GetInt("NumberAvailable");
-		}
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Coupon"/> class.
 		/// </summary>

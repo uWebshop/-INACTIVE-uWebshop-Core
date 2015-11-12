@@ -37,9 +37,13 @@ namespace uWebshop.DataAccess
 
         public ICoupon Get(int discountId, string couponCode)
         {
+            var sql = Sql.Builder.Select("*")
+                .From("uWebshopCoupons")
+                .Where("DiscountId = @0", discountId)
+                .Where("CouponCode @0", couponCode);
+
             var coupon =
-                Database.SingleOrDefault<uWebshopCoupon>("WHERE DiscountId = " + discountId + "AND CouponCode =" +
-                                                         couponCode);
+                Database.SingleOrDefault<uWebshopCoupon>(sql);
 
             return new Coupon(coupon.DiscountId, coupon.CouponCode, coupon.NumberAvailable);
         }
