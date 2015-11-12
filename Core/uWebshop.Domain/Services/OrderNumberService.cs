@@ -59,7 +59,7 @@ namespace uWebshop.Domain.Services
 			var orderNumberPrefix = store.OrderNumberPrefix;
 			if (lastOrderReferenceNumber <= 0)
 			{
-				if (!string.IsNullOrEmpty(currentHighestOrderNumber) && currentHighestOrderNumber.Length >= orderNumberPrefix.Length)
+				if (!string.IsNullOrEmpty(currentHighestOrderNumber) && !string.IsNullOrEmpty(orderNumberPrefix) && currentHighestOrderNumber.Length >= orderNumberPrefix.Length)
 					int.TryParse(currentHighestOrderNumber.Substring(orderNumberPrefix.Length, currentHighestOrderNumber.Length - orderNumberPrefix.Length), out lastOrderReferenceNumber);
 				else
 					int.TryParse(currentHighestOrderNumber, out lastOrderReferenceNumber);

@@ -11,7 +11,9 @@ using uWebshop.DataAccess.Pocos;
 using Umbraco.Core;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Persistence;
+using Umbraco.Core.Persistence.Mappers;
 using Umbraco.Web;
+using static Umbraco.Core.Persistence.Sql;
 
 namespace uWebshop.DataAccess
 {
@@ -165,9 +167,8 @@ namespace uWebshop.DataAccess
 	        {
 	            Database.Insert(orderData);
 	        }
-	        else
-	        {
-	            Database.Update(orderData);
+            else { 
+	        Database.Update(orderData);
 	        }
 		}
 
@@ -298,22 +299,16 @@ namespace uWebshop.DataAccess
 
 		public static string GetHighestOrderNumberForStore(string storeAlias, ref int referenceId)
 		{
-            // todo: use PetaPoco
-			using (var reader = SQLHelper.ExecuteReader("SELECT orderNumber, storeOrderReferenceID FROM uWebshopOrders WHERE StoreAlias = @storeAlias ORDER BY id DESC", SQLHelper.CreateParameter("@storeAlias", storeAlias)))
-			{
-				while (reader.Read())
-				{
-					referenceId = reader.Get<int>("storeOrderReferenceID");
 
-					var orderNumber = reader.Get<string>("orderNumber");
+            var sql = Builder.Select("*")
+                        .From("uWebshopOrders")
+                        .Where("StoreAlias = @0", storeAlias)
+                        .Where("orderNumber NOT like @0", "[INCOMPLETE]%")
+                        .Where("orderNumber NOT like @0", "[SCHEDULED]%")
+                        .OrderBy("id DESC");
 
-					if (!string.IsNullOrEmpty(orderNumber) && !orderNumber.StartsWith("[INCOMPLETE]") && !orderNumber.StartsWith("[SCHEDULED]"))
-					{
-						return orderNumber;
-					}
-				}
-			}
-			return null;
+            var orderResult = Database.FirstOrDefault<uWebshopOrderData>(sql);
+		    return orderResult != null ? orderResult.OrderNumber : null;
 		}
 
 		public static string GetHighestOrderNumber(ref int referenceId)
@@ -351,6 +346,17 @@ namespace uWebshop.DataAccess
 
 		public static int AssignNewOrderNumberToOrder(int databaseId, string alias, int orderNumberStartNumber)
 		{
+
+            //var order = new uWebshopOrderData();
+
+            //using (var scope = Database.GetTransaction())
+            //{
+            //    order = Database.SingleOrDefault<uWebshopOrderData>("SELECT orderNumber, storeOrderReferenceID FROM uWebshopOrders WHERE StoreAlias = @0 ORDER BY id DESC", storeAlias);
+
+            //    scope.Complete();
+            //}
+
+
             // todo: use PetaPoco
             return SQLHelper.ExecuteScalar<int>(@"begin tran
 

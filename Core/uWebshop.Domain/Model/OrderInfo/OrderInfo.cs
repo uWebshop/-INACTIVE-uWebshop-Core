@@ -689,8 +689,14 @@ namespace uWebshop.Domain
 					return _vatCharged.GetValueOrDefault();
 				}
 
-				// if customer country == store country ==> pay VAT
-				if (!string.IsNullOrEmpty(CustomerInfo.CountryCode) && CustomerInfo.CountryCode.ToLowerInvariant() == StoreInfo.CountryCode.ToLowerInvariant())
+                // if no countrycode is set on the store -> charge vat
+			    if (string.IsNullOrEmpty(StoreInfo.CountryCode))
+			    {
+                    return (bool)(_vatCharged = true);
+                }
+                
+                // if customer country == store country ==> pay VAT
+                if (!string.IsNullOrEmpty(CustomerInfo.CountryCode) && StoreInfo.CountryCode != null && CustomerInfo.CountryCode.ToLowerInvariant() == StoreInfo.CountryCode.ToLowerInvariant())
 				{
 					//Log.Instance.LogDebug("VATCharged TRUE: CustomerInfo.CountryCode != null && StoreInfo.CountryCode != null && CustomerInfo.CountryCode.ToLowerInvariant() == StoreInfo.CountryCode.ToLowerInvariant()");
 					return (bool)(_vatCharged = true);

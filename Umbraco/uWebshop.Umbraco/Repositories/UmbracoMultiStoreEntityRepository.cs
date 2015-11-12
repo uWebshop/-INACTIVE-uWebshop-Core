@@ -17,11 +17,13 @@ namespace uWebshop.Umbraco.Repositories
 	{
 		public T1 GetById(int id, ILocalization localization)
 		{
+		    if (id <= 0) return null;
+
             var helper = new UmbracoHelper(UmbracoContext.Current);
 
-		    var node = helper.TypedContent(id);
+            var node = helper.TypedContent(id);
 
-            return CreateEntityFromNode(node, localization);
+		    return node != null ? CreateEntityFromNode(node, localization) : null;
 		}
 
 		public List<T1> GetAll(ILocalization localization)
