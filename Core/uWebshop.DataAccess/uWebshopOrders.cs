@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Xml.Linq;
 using uWebshop.Common;
-using umbraco.DataLayer;
 using uWebshop.DataAccess.Pocos;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Persistence;
@@ -432,19 +430,30 @@ select @storeOrderReferenceID",
 	        }
 	    }
 
+        /// <summary>
+        /// Used to determine new incomplete order number
+        /// </summary>
+        /// <returns></returns>
 	    public static int DetermineLastOrderId()
 		{ 
 			var lastOrderNumber = 0;
 
-			var reader = Database.Fetch<uWebshopOrderData>("SELECT TOP(1) id FROM uWebshopOrders ORDER BY id DESC");
+			var reader = Database.Fetch<uWebshopOrderData>("SELECT TOP(1) orderNumber FROM uWebshopOrders where OrderStatus = 'Incomplete' ORDER BY orderNumber DESC");
 
 		    var firstOrDefault = reader.FirstOrDefault();
-		    if (firstOrDefault != null)
-		    {
-		        lastOrderNumber = firstOrDefault.StoreOrderReferenceId;
-		    }
+	        if (firstOrDefault != null)
+	        {
+	            var incompleteOrderNumber = firstOrDefault.OrderNumber;
 
-		    return lastOrderNumber;
+	            if (incompleteOrderNumber.StartsWith("[INCOMPLETE]-"))
+	            {
+                    incompleteOrderNumber = incompleteOrderNumber.Replace("[INCOMPLETE]-", string.Empty);
+	            }
+
+	            int.TryParse(incompleteOrderNumber, out lastOrderNumber);
+	        }
+
+	        return lastOrderNumber;
 		}
         
 		public static void Delete(IEnumerable<uWebshopOrderData> orders)
