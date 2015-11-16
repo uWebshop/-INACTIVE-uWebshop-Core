@@ -1052,6 +1052,7 @@ namespace uWebshop.Domain
 			orderInfo.OrderNumber = orderData.OrderNumber;
 
 			orderInfo.DeliveryDate = orderData.DeliveryDate;
+		    orderInfo.ConfirmDate = orderData.ConfirmDate;
 
 			if (orderData.SeriesId > 0)
 			{
@@ -1149,6 +1150,7 @@ namespace uWebshop.Domain
             {
                 Id = DatabaseId,
                 CreateDate = CreateDate.GetValueOrDefault(),
+                ConfirmDate = ConfirmDate.GetValueOrDefault(),
                 UniqueId = UniqueOrderId,
                 StoreAlias = StoreInfo.Alias,
                 StoreOrderReferenceId = StoreOrderReferenceId.GetValueOrDefault(),

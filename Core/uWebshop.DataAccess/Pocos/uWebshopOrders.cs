@@ -81,6 +81,10 @@ namespace uWebshop.DataAccess.Pocos
         [Column("updateDate")]
         public DateTime? UpdateDate { get; set; }
 
+        [Column("confirmDate")]
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public DateTime? ConfirmDate { get; set; }
+
         [Column("deliveryDate")]
         [NullSetting(NullSetting = NullSettings.Null)]
         public DateTime? DeliveryDate { get; set; }

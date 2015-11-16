@@ -124,7 +124,7 @@ namespace uWebshop.API
 		}
 
 		/// <summary>
-		/// Gets the orders.
+		/// Gets the orders based on the confirm Date
 		/// </summary>
 		/// <param name="startDate">The start date.</param>
 		/// <param name="endDate">The end date.</param>
@@ -134,7 +134,7 @@ namespace uWebshop.API
 		{
 			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || UwebshopRequest.Current.PaymentProvider != null)
 			{
-				return GetAllOrders(storeAlias).Where(o => o.ConfirmDate >= startDate && o.ConfirmDate <= endDate);
+                return GetOrdersConfirmedBetweenTimes(startDate, endDate, storeAlias);
 			}
 
 			return Enumerable.Empty<IOrder>();
@@ -157,15 +157,32 @@ namespace uWebshop.API
 			return Enumerable.Empty<IOrder>();
 		}
 
-		
-		
-		/// <summary>
-		/// Gets the orders for customer.
-		/// </summary>
-		/// <param name="customerId">The customer unique identifier.</param>
-		/// <param name="storeAlias">The store alias.</param>
-		/// <returns></returns>
-		public static IEnumerable<IOrder> GetOrdersForCustomer(int customerId, string storeAlias = null)
+        /// <summary>
+        /// Gets orders confirmed between certaintime frame
+        /// </summary>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <param name="storeAlias"></param>
+        /// <returns></returns>
+        public static IEnumerable<IOrder> GetOrdersConfirmedBetweenTimes(DateTime startDate, DateTime endDate, string storeAlias = null)
+        {
+            if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || UwebshopRequest.Current.PaymentProvider != null)
+            {
+                return OrderHelper.GetOrdersConfirmedBetweenTimes(startDate, endDate, storeAlias).Select(CreateBasketFromOrderInfo);
+            }
+
+            return Enumerable.Empty<IOrder>();
+        }
+
+
+
+        /// <summary>
+        /// Gets the orders for customer.
+        /// </summary>
+        /// <param name="customerId">The customer unique identifier.</param>
+        /// <param name="storeAlias">The store alias.</param>
+        /// <returns></returns>
+        public static IEnumerable<IOrder> GetOrdersForCustomer(int customerId, string storeAlias = null)
 		{
 			var membershipUser = UwebshopRequest.Current.User;
 			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || membershipUser != null && membershipUser.ProviderUserKey == customerId.ToString() || UwebshopRequest.Current.PaymentProvider != null)

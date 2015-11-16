@@ -25,8 +25,8 @@ namespace uWebshop.DataAccess
             if (sqlToAppend == null)
             {
                 sqlToAppend = Builder
-                    .Where("not orderStatus = @0", "Incomplete")
-                    .Where("not orderStatus = @0", "Wishlist");
+                    .Where("not orderStatus = @0", OrderStatus.Incomplete)
+                    .Where("not orderStatus = @0", OrderStatus.Wishlist);
             }
 
             var sql = Builder.Select("*")
@@ -112,8 +112,8 @@ namespace uWebshop.DataAccess
 	        if (!includeIncomplete)
 	        {
                 var notIncompleteSql = Builder
-                    .Where("not orderStatus = @0", "Incomplete")
-                    .Where("not orderStatus = @0", "Wishlist");
+                    .Where("not orderStatus = @0", OrderStatus.Incomplete)
+                    .Where("not orderStatus = @0", OrderStatus.Wishlist);
 	            sqlToAppend.Append(notIncompleteSql);
 	        }
 
@@ -135,8 +135,8 @@ namespace uWebshop.DataAccess
             if (!includeIncomplete)
             {
                 var notIncompleteSql = Builder
-                    .Where("not orderStatus = @0", "Incomplete")
-                    .Where("not orderStatus = @0", "Wishlist");
+                    .Where("not orderStatus = @0", OrderStatus.Incomplete)
+                    .Where("not orderStatus = @0", OrderStatus.Wishlist);
                 sqlToAppend.Append(notIncompleteSql);
             }
 
@@ -154,7 +154,7 @@ namespace uWebshop.DataAccess
 
 		    var sqlToAppend = Builder
 		        .Where("customerID = @0", customerId)
-		        .Where("orderStatus = @0", "Wishlist");
+		        .Where("orderStatus = @0", OrderStatus.Wishlist);
 
             var orderData = GetAllOrderInfos(sqlToAppend);
 
@@ -171,25 +171,83 @@ namespace uWebshop.DataAccess
 
             var sqlToAppend = Builder
               .Where("customerUsername = @0", customerUsername)
-              .Where("orderStatus = @0", "Wishlist");
+              .Where("orderStatus = @0", OrderStatus.Wishlist);
 
             var orderData = GetAllOrderInfos(sqlToAppend);
 
             return orderData;
 		}
 
-	    public static IEnumerable<uWebshopOrderData> GetOrdersDeliveredBetweenTimes(DateTime? startTime, DateTime? endTime)
+	    /// <summary>
+	    /// Get orders with confirmdate between starttime and endtime
+	    /// </summary>
+	    /// <param name="startTime"></param>
+	    /// <param name="endTime"></param>
+	    /// <param name="storeAlias"></param>
+	    /// <returns></returns>
+	    public static IEnumerable<uWebshopOrderData> GetOrdersConfirmedBetweenTimes(DateTime? startTime, DateTime? endTime, string storeAlias = null)
+        {
+            if (endTime == null)
+            {
+                endTime = DateTime.Now;
+            }
+
+	        if (endTime == new DateTime())
+	        {
+	            endTime = DateTime.Now;
+	        }
+           
+            if (startTime >= endTime)
+            {
+                return new List<uWebshopOrderData>();
+            }
+            
+            var sql = Builder
+                .Where("not orderStatus = @0", OrderStatus.Incomplete)
+                .Where("not orderStatus = @0", OrderStatus.Wishlist)
+                .Where("not orderStatus = @0", OrderStatus.Scheduled)
+                .Where("confirmDate >= @0", startTime)
+                .Where("confirmDate <= @0", endTime);
+
+	        if (!string.IsNullOrEmpty(storeAlias))
+	        {
+	            var storeSql = Builder.Where("StoreAlias = @0", storeAlias);
+	            sql.Append(storeSql);
+	        }
+ 
+            return GetAllOrderInfos(sql);
+        }
+
+	    /// <summary>
+	    /// Get orders with deliverydate between starttime and endtime
+	    /// </summary>
+	    /// <param name="startTime"></param>
+	    /// <param name="endTime"></param>
+	    /// <param name="storeAlias"></param>
+	    /// <returns></returns>
+	    public static IEnumerable<uWebshopOrderData> GetOrdersDeliveredBetweenTimes(DateTime? startTime, DateTime? endTime, string storeAlias = null)
 	    {
-	        if (startTime >= endTime)
+            if (endTime == null)
+            {
+                endTime = DateTime.Now;
+            }
+
+	        if (startTime == null || startTime >= endTime)
 	        {
 	            return new List<uWebshopOrderData>();
 	        }
             
 	        var sql = Builder
-	            .Where("not orderStatus = @0", "Incomplete")
-	            .Where("not orderStatus = @0", "Wishlist")
+	            .Where("not orderStatus = @0", OrderStatus.Incomplete)
+	            .Where("not orderStatus = @0", OrderStatus.Wishlist)
 	            .Where("deliveryDate >= @0", startTime)
 	            .Where("deliveryDate <= @0", endTime);
+
+            if (!string.IsNullOrEmpty(storeAlias))
+            {
+                var storeSql = Builder.Where("StoreAlias = @0", storeAlias);
+                sql.Append(storeSql);
+            }
 
             return GetAllOrderInfos(sql);
 	    }

@@ -314,28 +314,32 @@ namespace uWebshop.Domain.Helpers
 			return OrderRepository.GetOrdersFromCustomer(userName, storeAlias, includeIncomplete);
 		}
 
-		/// <summary>
-		/// Gets the orders delivered between times.
-		/// </summary>
-		/// <param name="startTime">The start time.</param>
-		/// <param name="endTime">The end time.</param>
-		public static IEnumerable<OrderInfo> GetOrdersDeliveredBetweenTimes(DateTime startTime, DateTime endTime, string storeAlias = null)
-		{
-			if (storeAlias != null)
-			{
-				return
-					uWebshopOrders.GetOrdersDeliveredBetweenTimes(startTime, endTime).Where(x => x.StoreAlias.ToLowerInvariant() == storeAlias.ToLowerInvariant()).Select(OrderInfo.CreateOrderInfoFromOrderData);
-			}
-			return
-				uWebshopOrders.GetOrdersDeliveredBetweenTimes(startTime, endTime).Select(OrderInfo.CreateOrderInfoFromOrderData);
-		}
+	    /// <summary>
+	    /// Gets the orders delivered between times.
+	    /// </summary>
+	    /// <param name="startTime">The start time.</param>
+	    /// <param name="endTime">The end time.</param>
+	    public static IEnumerable<OrderInfo> GetOrdersDeliveredBetweenTimes(DateTime startTime, DateTime endTime,
+	        string storeAlias = null)
+	    {
 
-		/// <summary>
-		/// Returns all the orders from a customer (member) Id;
-		/// </summary>
-		/// <param name="customerId">The customer unique identifier.</param>
-		/// <param name="storeAlias">The store alias.</param>
-		public static IEnumerable<OrderInfo> GetWishlistsForCustomer(int customerId, string storeAlias = null)
+	        return
+	            uWebshopOrders.GetOrdersDeliveredBetweenTimes(startTime, endTime, storeAlias)
+	                .Select(OrderInfo.CreateOrderInfoFromOrderData);
+	    }
+
+	    public static IEnumerable<OrderInfo> GetOrdersConfirmedBetweenTimes(DateTime startTime, DateTime endTime, string storeAlias = null)
+        {
+            return
+                uWebshopOrders.GetOrdersConfirmedBetweenTimes(startTime, endTime, storeAlias).Select(OrderInfo.CreateOrderInfoFromOrderData);
+        }
+
+        /// <summary>
+        /// Returns all the orders from a customer (member) Id;
+        /// </summary>
+        /// <param name="customerId">The customer unique identifier.</param>
+        /// <param name="storeAlias">The store alias.</param>
+        public static IEnumerable<OrderInfo> GetWishlistsForCustomer(int customerId, string storeAlias = null)
 		{
 			return OrderRepository.GetWishlistsFromCustomer(customerId, storeAlias);
 		}

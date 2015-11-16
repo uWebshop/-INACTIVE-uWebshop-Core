@@ -108,7 +108,7 @@ namespace uWebshop.Umbraco.WebApi
 		}
 		
 		/// <summary>
-		/// Get orders based on DateTimeRange
+		/// Get orders based on confirm DateTimeRange
 		/// </summary>
 		/// <param name="startDateTime">Format: 2015-05-26T16:03:35</param>
 		/// <param name="endDateTime">Format: 2015-05-26T16:03:35</param>
@@ -119,9 +119,17 @@ namespace uWebshop.Umbraco.WebApi
 			DateTime startDate;
 			DateTime.TryParse(startDateTime, out startDate);
 			var endDate = DateTime.Now;
-			if (endDateTime != null) DateTime.TryParse(endDateTime, out endDate);
+		    if (endDateTime != null)
+		    {
+		        DateTime.TryParse(endDateTime, out endDate);
+                if (!endDateTime.Contains(':'))
+                {
+                    endDate = endDate.Date.AddDays(1).AddSeconds(-1);
+                }
+            }
 
-			var orders = Orders.GetOrders(startDate, endDate, storeAlias).Where(x => x.Status != OrderStatus.Incomplete && x.Status != OrderStatus.Wishlist && x.Status == OrderStatus.Scheduled); ;
+		    var orders = Orders.GetOrdersConfirmedBetweenTimes(startDate, endDate, storeAlias);
+		    
 			return orders.Select(o => o as BasketOrderInfoAdaptor);
 		}
 

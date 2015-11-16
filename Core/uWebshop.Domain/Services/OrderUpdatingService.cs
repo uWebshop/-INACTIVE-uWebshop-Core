@@ -908,6 +908,7 @@ namespace uWebshop.Domain.Services
 						return false;
 					}
 
+				    order.ConfirmDate = DateTime.Now;
 					order.RedirectUrl = paymentRedirectUrl;
 
 					orderNrTransaction.Persist();
