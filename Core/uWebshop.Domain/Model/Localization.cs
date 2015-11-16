@@ -33,7 +33,7 @@ namespace uWebshop.Domain.Model
 
 		    if (store.Currencies != null)
 		    {
-		        var currenciesOnStore = store.Currencies.SingleOrDefault(c => c.ISOCurrencySymbol == currencyCode);
+		        var currenciesOnStore = store.Currencies.FirstOrDefault(c => c.ISOCurrencySymbol == currencyCode);
 		        return new Localization {Store = store, Currency = currenciesOnStore};
 		    }
             

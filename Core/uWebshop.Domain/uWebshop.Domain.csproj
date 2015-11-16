@@ -52,6 +52,9 @@
     <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />
+    <Reference Include="Umbraco.Core">
+      <HintPath>..\..\Binary Dependencies umbraco7\Umbraco.Core.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="API\DataClasses\AppliedOrderDiscountAdaptor.cs" />

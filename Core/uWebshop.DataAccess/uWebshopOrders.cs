@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Xml.Linq;
 using uWebshop.Common;
@@ -20,26 +21,37 @@ namespace uWebshop.DataAccess
         {
             get { return UmbracoContext.Current.Application.DatabaseContext.Database; } 
         }
-
-        private static ISqlHelper SQLHelper
-        {
-            get { return DataLayerHelper.CreateSqlHelper(ConnectionString); }
-        }
-
-        public static IEnumerable<uWebshopOrderData> GetAllOrderInfos(string where = null)
+        
+        public static IEnumerable<uWebshopOrderData> GetAllOrderInfos(Sql sqlToAppend = null)
 		{
-			if (where == null) where = "where not orderStatus = 'Incomplete' and not orderStatus = 'Wishlist'";
+            if (sqlToAppend == null)
+            {
+                sqlToAppend = Builder
+                    .Where("not orderStatus = @0", "Incomplete")
+                    .Where("not orderStatus = @0", "Wishlist");
+            }
 
-		    return
-		        Database.Query<uWebshopOrderData>(
-		            "SELECT * FROM uWebshopOrders left outer join uWebshopOrderSeries on seriesID= uWebshopOrderSeries.id " +
-		            where);
+            var sql = Builder.Select("*")
+                .From("uWebshopOrders")
+                .LeftOuterJoin("uWebshopOrderSeries")
+                .On("seriesID= uWebshopOrderSeries.id");
+
+            if (sqlToAppend != null)
+            {
+                sql.Append(sqlToAppend);
+            }
+            
+            return
+		        Database.Query<uWebshopOrderData>(sql);
 
         }
 
 	    public static uWebshopOrderData GetOrderInfo(Guid orderId)
 	    {
-            var orderData = GetAllOrderInfos("WHERE uniqueID = '" + orderId + "'");
+	        var sqlToAppend = Builder
+	            .Where("uniqueID = @0", orderId);
+
+            var orderData = GetAllOrderInfos(sqlToAppend);
           
 	        if (orderData != null && orderData.FirstOrDefault() != null)
 	        {
@@ -55,7 +67,10 @@ namespace uWebshop.DataAccess
 
 	    public static uWebshopOrderData GetOrderInfo(string transactionId)
 	    {
-            var orderData = GetAllOrderInfos("WHERE transactionID = " + transactionId);
+            var sqlToAppend = Builder
+                .Where("transactionID = @0", transactionId);
+
+            var orderData = GetAllOrderInfos(sqlToAppend);
 
             if (orderData != null && orderData.FirstOrDefault() != null)
             {
@@ -70,7 +85,10 @@ namespace uWebshop.DataAccess
 
 		public static uWebshopOrderData GetOrderInfo(int id)
 		{
-            var orderData = GetAllOrderInfos("WHERE uWebshopOrders.id = " + id);
+            var sqlToAppend = Builder
+                .Where("id = @0", id);
+
+            var orderData = GetAllOrderInfos(sqlToAppend);
 
             if (orderData != null && orderData.FirstOrDefault() != null)
             {
@@ -90,9 +108,18 @@ namespace uWebshop.DataAccess
 	            return new List<uWebshopOrderData>();
 	        }
 
-            var orderData = GetAllOrderInfos("WHERE customerID = " +
-                    customerId +
-                    (includeIncomplete ? "" : " and not orderStatus = 'Incomplete' and not orderStatus = 'Wishlist'"));
+            var sqlToAppend = Builder
+                .Where("customerID = @0", customerId);
+
+	        if (!includeIncomplete)
+	        {
+                var notIncompleteSql = Builder
+                    .Where("not orderStatus = @0", "Incomplete")
+                    .Where("not orderStatus = @0", "Wishlist");
+	            sqlToAppend.Append(notIncompleteSql);
+	        }
+
+            var orderData = GetAllOrderInfos(sqlToAppend);
 
 	        return orderData;
 	    }
@@ -104,9 +131,18 @@ namespace uWebshop.DataAccess
                 return new List<uWebshopOrderData>();
             }
 
-            var orderData = GetAllOrderInfos("WHERE customerUsername = " +
-                    customerUsername +
-                    (includeIncomplete ? "" : " and not orderStatus = 'Incomplete' and not orderStatus = 'Wishlist'"));
+            var sqlToAppend = Builder
+               .Where("customerUsername = @0", customerUsername);
+
+            if (!includeIncomplete)
+            {
+                var notIncompleteSql = Builder
+                    .Where("not orderStatus = @0", "Incomplete")
+                    .Where("not orderStatus = @0", "Wishlist");
+                sqlToAppend.Append(notIncompleteSql);
+            }
+
+            var orderData = GetAllOrderInfos(sqlToAppend);
 
             return orderData;
 		}
@@ -118,8 +154,11 @@ namespace uWebshop.DataAccess
                 return new List<uWebshopOrderData>();
             }
 
-            var orderData = GetAllOrderInfos("WHERE customerID = " +
-                    customerId + " and orderStatus = 'Wishlist'");
+		    var sqlToAppend = Builder
+		        .Where("customerID = @0", customerId)
+		        .Where("orderStatus = @0", "Wishlist");
+
+            var orderData = GetAllOrderInfos(sqlToAppend);
 
             return orderData;
 		}
@@ -132,20 +171,29 @@ namespace uWebshop.DataAccess
                 return new List<uWebshopOrderData>();
             }
 
-            var orderData = GetAllOrderInfos("WHERE customerUsername = " +
-                    customerUsername + " and orderStatus = 'Wishlist'");
+            var sqlToAppend = Builder
+              .Where("customerUsername = @0", customerUsername)
+              .Where("orderStatus = @0", "Wishlist");
+
+            var orderData = GetAllOrderInfos(sqlToAppend);
 
             return orderData;
 		}
 
-	    public static IEnumerable<uWebshopOrderData> GetOrdersDeliveredBetweenTimes(DateTime startTime, DateTime endTime)
+	    public static IEnumerable<uWebshopOrderData> GetOrdersDeliveredBetweenTimes(DateTime? startTime, DateTime? endTime)
 	    {
 	        if (startTime >= endTime)
 	        {
 	            return new List<uWebshopOrderData>();
 	        }
+            
+	        var sql = Builder
+	            .Where("not orderStatus = @0", "Incomplete")
+	            .Where("not orderStatus = @0", "Wishlist")
+	            .Where("deliveryDate >= @0", startTime)
+	            .Where("deliveryDate <= @0", endTime);
 
-	        return GetAllOrderInfos("WHERE and not orderStatus = 'Incomplete' and not orderStatus = 'Wishlist' and deliveryDate >= " + startTime + " and deliveryDate <= " + endTime);
+            return GetAllOrderInfos(sql);
 	    }
 
 	    public static void StoreOrder(uWebshopOrderData orderData)
@@ -330,41 +378,61 @@ namespace uWebshop.DataAccess
 		    Database.Update(order);
 		}
 
-		public static int AssignNewOrderNumberToOrder(int databaseId, string storeAlias, int orderNumberStartNumber)
-		{
-            // todo PETAPOCO
-            return Database.ExecuteScalar<int>(@"begin tran
-
-declare @storeOrderReferenceID int
+	    public static int AssignNewOrderNumberToOrder(int databaseId, string storeAlias, int orderNumberStartNumber)
+	    {
+	        using (var referenceIdUpdate = Database.GetTransaction())
+	        {
+	            var referenceId = Database.ExecuteScalar<int>(@"declare @storeOrderReferenceID int
 set @storeOrderReferenceID =  coalesce((SELECT top 1 storeOrderReferenceID FROM uWebshopOrders WHERE StoreAlias = @storeAlias ORDER BY storeOrderReferenceID DESC),0) + 1
 set @storeOrderReferenceID = case when @orderNumberStartNumber > @storeOrderReferenceID then @orderNumberStartNumber else @storeOrderReferenceID end
+SELECT @storeOrderReferenceID end
 
-update uWebshopOrders set storeOrderReferenceID = @storeOrderReferenceID, storeAlias = @storeAlias, updateDate = @updateDate where id = @id
+update uWebshopOrders set storeOrderReferenceID = @storeOrderReferenceID, storeAlias = @storeAlias, updateDate = @updateDate where id = @id",
+	                new
+	                {
+	                    id = databaseId,
+	                    orderNumberStartNumber = orderNumberStartNumber,
+	                    storeAlias = storeAlias,
+	                    updateDate = DateTime.Now
+	                });
 
-select @storeOrderReferenceID
+	            referenceIdUpdate.Complete();
 
-commit tran", SQLHelper.CreateParameter("@id", databaseId), SQLHelper.CreateParameter("@orderNumberStartNumber", orderNumberStartNumber), SQLHelper.CreateParameter("@storeAlias", storeAlias), SQLHelper.CreateParameter("@updateDate", DateTime.Now));
-		}
+                return referenceId;
+            }
+            
+	    }
 
-		public static int AssignNewOrderNumberToOrderSharedBasket(int databaseId, string alias, int orderNumberStartNumber)
-		{
-            // todo: PetaPoco
-            if (databaseId <= 0) throw new Exception("No valid database id");
-
-			return Database.ExecuteScalar<int>(@"begin tran
-
-declare @storeOrderReferenceID int
+	    public static int AssignNewOrderNumberToOrderSharedBasket(int databaseId, string storeAlias,
+	        int orderNumberStartNumber)
+	    {
+	        // todo: PetaPoco
+	        if (databaseId <= 0) throw new Exception("No valid database id");
+            
+	        using (var referenceIdUpdate = Database.GetTransaction())
+	        {
+	            var referenceId = Database.ExecuteScalar<int>(@"declare @storeOrderReferenceID int
 set @storeOrderReferenceID =  coalesce((SELECT top 1 storeOrderReferenceID FROM uWebshopOrders ORDER BY storeOrderReferenceID DESC),0) + 1
 set @storeOrderReferenceID = case when @orderNumberStartNumber > @storeOrderReferenceID then @orderNumberStartNumber else @storeOrderReferenceID end
 
 update uWebshopOrders set storeOrderReferenceID = @storeOrderReferenceID, storeAlias = @storeAlias, updateDate = @updateDate where id = @id
 
-select @storeOrderReferenceID
+select @storeOrderReferenceID",
+	                new
+	                {
+	                    id = databaseId,
+	                    orderNumberStartNumber = orderNumberStartNumber,
+	                    storeAlias = storeAlias,
+	                    updateDate = DateTime.Now
+	                });
 
-commit tran", SQLHelper.CreateParameter("@id", databaseId), SQLHelper.CreateParameter("@orderNumberStartNumber", orderNumberStartNumber), SQLHelper.CreateParameter("@storeAlias", alias), SQLHelper.CreateParameter("@updateDate", DateTime.Now));
-		}
+	            referenceIdUpdate.Complete();
 
-		public static int DetermineLastOrderId()
+	            return referenceId;
+	        }
+	    }
+
+	    public static int DetermineLastOrderId()
 		{ 
 			var lastOrderNumber = 0;
 
@@ -400,9 +468,12 @@ commit tran", SQLHelper.CreateParameter("@id", databaseId), SQLHelper.CreatePara
         public static void RemoveScheduledOrdersWithSeriesId(int seriesId)
 	    {
 	        if (seriesId <= 0) throw new ArgumentOutOfRangeException("seriesId");
+            
+            var sqlToAppend = Builder
+              .Where("seriesID = @0", seriesId)
+              .Where("orderStatus = @0", "Scheduled");
 
-            // todo: test
-	        var orders = GetAllOrderInfos("where seriesID = "+ seriesId + " and orderStatus = 'Scheduled'");
+            var orders = GetAllOrderInfos(sqlToAppend);
 
 	        foreach (var order in orders)
 	        {

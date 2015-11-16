@@ -127,11 +127,15 @@ namespace uWebshop.DataAccess
 
             var sql = Sql.Builder.Select("*")
                 .From("uWebshopStock")
-                .Where("NodeId = @0", productId)
-                .Where("StoreAlias @0", storeAlias);
+                .Where("NodeId = @0", productId);
+
+            if (!string.IsNullOrEmpty(storeAlias))
+            {
+                sql.Append(Sql.Builder.Where("StoreAlias @0", storeAlias));
+            }
 
             var stockItem =
-                Database.SingleOrDefault<uWebshopStock>(sql);
+                Database.FirstOrDefault<uWebshopStock>(sql);
 
             if (stockItem != null)
             {
@@ -178,11 +182,15 @@ namespace uWebshop.DataAccess
 
             var sql = Sql.Builder.Select("*")
                 .From("uWebshopStock")
-                .Where("NodeId = @0", productId)
-                .Where("StoreAlias @0", storeAlias);
+                .Where("NodeId = @0", productId);
+
+            if (!string.IsNullOrEmpty(storeAlias))
+            {
+                sql.Append(Sql.Builder.Where("StoreAlias @0", storeAlias));
+            }
 
             var stockItem =
-                Database.SingleOrDefault<uWebshopStock>(sql);
+                Database.FirstOrDefault<uWebshopStock>(sql);
 
             if (stockItem != null)
             {
@@ -231,11 +239,15 @@ namespace uWebshop.DataAccess
 
             var sql = Sql.Builder.Select("*")
                 .From("uWebshopStock")
-                .Where("NodeId = @0", productId)
-                .Where("StoreAlias @0", storeAlias);
+                .Where("NodeId = @0", productId);
+
+            if (!string.IsNullOrEmpty(storeAlias))
+            {
+                sql.Append(Sql.Builder.Where("StoreAlias @0", storeAlias));
+            }
 
             var stockItem =
-                Database.SingleOrDefault<uWebshopStock>(sql);
+                Database.FirstOrDefault<uWebshopStock>(sql);
 
             if (stockItem != null)
             {
@@ -278,11 +290,15 @@ namespace uWebshop.DataAccess
 
             var sql = Sql.Builder.Select("*")
                 .From("uWebshopStock")
-                .Where("NodeId = @0", productId)
-                .Where("StoreAlias @0", storeAlias);
+                .Where("NodeId = @0", productId);
+
+            if (!string.IsNullOrEmpty(storeAlias))
+            {
+                sql.Append(Sql.Builder.Where("StoreAlias @0", storeAlias));
+            }
 
             var stockItem =
-                Database.SingleOrDefault<uWebshopStock>(sql);
+                Database.FirstOrDefault<uWebshopStock>(sql);
 
             if (stockItem != null)
             {

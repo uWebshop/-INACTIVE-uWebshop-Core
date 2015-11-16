@@ -39,13 +39,7 @@ namespace uWebshop.Domain.Helpers
 
 		private const string MacrosAddedKey = "macrosAdded";
 		public IList<Exception> Exceptions = new List<Exception>();
-
-		// Macro-elements
-		protected static ISqlHelper SqlHelper
-		{
-			get { return Application.SqlHelper; }
-		}
-
+        
 		#region public properties
 
 		public bool CacheByPersonalization

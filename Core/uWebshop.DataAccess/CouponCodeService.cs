@@ -22,7 +22,7 @@ namespace uWebshop.DataAccess
             get { return UmbracoContext.Current.Application.DatabaseContext.Database; }
         }
 
-
+        // todo: use Sql instead of string
         public IEnumerable<ICoupon> GetAll(string where = null)
         {
             var coupons = Database.Query<uWebshopCoupon>("SELECT * FROM uWebshopCoupons " + where);
@@ -43,13 +43,16 @@ namespace uWebshop.DataAccess
                 .Where("CouponCode @0", couponCode);
 
             var coupon =
-                Database.SingleOrDefault<uWebshopCoupon>(sql);
+                Database.FirstOrDefault<uWebshopCoupon>(sql);
 
             return new Coupon(coupon.DiscountId, coupon.CouponCode, coupon.NumberAvailable);
         }
 
         public IEnumerable<ICoupon> GetAllWithCouponcode(string couponCode)
         {
+            var sql = Sql.Builder
+               .Where("CouponCode @0", couponCode);
+
             return GetAll("WHERE CouponCode = " + couponCode);
         }
 
