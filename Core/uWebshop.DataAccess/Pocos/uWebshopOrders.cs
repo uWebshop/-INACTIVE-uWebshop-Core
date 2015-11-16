@@ -93,20 +93,14 @@ namespace uWebshop.DataAccess.Pocos
         [NullSetting(NullSetting = NullSettings.Null)]
         public int SeriesId { get; set; }
 
-        [Column("SeriesCronInterval")]
-        [NullSetting(NullSetting = NullSettings.Null)]
+        // todo: test ignore by new install
+        [Ignore]
         public string SeriesCronInterval { get; set; }
-        
-        [Column("SeriesStart")]
-        [NullSetting(NullSetting = NullSettings.Null)]
+        [Ignore]
         public DateTime? SeriesStart { get; set; }
-
-        [Column("SeriesEnd")]
-        [NullSetting(NullSetting = NullSettings.Null)]
+        [Ignore]
         public DateTime? SeriesEnd { get; set; }
-
-        [Column("SeriesEndAfterInstances")]
-        [NullSetting(NullSetting = NullSettings.Null)]
+        [Ignore]
         public int SeriesEndAfterInstances { get; set; }
     }
 

@@ -12,7 +12,7 @@ namespace uWebshop.DataAccess.Pocos
         [Column("id")]
         [PrimaryKeyColumn(AutoIncrement = true)]
         [NullSetting(NullSetting = NullSettings.NotNull)]
-        public int id { get; set; }
+        public int Id { get; set; }
 
         [Column("cronInterval")]
         [NullSetting(NullSetting = NullSettings.Null)]

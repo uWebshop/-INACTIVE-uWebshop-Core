@@ -18,6 +18,10 @@ namespace uWebshop.Domain
 		{
 			
 		}
+		/// <summary>
+		/// uWebshop Orderseries (to repat orders)
+		/// </summary>
+		/// <param name="orderData"></param>
 		public OrderSeries(uWebshopOrderData orderData)
 		{
 			Id = orderData.SeriesId;
