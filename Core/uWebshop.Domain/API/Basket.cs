@@ -11,14 +11,17 @@ using uWebshop.Domain.Interfaces;
 
 namespace uWebshop.API
 {
+	/// <summary>
+	/// uWebshop Basket API 
+	/// </summary>
 	public static class Basket
 	{
 		/// <summary>
-		/// Equal to GetOrCreateBasket() WARNING: expect this call to change to GetExistingBasket()
+		/// Get Current basket or Null
 		/// </summary>
 		public static IBasket GetBasket()
 		{
-			return GetOrCreateBasket();
+			return GetExistingBasket();
 		}
 
 		/// <summary>

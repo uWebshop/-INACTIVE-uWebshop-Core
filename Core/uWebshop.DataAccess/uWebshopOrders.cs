@@ -254,24 +254,50 @@ namespace uWebshop.DataAccess
 
 	    public static void StoreOrder(uWebshopOrderData orderData)
 		{
-            
-			if (!string.IsNullOrWhiteSpace(orderData.SeriesCronInterval))
-			{
-                // todo create or update
-            }
-            
+            // todo: combine into one sql call, but this is problematic with SQL-CE and maybe SQL-AZURE? 
+            // http://stackoverflow.com/questions/6595105/bulk-insert-update-with-petapoco
+
             orderData.UpdateDate = DateTime.Now;
+            
+	        if(orderData.SeriesId > 0 && !string.IsNullOrEmpty(orderData.SeriesCronInterval))
+		    {
+		        var orderSerie = new uWebshopOrderSeries
+		        {
+		            Id = orderData.SeriesId,
+		            CronInterval = orderData.SeriesCronInterval,
+		            Start = orderData.SeriesStart.GetValueOrDefault(),
+		            End = orderData.SeriesEnd.GetValueOrDefault(),
+		            EndAfterInstances = orderData.SeriesEndAfterInstances
+		        };
+                Database.Update(orderSerie);
+		    }
+            else if (orderData.SeriesId == 0 && !string.IsNullOrEmpty(orderData.SeriesCronInterval))
+            {
+                var orderSerie = new uWebshopOrderSeries
+                {
+                    CronInterval = orderData.SeriesCronInterval,
+                    Start = orderData.SeriesStart.GetValueOrDefault(),
+                    End = orderData.SeriesEnd.GetValueOrDefault(),
+                    EndAfterInstances = orderData.SeriesEndAfterInstances
+                };
+                Database.Insert(orderSerie);
+            }
+            else if (orderData.SeriesId > 0)
+            {
+                Database.Delete<uWebshopOrderSeries>(orderData.SeriesId);
+            }
 
-	        if (GetOrderInfo(orderData.UniqueId) == null)
-	        {
-	            Database.Insert(orderData);
-	        }
-            else { 
-	        Database.Update(orderData);
-	        }
-		}
+            if (GetOrderInfo(orderData.UniqueId) == null)
+            {
+                Database.Insert(orderData);
+            }
+            else
+            {
+                Database.Update(orderData);
+            }
 
-
+        }
+        
         public static void SetOrderInfo(Guid orderId, string serializedOrderInfoObject, OrderStatus orderStatus)
 		{
 			SetOrderInfo(orderId, serializedOrderInfoObject, orderStatus.ToString());

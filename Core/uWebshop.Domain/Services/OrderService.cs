@@ -71,7 +71,8 @@ namespace uWebshop.Domain.Services
 			order.Localization = StoreHelper.CurrentLocalization; // todo clean
 			order.AddStore(store);
 
-			order.Save(); // end possible race condition ending in out of sync orderNumber
+            // todo: test this situation extensively where save is disabled here. Do not save order here, because it will cause 2 saves (on create and when the action after this call is executed)
+			//order.Save(); // end possible race condition ending in out of sync orderNumber
 
 			return order;
 		}
