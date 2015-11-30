@@ -37,25 +37,40 @@ namespace uWebshop.Umbraco.Repositories
 
 		public UwbsNode GetByGlobalId(int globalId)
 		{
-			var uwbsNode = GetAll().FirstOrDefault(node => node.Id == globalId);
-			uwbsNode = uwbsNode ?? LoadUwbsNodeFromNode(globalId); // fallback = slow! (nodefactory)
-			return uwbsNode.Path != null ? uwbsNode : null;
+		    if (globalId > 1)
+		    {
+		        var uwbsNode = GetAll().FirstOrDefault(node => node.Id == globalId);
+		        uwbsNode = uwbsNode ?? LoadUwbsNodeFromNode(globalId); // fallback = slow! (nodefactory)
+		        return uwbsNode.Path != null ? uwbsNode : null;
+		    }
+
+		    return null;
 		}
 
 		private static UwbsNode LoadUwbsNodeFromNode(int id)
 		{
-            var umbracoHelper = new UmbracoHelper(UmbracoContext.Current);
-		    var node = umbracoHelper.TypedContent(id);
-			var n = new UwbsNode();
-			n.Path = node.Path;
-			n.NodeTypeAlias = node.DocumentTypeAlias;
-			if (node.Name != null && node.Parent != null)
-				n.ParentId = node.Parent.Id;
-			n.Id = node.Id;
-			n.UrlName = node.UrlName ?? "";
-			n.SortOrder = node.SortOrder;
-			n.Level = node.Level;
-			return n;
+		    if (id > 1)
+		    {
+		        var umbracoHelper = new UmbracoHelper(UmbracoContext.Current);
+		        var node = umbracoHelper.TypedContent(id);
+		        if (node != null)
+		        {
+		            var n = new UwbsNode
+		            {
+		                Path = node.Path,
+		                NodeTypeAlias = node.DocumentTypeAlias
+		            };
+		            if (node.Name != null && node.Parent != null)
+		                n.ParentId = node.Parent.Id;
+		            n.Id = node.Id;
+		            n.UrlName = node.UrlName ?? "";
+		            n.SortOrder = node.SortOrder;
+		            n.Level = node.Level;
+		            return n;
+		        }
+		    }
+
+		    return null;
 		}
 
 		private static UwbsNode LoadUwbsNodeFromLuceneDocument(Document examineNode)
@@ -206,20 +221,26 @@ namespace uWebshop.Umbraco.Repositories
 
 		public IEnumerable<UwbsNode> GetNodesWithStorePicker(int storeId)
 		{
+            // todo: make case insensitive
 			var nodes = InternalHelpers.GetSearchResults("uwbsStorePicker:[0* TO 9*]").Where(x => x.GetField("uwbsStorePicker") != null 
 				&& x.GetField("uwbsStorePicker").StringValue() == storeId.ToString()).Select(LoadUwbsNodeFromLuceneDocument);
 			if (nodes.Any()) return nodes;
-
+            
 			var nodesFromXml = new List<UwbsNode>();
 			// xmlstore/node factory fallback
+            // todo: new UmbracoHelper instead of old library
 			var it = library.GetXmlNodeByXPath("//uwbsStorePicker[text() = '" + storeId + "']/parent::*");
-			while (it.MoveNext())
-			{
-				var intval = it.Current.GetAttribute("id", it.Current.NamespaceURI);
-				nodesFromXml.Add(LoadUwbsNodeFromNode(int.Parse(intval))); // possible todo: make a constructor that can work with the XML itself (to work without UmbracoContext)
-			}
+		    while (it.MoveNext())
+		    {
+		        var intval = it.Current.GetAttribute("id", it.Current.NamespaceURI);
 
-			return nodesFromXml;
+		        var node = LoadUwbsNodeFromNode(int.Parse(intval));
+
+		        if (node != null)
+		            nodesFromXml.Add(node);
+		    }
+
+		    return nodesFromXml;
 		}
 		
 		public static IEnumerable<int> GetNodeIdsFromXMLStoreForNodeTypeAlias(string nodeTypeAlias, int startNodeId = 0)

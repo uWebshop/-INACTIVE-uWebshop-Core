@@ -48,8 +48,19 @@ namespace uWebshop.Domain
 		public string ParentNodeTypeAlias
 		{
 			// todo: some issues with loops when trying to load this or ParentCategory in the service/repo
-			get { return _parentNodeTypeAlias ?? (_parentNodeTypeAlias = IO.Container.Resolve<ICMSEntityRepository>().GetByGlobalId(ParentId).NodeTypeAlias); }
-			set { }
+			get
+			{
+			    var getById = IO.Container.Resolve<ICMSEntityRepository>().GetByGlobalId(ParentId);
+			    if (getById != null)
+			    {
+			        var parentNodeTypeAlias = IO.Container.Resolve<ICMSEntityRepository>().GetByGlobalId(ParentId).NodeTypeAlias;
+			        if (parentNodeTypeAlias != null)
+			            return _parentNodeTypeAlias ?? (_parentNodeTypeAlias = parentNodeTypeAlias);
+			    }
+
+			    return null;
+			}
+		    set { }
 		}
 
 		/// <summary>

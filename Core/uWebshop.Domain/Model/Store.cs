@@ -96,7 +96,13 @@ namespace uWebshop.Domain
 		{
 			get
 			{
-				return IO.Container.Resolve<ICMSEntityRepository>().GetNodesWithStorePicker(Id).Select(result => result != null ? result.Id : 0);
+			    var nodesWithStorePicker = IO.Container.Resolve<ICMSEntityRepository>().GetNodesWithStorePicker(Id);
+			    if (nodesWithStorePicker.Any())
+			    {
+			        return nodesWithStorePicker.Select(result => result != null ? result.Id : 0);
+			    }
+
+			    return Enumerable.Empty<int>();
 			}
 		} 
 
