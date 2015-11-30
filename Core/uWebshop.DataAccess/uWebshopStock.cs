@@ -157,7 +157,8 @@ namespace uWebshop.DataAccess
                     // todo: should this be 1?
                     Stock = 1,
                     NodeId = currentNodeId,
-                    UpdateDateTime = DateTime.Now
+                    UpdateDateTime = DateTime.Now,
+                    CreatDateTime = DateTime.Now
                 };
 
                 if (updateOrderCount)

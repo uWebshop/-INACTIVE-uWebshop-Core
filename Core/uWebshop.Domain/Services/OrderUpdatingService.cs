@@ -908,7 +908,7 @@ namespace uWebshop.Domain.Services
 						return false;
 					}
 
-				    order.ConfirmDate = DateTime.Now;
+				   
 					order.RedirectUrl = paymentRedirectUrl;
 
 					orderNrTransaction.Persist();
@@ -920,7 +920,7 @@ namespace uWebshop.Domain.Services
 				order.RedirectUrl = paymentRedirectUrl;
 			}
 
-			order.Status = !dontScheduleAlwaysConfirm && _uwebshopConfiguration.UseDeliveryDateAsConfirmDateForScheduledOrders && order.DeliveryDate.HasValue
+            order.Status = !dontScheduleAlwaysConfirm && _uwebshopConfiguration.UseDeliveryDateAsConfirmDateForScheduledOrders && order.DeliveryDate.HasValue
 				? OrderStatus.Scheduled : OrderStatus.Confirmed;
 			Save(order, true);
 
