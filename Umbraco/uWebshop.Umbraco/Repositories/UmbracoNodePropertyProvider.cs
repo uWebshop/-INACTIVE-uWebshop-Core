@@ -39,7 +39,7 @@ namespace uWebshop.Umbraco.Repositories
 			property = property.ToLowerInvariant();
 			// todo: check efficiency
 			var prop = _node.Properties.FirstOrDefault(p => p.PropertyTypeAlias.ToLowerInvariant() == property);
-			return prop != null ? prop.Value.ToString() : null;
+		    return prop != null && prop.Value != null ? prop.Value.ToString() : null;
 		}
 	}
 }
