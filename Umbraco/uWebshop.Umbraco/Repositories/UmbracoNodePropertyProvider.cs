@@ -1,5 +1,4 @@
-﻿using uWebshop.Domain.Interfaces;
-using umbraco.NodeFactory;
+using uWebshop.Domain.Interfaces;
 using System.Linq;
 using Umbraco.Core.Models;
 
@@ -18,15 +17,15 @@ namespace uWebshop.Umbraco.Repositories
 		{
 			property = property.ToLowerInvariant();
 			// todo: check efficiency
-			return _node.Properties.Any(p => p.PropertyTypeAlias.ToLowerInvariant() == property);
+			return _node.Properties.Any(p => p.PropertyTypeAlias != null && p.PropertyTypeAlias.ToLowerInvariant() == property);
 		}
 
 		public bool UpdateValueIfPropertyPresent(string property, ref string value)
 		{
 			property = property.ToLowerInvariant();
 			// todo: check efficiency
-            var prop = _node.Properties.FirstOrDefault(p => p.PropertyTypeAlias.ToLowerInvariant() == property);
-			if (prop != null)
+            var prop = _node.Properties.FirstOrDefault(p => p.PropertyTypeAlias != null && p.PropertyTypeAlias.ToLowerInvariant() == property);
+			if (prop != null && prop.Value != null)
 			{
 				value = prop.Value.ToString();
 				return true;
@@ -38,8 +37,8 @@ namespace uWebshop.Umbraco.Repositories
 		{
 			property = property.ToLowerInvariant();
 			// todo: check efficiency
-			var prop = _node.Properties.FirstOrDefault(p => p.PropertyTypeAlias.ToLowerInvariant() == property);
-		    return prop != null && prop.Value != null ? prop.Value.ToString() : null;
+			var prop = _node.Properties.FirstOrDefault(p => p.PropertyTypeAlias != null && p.PropertyTypeAlias.ToLowerInvariant() == property);
+			return prop != null && prop.Value != null ? prop.Value.ToString() : null;
 		}
 	}
 }
