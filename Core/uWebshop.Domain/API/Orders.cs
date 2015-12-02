@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Security;
@@ -157,41 +157,43 @@ namespace uWebshop.API
 			return Enumerable.Empty<IOrder>();
 		}
 
-        /// <summary>
-        /// Gets orders confirmed between certaintime frame
-        /// </summary>
-        /// <param name="startDate"></param>
-        /// <param name="endDate"></param>
-        /// <param name="storeAlias"></param>
-        /// <returns></returns>
-        public static IEnumerable<IOrder> GetOrdersConfirmedBetweenTimes(DateTime startDate, DateTime endDate, string storeAlias = null)
-        {
-            if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || UwebshopRequest.Current.PaymentProvider != null)
-            {
-                return OrderHelper.GetOrdersConfirmedBetweenTimes(startDate, endDate, storeAlias).Select(CreateBasketFromOrderInfo);
-            }
-
-            return Enumerable.Empty<IOrder>();
-        }
-
-
-
-        /// <summary>
-        /// Gets the orders for customer.
-        /// </summary>
-        /// <param name="customerId">The customer unique identifier.</param>
-        /// <param name="storeAlias">The store alias.</param>
-        /// <returns></returns>
-        public static IEnumerable<IOrder> GetOrdersForCustomer(int customerId, string storeAlias = null)
+	        /// <summary>
+	        /// Gets orders confirmed between certaintime frame
+	        /// </summary>
+	        /// <param name="startDate"></param>
+	        /// <param name="endDate"></param>
+	        /// <param name="storeAlias"></param>
+	        /// <returns></returns>
+	        public static IEnumerable<IOrder> GetOrdersConfirmedBetweenTimes(DateTime startDate, DateTime endDate, string storeAlias = null)
+	        {
+	            if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || UwebshopRequest.Current.PaymentProvider != null)
+	            {
+	                return OrderHelper.GetOrdersConfirmedBetweenTimes(startDate, endDate, storeAlias).Select(CreateBasketFromOrderInfo);
+	            }
+	
+	            return Enumerable.Empty<IOrder>();
+	        }
+	
+	
+	
+	        /// <summary>
+	        /// Gets the orders for customer.
+	        /// </summary>
+	        /// <param name="customerId">The customer unique identifier.</param>
+	        /// <param name="storeAlias">The store alias.</param>
+	        /// <returns></returns>
+	        public static IEnumerable<IOrder> GetOrdersForCustomer(int customerId, string storeAlias = null)
 		{
 			var membershipUser = UwebshopRequest.Current.User;
-			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || membershipUser != null && membershipUser.ProviderUserKey == customerId.ToString() || UwebshopRequest.Current.PaymentProvider != null)
+			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated 
+	        || (membershipUser != null && membershipUser.ProviderUserKey != null && membershipUser.ProviderUserKey.ToString() == customerId.ToString()) 
+	        || UwebshopRequest.Current.PaymentProvider != null)
 			{
 				return OrderHelper.GetOrdersForCustomer(customerId, storeAlias).Select(CreateBasketFromOrderInfo);
 			}
-
+	
 			return Enumerable.Empty<IOrder>();
-
+	
 		}
 
 		/// <summary>
