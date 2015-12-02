@@ -52,9 +52,8 @@ namespace uWebshop.DataAccess.Pocos
         public string OrderInfo { get; set; }
 
         [Column("orderStatus")]
-        [Length(100)]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public string OrderStatus { get; set; }
+        public int OrderStatus { get; set; }
 
         [Column("transactionID")]
         [Length(100)]
@@ -104,6 +103,6 @@ namespace uWebshop.DataAccess.Pocos
         public int SeriesEndAfterInstances { get; set; }
     }
 
-    
+
 
 }
