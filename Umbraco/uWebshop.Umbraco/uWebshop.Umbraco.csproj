@@ -93,6 +93,7 @@
     <Compile Include="Base\XML\Store.cs" />
     <Compile Include="DataTypes\CountySelector\CountrySelectorDataType.cs" />
     <Compile Include="DataTypes\CouponCodeEditor\CouponCodeDataType.cs" />
+    <Compile Include="DataTypes\ShopDashboard\ShopDashboardDataType.cs" />
     <Compile Include="DataTypes\Currencies\CurrenciesDataType.cs" />
     <Compile Include="DataTypes\DataTypes.cs" />
     <Compile Include="DataTypes\DiscountOrderCondition\DiscountOrderConditionDataType.cs" />
@@ -248,6 +249,8 @@
     <Content Include="Installer\content\App_Plugins\uWebshop\datatypes\OrderDetails\orderdetails.html" />
     <Content Include="Installer\content\App_Plugins\uWebshop\datatypes\OrderedCount\orderedcount.controller.js" />
     <Content Include="Installer\content\App_Plugins\uWebshop\datatypes\OrderedCount\orderedcount.html" />
+    <Content Include="Installer\content\App_Plugins\uWebshop\datatypes\ShopDashboard\shopdashboard.controller.js" />
+    <Content Include="Installer\content\App_Plugins\uWebshop\datatypes\ShopDashboard\shopdashboard.html" />
     <Content Include="Installer\content\App_Plugins\uWebshop\datatypes\OrderSection\ordersection.controller.js" />
     <Content Include="Installer\content\App_Plugins\uWebshop\datatypes\OrderSection\ordersection.html" />
     <Content Include="Installer\content\App_Plugins\uWebshop\datatypes\OrderStatusPicker\orderstatuspicker.controller.js" />

@@ -7,5 +7,11 @@
 	public class UwebshopRootContentType
 	{
 		internal static string NodeAlias;
-	}
+
+        /// <summary>
+        /// The shop dashboard on the uWebshop node
+        /// </summary>
+        [ContentPropertyType(Alias = "shopDashboard", DataType = DataType.ShopDashboard, Tab = ContentTypeTab.Global, Name = "#ShopDashboard", Description = "#ShopDashboardDescription")]
+        public string ShopDashboard { get; set; }
+    }
 }

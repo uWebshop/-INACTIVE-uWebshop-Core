@@ -222,7 +222,14 @@
 					view: "~/App_Plugins/uWebshop/dataTypes/DiscountOrderCondition/discountordercondition.html"
 				}   
 		}   
-		
+		, 
+		{
+				alias: "uWebshop.ShopDashboard",           
+				name: "uWebshop ShopDashboard",         
+				editor: {
+					view: "~/App_Plugins/uWebshop/dataTypes/ShopDashboard/shopdashboard.html"
+				}   
+		} 
 	]
 	,        
 	javascript: [

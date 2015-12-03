@@ -105,6 +105,6 @@ namespace uWebshop.Domain.ContentTypes
 		PaymentProviderAmountType,
 		Currencies,
 		MultiContentPickerCatalog,
-        //ShopDashboard
+        ShopDashboard
     }
 }
