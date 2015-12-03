@@ -50,9 +50,6 @@ namespace uWebshop.DataAccess
 
         public IEnumerable<ICoupon> GetAllWithCouponcode(string couponCode)
         {
-            var sql = Sql.Builder
-               .Where("CouponCode @0", couponCode);
-
             return GetAll("WHERE CouponCode = " + couponCode);
         }
 

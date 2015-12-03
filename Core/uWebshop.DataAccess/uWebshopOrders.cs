@@ -21,20 +21,20 @@ namespace uWebshop.DataAccess
         }
         
         public static IEnumerable<uWebshopOrderData> GetAllOrderInfos(Sql sqlToAppend = null)
-		{
-            if (sqlToAppend == null)
-            {
-                sqlToAppend = Builder
-                    .Where("not orderStatus = @0", OrderStatus.Incomplete)
-                    .Where("not orderStatus = @0", OrderStatus.Wishlist);
-            }
-
-            var sql = Builder.Select("*")
+        {
+	        var sql = Builder.Select("*")
                 .From("uWebshopOrders")
                 .LeftOuterJoin("uWebshopOrderSeries")
                 .On("seriesID= uWebshopOrderSeries.id");
 
-            if (sqlToAppend != null)
+			if (sqlToAppend == null)
+			{
+				sql
+					.Where("not orderStatus = @0", OrderStatus.Incomplete)
+					.Where("not orderStatus = @0", OrderStatus.Wishlist);
+			}
+
+			if (sqlToAppend != null)
             {
                 sql.Append(sqlToAppend);
             }
@@ -111,10 +111,9 @@ namespace uWebshop.DataAccess
 
 	        if (!includeIncomplete)
 	        {
-                var notIncompleteSql = Builder
-                    .Where("not orderStatus = @0", OrderStatus.Incomplete)
+				sqlToAppend
+					.Where("not orderStatus = @0", OrderStatus.Incomplete)
                     .Where("not orderStatus = @0", OrderStatus.Wishlist);
-	            sqlToAppend.Append(notIncompleteSql);
 	        }
 
             var orderData = GetAllOrderInfos(sqlToAppend);
@@ -134,10 +133,9 @@ namespace uWebshop.DataAccess
 
             if (!includeIncomplete)
             {
-                var notIncompleteSql = Builder
-                    .Where("not orderStatus = @0", OrderStatus.Incomplete)
+				sqlToAppend
+					 .Where("not orderStatus = @0", OrderStatus.Incomplete)
                     .Where("not orderStatus = @0", OrderStatus.Wishlist);
-                sqlToAppend.Append(notIncompleteSql);
             }
 
             var orderData = GetAllOrderInfos(sqlToAppend);
@@ -211,8 +209,7 @@ namespace uWebshop.DataAccess
 
 	        if (!string.IsNullOrEmpty(storeAlias))
 	        {
-	            var storeSql = Builder.Where("StoreAlias = @0", storeAlias);
-	            sql.Append(storeSql);
+				sql.Where("StoreAlias = @0", storeAlias);
 	        }
  
             return GetAllOrderInfos(sql);
@@ -245,8 +242,7 @@ namespace uWebshop.DataAccess
 
             if (!string.IsNullOrEmpty(storeAlias))
             {
-                var storeSql = Builder.Where("StoreAlias = @0", storeAlias);
-                sql.Append(storeSql);
+				sql.Where("StoreAlias = @0", storeAlias);
             }
 
             return GetAllOrderInfos(sql);

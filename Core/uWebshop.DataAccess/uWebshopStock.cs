@@ -131,7 +131,7 @@ namespace uWebshop.DataAccess
 
             if (!string.IsNullOrEmpty(storeAlias))
             {
-                sql.Append(Sql.Builder.Where("StoreAlias @0", storeAlias));
+				sql.Where("StoreAlias @0", storeAlias);
             }
 
             var stockItem =
@@ -187,7 +187,7 @@ namespace uWebshop.DataAccess
 
             if (!string.IsNullOrEmpty(storeAlias))
             {
-                sql.Append(Sql.Builder.Where("StoreAlias @0", storeAlias));
+				sql.Where("StoreAlias @0", storeAlias);
             }
 
             var stockItem =
@@ -244,7 +244,7 @@ namespace uWebshop.DataAccess
 
             if (!string.IsNullOrEmpty(storeAlias))
             {
-                sql.Append(Sql.Builder.Where("StoreAlias @0", storeAlias));
+				sql.Where("StoreAlias @0", storeAlias);
             }
 
             var stockItem =
@@ -295,7 +295,7 @@ namespace uWebshop.DataAccess
 
             if (!string.IsNullOrEmpty(storeAlias))
             {
-                sql.Append(Sql.Builder.Where("StoreAlias @0", storeAlias));
+				sql.Where("StoreAlias @0", storeAlias);
             }
 
             var stockItem =
