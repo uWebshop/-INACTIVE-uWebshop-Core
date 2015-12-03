@@ -30,8 +30,8 @@ namespace uWebshop.DataAccess
 			if (sqlToAppend == null)
 			{
 				sql
-					.Where("not orderStatus = @0", OrderStatus.Incomplete)
-					.Where("not orderStatus = @0", OrderStatus.Wishlist);
+					.Where("not orderStatus = @0", OrderStatus.Incomplete.ToString())
+					.Where("not orderStatus = @0", OrderStatus.Wishlist.ToString());
 			}
 
 			if (sqlToAppend != null)
@@ -112,8 +112,8 @@ namespace uWebshop.DataAccess
 	        if (!includeIncomplete)
 	        {
 				sqlToAppend
-					.Where("not orderStatus = @0", OrderStatus.Incomplete)
-                    .Where("not orderStatus = @0", OrderStatus.Wishlist);
+					.Where("not orderStatus = @0", OrderStatus.Incomplete.ToString())
+                    .Where("not orderStatus = @0", OrderStatus.Wishlist.ToString());
 	        }
 
             var orderData = GetAllOrderInfos(sqlToAppend);
@@ -134,8 +134,8 @@ namespace uWebshop.DataAccess
             if (!includeIncomplete)
             {
 				sqlToAppend
-					 .Where("not orderStatus = @0", OrderStatus.Incomplete)
-                    .Where("not orderStatus = @0", OrderStatus.Wishlist);
+					 .Where("not orderStatus = @0", OrderStatus.Incomplete.ToString())
+                    .Where("not orderStatus = @0", OrderStatus.Wishlist.ToString());
             }
 
             var orderData = GetAllOrderInfos(sqlToAppend);
@@ -152,7 +152,7 @@ namespace uWebshop.DataAccess
 
 		    var sqlToAppend = Builder
 		        .Where("customerID = @0", customerId)
-		        .Where("orderStatus = @0", OrderStatus.Wishlist);
+		        .Where("orderStatus = @0", OrderStatus.Wishlist.ToString());
 
             var orderData = GetAllOrderInfos(sqlToAppend);
 
@@ -169,7 +169,7 @@ namespace uWebshop.DataAccess
 
             var sqlToAppend = Builder
               .Where("customerUsername = @0", customerUsername)
-              .Where("orderStatus = @0", OrderStatus.Wishlist);
+              .Where("orderStatus = @0", OrderStatus.Wishlist.ToString());
 
             var orderData = GetAllOrderInfos(sqlToAppend);
 
@@ -201,9 +201,9 @@ namespace uWebshop.DataAccess
             }
             
             var sql = Builder
-                .Where("not orderStatus = @0", OrderStatus.Incomplete)
-                .Where("not orderStatus = @0", OrderStatus.Wishlist)
-                .Where("not orderStatus = @0", OrderStatus.Scheduled)
+                .Where("not orderStatus = @0", OrderStatus.Incomplete.ToString())
+                .Where("not orderStatus = @0", OrderStatus.Wishlist.ToString())
+                .Where("not orderStatus = @0", OrderStatus.Scheduled.ToString())
                 .Where("confirmDate >= @0", startTime)
                 .Where("confirmDate <= @0", endTime);
 
@@ -235,8 +235,8 @@ namespace uWebshop.DataAccess
 	        }
             
 	        var sql = Builder
-	            .Where("not orderStatus = @0", OrderStatus.Incomplete)
-	            .Where("not orderStatus = @0", OrderStatus.Wishlist)
+	            .Where("not orderStatus = @0", OrderStatus.Incomplete.ToString())
+	            .Where("not orderStatus = @0", OrderStatus.Wishlist.ToString())
 	            .Where("deliveryDate >= @0", startTime)
 	            .Where("deliveryDate <= @0", endTime);
 
