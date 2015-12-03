@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using uWebshop.Common;
 using uWebshop.Domain.ContentTypes;
+using Umbraco.Core.Models;
 
 namespace uWebshop.Domain.Interfaces
 {
@@ -15,6 +16,6 @@ namespace uWebshop.Domain.Interfaces
 		public string KeyGuid;
 		public string Name;
 		public DatabaseType Type;
-		public List<string> PreValues;
+		public Dictionary<string, PreValue> PreValues;
 	}
 }

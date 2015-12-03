@@ -21,7 +21,8 @@ namespace uWebshop.Domain
 			ProductUrl = ConfigurationManager.AppSettings["uwbsProductUrl"];
 			ExamineSearcher = ConfigurationManager.AppSettings["uwbsExamineSearcher"] ?? "ExternalSearcher";
 			ExamineIndexer = ConfigurationManager.AppSettings["uwbsExamineIndexer"] ?? "ExternalIndexer";
-			ShareBasketBetweenStores = ConfigurationManager.AppSettings["uwbsShareBasketBetweenStores"] == "true";
+		    CreateMissingProperties = ConfigurationManager.AppSettings["uwbsCreateMissingProperties"] == "true" || ConfigurationManager.AppSettings["uwbsCreateMissingProperties"] == null;
+            ShareBasketBetweenStores = ConfigurationManager.AppSettings["uwbsShareBasketBetweenStores"] == "true";
 			OrdersCacheTimeoutMilliseconds = Common.Helpers.ParseInt(ConfigurationManager.AppSettings["uwbsOrdersCacheTimeoutMilliseconds"], 2000);
 			DisableDateFolders = ConfigurationManager.AppSettings["uwbsDisableDateFolders"] == "true";
 			UseDeliveryDateAsConfirmDateForScheduledOrders = ConfigurationManager.AppSettings["uwbsUseDeliveryDateAsConfirmDateForScheduledOrders"] == "true";
@@ -79,10 +80,16 @@ namespace uWebshop.Domain
 		/// </summary>
 		public bool DisableDateFolders { get; private set; }
 
-		/// <summary>
-		/// Gets the legacy category URL identifier.
-		/// </summary>
-		public string LegacyCategoryUrlIdentifier { get; private set; }
+        /// <summary>
+        /// Gets a value indicating if missing document type properties should be crated on install/update
+        /// default false
+        /// </summary>
+        public bool CreateMissingProperties { get; private set; }
+
+        /// <summary>
+        /// Gets the legacy category URL identifier.
+        /// </summary>
+        public string LegacyCategoryUrlIdentifier { get; private set; }
 
 		/// <summary>
 		/// Gets the legacy product URL identifier.

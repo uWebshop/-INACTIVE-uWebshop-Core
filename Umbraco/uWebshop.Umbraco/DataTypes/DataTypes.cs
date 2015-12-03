@@ -21,10 +21,12 @@ using uWebshop.Umbraco.DataTypes.Price;
 using uWebshop.Umbraco.DataTypes.Ranges;
 using uWebshop.Umbraco.DataTypes.ShippingProviderType;
 using uWebshop.Umbraco.DataTypes.ShippingRangeType;
+using uWebshop.Umbraco.DataTypes.ShopDashBoard;
 using uWebshop.Umbraco.DataTypes.StockUpdate;
 using uWebshop.Umbraco.DataTypes.StorePicker;
 using uWebshop.Umbraco.DataTypes.StoreTemplatePicker;
 using uWebshop.Umbraco.DataTypes.ZoneSelector;
+using Umbraco.Core.Models;
 
 namespace uWebshop.Umbraco.DataTypes
 {
@@ -56,13 +58,13 @@ namespace uWebshop.Umbraco.DataTypes
         }
 
         private void Define(DataType type, Guid? key, string name, DatabaseType dbType = DatabaseType.Ntext,
-            List<string> preValues = null)
+            Dictionary<string,PreValue> preValues = null)
         {
             Define(type, "uWebshop." + type, key, name, dbType, preValues);
         }
 
         private void Define(DataType type, string alias, Guid? key, string name,
-            DatabaseType dbType = DatabaseType.Ntext, List<string> preValues = null)
+            DatabaseType dbType = DatabaseType.Ntext, Dictionary<string, PreValue> preValues = null)
         {
             dataTypes.Add(new UwebshopDataTypeDefinition
             {
@@ -127,6 +129,7 @@ namespace uWebshop.Umbraco.DataTypes
             Define(DataType.Zones, ZoneSelectorDataType.Key, ZoneSelectorDataType.Name,
                 ZoneSelectorDataType.DatabaseType);
             Define(DataType.Currencies, CurrenciesDataType.Key, CurrenciesDataType.Name, CurrenciesDataType.DatabaseType);
+            Define(DataType.ShopDashboard, ShopDashboardDataType.Key, ShopDashboardDataType.Name, ShopDashboardDataType.DatabaseType);
 
             var catagoryRepositoryXPath = "//" + Catalog.CategoryRepositoryNodeAlias;
             if (string.IsNullOrEmpty(Catalog.CategoryRepositoryNodeAlias))
@@ -203,22 +206,25 @@ namespace uWebshop.Umbraco.DataTypes
             // EmailDetails
             // ProductOverview
 
+
+
             Define(DataType.OrderInfoViewer, new Guid("6f455770-3677-4c6c-843d-2c76d7b33893"), "uWebshop OrderDetails",
-                DatabaseType.Ntext, new List<string> {"/uWebshopBackend/uWebshopUmbracoOrderDetails.cshtml"});
+                DatabaseType.Ntext, null);
             Define(DataType.OrderSection, new Guid("de47d313-9364-472b-8ee7-9b002cc204b9"), "uWebshop OrderOverview",
-                DatabaseType.Ntext, new List<string> {"/uWebshopBackend/uWebshopUmbracoOrderOverview.cshtml"});
-            Define(DataType.EmailDetails, new Guid("9d87378c-5864-4ae2-bd83-1cd14b0c3290"), "uWebshop EmailDetails");
+                DatabaseType.Ntext, null);
             Define(DataType.ProductOverview, new Guid("3873106b-fbb8-4d55-8e91-a07680e796d7"),
-                "uWebshop ProductOverview", DatabaseType.Ntext,
-                new List<string> {"/uWebshopBackend/uWebshopUmbracoProductOverview.cshtml"});
-
-
+                "uWebshop ProductOverview", DatabaseType.Ntext,null);
             Define(DataType.MultiNodePicker, new Guid("97600235-acf7-4ade-9ba9-6cad4743cb6d"), "uWebshop Global Picker",
                 DatabaseType.Ntext, GetPrevaluesForMultiNodeTreePicker("/*"));
             //Define(DataType.MultiNodePicker, new Guid(DataTypeGuids.MultiNodeTreePickerId));
 
+            var vartPickerPreValues = new Dictionary<string, PreValue>
+            {
+                {"value", new PreValue("0, 6, 19, 21")}
+            };
+
             Define(DataType.VatPicker, new Guid("69d3f953-b565-4269-9d68-4b39e13c70e5"), "uWebshop Vat Picker",
-                DatabaseType.Integer, new List<string> {"0", "6", "15", "19", "21"});
+                DatabaseType.Integer, vartPickerPreValues);
 
             //<DataType Name="uWebshop Vat Picker" Id="a74ea9c9-8e18-4d2a-8cf6-73c6206c5da6" Definition="69d3f953-b565-4269-9d68-4b39e13c70e5" DatabaseType="Ntext">
             //  <PreValues>
@@ -233,31 +239,27 @@ namespace uWebshop.Umbraco.DataTypes
             return dataTypes;
         }
 
-        private List<string> GetPrevaluesForMultiNodeTreePicker(string startXPath, string nodeTypeAliasFilter = null)
+        private Dictionary<string, PreValue> GetPrevaluesForMultiNodeTreePicker(string startXPath, string nodeTypeAliasFilter = null)
         {
-            return new List<string>
+            var filterNode = string.IsNullOrWhiteSpace(nodeTypeAliasFilter)
+                ? "*"
+                : "/*[starts-with(name(),'" + nodeTypeAliasFilter + "')]";
+
+            return new Dictionary<string, PreValue>
             {
-                "content",
-                string.IsNullOrWhiteSpace(nodeTypeAliasFilter)
-                    ? "*"
-                    : "/*[starts-with(name(),'" + nodeTypeAliasFilter + "')]",
-                "-1",
-                "False",
-                "1",
-                "1",
-                "0",
-                "False",
-                "1",
-                "0",
-                startXPath,
-                "200",
-                "0",
+                {"treesource", new PreValue("content")},
+                {"startNode", new PreValue(startXPath)},
+                {"filter", new PreValue(filterNode)}
             };
+
         }
 
-        private List<string> GetPrevaluesForImagesFiles()
+        private Dictionary<string, PreValue> GetPrevaluesForImagesFiles()
         {
-            return new List<string> {"media", "*", "-1", "False", "1", "1", "-1", "False", "0", "0", "/", "200", "0",};
+            return new Dictionary<string, PreValue>
+            {
+                {"treesource", new PreValue("media")}
+            };
         }
     }
 

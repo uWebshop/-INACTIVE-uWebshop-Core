@@ -108,18 +108,5 @@ namespace uWebshop.Umbraco.Services
 			}
 			return content;
 		}
-
-		private static string MakeOrderSectionValue(OrderStatus orderStatus)
-		{
-			//<orderSection><![CDATA[<values>
-			//  <orderStatus>OfflinePayment</orderStatus>
-			//  <orderTimeInDays>1</orderTimeInDays>
-			//</values>]]></orderSection>
-			return string.Format(@"
-<values>
-  <orderStatus>{0}</orderStatus>
-  <orderTimeInDays>1</orderTimeInDays>
-</values>", orderStatus);
-		}
 	}
 }

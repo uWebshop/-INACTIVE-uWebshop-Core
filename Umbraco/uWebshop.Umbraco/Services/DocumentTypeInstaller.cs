@@ -113,8 +113,13 @@ namespace uWebshop.Umbraco.Services
 
 			foreach (var def in dataTypesToGenerate.Where(def => def.PreValues != null && def.PreValues.Any()).OrderBy(d => d.Name))
 			{
-				Write("if (newDataTypesList.Contains(" + def.DataType + "DataTypeDef))\r\n");
-				Write("	dataTypeService.SavePreValues(" + def.DataType + "DataTypeDef.Id, new[] { " + string.Join(",", def.PreValues.Select(s => "\"" + s.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\"").ToArray()) + " });\r\n");
+			    Write("	var " + def.DataType + "Dict = new Dictionary<string, PreValue>();");
+                
+                foreach (var preValue in def.PreValues)
+			    {
+                    Write(def.DataType + "Dict.Add(\"" + preValue.Key + "\", new PreValue(\"" + preValue.Value.Value + "\"));");
+                }
+			    Write("	dataTypeService.SavePreValues(" + def.DataType + "DataTypeDef.Id," + def.DataType + "Dict);\r\n");
 			}
 
 			Write("\r\n");
@@ -158,7 +163,7 @@ namespace uWebshop.Umbraco.Services
 				{
 					Write("if (" + contentTypeVarName + ".PropertyTypes.All(p => p.Alias != \"" + property.Alias + "\")" +
 						(property.Umbraco6Only ? "&& umbracoVersionMajor == 6" : "") +
-						"){\r\n");
+						" && createMissingProperties == true){\r\n");
 					Write("GetOrAddPropertyGroup(" + contentTypeVarName + ", \"" + property.Tab + "\").PropertyTypes.Add(");
 					Write("new PropertyType(" + property.DataType + "DataTypeDef) { ");
 					Write("Alias = \"" + property.Alias + "\", ");
@@ -217,10 +222,10 @@ namespace uWebshop.Umbraco.Services
 			_stockService = stockService;
 			_umbracoVersion = umbracoVersion;
 		}
-		partial void InstallGenerated(IUmbracoVersion umbracoVersion);
-	    public void Install()
+		partial void InstallGenerated(IUmbracoVersion umbracoVersion, bool createMissingProperties = false);
+	    public void Install(bool createMissingProperties = false)
 		{
-			InstallGenerated(_umbracoVersion);
+			InstallGenerated(_umbracoVersion, createMissingProperties);
 		}
 
 		public bool InstallStorePickerOnNodeWithId(int nodeId, out string feedbackSmall, out string feedbackLarge)

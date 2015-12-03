@@ -118,17 +118,5 @@ namespace uWebshop.Domain
 			}
 			set { }
 		}
-
-		/// <summary>
-		/// Unused
-		/// </summary>
-		/// <value>
-		/// Unused
-		/// </value>
-		[ContentPropertyType(Alias = "templatePreview", DataType = DataType.EmailDetails, Tab = ContentTypeTab.Global, Name = "#TemplatePreview", Description = "#TemplatePreviewDescription", Umbraco6Only = true)]
-		public string TemplatePreview
-		{
-			set { }
-		}
 	}
 }

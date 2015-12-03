@@ -101,10 +101,10 @@ namespace uWebshop.Domain.ContentTypes
 		ProductOverview,
 		OrderInfoViewer,
 		MultiContentPickerShippingZones,
-		EmailDetails,
 		CouponCodes,
 		PaymentProviderAmountType,
 		Currencies,
-		MultiContentPickerCatalog
-	}
+		MultiContentPickerCatalog,
+        ShopDashboard
+    }
 }

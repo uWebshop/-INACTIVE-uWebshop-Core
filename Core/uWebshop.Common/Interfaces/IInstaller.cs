@@ -8,6 +8,6 @@
 		/// <summary>
 		/// Installs this instance.
 		/// </summary>
-		void Install();
+		void Install(bool createMissingProperties = false);
 	}
 }

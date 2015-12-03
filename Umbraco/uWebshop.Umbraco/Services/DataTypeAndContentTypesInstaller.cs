@@ -13,46 +13,48 @@ namespace uWebshop.Umbraco.Services
 {
 	internal partial class CMSInstaller
 	{
-		partial void InstallGenerated(IUmbracoVersion umbracoVersion)
+		partial void InstallGenerated(IUmbracoVersion umbracoVersion, bool createMissingProperties = false)
 		{
 				#region check for uWebshop Database tables
 
 		        //Get the Umbraco Database context
 		        var db = UmbracoContext.Current.Application.DatabaseContext.Database;
 
-		        //Check if the DB table does NOT exist
-		        if (!db.TableExist("uWebshopOrders"))
-		        {
-                    //Create DB table - and set overwrite to false
-		            db.CreateTable<uWebshopOrderData>(false);
-					// Alter the OrderInfo (XML) column to NVarChar(MAX)
-					try {
-						db.Execute("ALTER TABLE uWebshopOrders ALTER COLUMN orderInfo NVARCHAR(MAX)");
+				if(db != null){
+					//Check if the DB table does NOT exist
+					if (!db.TableExist("uWebshopOrders"))
+					{
+						//Create DB table - and set overwrite to false
+						db.CreateTable<uWebshopOrderData>(false);
+						// Alter the OrderInfo (XML) column to NVarChar(MAX)
+						try {
+							db.Execute("ALTER TABLE uWebshopOrders ALTER COLUMN orderInfo NVARCHAR(MAX)");
+						}
+						catch {
+							// this fails on SQL-CE and is fine because it will stay NTEXT
+						}
 					}
-					catch {
-						// this fails on SQL-CE and is fine because it will stay NTEXT
+					//Check if the DB table does NOT exist
+					if (!db.TableExist("uWebshopOrderSeries"))
+					{
+						//Create DB table - and set overwrite to false
+						db.CreateTable<uWebshopOrderSeries>(false);
 					}
-		        }
-		        //Check if the DB table does NOT exist
-		        if (!db.TableExist("uWebshopOrderSeries"))
-		        {
-		            //Create DB table - and set overwrite to false
-		            db.CreateTable<uWebshopOrderSeries>(false);
-		        }
 
-		        //Check if the DB table does NOT exist
-		        if (!db.TableExist("uWebshopCoupon"))
-		        {
-		            //Create DB table - and set overwrite to false
-		            db.CreateTable<uWebshopCoupon>(false);
-		        }
+					//Check if the DB table does NOT exist
+					if (!db.TableExist("uWebshopCoupon"))
+					{
+						//Create DB table - and set overwrite to false
+						db.CreateTable<uWebshopCoupon>(false);
+					}
 
-		        //Check if the DB table does NOT exist
-		        if (!db.TableExist("uWebshopStock"))
-		        {
-		            //Create DB table - and set overwrite to false
-		            db.CreateTable<uWebshopStock>(false);
-		        }
+					//Check if the DB table does NOT exist
+					if (!db.TableExist("uWebshopStock"))
+					{
+						//Create DB table - and set overwrite to false
+						db.CreateTable<uWebshopStock>(false);
+					}
+				}
 
 		        #endregion
 			var contentTypeService = ApplicationContext.Current.Services.ContentTypeService;
@@ -167,16 +169,6 @@ var EnableDisableDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.En
 				TemplatePickerDataTypeDef.DatabaseType = DataTypeDatabaseType.Nvarchar;
 				
 				newDataTypesList.Add(TemplatePickerDataTypeDef);
-			}
-			var EmailDetailsDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.EmailDetails");
-			if (EmailDetailsDataTypeDef == null)
-			{				
-				EmailDetailsDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.EmailDetails");
-				EmailDetailsDataTypeDef.Name = "uWebshop EmailDetails";
-				EmailDetailsDataTypeDef.Key = new Guid("9d87378c-5864-4ae2-bd83-1cd14b0c3290");
-				EmailDetailsDataTypeDef.DatabaseType = DataTypeDatabaseType.Ntext;
-				
-				newDataTypesList.Add(EmailDetailsDataTypeDef);
 			}
 			var MultiContentPickerFilesDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.MultiContentPickerFiles");
 			if (MultiContentPickerFilesDataTypeDef == null)
@@ -368,6 +360,16 @@ var EnableDisableDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.En
 				
 				newDataTypesList.Add(MultiContentPickerShippingZonesDataTypeDef);
 			}
+			var ShopDashboardDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.ShopDashboard");
+			if (ShopDashboardDataTypeDef == null)
+			{				
+				ShopDashboardDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.ShopDashboard");
+				ShopDashboardDataTypeDef.Name = "uWebshop ShopDashboard";
+				ShopDashboardDataTypeDef.Key = new Guid("df1c2d1f-77c2-40fb-a6f8-7fd8612101c5");
+				ShopDashboardDataTypeDef.DatabaseType = DataTypeDatabaseType.Nvarchar;
+				
+				newDataTypesList.Add(ShopDashboardDataTypeDef);
+			}
 			var StockDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.Stock");
 			if (StockDataTypeDef == null)
 			{				
@@ -438,8 +440,6 @@ DiscountTypeDataTypeDef = dataTypeService.GetDataTypeDefinitionById(new Guid("2d
 if (DiscountTypeDataTypeDef == null) throw new Exception("Could not create and/or load DiscountType datatype");
 TemplatePickerDataTypeDef = dataTypeService.GetDataTypeDefinitionById(new Guid("0a10d9dd-ebbc-48f5-be93-9fac239ac876"));
 if (TemplatePickerDataTypeDef == null) throw new Exception("Could not create and/or load TemplatePicker datatype");
-EmailDetailsDataTypeDef = dataTypeService.GetDataTypeDefinitionById(new Guid("9d87378c-5864-4ae2-bd83-1cd14b0c3290"));
-if (EmailDetailsDataTypeDef == null) throw new Exception("Could not create and/or load EmailDetails datatype");
 MultiContentPickerFilesDataTypeDef = dataTypeService.GetDataTypeDefinitionById(new Guid("83c13f11-95d8-4f10-b510-581983fe8c19"));
 if (MultiContentPickerFilesDataTypeDef == null) throw new Exception("Could not create and/or load MultiContentPickerFiles datatype");
 MultiNodePickerDataTypeDef = dataTypeService.GetDataTypeDefinitionById(new Guid("97600235-acf7-4ade-9ba9-6cad4743cb6d"));
@@ -478,6 +478,8 @@ ShippingProviderRangeTypeDataTypeDef = dataTypeService.GetDataTypeDefinitionById
 if (ShippingProviderRangeTypeDataTypeDef == null) throw new Exception("Could not create and/or load ShippingProviderRangeType datatype");
 MultiContentPickerShippingZonesDataTypeDef = dataTypeService.GetDataTypeDefinitionById(new Guid("18ee35a7-7931-4d80-822c-ffe2bfb40f6e"));
 if (MultiContentPickerShippingZonesDataTypeDef == null) throw new Exception("Could not create and/or load MultiContentPickerShippingZones datatype");
+ShopDashboardDataTypeDef = dataTypeService.GetDataTypeDefinitionById(new Guid("df1c2d1f-77c2-40fb-a6f8-7fd8612101c5"));
+if (ShopDashboardDataTypeDef == null) throw new Exception("Could not create and/or load ShopDashboard datatype");
 StockDataTypeDef = dataTypeService.GetDataTypeDefinitionById(new Guid("5744ead8-977b-44c1-b362-fe8bebca7098"));
 if (StockDataTypeDef == null) throw new Exception("Could not create and/or load Stock datatype");
 StorePickerDataTypeDef = dataTypeService.GetDataTypeDefinitionById(new Guid("1e8cdc0b-436e-46f5-bfec-57be45745771"));
@@ -489,30 +491,15 @@ if (VatPickerDataTypeDef == null) throw new Exception("Could not create and/or l
 ZonesDataTypeDef = dataTypeService.GetDataTypeDefinitionById(new Guid("8bc628dd-fe95-4a73-bdde-a7f4b620c170"));
 if (ZonesDataTypeDef == null) throw new Exception("Could not create and/or load Zones datatype");
 
-if (newDataTypesList.Contains(MultiContentPickerCatalogDataTypeDef))
-	dataTypeService.SavePreValues(MultiContentPickerCatalogDataTypeDef.Id, new[] { "content","*","-1","False","1","1","0","False","1","0","//uwbsCatalog","200","0" });
-if (newDataTypesList.Contains(MultiContentPickerCategoriesDataTypeDef))
-	dataTypeService.SavePreValues(MultiContentPickerCategoriesDataTypeDef.Id, new[] { "content","/*[starts-with(name(),'uwbsCategory')]","-1","False","1","1","0","False","1","0","//uwbsCategoryRepository","200","0" });
-if (newDataTypesList.Contains(MultiContentPickerFilesDataTypeDef))
-	dataTypeService.SavePreValues(MultiContentPickerFilesDataTypeDef.Id, new[] { "media","*","-1","False","1","1","-1","False","0","0","/","200","0" });
-if (newDataTypesList.Contains(MultiNodePickerDataTypeDef))
-	dataTypeService.SavePreValues(MultiNodePickerDataTypeDef.Id, new[] { "content","*","-1","False","1","1","0","False","1","0","/*","200","0" });
-if (newDataTypesList.Contains(MultiContentPickerImagesDataTypeDef))
-	dataTypeService.SavePreValues(MultiContentPickerImagesDataTypeDef.Id, new[] { "media","*","-1","False","1","1","-1","False","0","0","/","200","0" });
-if (newDataTypesList.Contains(OrderInfoViewerDataTypeDef))
-	dataTypeService.SavePreValues(OrderInfoViewerDataTypeDef.Id, new[] { "/uWebshopBackend/uWebshopUmbracoOrderDetails.cshtml" });
-if (newDataTypesList.Contains(OrderSectionDataTypeDef))
-	dataTypeService.SavePreValues(OrderSectionDataTypeDef.Id, new[] { "/uWebshopBackend/uWebshopUmbracoOrderOverview.cshtml" });
-if (newDataTypesList.Contains(MultiContentPickerPaymentZonesDataTypeDef))
-	dataTypeService.SavePreValues(MultiContentPickerPaymentZonesDataTypeDef.Id, new[] { "content","/*[starts-with(name(),'uwbsPaymentProviderZone')]","-1","False","1","1","0","False","1","0","//uwbsPaymentProviderZoneSection","200","0" });
-if (newDataTypesList.Contains(MultiContentPickerProductsDataTypeDef))
-	dataTypeService.SavePreValues(MultiContentPickerProductsDataTypeDef.Id, new[] { "content","/*[starts-with(name(),'uwbsProduct')]","-1","False","1","1","0","False","1","0","//uwbsCatalog","200","0" });
-if (newDataTypesList.Contains(ProductOverviewDataTypeDef))
-	dataTypeService.SavePreValues(ProductOverviewDataTypeDef.Id, new[] { "/uWebshopBackend/uWebshopUmbracoProductOverview.cshtml" });
-if (newDataTypesList.Contains(MultiContentPickerShippingZonesDataTypeDef))
-	dataTypeService.SavePreValues(MultiContentPickerShippingZonesDataTypeDef.Id, new[] { "content","/*[starts-with(name(),'uwbsShippingProviderZone')]","-1","False","1","1","0","False","1","0","//uwbsShippingProviderZoneSection","200","0" });
-if (newDataTypesList.Contains(VatPickerDataTypeDef))
-	dataTypeService.SavePreValues(VatPickerDataTypeDef.Id, new[] { "0","6","15","19","21" });
+	var MultiContentPickerCatalogDict = new Dictionary<string, PreValue>();MultiContentPickerCatalogDict.Add("treesource", new PreValue("content"));MultiContentPickerCatalogDict.Add("startNode", new PreValue("//uwbsCatalog"));MultiContentPickerCatalogDict.Add("filter", new PreValue("*"));	dataTypeService.SavePreValues(MultiContentPickerCatalogDataTypeDef.Id,MultiContentPickerCatalogDict);
+	var MultiContentPickerCategoriesDict = new Dictionary<string, PreValue>();MultiContentPickerCategoriesDict.Add("treesource", new PreValue("content"));MultiContentPickerCategoriesDict.Add("startNode", new PreValue("//uwbsCategoryRepository"));MultiContentPickerCategoriesDict.Add("filter", new PreValue("/*[starts-with(name(),'uwbsCategory')]"));	dataTypeService.SavePreValues(MultiContentPickerCategoriesDataTypeDef.Id,MultiContentPickerCategoriesDict);
+	var MultiContentPickerFilesDict = new Dictionary<string, PreValue>();MultiContentPickerFilesDict.Add("treesource", new PreValue("media"));	dataTypeService.SavePreValues(MultiContentPickerFilesDataTypeDef.Id,MultiContentPickerFilesDict);
+	var MultiNodePickerDict = new Dictionary<string, PreValue>();MultiNodePickerDict.Add("treesource", new PreValue("content"));MultiNodePickerDict.Add("startNode", new PreValue("/*"));MultiNodePickerDict.Add("filter", new PreValue("*"));	dataTypeService.SavePreValues(MultiNodePickerDataTypeDef.Id,MultiNodePickerDict);
+	var MultiContentPickerImagesDict = new Dictionary<string, PreValue>();MultiContentPickerImagesDict.Add("treesource", new PreValue("media"));	dataTypeService.SavePreValues(MultiContentPickerImagesDataTypeDef.Id,MultiContentPickerImagesDict);
+	var MultiContentPickerPaymentZonesDict = new Dictionary<string, PreValue>();MultiContentPickerPaymentZonesDict.Add("treesource", new PreValue("content"));MultiContentPickerPaymentZonesDict.Add("startNode", new PreValue("//uwbsPaymentProviderZoneSection"));MultiContentPickerPaymentZonesDict.Add("filter", new PreValue("/*[starts-with(name(),'uwbsPaymentProviderZone')]"));	dataTypeService.SavePreValues(MultiContentPickerPaymentZonesDataTypeDef.Id,MultiContentPickerPaymentZonesDict);
+	var MultiContentPickerProductsDict = new Dictionary<string, PreValue>();MultiContentPickerProductsDict.Add("treesource", new PreValue("content"));MultiContentPickerProductsDict.Add("startNode", new PreValue("//uwbsCatalog"));MultiContentPickerProductsDict.Add("filter", new PreValue("/*[starts-with(name(),'uwbsProduct')]"));	dataTypeService.SavePreValues(MultiContentPickerProductsDataTypeDef.Id,MultiContentPickerProductsDict);
+	var MultiContentPickerShippingZonesDict = new Dictionary<string, PreValue>();MultiContentPickerShippingZonesDict.Add("treesource", new PreValue("content"));MultiContentPickerShippingZonesDict.Add("startNode", new PreValue("//uwbsShippingProviderZoneSection"));MultiContentPickerShippingZonesDict.Add("filter", new PreValue("/*[starts-with(name(),'uwbsShippingProviderZone')]"));	dataTypeService.SavePreValues(MultiContentPickerShippingZonesDataTypeDef.Id,MultiContentPickerShippingZonesDict);
+	var VatPickerDict = new Dictionary<string, PreValue>();VatPickerDict.Add("value", new PreValue("0, 6, 19, 21"));	dataTypeService.SavePreValues(VatPickerDataTypeDef.Id,VatPickerDict);
 
 if (newDataTypesList.Any()) dataTypeService.Save(newDataTypesList);
 
@@ -543,25 +530,25 @@ AllowedTemplates = new List<ITemplate>(),
 PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),};
 contentTypeList.Add(uwbsCategoryContentType);
 
-if (uwbsCategoryContentType.PropertyTypes.All(p => p.Alias != "title")){
+if (uwbsCategoryContentType.PropertyTypes.All(p => p.Alias != "title") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsCategoryContentType, "Global").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "title", Name = "#Title", Description = "#TitleDescription",Mandatory = true, });
 }
-if (uwbsCategoryContentType.PropertyTypes.All(p => p.Alias != "url")){
+if (uwbsCategoryContentType.PropertyTypes.All(p => p.Alias != "url") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsCategoryContentType, "Global").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "url", Name = "#Url", Description = "#UrlDescription",Mandatory = true, });
 }
-if (uwbsCategoryContentType.PropertyTypes.All(p => p.Alias != "metaDescription")){
+if (uwbsCategoryContentType.PropertyTypes.All(p => p.Alias != "metaDescription") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsCategoryContentType, "Global").PropertyTypes.Add(new PropertyType(TextboxMultipleDataTypeDef) { Alias = "metaDescription", Name = "#MetaDescription", Description = "#MetaDescriptionDescription",});
 }
-if (uwbsCategoryContentType.PropertyTypes.All(p => p.Alias != "metaTags")){
+if (uwbsCategoryContentType.PropertyTypes.All(p => p.Alias != "metaTags") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsCategoryContentType, "Global").PropertyTypes.Add(new PropertyType(TagsDataTypeDef) { Alias = "metaTags", Name = "#Tags", Description = "#TagsDescription",});
 }
-if (uwbsCategoryContentType.PropertyTypes.All(p => p.Alias != "categories")){
+if (uwbsCategoryContentType.PropertyTypes.All(p => p.Alias != "categories") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsCategoryContentType, "Global").PropertyTypes.Add(new PropertyType(MultiContentPickerCategoriesDataTypeDef) { Alias = "categories", Name = "#SubCategories", Description = "#SubCategoriesDescription",});
 }
-if (uwbsCategoryContentType.PropertyTypes.All(p => p.Alias != "description")){
+if (uwbsCategoryContentType.PropertyTypes.All(p => p.Alias != "description") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsCategoryContentType, "Details").PropertyTypes.Add(new PropertyType(RichTextDataTypeDef) { Alias = "description", Name = "#Description", Description = "#DescriptionDescription",});
 }
-if (uwbsCategoryContentType.PropertyTypes.All(p => p.Alias != "images")){
+if (uwbsCategoryContentType.PropertyTypes.All(p => p.Alias != "images") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsCategoryContentType, "Details").PropertyTypes.Add(new PropertyType(MultiContentPickerImagesDataTypeDef) { Alias = "images", Name = "#Images", Description = "#ImagesDescription",});
 }
 
@@ -606,19 +593,19 @@ AllowedTemplates = new List<ITemplate>(),
 PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),};
 contentTypeList.Add(uwbsDiscountOrderBasicContentType);
 
-if (uwbsDiscountOrderBasicContentType.PropertyTypes.All(p => p.Alias != "title")){
+if (uwbsDiscountOrderBasicContentType.PropertyTypes.All(p => p.Alias != "title") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderBasicContentType, "Global").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "title", Name = "#Title", Description = "#TitleDescription",Mandatory = true, });
 }
-if (uwbsDiscountOrderBasicContentType.PropertyTypes.All(p => p.Alias != "description")){
+if (uwbsDiscountOrderBasicContentType.PropertyTypes.All(p => p.Alias != "description") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderBasicContentType, "Global").PropertyTypes.Add(new PropertyType(RichTextDataTypeDef) { Alias = "description", Name = "#Description", Description = "#DescriptionDescription",});
 }
-if (uwbsDiscountOrderBasicContentType.PropertyTypes.All(p => p.Alias != "disable")){
+if (uwbsDiscountOrderBasicContentType.PropertyTypes.All(p => p.Alias != "disable") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderBasicContentType, "Global").PropertyTypes.Add(new PropertyType(TrueFalseDataTypeDef) { Alias = "disable", Name = "#Disable", Description = "#DisableDescription",});
 }
-if (uwbsDiscountOrderBasicContentType.PropertyTypes.All(p => p.Alias != "discountType")){
+if (uwbsDiscountOrderBasicContentType.PropertyTypes.All(p => p.Alias != "discountType") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderBasicContentType, "Details").PropertyTypes.Add(new PropertyType(DiscountTypeDataTypeDef) { Alias = "discountType", Name = "#DiscountType", Description = "#DiscountTypeDescription",});
 }
-if (uwbsDiscountOrderBasicContentType.PropertyTypes.All(p => p.Alias != "discount")){
+if (uwbsDiscountOrderBasicContentType.PropertyTypes.All(p => p.Alias != "discount") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderBasicContentType, "Details").PropertyTypes.Add(new PropertyType(PriceDataTypeDef) { Alias = "discount", Name = "#Discount", Description = "#DiscountDescription",});
 }
 
@@ -635,25 +622,25 @@ AllowedTemplates = new List<ITemplate>(),
 PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),};
 contentTypeList.Add(uwbsDiscountOrderCountdownContentType);
 
-if (uwbsDiscountOrderCountdownContentType.PropertyTypes.All(p => p.Alias != "title")){
+if (uwbsDiscountOrderCountdownContentType.PropertyTypes.All(p => p.Alias != "title") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderCountdownContentType, "Global").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "title", Name = "#Title", Description = "#TitleDescription",Mandatory = true, });
 }
-if (uwbsDiscountOrderCountdownContentType.PropertyTypes.All(p => p.Alias != "description")){
+if (uwbsDiscountOrderCountdownContentType.PropertyTypes.All(p => p.Alias != "description") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderCountdownContentType, "Global").PropertyTypes.Add(new PropertyType(RichTextDataTypeDef) { Alias = "description", Name = "#Description", Description = "#DescriptionDescription",});
 }
-if (uwbsDiscountOrderCountdownContentType.PropertyTypes.All(p => p.Alias != "disable")){
+if (uwbsDiscountOrderCountdownContentType.PropertyTypes.All(p => p.Alias != "disable") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderCountdownContentType, "Global").PropertyTypes.Add(new PropertyType(TrueFalseDataTypeDef) { Alias = "disable", Name = "#Disable", Description = "#DisableDescription",});
 }
-if (uwbsDiscountOrderCountdownContentType.PropertyTypes.All(p => p.Alias != "discountType")){
+if (uwbsDiscountOrderCountdownContentType.PropertyTypes.All(p => p.Alias != "discountType") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderCountdownContentType, "Details").PropertyTypes.Add(new PropertyType(DiscountTypeDataTypeDef) { Alias = "discountType", Name = "#DiscountType", Description = "#DiscountTypeDescription",});
 }
-if (uwbsDiscountOrderCountdownContentType.PropertyTypes.All(p => p.Alias != "discount")){
+if (uwbsDiscountOrderCountdownContentType.PropertyTypes.All(p => p.Alias != "discount") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderCountdownContentType, "Details").PropertyTypes.Add(new PropertyType(PriceDataTypeDef) { Alias = "discount", Name = "#Discount", Description = "#DiscountDescription",});
 }
-if (uwbsDiscountOrderCountdownContentType.PropertyTypes.All(p => p.Alias != "countdownEnabled")){
+if (uwbsDiscountOrderCountdownContentType.PropertyTypes.All(p => p.Alias != "countdownEnabled") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderCountdownContentType, "Details").PropertyTypes.Add(new PropertyType(TrueFalseDataTypeDef) { Alias = "countdownEnabled", Name = "#CountdownEnabled", Description = "#CountdownEnabledDescription",});
 }
-if (uwbsDiscountOrderCountdownContentType.PropertyTypes.All(p => p.Alias != "countdown")){
+if (uwbsDiscountOrderCountdownContentType.PropertyTypes.All(p => p.Alias != "countdown") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderCountdownContentType, "Details").PropertyTypes.Add(new PropertyType(StockDataTypeDef) { Alias = "countdown", Name = "#Countdown", Description = "#CountdownDescription",});
 }
 
@@ -670,22 +657,22 @@ AllowedTemplates = new List<ITemplate>(),
 PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),};
 contentTypeList.Add(uwbsDiscountOrderCouponContentType);
 
-if (uwbsDiscountOrderCouponContentType.PropertyTypes.All(p => p.Alias != "title")){
+if (uwbsDiscountOrderCouponContentType.PropertyTypes.All(p => p.Alias != "title") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderCouponContentType, "Global").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "title", Name = "#Title", Description = "#TitleDescription",Mandatory = true, });
 }
-if (uwbsDiscountOrderCouponContentType.PropertyTypes.All(p => p.Alias != "description")){
+if (uwbsDiscountOrderCouponContentType.PropertyTypes.All(p => p.Alias != "description") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderCouponContentType, "Global").PropertyTypes.Add(new PropertyType(RichTextDataTypeDef) { Alias = "description", Name = "#Description", Description = "#DescriptionDescription",});
 }
-if (uwbsDiscountOrderCouponContentType.PropertyTypes.All(p => p.Alias != "disable")){
+if (uwbsDiscountOrderCouponContentType.PropertyTypes.All(p => p.Alias != "disable") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderCouponContentType, "Global").PropertyTypes.Add(new PropertyType(TrueFalseDataTypeDef) { Alias = "disable", Name = "#Disable", Description = "#DisableDescription",});
 }
-if (uwbsDiscountOrderCouponContentType.PropertyTypes.All(p => p.Alias != "discountType")){
+if (uwbsDiscountOrderCouponContentType.PropertyTypes.All(p => p.Alias != "discountType") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderCouponContentType, "Details").PropertyTypes.Add(new PropertyType(DiscountTypeDataTypeDef) { Alias = "discountType", Name = "#DiscountType", Description = "#DiscountTypeDescription",});
 }
-if (uwbsDiscountOrderCouponContentType.PropertyTypes.All(p => p.Alias != "discount")){
+if (uwbsDiscountOrderCouponContentType.PropertyTypes.All(p => p.Alias != "discount") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderCouponContentType, "Details").PropertyTypes.Add(new PropertyType(PriceDataTypeDef) { Alias = "discount", Name = "#Discount", Description = "#DiscountDescription",});
 }
-if (uwbsDiscountOrderCouponContentType.PropertyTypes.All(p => p.Alias != "couponCodes")){
+if (uwbsDiscountOrderCouponContentType.PropertyTypes.All(p => p.Alias != "couponCodes") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderCouponContentType, "Conditions").PropertyTypes.Add(new PropertyType(CouponCodesDataTypeDef) { Alias = "couponCodes", Name = "#CouponCodes", Description = "#CouponCodesDescription",});
 }
 
@@ -702,22 +689,22 @@ AllowedTemplates = new List<ITemplate>(),
 PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),};
 contentTypeList.Add(uwbsDiscountOrderMembergroupContentType);
 
-if (uwbsDiscountOrderMembergroupContentType.PropertyTypes.All(p => p.Alias != "title")){
+if (uwbsDiscountOrderMembergroupContentType.PropertyTypes.All(p => p.Alias != "title") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderMembergroupContentType, "Global").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "title", Name = "#Title", Description = "#TitleDescription",Mandatory = true, });
 }
-if (uwbsDiscountOrderMembergroupContentType.PropertyTypes.All(p => p.Alias != "description")){
+if (uwbsDiscountOrderMembergroupContentType.PropertyTypes.All(p => p.Alias != "description") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderMembergroupContentType, "Global").PropertyTypes.Add(new PropertyType(RichTextDataTypeDef) { Alias = "description", Name = "#Description", Description = "#DescriptionDescription",});
 }
-if (uwbsDiscountOrderMembergroupContentType.PropertyTypes.All(p => p.Alias != "disable")){
+if (uwbsDiscountOrderMembergroupContentType.PropertyTypes.All(p => p.Alias != "disable") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderMembergroupContentType, "Global").PropertyTypes.Add(new PropertyType(TrueFalseDataTypeDef) { Alias = "disable", Name = "#Disable", Description = "#DisableDescription",});
 }
-if (uwbsDiscountOrderMembergroupContentType.PropertyTypes.All(p => p.Alias != "discountType")){
+if (uwbsDiscountOrderMembergroupContentType.PropertyTypes.All(p => p.Alias != "discountType") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderMembergroupContentType, "Details").PropertyTypes.Add(new PropertyType(DiscountTypeDataTypeDef) { Alias = "discountType", Name = "#DiscountType", Description = "#DiscountTypeDescription",});
 }
-if (uwbsDiscountOrderMembergroupContentType.PropertyTypes.All(p => p.Alias != "discount")){
+if (uwbsDiscountOrderMembergroupContentType.PropertyTypes.All(p => p.Alias != "discount") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderMembergroupContentType, "Details").PropertyTypes.Add(new PropertyType(PriceDataTypeDef) { Alias = "discount", Name = "#Discount", Description = "#DiscountDescription",});
 }
-if (uwbsDiscountOrderMembergroupContentType.PropertyTypes.All(p => p.Alias != "memberGroups")){
+if (uwbsDiscountOrderMembergroupContentType.PropertyTypes.All(p => p.Alias != "memberGroups") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderMembergroupContentType, "Conditions").PropertyTypes.Add(new PropertyType(MemberGroupsDataTypeDef) { Alias = "memberGroups", Name = "#MemberGroups", Description = "#MemberGroupsDescription",});
 }
 
@@ -734,58 +721,58 @@ AllowedTemplates = new List<ITemplate>(),
 PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),};
 contentTypeList.Add(uwbsDiscountOrderContentType);
 
-if (uwbsDiscountOrderContentType.PropertyTypes.All(p => p.Alias != "title")){
+if (uwbsDiscountOrderContentType.PropertyTypes.All(p => p.Alias != "title") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderContentType, "Global").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "title", Name = "#Title", Description = "#TitleDescription",Mandatory = true, });
 }
-if (uwbsDiscountOrderContentType.PropertyTypes.All(p => p.Alias != "description")){
+if (uwbsDiscountOrderContentType.PropertyTypes.All(p => p.Alias != "description") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderContentType, "Global").PropertyTypes.Add(new PropertyType(RichTextDataTypeDef) { Alias = "description", Name = "#Description", Description = "#DescriptionDescription",});
 }
-if (uwbsDiscountOrderContentType.PropertyTypes.All(p => p.Alias != "disable")){
+if (uwbsDiscountOrderContentType.PropertyTypes.All(p => p.Alias != "disable") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderContentType, "Global").PropertyTypes.Add(new PropertyType(TrueFalseDataTypeDef) { Alias = "disable", Name = "#Disable", Description = "#DisableDescription",});
 }
-if (uwbsDiscountOrderContentType.PropertyTypes.All(p => p.Alias != "shippingDiscountable")){
+if (uwbsDiscountOrderContentType.PropertyTypes.All(p => p.Alias != "shippingDiscountable") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderContentType, "Details").PropertyTypes.Add(new PropertyType(TrueFalseDataTypeDef) { Alias = "shippingDiscountable", Name = "#ShippingDiscountable", Description = "#ShippingDiscountableDescription",});
 }
-if (uwbsDiscountOrderContentType.PropertyTypes.All(p => p.Alias != "discountType")){
+if (uwbsDiscountOrderContentType.PropertyTypes.All(p => p.Alias != "discountType") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderContentType, "Details").PropertyTypes.Add(new PropertyType(DiscountTypeDataTypeDef) { Alias = "discountType", Name = "#DiscountType", Description = "#DiscountTypeDescription",});
 }
-if (uwbsDiscountOrderContentType.PropertyTypes.All(p => p.Alias != "discount")){
+if (uwbsDiscountOrderContentType.PropertyTypes.All(p => p.Alias != "discount") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderContentType, "Details").PropertyTypes.Add(new PropertyType(PriceDataTypeDef) { Alias = "discount", Name = "#Discount", Description = "#DiscountDescription",});
 }
-if (uwbsDiscountOrderContentType.PropertyTypes.All(p => p.Alias != "ranges")){
+if (uwbsDiscountOrderContentType.PropertyTypes.All(p => p.Alias != "ranges") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderContentType, "Details").PropertyTypes.Add(new PropertyType(RangesDataTypeDef) { Alias = "ranges", Name = "#Ranges", Description = "#RangesDescription",});
 }
-if (uwbsDiscountOrderContentType.PropertyTypes.All(p => p.Alias != "countdownEnabled")){
+if (uwbsDiscountOrderContentType.PropertyTypes.All(p => p.Alias != "countdownEnabled") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderContentType, "Details").PropertyTypes.Add(new PropertyType(TrueFalseDataTypeDef) { Alias = "countdownEnabled", Name = "#CountdownEnabled", Description = "#CountdownEnabledDescription",});
 }
-if (uwbsDiscountOrderContentType.PropertyTypes.All(p => p.Alias != "countdown")){
+if (uwbsDiscountOrderContentType.PropertyTypes.All(p => p.Alias != "countdown") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderContentType, "Details").PropertyTypes.Add(new PropertyType(StockDataTypeDef) { Alias = "countdown", Name = "#Countdown", Description = "#CountdownDescription",});
 }
-if (uwbsDiscountOrderContentType.PropertyTypes.All(p => p.Alias != "orderCondition")){
+if (uwbsDiscountOrderContentType.PropertyTypes.All(p => p.Alias != "orderCondition") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderContentType, "Conditions").PropertyTypes.Add(new PropertyType(DiscountOrderConditionDataTypeDef) { Alias = "orderCondition", Name = "#OrderCondition", Description = "#OrderConditionDescription",});
 }
-if (uwbsDiscountOrderContentType.PropertyTypes.All(p => p.Alias != "numberOfItemsCondition")){
+if (uwbsDiscountOrderContentType.PropertyTypes.All(p => p.Alias != "numberOfItemsCondition") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderContentType, "Conditions").PropertyTypes.Add(new PropertyType(NumericDataTypeDef) { Alias = "numberOfItemsCondition", Name = "#NumberOfItemsCondition", Description = "#NumberOfItemsConditionDescription",});
 }
-if (uwbsDiscountOrderContentType.PropertyTypes.All(p => p.Alias != "minimumAmount")){
+if (uwbsDiscountOrderContentType.PropertyTypes.All(p => p.Alias != "minimumAmount") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderContentType, "Conditions").PropertyTypes.Add(new PropertyType(PriceDataTypeDef) { Alias = "minimumAmount", Name = "#MinimumAmount", Description = "#MinimumAmountDescription",});
 }
-if (uwbsDiscountOrderContentType.PropertyTypes.All(p => p.Alias != "couponCodes")){
+if (uwbsDiscountOrderContentType.PropertyTypes.All(p => p.Alias != "couponCodes") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderContentType, "Conditions").PropertyTypes.Add(new PropertyType(CouponCodesDataTypeDef) { Alias = "couponCodes", Name = "#CouponCodes", Description = "#CouponCodesDescription",});
 }
-if (uwbsDiscountOrderContentType.PropertyTypes.All(p => p.Alias != "oncePerCustomer")){
+if (uwbsDiscountOrderContentType.PropertyTypes.All(p => p.Alias != "oncePerCustomer") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderContentType, "Conditions").PropertyTypes.Add(new PropertyType(TrueFalseDataTypeDef) { Alias = "oncePerCustomer", Name = "#OncePerCustomer", Description = "#OncePerCustomerDescription",});
 }
-if (uwbsDiscountOrderContentType.PropertyTypes.All(p => p.Alias != "items")){
+if (uwbsDiscountOrderContentType.PropertyTypes.All(p => p.Alias != "items") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderContentType, "Filter").PropertyTypes.Add(new PropertyType(MultiNodePickerDataTypeDef) { Alias = "items", Name = "#Items", Description = "#ItemsDescription",});
 }
-if (uwbsDiscountOrderContentType.PropertyTypes.All(p => p.Alias != "affectedOrderlines")){
+if (uwbsDiscountOrderContentType.PropertyTypes.All(p => p.Alias != "affectedOrderlines") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderContentType, "Filter").PropertyTypes.Add(new PropertyType(MultiContentPickerCatalogDataTypeDef) { Alias = "affectedOrderlines", Name = "#AffectedOrderlines", Description = "#AffectedOrderlinesDescription",});
 }
-if (uwbsDiscountOrderContentType.PropertyTypes.All(p => p.Alias != "affectedTags")){
+if (uwbsDiscountOrderContentType.PropertyTypes.All(p => p.Alias != "affectedTags") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderContentType, "Filter").PropertyTypes.Add(new PropertyType(TagsDataTypeDef) { Alias = "affectedTags", Name = "#AffectedTags", Description = "#AffectedTagsDescription",});
 }
-if (uwbsDiscountOrderContentType.PropertyTypes.All(p => p.Alias != "memberGroups")){
+if (uwbsDiscountOrderContentType.PropertyTypes.All(p => p.Alias != "memberGroups") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderContentType, "Conditions").PropertyTypes.Add(new PropertyType(MemberGroupsDataTypeDef) { Alias = "memberGroups", Name = "#MemberGroups", Description = "#MemberGroupsDescription",});
 }
 
@@ -816,37 +803,37 @@ AllowedTemplates = new List<ITemplate>(),
 PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),};
 contentTypeList.Add(uwbsDiscountProductContentType);
 
-if (uwbsDiscountProductContentType.PropertyTypes.All(p => p.Alias != "title")){
+if (uwbsDiscountProductContentType.PropertyTypes.All(p => p.Alias != "title") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountProductContentType, "Global").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "title", Name = "#Title", Description = "#TitleDescription",Mandatory = true, });
 }
-if (uwbsDiscountProductContentType.PropertyTypes.All(p => p.Alias != "description")){
+if (uwbsDiscountProductContentType.PropertyTypes.All(p => p.Alias != "description") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountProductContentType, "Global").PropertyTypes.Add(new PropertyType(RichTextDataTypeDef) { Alias = "description", Name = "#Description", Description = "#DescriptionDescription",});
 }
-if (uwbsDiscountProductContentType.PropertyTypes.All(p => p.Alias != "disable")){
+if (uwbsDiscountProductContentType.PropertyTypes.All(p => p.Alias != "disable") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountProductContentType, "Global").PropertyTypes.Add(new PropertyType(TrueFalseDataTypeDef) { Alias = "disable", Name = "#Disable", Description = "#DisableDescription",});
 }
-if (uwbsDiscountProductContentType.PropertyTypes.All(p => p.Alias != "products")){
+if (uwbsDiscountProductContentType.PropertyTypes.All(p => p.Alias != "products") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountProductContentType, "Details").PropertyTypes.Add(new PropertyType(MultiContentPickerCatalogDataTypeDef) { Alias = "products", Name = "#Products", Description = "#ProductsDescription",});
 }
-if (uwbsDiscountProductContentType.PropertyTypes.All(p => p.Alias != "excludeVariants")){
+if (uwbsDiscountProductContentType.PropertyTypes.All(p => p.Alias != "excludeVariants") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountProductContentType, "Details").PropertyTypes.Add(new PropertyType(TrueFalseDataTypeDef) { Alias = "excludeVariants", Name = "#ExcludeVariants", Description = "#ExcludeVariantsDescription",});
 }
-if (uwbsDiscountProductContentType.PropertyTypes.All(p => p.Alias != "discountType")){
+if (uwbsDiscountProductContentType.PropertyTypes.All(p => p.Alias != "discountType") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountProductContentType, "Details").PropertyTypes.Add(new PropertyType(DiscountTypeDataTypeDef) { Alias = "discountType", Name = "#DiscountType", Description = "#DiscountTypeDescription",});
 }
-if (uwbsDiscountProductContentType.PropertyTypes.All(p => p.Alias != "discount")){
+if (uwbsDiscountProductContentType.PropertyTypes.All(p => p.Alias != "discount") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountProductContentType, "Details").PropertyTypes.Add(new PropertyType(PriceDataTypeDef) { Alias = "discount", Name = "#Discount", Description = "#DiscountDescription",});
 }
-if (uwbsDiscountProductContentType.PropertyTypes.All(p => p.Alias != "ranges")){
+if (uwbsDiscountProductContentType.PropertyTypes.All(p => p.Alias != "ranges") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountProductContentType, "Details").PropertyTypes.Add(new PropertyType(RangesDataTypeDef) { Alias = "ranges", Name = "#Ranges", Description = "#RangesDescription",});
 }
-if (uwbsDiscountProductContentType.PropertyTypes.All(p => p.Alias != "countdownEnabled")){
+if (uwbsDiscountProductContentType.PropertyTypes.All(p => p.Alias != "countdownEnabled") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountProductContentType, "Details").PropertyTypes.Add(new PropertyType(TrueFalseDataTypeDef) { Alias = "countdownEnabled", Name = "#CountdownEnabled", Description = "#CountdownEnabledDescription",});
 }
-if (uwbsDiscountProductContentType.PropertyTypes.All(p => p.Alias != "countdown")){
+if (uwbsDiscountProductContentType.PropertyTypes.All(p => p.Alias != "countdown") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountProductContentType, "Details").PropertyTypes.Add(new PropertyType(StockDataTypeDef) { Alias = "countdown", Name = "#Countdown", Description = "#CountdownDescription",});
 }
-if (uwbsDiscountProductContentType.PropertyTypes.All(p => p.Alias != "memberGroups")){
+if (uwbsDiscountProductContentType.PropertyTypes.All(p => p.Alias != "memberGroups") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountProductContentType, "Conditions").PropertyTypes.Add(new PropertyType(MemberGroupsDataTypeDef) { Alias = "memberGroups", Name = "#MemberGroups", Description = "#MemberGroupsDescription",});
 }
 
@@ -877,22 +864,22 @@ AllowedTemplates = new List<ITemplate>(),
 PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),};
 contentTypeList.Add(uwbsDiscountOrderRangedContentType);
 
-if (uwbsDiscountOrderRangedContentType.PropertyTypes.All(p => p.Alias != "title")){
+if (uwbsDiscountOrderRangedContentType.PropertyTypes.All(p => p.Alias != "title") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderRangedContentType, "Global").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "title", Name = "#Title", Description = "#TitleDescription",Mandatory = true, });
 }
-if (uwbsDiscountOrderRangedContentType.PropertyTypes.All(p => p.Alias != "description")){
+if (uwbsDiscountOrderRangedContentType.PropertyTypes.All(p => p.Alias != "description") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderRangedContentType, "Global").PropertyTypes.Add(new PropertyType(RichTextDataTypeDef) { Alias = "description", Name = "#Description", Description = "#DescriptionDescription",});
 }
-if (uwbsDiscountOrderRangedContentType.PropertyTypes.All(p => p.Alias != "disable")){
+if (uwbsDiscountOrderRangedContentType.PropertyTypes.All(p => p.Alias != "disable") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderRangedContentType, "Global").PropertyTypes.Add(new PropertyType(TrueFalseDataTypeDef) { Alias = "disable", Name = "#Disable", Description = "#DisableDescription",});
 }
-if (uwbsDiscountOrderRangedContentType.PropertyTypes.All(p => p.Alias != "discountType")){
+if (uwbsDiscountOrderRangedContentType.PropertyTypes.All(p => p.Alias != "discountType") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderRangedContentType, "Details").PropertyTypes.Add(new PropertyType(DiscountTypeDataTypeDef) { Alias = "discountType", Name = "#DiscountType", Description = "#DiscountTypeDescription",});
 }
-if (uwbsDiscountOrderRangedContentType.PropertyTypes.All(p => p.Alias != "discount")){
+if (uwbsDiscountOrderRangedContentType.PropertyTypes.All(p => p.Alias != "discount") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderRangedContentType, "Details").PropertyTypes.Add(new PropertyType(PriceDataTypeDef) { Alias = "discount", Name = "#Discount", Description = "#DiscountDescription",});
 }
-if (uwbsDiscountOrderRangedContentType.PropertyTypes.All(p => p.Alias != "ranges")){
+if (uwbsDiscountOrderRangedContentType.PropertyTypes.All(p => p.Alias != "ranges") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsDiscountOrderRangedContentType, "Details").PropertyTypes.Add(new PropertyType(RangesDataTypeDef) { Alias = "ranges", Name = "#Ranges", Description = "#RangesDescription",});
 }
 
@@ -923,17 +910,14 @@ AllowedTemplates = new List<ITemplate>(),
 PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),};
 contentTypeList.Add(uwbsEmailTemplateCustomerContentType);
 
-if (uwbsEmailTemplateCustomerContentType.PropertyTypes.All(p => p.Alias != "title")){
+if (uwbsEmailTemplateCustomerContentType.PropertyTypes.All(p => p.Alias != "title") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsEmailTemplateCustomerContentType, "Global").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "title", Name = "#Title", Description = "#TitleDescription",});
 }
-if (uwbsEmailTemplateCustomerContentType.PropertyTypes.All(p => p.Alias != "description")){
+if (uwbsEmailTemplateCustomerContentType.PropertyTypes.All(p => p.Alias != "description") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsEmailTemplateCustomerContentType, "Global").PropertyTypes.Add(new PropertyType(RichTextDataTypeDef) { Alias = "description", Name = "#Description", Description = "#DescriptionDescription",});
 }
-if (uwbsEmailTemplateCustomerContentType.PropertyTypes.All(p => p.Alias != "emailtemplate")){
+if (uwbsEmailTemplateCustomerContentType.PropertyTypes.All(p => p.Alias != "emailtemplate") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsEmailTemplateCustomerContentType, "Global").PropertyTypes.Add(new PropertyType(TemplatePickerDataTypeDef) { Alias = "emailtemplate", Name = "#Template", Description = "#TemplateDescription",});
-}
-if (uwbsEmailTemplateCustomerContentType.PropertyTypes.All(p => p.Alias != "templatePreview")&& umbracoVersionMajor == 6){
-GetOrAddPropertyGroup(uwbsEmailTemplateCustomerContentType, "Global").PropertyTypes.Add(new PropertyType(EmailDetailsDataTypeDef) { Alias = "templatePreview", Name = "#TemplatePreview", Description = "#TemplatePreviewDescription",});
 }
 
 
@@ -977,17 +961,14 @@ AllowedTemplates = new List<ITemplate>(),
 PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),};
 contentTypeList.Add(uwbsEmailTemplateStoreContentType);
 
-if (uwbsEmailTemplateStoreContentType.PropertyTypes.All(p => p.Alias != "title")){
+if (uwbsEmailTemplateStoreContentType.PropertyTypes.All(p => p.Alias != "title") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsEmailTemplateStoreContentType, "Global").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "title", Name = "#Title", Description = "#TitleDescription",});
 }
-if (uwbsEmailTemplateStoreContentType.PropertyTypes.All(p => p.Alias != "description")){
+if (uwbsEmailTemplateStoreContentType.PropertyTypes.All(p => p.Alias != "description") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsEmailTemplateStoreContentType, "Global").PropertyTypes.Add(new PropertyType(RichTextDataTypeDef) { Alias = "description", Name = "#Description", Description = "#DescriptionDescription",});
 }
-if (uwbsEmailTemplateStoreContentType.PropertyTypes.All(p => p.Alias != "emailtemplate")){
+if (uwbsEmailTemplateStoreContentType.PropertyTypes.All(p => p.Alias != "emailtemplate") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsEmailTemplateStoreContentType, "Global").PropertyTypes.Add(new PropertyType(TemplatePickerDataTypeDef) { Alias = "emailtemplate", Name = "#Template", Description = "#TemplateDescription",});
-}
-if (uwbsEmailTemplateStoreContentType.PropertyTypes.All(p => p.Alias != "templatePreview")&& umbracoVersionMajor == 6){
-GetOrAddPropertyGroup(uwbsEmailTemplateStoreContentType, "Global").PropertyTypes.Add(new PropertyType(EmailDetailsDataTypeDef) { Alias = "templatePreview", Name = "#TemplatePreview", Description = "#TemplatePreviewDescription",});
 }
 
 
@@ -1017,25 +998,25 @@ AllowedTemplates = new List<ITemplate>(),
 PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),};
 contentTypeList.Add(uwbsOrderContentType);
 
-if (uwbsOrderContentType.PropertyTypes.All(p => p.Alias != "orderStatusPicker")&& umbracoVersionMajor == 6){
+if (uwbsOrderContentType.PropertyTypes.All(p => p.Alias != "orderStatusPicker")&& umbracoVersionMajor == 6 && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsOrderContentType, "Global").PropertyTypes.Add(new PropertyType(OrderStatusPickerDataTypeDef) { Alias = "orderStatusPicker", Name = "#OrderStatusPicker", Description = "#OrderStatusPickerDescription",});
 }
-if (uwbsOrderContentType.PropertyTypes.All(p => p.Alias != "orderPaid")&& umbracoVersionMajor == 6){
+if (uwbsOrderContentType.PropertyTypes.All(p => p.Alias != "orderPaid")&& umbracoVersionMajor == 6 && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsOrderContentType, "Global").PropertyTypes.Add(new PropertyType(TrueFalseDataTypeDef) { Alias = "orderPaid", Name = "#OrderPaid", Description = "#OrderPaidDescription",});
 }
-if (uwbsOrderContentType.PropertyTypes.All(p => p.Alias != "orderDetails")){
+if (uwbsOrderContentType.PropertyTypes.All(p => p.Alias != "orderDetails") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsOrderContentType, "Global").PropertyTypes.Add(new PropertyType(OrderInfoViewerDataTypeDef) { Alias = "orderDetails", Name = "#OrderDetails", Description = "#OrderDetailsDescription",});
 }
-if (uwbsOrderContentType.PropertyTypes.All(p => p.Alias != "orderGuid")){
+if (uwbsOrderContentType.PropertyTypes.All(p => p.Alias != "orderGuid") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsOrderContentType, "Global").PropertyTypes.Add(new PropertyType(LabelDataTypeDef) { Alias = "orderGuid", Name = "#OrderGuid", Description = "#OrderGuidDescription",});
 }
-if (uwbsOrderContentType.PropertyTypes.All(p => p.Alias != "customerEmail")){
+if (uwbsOrderContentType.PropertyTypes.All(p => p.Alias != "customerEmail") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsOrderContentType, "Customer").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "customerEmail", Name = "#CustomerEmail", Description = "#CustomerEmailDescription",});
 }
-if (uwbsOrderContentType.PropertyTypes.All(p => p.Alias != "customerFirstName")){
+if (uwbsOrderContentType.PropertyTypes.All(p => p.Alias != "customerFirstName") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsOrderContentType, "Customer").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "customerFirstName", Name = "#CustomerFirstName", Description = "#CustomerFirstNameDescription",});
 }
-if (uwbsOrderContentType.PropertyTypes.All(p => p.Alias != "customerLastName")){
+if (uwbsOrderContentType.PropertyTypes.All(p => p.Alias != "customerLastName") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsOrderContentType, "Customer").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "customerLastName", Name = "#CustomerLastName", Description = "#CustomerLastNameDescription",});
 }
 
@@ -1052,49 +1033,49 @@ AllowedTemplates = new List<ITemplate>(),
 PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),};
 contentTypeList.Add(uwbsOrderedProductContentType);
 
-if (uwbsOrderedProductContentType.PropertyTypes.All(p => p.Alias != "productId")){
+if (uwbsOrderedProductContentType.PropertyTypes.All(p => p.Alias != "productId") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsOrderedProductContentType, "Global").PropertyTypes.Add(new PropertyType(ContentPickerDataTypeDef) { Alias = "productId", Name = "#ProductId", Description = "#ProductIdDescription",});
 }
-if (uwbsOrderedProductContentType.PropertyTypes.All(p => p.Alias != "typeAlias")){
+if (uwbsOrderedProductContentType.PropertyTypes.All(p => p.Alias != "typeAlias") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsOrderedProductContentType, "Global").PropertyTypes.Add(new PropertyType(LabelDataTypeDef) { Alias = "typeAlias", Name = "#TypeAlias", Description = "#TypeAliasDescription",});
 }
-if (uwbsOrderedProductContentType.PropertyTypes.All(p => p.Alias != "title")){
+if (uwbsOrderedProductContentType.PropertyTypes.All(p => p.Alias != "title") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsOrderedProductContentType, "Global").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "title", Name = "#Title", Description = "#TitleDescription",});
 }
-if (uwbsOrderedProductContentType.PropertyTypes.All(p => p.Alias != "sku")){
+if (uwbsOrderedProductContentType.PropertyTypes.All(p => p.Alias != "sku") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsOrderedProductContentType, "Global").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "sku", Name = "#SKU", Description = "#SKUDescription",});
 }
-if (uwbsOrderedProductContentType.PropertyTypes.All(p => p.Alias != "length")){
+if (uwbsOrderedProductContentType.PropertyTypes.All(p => p.Alias != "length") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsOrderedProductContentType, "Details").PropertyTypes.Add(new PropertyType(NumericDataTypeDef) { Alias = "length", Name = "#Length", Description = "#LengthDescription",});
 }
-if (uwbsOrderedProductContentType.PropertyTypes.All(p => p.Alias != "width")){
+if (uwbsOrderedProductContentType.PropertyTypes.All(p => p.Alias != "width") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsOrderedProductContentType, "Details").PropertyTypes.Add(new PropertyType(NumericDataTypeDef) { Alias = "width", Name = "#Width", Description = "WidthDescription",});
 }
-if (uwbsOrderedProductContentType.PropertyTypes.All(p => p.Alias != "height")){
+if (uwbsOrderedProductContentType.PropertyTypes.All(p => p.Alias != "height") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsOrderedProductContentType, "Details").PropertyTypes.Add(new PropertyType(NumericDataTypeDef) { Alias = "height", Name = "#Height", Description = "HeightDescription",});
 }
-if (uwbsOrderedProductContentType.PropertyTypes.All(p => p.Alias != "weight")){
+if (uwbsOrderedProductContentType.PropertyTypes.All(p => p.Alias != "weight") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsOrderedProductContentType, "Details").PropertyTypes.Add(new PropertyType(NumericDataTypeDef) { Alias = "weight", Name = "#Weight", Description = "#WeightDescription",});
 }
-if (uwbsOrderedProductContentType.PropertyTypes.All(p => p.Alias != "ranges")){
+if (uwbsOrderedProductContentType.PropertyTypes.All(p => p.Alias != "ranges") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsOrderedProductContentType, "Price").PropertyTypes.Add(new PropertyType(RangesDataTypeDef) { Alias = "ranges", Name = "#Ranges", Description = "#RangesDescription",});
 }
-if (uwbsOrderedProductContentType.PropertyTypes.All(p => p.Alias != "price")){
+if (uwbsOrderedProductContentType.PropertyTypes.All(p => p.Alias != "price") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsOrderedProductContentType, "Price").PropertyTypes.Add(new PropertyType(PriceDataTypeDef) { Alias = "price", Name = "#Price", Description = "#PriceDescription",});
 }
-if (uwbsOrderedProductContentType.PropertyTypes.All(p => p.Alias != "vat")){
+if (uwbsOrderedProductContentType.PropertyTypes.All(p => p.Alias != "vat") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsOrderedProductContentType, "Price").PropertyTypes.Add(new PropertyType(VatPickerDataTypeDef) { Alias = "vat", Name = "#VAT", Description = "#VatDescription",});
 }
-if (uwbsOrderedProductContentType.PropertyTypes.All(p => p.Alias != "itemCount")){
+if (uwbsOrderedProductContentType.PropertyTypes.All(p => p.Alias != "itemCount") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsOrderedProductContentType, "Price").PropertyTypes.Add(new PropertyType(NumericDataTypeDef) { Alias = "itemCount", Name = "#ItemCount", Description = "#ItemCountDescription",});
 }
-if (uwbsOrderedProductContentType.PropertyTypes.All(p => p.Alias != "orderedProductDiscountPercentage")){
+if (uwbsOrderedProductContentType.PropertyTypes.All(p => p.Alias != "orderedProductDiscountPercentage") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsOrderedProductContentType, "Price").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "orderedProductDiscountPercentage", Name = "#OrderedProductDiscountPercentage", Description = "#OrderedProductDiscountPercentageDescription",});
 }
-if (uwbsOrderedProductContentType.PropertyTypes.All(p => p.Alias != "orderedProductDiscountAmount")){
+if (uwbsOrderedProductContentType.PropertyTypes.All(p => p.Alias != "orderedProductDiscountAmount") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsOrderedProductContentType, "Price").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "orderedProductDiscountAmount", Name = "#OrderedProductDiscountAmount", Description = "#OrderedProductDiscountAmountDescription",});
 }
-if (uwbsOrderedProductContentType.PropertyTypes.All(p => p.Alias != "orderedProductDiscountExcludingVariants")){
+if (uwbsOrderedProductContentType.PropertyTypes.All(p => p.Alias != "orderedProductDiscountExcludingVariants") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsOrderedProductContentType, "Price").PropertyTypes.Add(new PropertyType(TrueFalseDataTypeDef) { Alias = "orderedProductDiscountExcludingVariants", Name = "#OrderedProductDiscountExcludingVariants", Description = "#OrderedProductDiscountExcludingVariantsDescription",});
 }
 
@@ -1111,43 +1092,43 @@ AllowedTemplates = new List<ITemplate>(),
 PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),};
 contentTypeList.Add(uwbsOrderedProductVariantContentType);
 
-if (uwbsOrderedProductVariantContentType.PropertyTypes.All(p => p.Alias != "variantId")){
+if (uwbsOrderedProductVariantContentType.PropertyTypes.All(p => p.Alias != "variantId") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsOrderedProductVariantContentType, "Global").PropertyTypes.Add(new PropertyType(ContentPickerDataTypeDef) { Alias = "variantId", Name = "#VariantId", Description = "#VariantIdDescription",});
 }
-if (uwbsOrderedProductVariantContentType.PropertyTypes.All(p => p.Alias != "typeAlias")){
+if (uwbsOrderedProductVariantContentType.PropertyTypes.All(p => p.Alias != "typeAlias") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsOrderedProductVariantContentType, "Global").PropertyTypes.Add(new PropertyType(LabelDataTypeDef) { Alias = "typeAlias", Name = "#TypeAlias", Description = "#TypeAliasDescription",});
 }
-if (uwbsOrderedProductVariantContentType.PropertyTypes.All(p => p.Alias != "title")){
+if (uwbsOrderedProductVariantContentType.PropertyTypes.All(p => p.Alias != "title") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsOrderedProductVariantContentType, "Global").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "title", Name = "#Title", Description = "#TitleDescription",});
 }
-if (uwbsOrderedProductVariantContentType.PropertyTypes.All(p => p.Alias != "sku")){
+if (uwbsOrderedProductVariantContentType.PropertyTypes.All(p => p.Alias != "sku") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsOrderedProductVariantContentType, "Global").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "sku", Name = "#SKU", Description = "#SKUDescription",});
 }
-if (uwbsOrderedProductVariantContentType.PropertyTypes.All(p => p.Alias != "group")){
+if (uwbsOrderedProductVariantContentType.PropertyTypes.All(p => p.Alias != "group") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsOrderedProductVariantContentType, "Global").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "group", Name = "#Group", Description = "#GroupDescription",});
 }
-if (uwbsOrderedProductVariantContentType.PropertyTypes.All(p => p.Alias != "length")){
+if (uwbsOrderedProductVariantContentType.PropertyTypes.All(p => p.Alias != "length") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsOrderedProductVariantContentType, "Details").PropertyTypes.Add(new PropertyType(NumericDataTypeDef) { Alias = "length", Name = "#Length", Description = "#LengthDescription",});
 }
-if (uwbsOrderedProductVariantContentType.PropertyTypes.All(p => p.Alias != "width")){
+if (uwbsOrderedProductVariantContentType.PropertyTypes.All(p => p.Alias != "width") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsOrderedProductVariantContentType, "Details").PropertyTypes.Add(new PropertyType(NumericDataTypeDef) { Alias = "width", Name = "#Width", Description = "WidthDescription",});
 }
-if (uwbsOrderedProductVariantContentType.PropertyTypes.All(p => p.Alias != "height")){
+if (uwbsOrderedProductVariantContentType.PropertyTypes.All(p => p.Alias != "height") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsOrderedProductVariantContentType, "Details").PropertyTypes.Add(new PropertyType(NumericDataTypeDef) { Alias = "height", Name = "#Height", Description = "HeightDescription",});
 }
-if (uwbsOrderedProductVariantContentType.PropertyTypes.All(p => p.Alias != "weight")){
+if (uwbsOrderedProductVariantContentType.PropertyTypes.All(p => p.Alias != "weight") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsOrderedProductVariantContentType, "Details").PropertyTypes.Add(new PropertyType(NumericDataTypeDef) { Alias = "weight", Name = "#Weight", Description = "#WeightDescription",});
 }
-if (uwbsOrderedProductVariantContentType.PropertyTypes.All(p => p.Alias != "price")){
+if (uwbsOrderedProductVariantContentType.PropertyTypes.All(p => p.Alias != "price") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsOrderedProductVariantContentType, "Price").PropertyTypes.Add(new PropertyType(PriceDataTypeDef) { Alias = "price", Name = "#Price", Description = "#PriceDescription",});
 }
-if (uwbsOrderedProductVariantContentType.PropertyTypes.All(p => p.Alias != "ranges")){
+if (uwbsOrderedProductVariantContentType.PropertyTypes.All(p => p.Alias != "ranges") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsOrderedProductVariantContentType, "Price").PropertyTypes.Add(new PropertyType(RangesDataTypeDef) { Alias = "ranges", Name = "#Ranges", Description = "#RangesDescription",});
 }
-if (uwbsOrderedProductVariantContentType.PropertyTypes.All(p => p.Alias != "discountPercentage")){
+if (uwbsOrderedProductVariantContentType.PropertyTypes.All(p => p.Alias != "discountPercentage") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsOrderedProductVariantContentType, "Price").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "discountPercentage", Name = "#OrderedProductVariantDiscountPercentage", Description = "#OrderedProductVariantDiscountPercentageDescription",});
 }
-if (uwbsOrderedProductVariantContentType.PropertyTypes.All(p => p.Alias != "discountAmount")){
+if (uwbsOrderedProductVariantContentType.PropertyTypes.All(p => p.Alias != "discountAmount") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsOrderedProductVariantContentType, "Price").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "discountAmount", Name = "#OrderedProductVariantDiscountAmount", Description = "#OrderedProductVariantDiscountAmountDescription",});
 }
 
@@ -1164,7 +1145,7 @@ AllowedTemplates = new List<ITemplate>(),
 PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),};
 contentTypeList.Add(uwbsOrderRepositoryContentType);
 
-if (uwbsOrderRepositoryContentType.PropertyTypes.All(p => p.Alias != "orderSection")){
+if (uwbsOrderRepositoryContentType.PropertyTypes.All(p => p.Alias != "orderSection") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsOrderRepositoryContentType, "Global").PropertyTypes.Add(new PropertyType(OrderSectionDataTypeDef) { Alias = "orderSection", Name = "#OrderSection", Description = "#OrderSectionDescription",});
 }
 
@@ -1195,31 +1176,31 @@ AllowedTemplates = new List<ITemplate>(),
 PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),};
 contentTypeList.Add(uwbsPaymentProviderContentType);
 
-if (uwbsPaymentProviderContentType.PropertyTypes.All(p => p.Alias != "title")){
+if (uwbsPaymentProviderContentType.PropertyTypes.All(p => p.Alias != "title") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsPaymentProviderContentType, "Global").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "title", Name = "#Title", Description = "#TitleDescription",});
 }
-if (uwbsPaymentProviderContentType.PropertyTypes.All(p => p.Alias != "description")){
+if (uwbsPaymentProviderContentType.PropertyTypes.All(p => p.Alias != "description") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsPaymentProviderContentType, "Global").PropertyTypes.Add(new PropertyType(RichTextDataTypeDef) { Alias = "description", Name = "#Description", Description = "#DescriptionDescription",});
 }
-if (uwbsPaymentProviderContentType.PropertyTypes.All(p => p.Alias != "image")){
+if (uwbsPaymentProviderContentType.PropertyTypes.All(p => p.Alias != "image") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsPaymentProviderContentType, "Global").PropertyTypes.Add(new PropertyType(MediaPickerDataTypeDef) { Alias = "image", Name = "#Image", Description = "#ImageDescription",});
 }
-if (uwbsPaymentProviderContentType.PropertyTypes.All(p => p.Alias != "type")){
+if (uwbsPaymentProviderContentType.PropertyTypes.All(p => p.Alias != "type") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsPaymentProviderContentType, "Details").PropertyTypes.Add(new PropertyType(PaymentProviderTypeDataTypeDef) { Alias = "type", Name = "#PaymentProviderType", Description = "#PaymentProviderTypeDescription",});
 }
-if (uwbsPaymentProviderContentType.PropertyTypes.All(p => p.Alias != "zone")){
+if (uwbsPaymentProviderContentType.PropertyTypes.All(p => p.Alias != "zone") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsPaymentProviderContentType, "Details").PropertyTypes.Add(new PropertyType(MultiContentPickerPaymentZonesDataTypeDef) { Alias = "zone", Name = "#Zone", Description = "#ZoneDescription",});
 }
-if (uwbsPaymentProviderContentType.PropertyTypes.All(p => p.Alias != "successNode")){
+if (uwbsPaymentProviderContentType.PropertyTypes.All(p => p.Alias != "successNode") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsPaymentProviderContentType, "Details").PropertyTypes.Add(new PropertyType(ContentPickerDataTypeDef) { Alias = "successNode", Name = "#SuccessNode", Description = "#SuccessNodeDescription",});
 }
-if (uwbsPaymentProviderContentType.PropertyTypes.All(p => p.Alias != "errorNode")){
+if (uwbsPaymentProviderContentType.PropertyTypes.All(p => p.Alias != "errorNode") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsPaymentProviderContentType, "Details").PropertyTypes.Add(new PropertyType(ContentPickerDataTypeDef) { Alias = "errorNode", Name = "#ErrorNode", Description = "#ErrorNodeDescription",});
 }
-if (uwbsPaymentProviderContentType.PropertyTypes.All(p => p.Alias != "cancelNode")){
+if (uwbsPaymentProviderContentType.PropertyTypes.All(p => p.Alias != "cancelNode") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsPaymentProviderContentType, "Details").PropertyTypes.Add(new PropertyType(ContentPickerDataTypeDef) { Alias = "cancelNode", Name = "#CancelNode", Description = "#CancelNodeDescription",});
 }
-if (uwbsPaymentProviderContentType.PropertyTypes.All(p => p.Alias != "testMode")){
+if (uwbsPaymentProviderContentType.PropertyTypes.All(p => p.Alias != "testMode") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsPaymentProviderContentType, "Details").PropertyTypes.Add(new PropertyType(EnableDisableDataTypeDef) { Alias = "testMode", Name = "#TestMode", Description = "#TestModeDescription",});
 }
 
@@ -1236,25 +1217,25 @@ AllowedTemplates = new List<ITemplate>(),
 PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),};
 contentTypeList.Add(uwbsPaymentProviderMethodContentType);
 
-if (uwbsPaymentProviderMethodContentType.PropertyTypes.All(p => p.Alias != "disable")){
+if (uwbsPaymentProviderMethodContentType.PropertyTypes.All(p => p.Alias != "disable") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsPaymentProviderMethodContentType, "Global").PropertyTypes.Add(new PropertyType(TrueFalseDataTypeDef) { Alias = "disable", Name = "#Disable", Description = "#DisableDescription",});
 }
-if (uwbsPaymentProviderMethodContentType.PropertyTypes.All(p => p.Alias != "title")){
+if (uwbsPaymentProviderMethodContentType.PropertyTypes.All(p => p.Alias != "title") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsPaymentProviderMethodContentType, "Global").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "title", Name = "#Title", Description = "#TitleDescription",});
 }
-if (uwbsPaymentProviderMethodContentType.PropertyTypes.All(p => p.Alias != "description")){
+if (uwbsPaymentProviderMethodContentType.PropertyTypes.All(p => p.Alias != "description") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsPaymentProviderMethodContentType, "Global").PropertyTypes.Add(new PropertyType(RichTextDataTypeDef) { Alias = "description", Name = "#Description", Description = "#DescriptionDescription",});
 }
-if (uwbsPaymentProviderMethodContentType.PropertyTypes.All(p => p.Alias != "image")){
+if (uwbsPaymentProviderMethodContentType.PropertyTypes.All(p => p.Alias != "image") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsPaymentProviderMethodContentType, "Global").PropertyTypes.Add(new PropertyType(MediaPickerDataTypeDef) { Alias = "image", Name = "#Image", Description = "#ImageDescription",});
 }
-if (uwbsPaymentProviderMethodContentType.PropertyTypes.All(p => p.Alias != "price")){
+if (uwbsPaymentProviderMethodContentType.PropertyTypes.All(p => p.Alias != "price") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsPaymentProviderMethodContentType, "Price").PropertyTypes.Add(new PropertyType(PriceDataTypeDef) { Alias = "price", Name = "#Price", Description = "#PriceDescription",});
 }
-if (uwbsPaymentProviderMethodContentType.PropertyTypes.All(p => p.Alias != "vat")){
+if (uwbsPaymentProviderMethodContentType.PropertyTypes.All(p => p.Alias != "vat") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsPaymentProviderMethodContentType, "Price").PropertyTypes.Add(new PropertyType(VatPickerDataTypeDef) { Alias = "vat", Name = "#VAT", Description = "#VatDescription",});
 }
-if (uwbsPaymentProviderMethodContentType.PropertyTypes.All(p => p.Alias != "amountType")){
+if (uwbsPaymentProviderMethodContentType.PropertyTypes.All(p => p.Alias != "amountType") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsPaymentProviderMethodContentType, "Price").PropertyTypes.Add(new PropertyType(PaymentProviderAmountTypeDataTypeDef) { Alias = "amountType", Name = "#AmountType", Description = "#AmountTypeDescription",});
 }
 
@@ -1299,7 +1280,7 @@ AllowedTemplates = new List<ITemplate>(),
 PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),};
 contentTypeList.Add(uwbsPaymentProviderZoneContentType);
 
-if (uwbsPaymentProviderZoneContentType.PropertyTypes.All(p => p.Alias != "zone")){
+if (uwbsPaymentProviderZoneContentType.PropertyTypes.All(p => p.Alias != "zone") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsPaymentProviderZoneContentType, "Global").PropertyTypes.Add(new PropertyType(ZonesDataTypeDef) { Alias = "zone", Name = "#Zone", Description = "#ZoneDescription",});
 }
 
@@ -1330,70 +1311,70 @@ AllowedTemplates = new List<ITemplate>(),
 PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),};
 contentTypeList.Add(uwbsProductContentType);
 
-if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "title")){
+if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "title") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductContentType, "Global").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "title", Name = "#Title", Description = "#TitleDescription",Mandatory = true, });
 }
-if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "url")){
+if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "url") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductContentType, "Global").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "url", Name = "#Url", Description = "#UrlDescription",Mandatory = true, });
 }
-if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "sku")){
+if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "sku") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductContentType, "Global").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "sku", Name = "#SKU", Description = "#SKUDescription",});
 }
-if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "metaDescription")){
+if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "metaDescription") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductContentType, "Global").PropertyTypes.Add(new PropertyType(TextboxMultipleDataTypeDef) { Alias = "metaDescription", Name = "#MetaDescription", Description = "#MetaDescriptionDescription",});
 }
-if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "metaTags")){
+if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "metaTags") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductContentType, "Global").PropertyTypes.Add(new PropertyType(TagsDataTypeDef) { Alias = "metaTags", Name = "#Tags", Description = "#TagsDescription",});
 }
-if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "categories")){
+if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "categories") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductContentType, "Global").PropertyTypes.Add(new PropertyType(MultiContentPickerCategoriesDataTypeDef) { Alias = "categories", Name = "#ProductCategories", Description = "#ProductCategoriesDescription",});
 }
-if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "disable")){
+if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "disable") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductContentType, "Global").PropertyTypes.Add(new PropertyType(TrueFalseDataTypeDef) { Alias = "disable", Name = "#Disable", Description = "#DisableDescription",});
 }
-if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "description")){
+if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "description") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductContentType, "Details").PropertyTypes.Add(new PropertyType(RichTextDataTypeDef) { Alias = "description", Name = "#Description", Description = "#DescriptionDescription",});
 }
-if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "images")){
+if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "images") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductContentType, "Details").PropertyTypes.Add(new PropertyType(MultiContentPickerImagesDataTypeDef) { Alias = "images", Name = "#Images", Description = "#ImagesDescription",});
 }
-if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "files")){
+if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "files") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductContentType, "Details").PropertyTypes.Add(new PropertyType(MultiContentPickerFilesDataTypeDef) { Alias = "files", Name = "#Files", Description = "#FilesDescription",});
 }
-if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "length")){
+if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "length") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductContentType, "Details").PropertyTypes.Add(new PropertyType(NumericDataTypeDef) { Alias = "length", Name = "#Length", Description = "#LengthDescription",});
 }
-if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "width")){
+if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "width") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductContentType, "Details").PropertyTypes.Add(new PropertyType(NumericDataTypeDef) { Alias = "width", Name = "#Width", Description = "#WidthDescription",});
 }
-if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "height")){
+if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "height") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductContentType, "Details").PropertyTypes.Add(new PropertyType(NumericDataTypeDef) { Alias = "height", Name = "#Height", Description = "#HeightDescription",});
 }
-if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "weight")){
+if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "weight") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductContentType, "Details").PropertyTypes.Add(new PropertyType(NumericDataTypeDef) { Alias = "weight", Name = "#Weight", Description = "#WeightDescription",});
 }
-if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "price")){
+if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "price") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductContentType, "Price").PropertyTypes.Add(new PropertyType(PriceDataTypeDef) { Alias = "price", Name = "#Price", Description = "#PriceDescription",});
 }
-if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "ranges")){
+if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "ranges") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductContentType, "Price").PropertyTypes.Add(new PropertyType(RangesDataTypeDef) { Alias = "ranges", Name = "#Ranges", Description = "#RangesDescription",});
 }
-if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "vat")){
+if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "vat") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductContentType, "Price").PropertyTypes.Add(new PropertyType(VatPickerDataTypeDef) { Alias = "vat", Name = "#VAT", Description = "#VatDescription",});
 }
-if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "stock")){
+if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "stock") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductContentType, "Price").PropertyTypes.Add(new PropertyType(StockDataTypeDef) { Alias = "stock", Name = "#Stock", Description = "#StockDescription",});
 }
-if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "ordered")){
+if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "ordered") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductContentType, "Price").PropertyTypes.Add(new PropertyType(OrderedCountDataTypeDef) { Alias = "ordered", Name = "#Ordered", Description = "#OrderedDescription",});
 }
-if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "stockStatus")){
+if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "stockStatus") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductContentType, "Price").PropertyTypes.Add(new PropertyType(EnableDisableDataTypeDef) { Alias = "stockStatus", Name = "#StockStatus", Description = "#StockStatusDescription",});
 }
-if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "backorderStatus")){
+if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "backorderStatus") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductContentType, "Price").PropertyTypes.Add(new PropertyType(EnableDisableDataTypeDef) { Alias = "backorderStatus", Name = "#BackorderStatus", Description = "#BackorderStatusDescription",});
 }
-if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "useVariantStock")){
+if (uwbsProductContentType.PropertyTypes.All(p => p.Alias != "useVariantStock") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductContentType, "Price").PropertyTypes.Add(new PropertyType(TrueFalseDataTypeDef) { Alias = "useVariantStock", Name = "#UseVariantStock", Description = "#UseVariantStockDescription",});
 }
 
@@ -1410,7 +1391,7 @@ AllowedTemplates = new List<ITemplate>(),
 PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),};
 contentTypeList.Add(uwbsProductRepositoryContentType);
 
-if (uwbsProductRepositoryContentType.PropertyTypes.All(p => p.Alias != "productOverview")){
+if (uwbsProductRepositoryContentType.PropertyTypes.All(p => p.Alias != "productOverview") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductRepositoryContentType, "Global").PropertyTypes.Add(new PropertyType(ProductOverviewDataTypeDef) { Alias = "productOverview", Name = "#ProductOverview", Description = "#ProductOverviewDescription",});
 }
 
@@ -1427,46 +1408,46 @@ AllowedTemplates = new List<ITemplate>(),
 PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),};
 contentTypeList.Add(uwbsProductVariantContentType);
 
-if (uwbsProductVariantContentType.PropertyTypes.All(p => p.Alias != "title")){
+if (uwbsProductVariantContentType.PropertyTypes.All(p => p.Alias != "title") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductVariantContentType, "Global").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "title", Name = "#Title", Description = "#TitleDescription",Mandatory = true, });
 }
-if (uwbsProductVariantContentType.PropertyTypes.All(p => p.Alias != "sku")){
+if (uwbsProductVariantContentType.PropertyTypes.All(p => p.Alias != "sku") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductVariantContentType, "Global").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "sku", Name = "#SKU", Description = "#SKUDescription",});
 }
-if (uwbsProductVariantContentType.PropertyTypes.All(p => p.Alias != "disable")){
+if (uwbsProductVariantContentType.PropertyTypes.All(p => p.Alias != "disable") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductVariantContentType, "Global").PropertyTypes.Add(new PropertyType(TrueFalseDataTypeDef) { Alias = "disable", Name = "#Disable", Description = "#DisableDescription",});
 }
-if (uwbsProductVariantContentType.PropertyTypes.All(p => p.Alias != "description")){
+if (uwbsProductVariantContentType.PropertyTypes.All(p => p.Alias != "description") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductVariantContentType, "Details").PropertyTypes.Add(new PropertyType(RichTextDataTypeDef) { Alias = "description", Name = "#Description", Description = "#DescriptionDescription",});
 }
-if (uwbsProductVariantContentType.PropertyTypes.All(p => p.Alias != "length")){
+if (uwbsProductVariantContentType.PropertyTypes.All(p => p.Alias != "length") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductVariantContentType, "Details").PropertyTypes.Add(new PropertyType(NumericDataTypeDef) { Alias = "length", Name = "#Length", Description = "#LengthDescription",});
 }
-if (uwbsProductVariantContentType.PropertyTypes.All(p => p.Alias != "width")){
+if (uwbsProductVariantContentType.PropertyTypes.All(p => p.Alias != "width") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductVariantContentType, "Details").PropertyTypes.Add(new PropertyType(NumericDataTypeDef) { Alias = "width", Name = "#Width", Description = "#WidthDescription",});
 }
-if (uwbsProductVariantContentType.PropertyTypes.All(p => p.Alias != "height")){
+if (uwbsProductVariantContentType.PropertyTypes.All(p => p.Alias != "height") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductVariantContentType, "Details").PropertyTypes.Add(new PropertyType(NumericDataTypeDef) { Alias = "height", Name = "#Height", Description = "#HeightDescription",});
 }
-if (uwbsProductVariantContentType.PropertyTypes.All(p => p.Alias != "weight")){
+if (uwbsProductVariantContentType.PropertyTypes.All(p => p.Alias != "weight") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductVariantContentType, "Details").PropertyTypes.Add(new PropertyType(NumericDataTypeDef) { Alias = "weight", Name = "#Weight", Description = "#WeightDescription",});
 }
-if (uwbsProductVariantContentType.PropertyTypes.All(p => p.Alias != "price")){
+if (uwbsProductVariantContentType.PropertyTypes.All(p => p.Alias != "price") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductVariantContentType, "Price").PropertyTypes.Add(new PropertyType(PriceDataTypeDef) { Alias = "price", Name = "#Price", Description = "#PriceDescription",});
 }
-if (uwbsProductVariantContentType.PropertyTypes.All(p => p.Alias != "ranges")){
+if (uwbsProductVariantContentType.PropertyTypes.All(p => p.Alias != "ranges") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductVariantContentType, "Price").PropertyTypes.Add(new PropertyType(RangesDataTypeDef) { Alias = "ranges", Name = "#Ranges", Description = "#RangesDescription",});
 }
-if (uwbsProductVariantContentType.PropertyTypes.All(p => p.Alias != "stock")){
+if (uwbsProductVariantContentType.PropertyTypes.All(p => p.Alias != "stock") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductVariantContentType, "Price").PropertyTypes.Add(new PropertyType(StockDataTypeDef) { Alias = "stock", Name = "#Stock", Description = "#StockDescription",});
 }
-if (uwbsProductVariantContentType.PropertyTypes.All(p => p.Alias != "ordered")){
+if (uwbsProductVariantContentType.PropertyTypes.All(p => p.Alias != "ordered") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductVariantContentType, "Price").PropertyTypes.Add(new PropertyType(OrderedCountDataTypeDef) { Alias = "ordered", Name = "#Ordered", Description = "#OrderedDescription",});
 }
-if (uwbsProductVariantContentType.PropertyTypes.All(p => p.Alias != "stockStatus")){
+if (uwbsProductVariantContentType.PropertyTypes.All(p => p.Alias != "stockStatus") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductVariantContentType, "Price").PropertyTypes.Add(new PropertyType(EnableDisableDataTypeDef) { Alias = "stockStatus", Name = "#StockStatus", Description = "#StockStatusDescription",});
 }
-if (uwbsProductVariantContentType.PropertyTypes.All(p => p.Alias != "backorderStatus")){
+if (uwbsProductVariantContentType.PropertyTypes.All(p => p.Alias != "backorderStatus") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductVariantContentType, "Price").PropertyTypes.Add(new PropertyType(EnableDisableDataTypeDef) { Alias = "backorderStatus", Name = "#BackorderStatus", Description = "#BackorderStatusDescription",});
 }
 
@@ -1483,13 +1464,13 @@ AllowedTemplates = new List<ITemplate>(),
 PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),};
 contentTypeList.Add(uwbsProductVariantGroupContentType);
 
-if (uwbsProductVariantGroupContentType.PropertyTypes.All(p => p.Alias != "title")){
+if (uwbsProductVariantGroupContentType.PropertyTypes.All(p => p.Alias != "title") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductVariantGroupContentType, "Global").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "title", Name = "#Title", Description = "#TitleDescription",Mandatory = true, });
 }
-if (uwbsProductVariantGroupContentType.PropertyTypes.All(p => p.Alias != "required")){
+if (uwbsProductVariantGroupContentType.PropertyTypes.All(p => p.Alias != "required") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductVariantGroupContentType, "Global").PropertyTypes.Add(new PropertyType(TrueFalseDataTypeDef) { Alias = "required", Name = "#RequiredVariantGroup", Description = "#RequiredVariantGroupDescription",});
 }
-if (uwbsProductVariantGroupContentType.PropertyTypes.All(p => p.Alias != "description")){
+if (uwbsProductVariantGroupContentType.PropertyTypes.All(p => p.Alias != "description") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsProductVariantGroupContentType, "Global").PropertyTypes.Add(new PropertyType(RichTextDataTypeDef) { Alias = "description", Name = "#Description", Description = "#DescriptionDescription",});
 }
 
@@ -1506,13 +1487,13 @@ AllowedTemplates = new List<ITemplate>(),
 PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),};
 contentTypeList.Add(uwbsSettingsContentType);
 
-if (uwbsSettingsContentType.PropertyTypes.All(p => p.Alias != "includingVat")){
+if (uwbsSettingsContentType.PropertyTypes.All(p => p.Alias != "includingVat") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsSettingsContentType, "Global").PropertyTypes.Add(new PropertyType(TrueFalseDataTypeDef) { Alias = "includingVat", Name = "#IncludingVat", Description = "#IncludingVatSettingDescription",});
 }
-if (uwbsSettingsContentType.PropertyTypes.All(p => p.Alias != "lowercaseUrls")){
+if (uwbsSettingsContentType.PropertyTypes.All(p => p.Alias != "lowercaseUrls") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsSettingsContentType, "Global").PropertyTypes.Add(new PropertyType(TrueFalseDataTypeDef) { Alias = "lowercaseUrls", Name = "#LowercaseUrls", Description = "#LowercaseUrlsSettingDescription",});
 }
-if (uwbsSettingsContentType.PropertyTypes.All(p => p.Alias != "incompleteOrderLifetime")){
+if (uwbsSettingsContentType.PropertyTypes.All(p => p.Alias != "incompleteOrderLifetime") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsSettingsContentType, "Global").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "incompleteOrderLifetime", Name = "#IncompleteOrderLifetime", Description = "#OrderLifetimeSettingDescription",Mandatory = true, });
 }
 
@@ -1529,34 +1510,34 @@ AllowedTemplates = new List<ITemplate>(),
 PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),};
 contentTypeList.Add(uwbsShippingProviderContentType);
 
-if (uwbsShippingProviderContentType.PropertyTypes.All(p => p.Alias != "title")){
+if (uwbsShippingProviderContentType.PropertyTypes.All(p => p.Alias != "title") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsShippingProviderContentType, "Global").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "title", Name = "#Title", Description = "#TitleDescription",});
 }
-if (uwbsShippingProviderContentType.PropertyTypes.All(p => p.Alias != "description")){
+if (uwbsShippingProviderContentType.PropertyTypes.All(p => p.Alias != "description") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsShippingProviderContentType, "Global").PropertyTypes.Add(new PropertyType(RichTextDataTypeDef) { Alias = "description", Name = "#Description", Description = "#DescriptionDescription",});
 }
-if (uwbsShippingProviderContentType.PropertyTypes.All(p => p.Alias != "image")){
+if (uwbsShippingProviderContentType.PropertyTypes.All(p => p.Alias != "image") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsShippingProviderContentType, "Global").PropertyTypes.Add(new PropertyType(MediaPickerDataTypeDef) { Alias = "image", Name = "#Image", Description = "#ImageDescription",});
 }
-if (uwbsShippingProviderContentType.PropertyTypes.All(p => p.Alias != "type")){
+if (uwbsShippingProviderContentType.PropertyTypes.All(p => p.Alias != "type") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsShippingProviderContentType, "Details").PropertyTypes.Add(new PropertyType(ShippingProviderTypeDataTypeDef) { Alias = "type", Name = "#ShippingProviderType", Description = "#ShippingProviderTypeDescription",});
 }
-if (uwbsShippingProviderContentType.PropertyTypes.All(p => p.Alias != "rangeType")){
+if (uwbsShippingProviderContentType.PropertyTypes.All(p => p.Alias != "rangeType") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsShippingProviderContentType, "Details").PropertyTypes.Add(new PropertyType(ShippingProviderRangeTypeDataTypeDef) { Alias = "rangeType", Name = "#ShippingProviderRangeType", Description = "#ShippingProviderRangeTypeDescription",});
 }
-if (uwbsShippingProviderContentType.PropertyTypes.All(p => p.Alias != "rangeStart")){
+if (uwbsShippingProviderContentType.PropertyTypes.All(p => p.Alias != "rangeStart") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsShippingProviderContentType, "Details").PropertyTypes.Add(new PropertyType(NumericDataTypeDef) { Alias = "rangeStart", Name = "#RangeStart", Description = "#RangeStartDescription",});
 }
-if (uwbsShippingProviderContentType.PropertyTypes.All(p => p.Alias != "rangeEnd")){
+if (uwbsShippingProviderContentType.PropertyTypes.All(p => p.Alias != "rangeEnd") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsShippingProviderContentType, "Details").PropertyTypes.Add(new PropertyType(NumericDataTypeDef) { Alias = "rangeEnd", Name = "#RangeEnd", Description = "#RangeEndDescription",});
 }
-if (uwbsShippingProviderContentType.PropertyTypes.All(p => p.Alias != "overrule")){
+if (uwbsShippingProviderContentType.PropertyTypes.All(p => p.Alias != "overrule") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsShippingProviderContentType, "Details").PropertyTypes.Add(new PropertyType(TrueFalseDataTypeDef) { Alias = "overrule", Name = "#Overrule", Description = "#OverruleDescription",});
 }
-if (uwbsShippingProviderContentType.PropertyTypes.All(p => p.Alias != "zone")){
+if (uwbsShippingProviderContentType.PropertyTypes.All(p => p.Alias != "zone") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsShippingProviderContentType, "Details").PropertyTypes.Add(new PropertyType(MultiContentPickerShippingZonesDataTypeDef) { Alias = "zone", Name = "#Zone", Description = "#ZoneDescription",});
 }
-if (uwbsShippingProviderContentType.PropertyTypes.All(p => p.Alias != "testMode")){
+if (uwbsShippingProviderContentType.PropertyTypes.All(p => p.Alias != "testMode") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsShippingProviderContentType, "Details").PropertyTypes.Add(new PropertyType(EnableDisableDataTypeDef) { Alias = "testMode", Name = "#TestMode", Description = "#TestModeDescription",});
 }
 
@@ -1573,22 +1554,22 @@ AllowedTemplates = new List<ITemplate>(),
 PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),};
 contentTypeList.Add(uwbsShippingProviderMethodContentType);
 
-if (uwbsShippingProviderMethodContentType.PropertyTypes.All(p => p.Alias != "disable")){
+if (uwbsShippingProviderMethodContentType.PropertyTypes.All(p => p.Alias != "disable") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsShippingProviderMethodContentType, "Global").PropertyTypes.Add(new PropertyType(TrueFalseDataTypeDef) { Alias = "disable", Name = "#Disable", Description = "#DisableDescription",});
 }
-if (uwbsShippingProviderMethodContentType.PropertyTypes.All(p => p.Alias != "title")){
+if (uwbsShippingProviderMethodContentType.PropertyTypes.All(p => p.Alias != "title") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsShippingProviderMethodContentType, "Global").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "title", Name = "#Title", Description = "#TitleDescription",});
 }
-if (uwbsShippingProviderMethodContentType.PropertyTypes.All(p => p.Alias != "description")){
+if (uwbsShippingProviderMethodContentType.PropertyTypes.All(p => p.Alias != "description") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsShippingProviderMethodContentType, "Global").PropertyTypes.Add(new PropertyType(RichTextDataTypeDef) { Alias = "description", Name = "#Description", Description = "#DescriptionDescription",});
 }
-if (uwbsShippingProviderMethodContentType.PropertyTypes.All(p => p.Alias != "image")){
+if (uwbsShippingProviderMethodContentType.PropertyTypes.All(p => p.Alias != "image") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsShippingProviderMethodContentType, "Global").PropertyTypes.Add(new PropertyType(MediaPickerDataTypeDef) { Alias = "image", Name = "#Image", Description = "#ImageDescription",});
 }
-if (uwbsShippingProviderMethodContentType.PropertyTypes.All(p => p.Alias != "price")){
+if (uwbsShippingProviderMethodContentType.PropertyTypes.All(p => p.Alias != "price") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsShippingProviderMethodContentType, "Price").PropertyTypes.Add(new PropertyType(PriceDataTypeDef) { Alias = "price", Name = "#Price", Description = "#PriceDescription",});
 }
-if (uwbsShippingProviderMethodContentType.PropertyTypes.All(p => p.Alias != "vat")){
+if (uwbsShippingProviderMethodContentType.PropertyTypes.All(p => p.Alias != "vat") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsShippingProviderMethodContentType, "Price").PropertyTypes.Add(new PropertyType(VatPickerDataTypeDef) { Alias = "vat", Name = "#VAT", Description = "#VatDescription",});
 }
 
@@ -1633,7 +1614,7 @@ AllowedTemplates = new List<ITemplate>(),
 PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),};
 contentTypeList.Add(uwbsShippingProviderZoneContentType);
 
-if (uwbsShippingProviderZoneContentType.PropertyTypes.All(p => p.Alias != "zone")){
+if (uwbsShippingProviderZoneContentType.PropertyTypes.All(p => p.Alias != "zone") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsShippingProviderZoneContentType, "Global").PropertyTypes.Add(new PropertyType(ZonesDataTypeDef) { Alias = "zone", Name = "#Zone", Description = "#ZoneDescription",});
 }
 
@@ -1664,127 +1645,127 @@ AllowedTemplates = new List<ITemplate>(),
 PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),};
 contentTypeList.Add(uwbsStoreContentType);
 
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "storeCulture")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "storeCulture") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Global").PropertyTypes.Add(new PropertyType(CulturesDataTypeDef) { Alias = "storeCulture", Name = "#StoreCulture", Description = "#StoreCultureDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "countryCode")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "countryCode") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Global").PropertyTypes.Add(new PropertyType(CountriesDataTypeDef) { Alias = "countryCode", Name = "#CountryCode", Description = "#CountryCodeDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "currencies")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "currencies") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Global").PropertyTypes.Add(new PropertyType(CurrenciesDataTypeDef) { Alias = "currencies", Name = "#Currencies", Description = "#CurrenciesDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "globalVat")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "globalVat") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Global").PropertyTypes.Add(new PropertyType(VatPickerDataTypeDef) { Alias = "globalVat", Name = "#GlobalVat", Description = "#GlobalVatDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "orderNumberPrefix")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "orderNumberPrefix") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Global").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "orderNumberPrefix", Name = "#OrderNumberPrefix", Description = "#OrderNumberPrefixDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "orderNumberTemplate")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "orderNumberTemplate") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Global").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "orderNumberTemplate", Name = "#OrderNumberTemplate", Description = "#OrderNumberTemplateDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "orderNumberStartNumber")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "orderNumberStartNumber") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Global").PropertyTypes.Add(new PropertyType(NumericDataTypeDef) { Alias = "orderNumberStartNumber", Name = "#OrderNumberStartNumber", Description = "#OrderNumberStartNumberDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "enableStock")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "enableStock") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Global").PropertyTypes.Add(new PropertyType(EnableDisableDataTypeDef) { Alias = "enableStock", Name = "#EnableStock", Description = "#EnableStockDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "defaultUseVariantStock")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "defaultUseVariantStock") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Global").PropertyTypes.Add(new PropertyType(EnableDisableDataTypeDef) { Alias = "defaultUseVariantStock", Name = "#UseVariantStock", Description = "#UseVariantStockDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "defaultCountdownEnabled")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "defaultCountdownEnabled") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Global").PropertyTypes.Add(new PropertyType(EnableDisableDataTypeDef) { Alias = "defaultCountdownEnabled", Name = "#CountdownEnabled", Description = "#CountdownEnabledDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "storeStock")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "storeStock") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Global").PropertyTypes.Add(new PropertyType(TrueFalseDataTypeDef) { Alias = "storeStock", Name = "#StoreStock", Description = "#StoreStockDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "useBackorders")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "useBackorders") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Global").PropertyTypes.Add(new PropertyType(EnableDisableDataTypeDef) { Alias = "useBackorders", Name = "#UseBackorders", Description = "#UseBackordersDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "enableTestmode")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "enableTestmode") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Global").PropertyTypes.Add(new PropertyType(EnableDisableDataTypeDef) { Alias = "enableTestmode", Name = "#EnableTestmode", Description = "#EnableTestmodeDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "storeEmailFrom")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "storeEmailFrom") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Email").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "storeEmailFrom", Name = "#StoreEmailFrom", Description = "#StoreEmailFromDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "storeEmailFromName")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "storeEmailFromName") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Email").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "storeEmailFromName", Name = "#StoreEmailFromName", Description = "#StoreEmailFromNameDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "storeEmailTo")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "storeEmailTo") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Email").PropertyTypes.Add(new PropertyType(StringDataTypeDef) { Alias = "storeEmailTo", Name = "#StoreEmailTo", Description = "#StoreEmailToDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "accountEmailCreated")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "accountEmailCreated") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Email").PropertyTypes.Add(new PropertyType(ContentPickerDataTypeDef) { Alias = "accountEmailCreated", Name = "#AccountEmailCreated", Description = "#AccountEmailCreatedDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "accountForgotPassword")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "accountForgotPassword") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Email").PropertyTypes.Add(new PropertyType(ContentPickerDataTypeDef) { Alias = "accountForgotPassword", Name = "#AccountForgotPassword", Description = "#AccountForgotPasswordDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "AccountChangePasswordNode")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "AccountChangePasswordNode") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Email").PropertyTypes.Add(new PropertyType(ContentPickerDataTypeDef) { Alias = "AccountChangePasswordNode", Name = "#AccountChangePasswordNode", Description = "#AccountChangePasswordNodeDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "confirmationEmailStore")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "confirmationEmailStore") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Email").PropertyTypes.Add(new PropertyType(ContentPickerDataTypeDef) { Alias = "confirmationEmailStore", Name = "#ConfirmationEmailStore", Description = "#ConfirmationEmailStoreDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "confirmationEmailCustomer")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "confirmationEmailCustomer") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Email").PropertyTypes.Add(new PropertyType(ContentPickerDataTypeDef) { Alias = "confirmationEmailCustomer", Name = "#ConfirmationEmailCustomer", Description = "#ConfirmationEmailCustomerDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "onlinePaymentEmailStore")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "onlinePaymentEmailStore") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Email").PropertyTypes.Add(new PropertyType(ContentPickerDataTypeDef) { Alias = "onlinePaymentEmailStore", Name = "#OnlinePaymentEmailStore", Description = "#OnlinePaymentEmailStoreDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "onlinePaymentEmailCustomer")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "onlinePaymentEmailCustomer") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Email").PropertyTypes.Add(new PropertyType(ContentPickerDataTypeDef) { Alias = "onlinePaymentEmailCustomer", Name = "#OnlinePaymentEmailCustomer", Description = "#OnlinePaymentEmailCustomerDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "offlinePaymentEmailStore")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "offlinePaymentEmailStore") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Email").PropertyTypes.Add(new PropertyType(ContentPickerDataTypeDef) { Alias = "offlinePaymentEmailStore", Name = "#OfflinePaymentEmailStore", Description = "#OfflinePaymentEmailStoreDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "offlinePaymentEmailCustomer")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "offlinePaymentEmailCustomer") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Email").PropertyTypes.Add(new PropertyType(ContentPickerDataTypeDef) { Alias = "offlinePaymentEmailCustomer", Name = "#OfflinePaymentEmailCustomer", Description = "#OfflinePaymentEmailCustomerDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "paymentFailedEmailStore")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "paymentFailedEmailStore") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Email").PropertyTypes.Add(new PropertyType(ContentPickerDataTypeDef) { Alias = "paymentFailedEmailStore", Name = "#PaymentFailedEmailStore", Description = "#PaymentFailedEmailStoreDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "paymentFailedEmailCustomer")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "paymentFailedEmailCustomer") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Email").PropertyTypes.Add(new PropertyType(ContentPickerDataTypeDef) { Alias = "paymentFailedEmailCustomer", Name = "#PaymentFailedEmailCustomer", Description = "#PaymentFailedEmailCustomerDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "dispatchedEmailStore")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "dispatchedEmailStore") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Email").PropertyTypes.Add(new PropertyType(ContentPickerDataTypeDef) { Alias = "dispatchedEmailStore", Name = "#DispatchedEmailStore", Description = "#DispatchedEmailStoreDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "dispatchedEmailCustomer")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "dispatchedEmailCustomer") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Email").PropertyTypes.Add(new PropertyType(ContentPickerDataTypeDef) { Alias = "dispatchedEmailCustomer", Name = "#DispatchedEmailCustomer", Description = "#DispatchedEmailCustomerDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "cancelEmailStore")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "cancelEmailStore") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Email").PropertyTypes.Add(new PropertyType(ContentPickerDataTypeDef) { Alias = "cancelEmailStore", Name = "#CancelEmailStore", Description = "#CancelEmailStoreDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "cancelEmailCustomer")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "cancelEmailCustomer") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Email").PropertyTypes.Add(new PropertyType(ContentPickerDataTypeDef) { Alias = "cancelEmailCustomer", Name = "#CancelEmailCustomer", Description = "#CancelEmailCustomerDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "closedEmailStore")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "closedEmailStore") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Email").PropertyTypes.Add(new PropertyType(ContentPickerDataTypeDef) { Alias = "closedEmailStore", Name = "#ClosedEmailStore", Description = "#ClosedEmailStoreDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "closedEmailCustomer")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "closedEmailCustomer") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Email").PropertyTypes.Add(new PropertyType(ContentPickerDataTypeDef) { Alias = "closedEmailCustomer", Name = "#ClosedEmailCustomer", Description = "#ClosedEmailCustomerDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "pendingEmailStore")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "pendingEmailStore") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Email").PropertyTypes.Add(new PropertyType(ContentPickerDataTypeDef) { Alias = "pendingEmailStore", Name = "#PendingEmailStore", Description = "#PendingEmailStoreDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "pendingEmailCustomer")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "pendingEmailCustomer") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Email").PropertyTypes.Add(new PropertyType(ContentPickerDataTypeDef) { Alias = "pendingEmailCustomer", Name = "#PendingEmailCustomer", Description = "#PendingEmailCustomerDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "temporaryOutOfStockEmailStore")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "temporaryOutOfStockEmailStore") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Email").PropertyTypes.Add(new PropertyType(ContentPickerDataTypeDef) { Alias = "temporaryOutOfStockEmailStore", Name = "#TemporaryOutOfStockEmailStore", Description = "#TemporaryOutOfStockEmailStoreDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "temporaryOutOfStockEmailCustomer")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "temporaryOutOfStockEmailCustomer") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Email").PropertyTypes.Add(new PropertyType(ContentPickerDataTypeDef) { Alias = "temporaryOutOfStockEmailCustomer", Name = "#TemporaryOutOfStockEmailCustomer", Description = "#TemporaryOutOfStockEmailCustomerDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "undeliverableEmailStore")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "undeliverableEmailStore") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Email").PropertyTypes.Add(new PropertyType(ContentPickerDataTypeDef) { Alias = "undeliverableEmailStore", Name = "#UndeliverableEmailStore", Description = "#UndeliverableEmailStoreDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "undeliverableEmailCustomer")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "undeliverableEmailCustomer") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Email").PropertyTypes.Add(new PropertyType(ContentPickerDataTypeDef) { Alias = "undeliverableEmailCustomer", Name = "#UndeliverableEmailCustomer", Description = "#UndeliverableEmailCustomerDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "returnEmailStore")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "returnEmailStore") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Email").PropertyTypes.Add(new PropertyType(ContentPickerDataTypeDef) { Alias = "returnEmailStore", Name = "#ReturnEmailStore", Description = "#ReturnEmailStoreDescription",});
 }
-if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "returnEmailCustomer")){
+if (uwbsStoreContentType.PropertyTypes.All(p => p.Alias != "returnEmailCustomer") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsStoreContentType, "Email").PropertyTypes.Add(new PropertyType(ContentPickerDataTypeDef) { Alias = "returnEmailCustomer", Name = "#ReturnEmailCustomer", Description = "#ReturnEmailCustomerDescription",});
 }
 
@@ -1816,6 +1797,9 @@ AllowedTemplates = new List<ITemplate>(),
 PropertyGroups = new PropertyGroupCollection(new List<PropertyGroup>()),};
 contentTypeList.Add(uWebshopContentType);
 
+if (uWebshopContentType.PropertyTypes.All(p => p.Alias != "shopDashboard") && createMissingProperties == true){
+GetOrAddPropertyGroup(uWebshopContentType, "Global").PropertyTypes.Add(new PropertyType(ShopDashboardDataTypeDef) { Alias = "shopDashboard", Name = "#ShopDashboard", Description = "#ShopDashboardDescription",});
+}
 
 contentTypeService.Save(contentTypeList);
 
