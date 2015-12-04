@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Security;
@@ -174,8 +174,6 @@ namespace uWebshop.API
             return Enumerable.Empty<IOrder>();
         }
 
-
-
         /// <summary>
         /// Gets the orders for customer.
         /// </summary>
@@ -183,35 +181,37 @@ namespace uWebshop.API
         /// <param name="storeAlias">The store alias.</param>
         /// <returns></returns>
         public static IEnumerable<IOrder> GetOrdersForCustomer(int customerId, string storeAlias = null)
-		{
-			var membershipUser = UwebshopRequest.Current.User;
-			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || membershipUser != null && membershipUser.ProviderUserKey == customerId.ToString() || UwebshopRequest.Current.PaymentProvider != null)
-			{
-				return OrderHelper.GetOrdersForCustomer(customerId, storeAlias).Select(CreateBasketFromOrderInfo);
-			}
+        {
+            var membershipUser = UwebshopRequest.Current.User;
+            if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated
+                || (membershipUser != null && membershipUser.ProviderUserKey != null && membershipUser.ProviderUserKey.ToString() == customerId.ToString())
+                || UwebshopRequest.Current.PaymentProvider != null)
+            {
+                return OrderHelper.GetOrdersForCustomer(customerId, storeAlias).Select(CreateBasketFromOrderInfo);
+            }
 
-			return Enumerable.Empty<IOrder>();
+            return Enumerable.Empty<IOrder>();
 
-		}
+        }
 
-		/// <summary>
-		/// Gets the orders for customer.
-		/// </summary>
-		/// <param name="userName">Name of the user.</param>
-		/// <param name="storeAlias">The store alias.</param>
-		/// <returns></returns>
-		public static IEnumerable<IOrder> GetOrdersForCustomer(string userName, string storeAlias = null)
-		{
-			var membershipUser = UwebshopRequest.Current.User;
-			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || membershipUser != null && membershipUser.UserName == userName || UwebshopRequest.Current.PaymentProvider != null)
-			{
-				return OrderHelper.GetOrdersForCustomer(userName, storeAlias).Select(CreateBasketFromOrderInfo);
-			}
+        /// <summary>
+        /// Gets the orders for customer.
+        /// </summary>
+        /// <param name="userName">Name of the user.</param>
+        /// <param name="storeAlias">The store alias.</param>
+        /// <returns></returns>
+        public static IEnumerable<IOrder> GetOrdersForCustomer(string userName, string storeAlias = null)
+        {
+            var membershipUser = UwebshopRequest.Current.User;
+            if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || membershipUser != null && membershipUser.UserName == userName || UwebshopRequest.Current.PaymentProvider != null)
+            {
+                return OrderHelper.GetOrdersForCustomer(userName, storeAlias).Select(CreateBasketFromOrderInfo);
+            }
 
-			return Enumerable.Empty<IOrder>();
-		}
+            return Enumerable.Empty<IOrder>();
+        }
 
-		internal static IOrder CreateBasketFromOrderInfo(OrderInfo order)
+        internal static IOrder CreateBasketFromOrderInfo(OrderInfo order)
 		{
 			return new BasketOrderInfoAdaptor(order);
 		}
