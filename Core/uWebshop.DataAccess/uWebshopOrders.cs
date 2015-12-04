@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
@@ -460,12 +460,25 @@ namespace uWebshop.DataAccess
 	    {
 	        using (var referenceIdUpdate = Database.GetTransaction())
 	        {
-	            var referenceId = Database.ExecuteScalar<int>(@"declare @storeOrderReferenceID int
-set @storeOrderReferenceID =  coalesce((SELECT top 1 storeOrderReferenceID FROM uWebshopOrders WHERE StoreAlias = @storeAlias ORDER BY storeOrderReferenceID DESC),0) + 1
-set @storeOrderReferenceID = case when @orderNumberStartNumber > @storeOrderReferenceID then @orderNumberStartNumber else @storeOrderReferenceID end
-SELECT @storeOrderReferenceID end
-
-update uWebshopOrders set storeOrderReferenceID = @storeOrderReferenceID, storeAlias = @storeAlias, updateDate = @updateDate where id = @id",
+	            var referenceId = Database.ExecuteScalar<int>(@"DECLARE @@storeOrderReferenceID int
+SET @@storeOrderReferenceID = COALESCE((SELECT TOP 1
+  storeOrderReferenceID
+FROM uWebshopOrders
+WHERE StoreAlias = @storeAlias
+ORDER BY storeOrderReferenceID DESC)
+, 0) + 1
+SET @@storeOrderReferenceID =
+                            CASE
+                              WHEN @orderNumberStartNumber > @@storeOrderReferenceID THEN @orderNumberStartNumber
+                              ELSE @@storeOrderReferenceID
+                            END
+SELECT
+  @@storeOrderReferenceID
+UPDATE uWebshopOrders
+SET storeOrderReferenceID = @@storeOrderReferenceID,
+    storeAlias = @storeAlias,
+    updateDate = @updateDate
+WHERE id = @id",
 	                new
 	                {
 	                    id = databaseId,
@@ -489,13 +502,24 @@ update uWebshopOrders set storeOrderReferenceID = @storeOrderReferenceID, storeA
             
 	        using (var referenceIdUpdate = Database.GetTransaction())
 	        {
-	            var referenceId = Database.ExecuteScalar<int>(@"declare @storeOrderReferenceID int
-set @storeOrderReferenceID =  coalesce((SELECT top 1 storeOrderReferenceID FROM uWebshopOrders ORDER BY storeOrderReferenceID DESC),0) + 1
-set @storeOrderReferenceID = case when @orderNumberStartNumber > @storeOrderReferenceID then @orderNumberStartNumber else @storeOrderReferenceID end
-
-update uWebshopOrders set storeOrderReferenceID = @storeOrderReferenceID, storeAlias = @storeAlias, updateDate = @updateDate where id = @id
-
-select @storeOrderReferenceID",
+	            var referenceId = Database.ExecuteScalar<int>(@"DECLARE @@storeOrderReferenceID int
+SET @@storeOrderReferenceID = COALESCE((SELECT TOP 1
+  storeOrderReferenceID
+FROM uWebshopOrders
+ORDER BY storeOrderReferenceID DESC)
+, 0) + 1
+SET @@storeOrderReferenceID =
+                            CASE
+                              WHEN @orderNumberStartNumber > @@storeOrderReferenceID THEN @orderNumberStartNumber
+                              ELSE @@storeOrderReferenceID
+                            END
+UPDATE uWebshopOrders
+SET storeOrderReferenceID = @@storeOrderReferenceID,
+    storeAlias = @storeAlias,
+    updateDate = @updateDate
+WHERE id = @id
+SELECT
+  @@storeOrderReferenceID",
 	                new
 	                {
 	                    id = databaseId,
