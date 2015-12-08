@@ -46,7 +46,8 @@ namespace uWebshop.Umbraco.Repositories
 		{
             var umbracoHelper = new UmbracoHelper(UmbracoContext.Current);
 		    var node = umbracoHelper.TypedContent(id);
-			var n = new UwbsNode();
+            var n = new UwbsNode();
+		    if (node == null) return n;
 			n.Path = node.Path;
 			n.NodeTypeAlias = node.DocumentTypeAlias;
 			if (node.Name != null && node.Parent != null)
