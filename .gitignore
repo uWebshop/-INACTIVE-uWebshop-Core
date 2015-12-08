@@ -150,3 +150,4 @@ App_Data/*.ldf
 Binary Dependencies umbraco7/Umbraco.Core.xml
 builds/
 
+*.ide
