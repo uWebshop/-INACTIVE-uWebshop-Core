@@ -85,13 +85,16 @@ namespace uWebshop.Umbraco.Services
 				if (def.Name != null)
 				{
 					Write(@"			if (" + def.DataType + @"DataTypeDef == null)
-			{				
-				" + def.DataType + @"DataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, """ + def.Alias + @""");
-				" + def.DataType + @"DataTypeDef.Name = """ + def.Name + @""";
-				" + def.DataType + @"DataTypeDef.Key = new Guid(""" + def.KeyGuid + @""");
-				" + def.DataType + @"DataTypeDef.DatabaseType = DataTypeDatabaseType." + def.Type + @";
+			{
+			    try
+			    {				
+				    " + def.DataType + @"DataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, """ + def.Alias + @""");
+				    " + def.DataType + @"DataTypeDef.Name = """ + def.Name + @""";
+				    " + def.DataType + @"DataTypeDef.Key = new Guid(""" + def.KeyGuid + @""");
+				    " + def.DataType + @"DataTypeDef.DatabaseType = DataTypeDatabaseType." + def.Type + @";
 				
-				newDataTypesList.Add(" + def.DataType + @"DataTypeDef);
+				    dataTypeService.Save(" + def.DataType + @"DataTypeDef);
+                }catch(Exception){}
 			}
 			");
 				}
