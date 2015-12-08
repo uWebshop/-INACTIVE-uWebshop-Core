@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.ApplicationServer.Caching;
 using uWebshop.Common.Interfaces;
 
 namespace uWebshop.Azure

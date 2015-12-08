@@ -7,14 +7,15 @@ using uWebshop.DataAccess.Pocos;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Persistence;
 using Umbraco.Web;
-using static Umbraco.Core.Persistence.Sql;
+//using static Umbraco.Core.Persistence.Sql;
 
 namespace uWebshop.DataAccess
 {
 	public class uWebshopOrders
 	{
 		public static string ConnectionString;
-        
+	    private static Sql Builder = Umbraco.Core.Persistence.Sql.Builder;
+
         internal static UmbracoDatabase Database
         {
             get { return UmbracoContext.Current.Application.DatabaseContext.Database; } 
