@@ -939,6 +939,42 @@ namespace uWebshop.Domain.Helpers
 			return order;
 		}
 
+        /// <summary>
+        /// Adds the order to basket (current or new).
+        /// </summary>
+        /// <param name="orderGuid">The order unique identifier.</param>
+        /// <returns>The basket</returns>
+	    public static OrderInfo AddOrderToBasket(Guid orderGuid)
+	    {
+	        var renewOrder = GetOrder(orderGuid);
+
+	        var currentOrder = GetOrder();
+
+	        if (currentOrder == null)
+	        {
+	            currentOrder = CreateOrder();
+	        }
+
+	        currentOrder.Status = OrderStatus.Incomplete;
+
+	        foreach (var line in renewOrder.OrderLines.Where(ol => API.Catalog.GetProduct(ol.ProductInfo.Id) != null))
+	        {
+	            Dictionary<string, string> dictionary = null;
+	            var xElement = line.CustomData.Element("fields");
+
+	            if (xElement != null)
+	            {
+	                dictionary = xElement.Elements().ToDictionary(e => e.Name.LocalName, e => e.Value);
+	            }
+
+	            currentOrder.AddOrUpdateOrderLine(0, line.ProductInfo.Id, "add", line.ProductInfo.ItemCount.GetValueOrDefault(1),
+	                                              line.ProductInfo.ProductVariants.Select(v => v.Id), dictionary);
+	        }
+	        currentOrder.Save();
+
+	        return currentOrder;
+	    }
+
 		public static bool ConfirmScheduledOrder(OrderInfo order, int confirmationNodeId = 0)
 		{
 			return IO.Container.Resolve<IOrderUpdatingService>().ConfirmOrder(order, true, confirmationNodeId, true);

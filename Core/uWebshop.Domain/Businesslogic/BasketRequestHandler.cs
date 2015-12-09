@@ -186,8 +186,7 @@ namespace uWebshop.Domain.Businesslogic
 			}
 
 			List<string> cleanOrderCollection = requestParameters.AllKeys.Where(x => x != null && x.ToLower() == "clearorder").ToList();
-
-			if (cleanOrderCollection.Any())
+            if (cleanOrderCollection.Any())
 			{
 				var keyValue = requestParameters[cleanOrderCollection.First()];
 				if (keyValue.ToLower() == "true" || keyValue.ToLower() == "clearorder" || keyValue.ToLower() == "on" ||
@@ -200,8 +199,7 @@ namespace uWebshop.Domain.Businesslogic
 
 			List<string> productQueryStringCollection = requestParameters.AllKeys.Where(x => x != null && x.ToLower() == "productid").ToList();
 			List<string> orderlineIdQueryStringCollection = requestParameters.AllKeys.Where(x => x != null && x.ToLower() == "orderlineid").ToList();
-			
-
+		
 			if (productQueryStringCollection.Any() || orderlineIdQueryStringCollection.Any())
 			{
 				var result = AddProduct(requestParameters, rawRequestUrl);
@@ -2176,35 +2174,10 @@ namespace uWebshop.Domain.Businesslogic
 
 			var orderGuid = Guid.Parse(requestParameters[renewOrderKey]);
 
-			var renewOrder = OrderHelper.GetOrder(orderGuid);
+			var currentOrder = OrderHelper.AddOrderToBasket(orderGuid);
 
-			var currentOrder = OrderHelper.GetOrder();
-
-			if (currentOrder == null)
-			{
-				currentOrder = OrderHelper.CreateOrder();
-			}
-
-			currentOrder.Status = OrderStatus.Incomplete;
-
-			foreach (var line in renewOrder.OrderLines.Where(ol => API.Catalog.GetProduct(ol.ProductInfo.Id) != null))
-			{
-				Dictionary<string, string> dictionary = null;
-				var xElement = line.CustomData.Element("fields");
-
-				if (xElement != null)
-				{
-					dictionary = xElement.Elements().ToDictionary(e => e.Name.LocalName, e => e.Value);
-				}
-
-				currentOrder.AddOrUpdateOrderLine(0, line.ProductInfo.Id, "add", line.ProductInfo.ItemCount.GetValueOrDefault(1),
-					line.ProductInfo.ProductVariants.Select(v => v.Id), dictionary);
-			}
-			
-			Session.Add(Constants.OrderToBasketActionResult, BasketActionResult.Success);
+		    Session.Add(Constants.OrderToBasketActionResult, BasketActionResult.Success);
 			result.Add(Constants.OrderToBasketActionResult, BasketActionResult.Success.ToString());
-
-			currentOrder.Save();
 
 			handleObject.Validated = false;
 			handleObject.Success = true;
@@ -2213,8 +2186,7 @@ namespace uWebshop.Domain.Businesslogic
 			return handleObject;
 		}
 
-
-		private ConcurrentDictionary<Guid, object> _orderLocks = new ConcurrentDictionary<Guid, object>();
+	    private ConcurrentDictionary<Guid, object> _orderLocks = new ConcurrentDictionary<Guid, object>();
 		private object GetLockForOrder(Guid order)
 		{
 			return _orderLocks.GetOrAdd(order, new object());

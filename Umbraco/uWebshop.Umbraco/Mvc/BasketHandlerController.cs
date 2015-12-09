@@ -19,15 +19,6 @@ using umbraco.cms.businesslogic.member;
 
 namespace uWebshop.Umbraco.Mvc
 {
-    //public class OrderController : SurfaceController
-    //{
-    //    [HttpPost]
-    //    public ActionResult Cancel()
-    //    {
-            
-    //    }
-    //}
-
 	public class BasketHandlerController : SurfaceController
 	{
 		[HttpPost]

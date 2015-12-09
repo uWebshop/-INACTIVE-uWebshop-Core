@@ -20,6 +20,7 @@ namespace uWebshop.Umbraco.Repositories
             var helper = new UmbracoHelper(UmbracoContext.Current);
 
 		    var node = helper.TypedContent(id);
+		    if (node == null) return null;
 
             return CreateEntityFromNode(node, localization);
 		}
