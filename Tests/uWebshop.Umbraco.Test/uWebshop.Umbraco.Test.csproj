@@ -46,7 +46,7 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
     <Reference Include="Umbraco.Core">
-      <HintPath>..\..\Binary Dependencies umbraco6\Umbraco.Core.dll</HintPath>
+      <HintPath>..\..\Binary Dependencies umbraco7\Umbraco.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
