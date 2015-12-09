@@ -98,7 +98,7 @@ namespace uWebshop.Umbraco.Mvc
 		}
 		
 		[HttpPost]
-		public ActionResult AddProduct(int productId, int quantity, Dictionary<string, int> variants, Dictionary<string, string> property, int orderLineId = 0)
+		public ActionResult AddProduct(int productId, int quantity, Dictionary<string, int> variants, Dictionary<string, string> property, int orderLineId = 0, string action = "add")
 		{
 			var order = OrderHelper.GetOrder() ?? OrderHelper.CreateOrder();
 
@@ -107,7 +107,7 @@ namespace uWebshop.Umbraco.Mvc
 
 			if (productId > 0 || orderLineId > 0)
 			{
-				orderUpdater.AddOrUpdateOrderLine(order, orderLineId, productId, "add", quantity, variants.Select(v => v.Value), property); // unit test dat dit aangeroepen wordt
+				orderUpdater.AddOrUpdateOrderLine(order, orderLineId, productId, action, quantity, variants.Select(v => v.Value), property); // unit test dat dit aangeroepen wordt
 				orderUpdater.Save(order);
 			}
 
