@@ -5,7 +5,6 @@ using System.Text;
 using System.Web.UI.WebControls;
 using uWebshop.Common.Interfaces;
 using uWebshop.DataAccess;
-using umbraco.DataLayer;
 
 namespace uWebshop.Domain.Model
 {

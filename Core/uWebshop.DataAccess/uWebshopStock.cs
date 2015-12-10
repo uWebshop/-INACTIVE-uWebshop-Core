@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Web;
 using System.Linq;
 using umbraco;
-using umbraco.BusinessLogic;
-using umbraco.DataLayer;
 using uWebshop.DataAccess.Pocos;
 using Umbraco.Core;
 using Umbraco.Core.Logging;
