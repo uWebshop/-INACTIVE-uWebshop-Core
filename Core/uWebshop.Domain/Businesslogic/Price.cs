@@ -314,11 +314,11 @@ namespace uWebshop.Domain.Businesslogic
 					_applyDiscount = i => _applyDiscountRanged(i, totalCount);
 				}
 
-				var rangedPrice = _ranges.GetRangeAmountForValue(totalCount) ?? ValueInCents;
+				var rangedPrice = _ranges.GetRangeAmountForValue(totalCount) ?? _originalPrice;
 				return rangedPrice;
 			}
 
-			return ValueInCents;
+			return _originalPrice;
 		}
 
 		IVatPrice IDiscountedPrice.BeforeDiscount { get { return BeforeDiscount; } }
