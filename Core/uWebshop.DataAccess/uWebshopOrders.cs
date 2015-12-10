@@ -66,12 +66,12 @@ namespace uWebshop.DataAccess
 
 	    public static uWebshopOrderData GetOrderInfo(string transactionId)
 	    {
-            var sqlToAppend = Builder
+            var sql = Builder
                 .Where("transactionID = @0", transactionId);
 
-            var orderData = GetAllOrderInfos(sqlToAppend);
+            var orderData = Database.Query<uWebshopOrderData>(sql);
 
-            if (orderData != null && orderData.FirstOrDefault() != null)
+            if (orderData != null && orderData.Any())
             {
                 return orderData.FirstOrDefault();
             }
@@ -84,12 +84,12 @@ namespace uWebshop.DataAccess
 
 		public static uWebshopOrderData GetOrderInfo(int id)
 		{
-            var sqlToAppend = Builder
+            var sql = Builder
                 .Where("id = @0", id);
 
-            var orderData = GetAllOrderInfos(sqlToAppend);
+            var orderData = Database.Query<uWebshopOrderData>(sql);
 
-            if (orderData != null && orderData.FirstOrDefault() != null)
+            if (orderData != null && orderData.Any())
             {
                 return orderData.FirstOrDefault();
             }
@@ -107,19 +107,19 @@ namespace uWebshop.DataAccess
 	            return new List<uWebshopOrderData>();
 	        }
 
-            var sqlToAppend = Builder
+            var sql = Builder
                 .Where("customerID = @0", customerId);
 
 	        if (!includeIncomplete)
 	        {
-				sqlToAppend
+				sql
 					.Where("not orderStatus = @0", OrderStatus.Incomplete.ToString())
                     .Where("not orderStatus = @0", OrderStatus.Wishlist.ToString());
 	        }
 
-            var orderData = GetAllOrderInfos(sqlToAppend);
+            var orderData = Database.Query<uWebshopOrderData>(sql);
 
-	        return orderData;
+			return orderData;
 	    }
 
 	    public static IEnumerable<uWebshopOrderData> GetOrdersFromCustomer(string customerUsername, bool includeIncomplete = false)
@@ -129,17 +129,17 @@ namespace uWebshop.DataAccess
                 return new List<uWebshopOrderData>();
             }
 
-            var sqlToAppend = Builder
+            var sql = Builder
                .Where("customerUsername = @0", customerUsername);
 
             if (!includeIncomplete)
             {
-				sqlToAppend
+				sql
 					 .Where("not orderStatus = @0", OrderStatus.Incomplete.ToString())
                     .Where("not orderStatus = @0", OrderStatus.Wishlist.ToString());
             }
 
-            var orderData = GetAllOrderInfos(sqlToAppend);
+            var orderData = Database.Query<uWebshopOrderData>(sql);
 
             return orderData;
 		}
@@ -151,11 +151,11 @@ namespace uWebshop.DataAccess
                 return new List<uWebshopOrderData>();
             }
 
-		    var sqlToAppend = Builder
+		    var sql = Builder
 		        .Where("customerID = @0", customerId)
 		        .Where("orderStatus = @0", OrderStatus.Wishlist.ToString());
 
-            var orderData = GetAllOrderInfos(sqlToAppend);
+            var orderData = Database.Query<uWebshopOrderData>(sql);
 
             return orderData;
 		}
@@ -168,11 +168,11 @@ namespace uWebshop.DataAccess
                 return new List<uWebshopOrderData>();
             }
 
-            var sqlToAppend = Builder
+            var sql = Builder
               .Where("customerUsername = @0", customerUsername)
               .Where("orderStatus = @0", OrderStatus.Wishlist.ToString());
 
-            var orderData = GetAllOrderInfos(sqlToAppend);
+            var orderData = Database.Query<uWebshopOrderData>(sql);
 
             return orderData;
 		}
@@ -213,8 +213,8 @@ namespace uWebshop.DataAccess
 				sql.Where("StoreAlias = @0", storeAlias);
 	        }
  
-            return GetAllOrderInfos(sql);
-        }
+            return Database.Query<uWebshopOrderData>(sql);
+		}
 
 	    /// <summary>
 	    /// Get orders with deliverydate between starttime and endtime
@@ -246,8 +246,8 @@ namespace uWebshop.DataAccess
 				sql.Where("StoreAlias = @0", storeAlias);
             }
 
-            return GetAllOrderInfos(sql);
-	    }
+            return Database.Query<uWebshopOrderData>(sql);
+		}
 
 	    public static void StoreOrder(uWebshopOrderData orderData)
 		{
@@ -583,11 +583,11 @@ SELECT
 	    {
 	        if (seriesId <= 0) throw new ArgumentOutOfRangeException("seriesId");
             
-            var sqlToAppend = Builder
+            var sql = Builder
               .Where("seriesID = @0", seriesId)
-              .Where("orderStatus = @0", "Scheduled");
+              .Where("orderStatus = @0", OrderStatus.Scheduled.ToString());
 
-            var orders = GetAllOrderInfos(sqlToAppend);
+            var orders = Database.Query<uWebshopOrderData>(sql); ;
 
 	        foreach (var order in orders)
 	        {
