@@ -443,7 +443,7 @@ namespace uWebshop.Domain
 		[DataMember]
 		public DiscountProduct ProductVariantDiscount
 		{
-			get { return IO.Container.Resolve<IProductDiscountService>().GetDiscountByProductId(Id, Localization); }
+			get { return IO.Container.Resolve<IProductDiscountService>().GetDiscountByProductVariantId(Id, Localization); }
 			set { }
 		}
 
@@ -664,22 +664,11 @@ namespace uWebshop.Domain
 		{
 			get
 			{
-				// todo: move?  and test
-				return Businesslogic.Price.CreateDiscountedRanged(OriginalPriceInCents, Ranges, Product.PricesIncludingVat, Vat, 
-					order => order.OrderLines.Where(line => line.ProductInfo.ProductVariants.Any(v => v.Id == Id)).Sum(line => line.ProductInfo.ItemCount.GetValueOrDefault(1)), // todo: move/centralize this
-																  i =>
-																	  {
-																		  int discounted;
-																		  if (Product.IsDiscounted && !Product.Discount.ExcludeVariants && Product.Discount.Type == DiscountType.Percentage)
-																		  {
-																			  discounted = Product.Discount.GetAdjustedPrice(i);
-																		  }
-																		  else
-																		  {
-																			  discounted = i;
-																		  }
-																		  return IsDiscounted ? ProductVariantDiscount.GetAdjustedPrice(discounted) : discounted;
-																	  }, Localization);
+				// todo: move? and test
+				return Businesslogic.Price.CreateDiscountedRanged(OriginalPriceInCents, Ranges, Product.PricesIncludingVat, Vat,
+					order => order.OrderLines.Where(line => line.ProductInfo.ProductVariants.Any(x => x.Id == Id)).Sum(line => line.ProductInfo.ItemCount.GetValueOrDefault(1)),// todo: move/centralize this
+					(unDiscountedPrice, orderTotalItemCount) => IO.Container.Resolve<IProductDiscountService>().GetAdjustedPriceForProductVariantWithId(Id, Localization, unDiscountedPrice, orderTotalItemCount),
+					Localization);
 			}
 		}
 

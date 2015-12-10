@@ -195,7 +195,7 @@ namespace uWebshop.Domain.Businesslogic
 		private Price(int price, IEnumerable<Range> ranges, bool includingVat, decimal vat, Func<IOrderInfo, int> orderCountCalculation, Func<int, int> applyDiscount, ILocalization localization)
 			: this(price, includingVat, vat, localization)
 		{
-			if (ranges != null)
+			if (ranges != null && ranges.Any())
 			{
 				var defaultRange = ranges.GetRangeAmountForValue(1);
 				if (defaultRange != null)
@@ -314,11 +314,11 @@ namespace uWebshop.Domain.Businesslogic
 					_applyDiscount = i => _applyDiscountRanged(i, totalCount);
 				}
 
-				var rangedPrice = _ranges.GetRangeAmountForValue(totalCount) ?? _originalPrice;
+				var rangedPrice = _ranges.GetRangeAmountForValue(totalCount) ?? ValueInCents;
 				return rangedPrice;
 			}
 
-			return _originalPrice;
+			return ValueInCents;
 		}
 
 		IVatPrice IDiscountedPrice.BeforeDiscount { get { return BeforeDiscount; } }

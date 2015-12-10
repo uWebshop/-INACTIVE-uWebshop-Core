@@ -34,25 +34,25 @@ namespace uWebshop.DataAccess
 					.Where("not orderStatus = @0", OrderStatus.Incomplete.ToString())
 					.Where("not orderStatus = @0", OrderStatus.Wishlist.ToString());
 			}
-
-			if (sqlToAppend != null)
+			else
             {
                 sql.Append(sqlToAppend);
             }
-            
-            return
-		        Database.Query<uWebshopOrderData>(sql);
+
+            var query = Database.Query<uWebshopOrderData>(sql);
+
+	        return query;
 
         }
 
 	    public static uWebshopOrderData GetOrderInfo(Guid orderId)
 	    {
-	        var sqlToAppend = Builder
+	        var sql = Builder
 	            .Where("uniqueID = @0", orderId);
 
-            var orderData = GetAllOrderInfos(sqlToAppend);
-          
-	        if (orderData != null && orderData.FirstOrDefault() != null)
+            var orderData = Database.Query<uWebshopOrderData>(sql);
+
+			if (orderData != null && orderData.Any())
 	        {
 	            return orderData.FirstOrDefault();
 	        }

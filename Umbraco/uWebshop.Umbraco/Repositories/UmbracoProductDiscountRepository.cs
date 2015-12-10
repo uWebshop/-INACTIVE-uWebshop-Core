@@ -26,8 +26,10 @@ namespace uWebshop.Umbraco.Repositories
 
 			var categories = discount.Items.Select(id => DomainHelper.GetCategoryById(id)).Where(x => x != null).ToList();
 			var products = discount.Items.Select(id => DomainHelper.GetProductById(id)).Where(x => x != null).ToList();
+			var productVariants = discount.Items.Select(id => DomainHelper.GetProductVariantById(id)).Where(x => x != null).ToList();
 
 			var discountProducts = new List<IProduct>();
+			var discountProductVariants = new List<IProductVariant>();
 
 			foreach (var category in categories)
 			{
@@ -44,10 +46,15 @@ namespace uWebshop.Umbraco.Repositories
 			{
 				discountProducts.Add(product);
 			}
-			
-			discount.Products = discountProducts;
 
-			discount.ProductVariants = discount.Items.Select(id => DomainHelper.GetProductVariantById(id)).Where(variant => variant != null);
+			foreach (var productvariant in productVariants.Where(productvariant => discountProductVariants.All(x => productvariant != null && x.Id != productvariant.Id)))
+			{
+				discountProductVariants.Add(productvariant);
+			}
+
+			discount.Products = discountProducts;
+			
+			discount.ProductVariants = discountProductVariants;
 
 			var excludeVariants = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.excludeVariants, localization, fields);
 			discount.ExcludeVariants = excludeVariants == "enable" || excludeVariants == "1" || excludeVariants == "true";
