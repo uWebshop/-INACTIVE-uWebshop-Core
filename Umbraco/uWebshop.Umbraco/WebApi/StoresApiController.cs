@@ -163,8 +163,25 @@ namespace uWebshop.Umbraco.WebApi
 		{
 			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated)
 			{
-				var files = Directory.GetFiles(IOHelper.MapPath(SystemDirectories.Xslt), "*.xslt", SearchOption.AllDirectories).Select(file => file.Replace(IOHelper.MapPath(SystemDirectories.Xslt) + @"\", string.Empty)).ToList();
-				files.AddRange(Directory.GetFiles(IOHelper.MapPath(SystemDirectories.MacroScripts), "*.cshtml", SearchOption.AllDirectories).Select(file => file.Replace(IOHelper.MapPath(SystemDirectories.MacroScripts) + @"\", string.Empty)));
+				var files = new List<string>();
+				// xslt directory
+				if (Directory.Exists(IOHelper.MapPath(SystemDirectories.Xslt)))
+				{
+					files = Directory.GetFiles(IOHelper.MapPath(SystemDirectories.Xslt), "*.xslt", SearchOption.AllDirectories).Select(file => file.Replace(IOHelper.MapPath(SystemDirectories.Xslt) + @"\", string.Empty)).ToList();
+				}
+				// macroscripts directory
+				if (Directory.Exists(IOHelper.MapPath(SystemDirectories.MacroScripts)))
+				{
+					files.AddRange(Directory.GetFiles(IOHelper.MapPath(SystemDirectories.MacroScripts), "*.cshtml", SearchOption.AllDirectories).Select(file => file.Replace(IOHelper.MapPath(SystemDirectories.MacroScripts) + @"\", string.Empty)));
+				}
+				// views directory
+				if (Directory.Exists(IOHelper.MapPath(SystemDirectories.MvcViews)))
+				{
+					files.AddRange(
+						Directory.GetFiles(IOHelper.MapPath(SystemDirectories.MvcViews), "*.cshtml", SearchOption.AllDirectories)
+							.Select(file => file.Replace(IOHelper.MapPath(SystemDirectories.MvcViews) + @"\", string.Empty)));
+				}
+
 				return files.Where(x => x.ToLowerInvariant().Contains("email") || x.ToLowerInvariant().Contains("mail"));
 			}
 			return null;
