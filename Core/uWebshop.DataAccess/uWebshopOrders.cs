@@ -47,8 +47,12 @@ namespace uWebshop.DataAccess
 
 	    public static uWebshopOrderData GetOrderInfo(Guid orderId)
 	    {
-	        var sql = Builder
-	            .Where("uniqueID = @0", orderId);
+		    var sql = Builder.Select("*")
+			    .From("uWebshopOrders")
+			    .LeftOuterJoin("uWebshopOrderSeries")
+			    .On("seriesID= uWebshopOrderSeries.id")
+			    .Where("uniqueID = @0", orderId);
+			   
 
             var orderData = Database.Query<uWebshopOrderData>(sql);
 
@@ -66,9 +70,12 @@ namespace uWebshop.DataAccess
 
 	    public static uWebshopOrderData GetOrderInfo(string transactionId)
 	    {
-            var sql = Builder
-                .Where("transactionID = @0", transactionId);
-
+			var sql = Builder.Select("*")
+				.From("uWebshopOrders")
+				.LeftOuterJoin("uWebshopOrderSeries")
+				.On("seriesID= uWebshopOrderSeries.id")
+				.Where("transactionID = @0", transactionId);
+			
             var orderData = Database.Query<uWebshopOrderData>(sql);
 
             if (orderData != null && orderData.Any())
@@ -84,9 +91,12 @@ namespace uWebshop.DataAccess
 
 		public static uWebshopOrderData GetOrderInfo(int id)
 		{
-            var sql = Builder
-                .Where("id = @0", id);
-
+			var sql = Builder.Select("*")
+				.From("uWebshopOrders")
+				.LeftOuterJoin("uWebshopOrderSeries")
+				.On("seriesID= uWebshopOrderSeries.id")
+				.Where("id = @0", id);
+			
             var orderData = Database.Query<uWebshopOrderData>(sql);
 
             if (orderData != null && orderData.Any())
@@ -107,8 +117,11 @@ namespace uWebshop.DataAccess
 	            return new List<uWebshopOrderData>();
 	        }
 
-            var sql = Builder
-                .Where("customerID = @0", customerId);
+			var sql = Builder.Select("*")
+				.From("uWebshopOrders")
+				.LeftOuterJoin("uWebshopOrderSeries")
+				.On("seriesID= uWebshopOrderSeries.id")
+				.Where("customerID = @0", customerId);
 
 	        if (!includeIncomplete)
 	        {
@@ -129,10 +142,13 @@ namespace uWebshop.DataAccess
                 return new List<uWebshopOrderData>();
             }
 
-            var sql = Builder
-               .Where("customerUsername = @0", customerUsername);
+		    var sql = Builder.Select("*")
+			    .From("uWebshopOrders")
+			    .LeftOuterJoin("uWebshopOrderSeries")
+				.On("seriesID= uWebshopOrderSeries.id")
+				 .Where("customerUsername = @0", customerUsername);
 
-            if (!includeIncomplete)
+			if (!includeIncomplete)
             {
 				sql
 					 .Where("not orderStatus = @0", OrderStatus.Incomplete.ToString())
@@ -151,10 +167,14 @@ namespace uWebshop.DataAccess
                 return new List<uWebshopOrderData>();
             }
 
-		    var sql = Builder
-		        .Where("customerID = @0", customerId)
-		        .Where("orderStatus = @0", OrderStatus.Wishlist.ToString());
 
+			var sql = Builder.Select("*")
+				.From("uWebshopOrders")
+				.LeftOuterJoin("uWebshopOrderSeries")
+				.On("seriesID= uWebshopOrderSeries.id")
+				 .Where("customerID = @0", customerId)
+				.Where("orderStatus = @0", OrderStatus.Wishlist.ToString());
+			
             var orderData = Database.Query<uWebshopOrderData>(sql);
 
             return orderData;
@@ -168,11 +188,14 @@ namespace uWebshop.DataAccess
                 return new List<uWebshopOrderData>();
             }
 
-            var sql = Builder
-              .Where("customerUsername = @0", customerUsername)
-              .Where("orderStatus = @0", OrderStatus.Wishlist.ToString());
+			var sql = Builder.Select("*")
+				.From("uWebshopOrders")
+				.LeftOuterJoin("uWebshopOrderSeries")
+				.On("seriesID= uWebshopOrderSeries.id")
+				.Where("customerUsername = @0", customerUsername)
+			  .Where("orderStatus = @0", OrderStatus.Wishlist.ToString());
 
-            var orderData = Database.Query<uWebshopOrderData>(sql);
+			var orderData = Database.Query<uWebshopOrderData>(sql);
 
             return orderData;
 		}
@@ -200,15 +223,18 @@ namespace uWebshop.DataAccess
             {
                 return new List<uWebshopOrderData>();
             }
-            
-            var sql = Builder
-                .Where("not orderStatus = @0", OrderStatus.Incomplete.ToString())
+			
+			var sql = Builder.Select("*")
+				.From("uWebshopOrders")
+				.LeftOuterJoin("uWebshopOrderSeries")
+				.On("seriesID= uWebshopOrderSeries.id")
+				.Where("not orderStatus = @0", OrderStatus.Incomplete.ToString())
                 .Where("not orderStatus = @0", OrderStatus.Wishlist.ToString())
                 .Where("not orderStatus = @0", OrderStatus.Scheduled.ToString())
                 .Where("confirmDate >= @0", startTime)
                 .Where("confirmDate <= @0", endTime);
 
-	        if (!string.IsNullOrEmpty(storeAlias))
+			if (!string.IsNullOrEmpty(storeAlias))
 	        {
 				sql.Where("StoreAlias = @0", storeAlias);
 	        }
@@ -234,14 +260,17 @@ namespace uWebshop.DataAccess
 	        {
 	            return new List<uWebshopOrderData>();
 	        }
-            
-	        var sql = Builder
-	            .Where("not orderStatus = @0", OrderStatus.Incomplete.ToString())
+
+			var sql = Builder.Select("*")
+				.From("uWebshopOrders")
+				.LeftOuterJoin("uWebshopOrderSeries")
+				.On("seriesID= uWebshopOrderSeries.id")
+				.Where("not orderStatus = @0", OrderStatus.Incomplete.ToString())
 	            .Where("not orderStatus = @0", OrderStatus.Wishlist.ToString())
 	            .Where("deliveryDate >= @0", startTime)
 	            .Where("deliveryDate <= @0", endTime);
 
-            if (!string.IsNullOrEmpty(storeAlias))
+			if (!string.IsNullOrEmpty(storeAlias))
             {
 				sql.Where("StoreAlias = @0", storeAlias);
             }
