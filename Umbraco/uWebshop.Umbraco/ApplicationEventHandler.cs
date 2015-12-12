@@ -75,19 +75,16 @@ namespace uWebshop.Umbraco
 
 		    if (uWebshopConfigurationStatus == null || uWebshopConfigurationStatus != uWebshopVersionFromDomain.ToString())
 		    {
-				// check if upgrade
-			    var upgrade = uWebshopConfigurationStatus != null && uWebshopConfigurationStatus != uWebshopVersionFromDomain.ToString();
+				// if there is no uWebshopConfigurationStatus found, create properties || OR if uwbsCreateMissingProperties = true
+				var createMissingProperties = uWebshopConfigurationStatus == null || ConfigurationManager.AppSettings["uwbsCreateMissingProperties"] == "true";
 
-				// if not an upgrade, only recreate missing properties when uwbsCreateMissingProperties == true
-				var createMissingProperties = !upgrade || ConfigurationManager.AppSettings["uwbsCreateMissingProperties"] == "true";
-
-				// upgrade situation before uWebshop started using configurationstatus, you also want to disable the creation of properties
-			    if (!upgrade && ConfigurationManager.AppSettings["uwbsCreateMissingProperties"] != "true")
+				// if uwbsCreateMissingProperties is set to false, NEVER create properties
+				if (ConfigurationManager.AppSettings["uwbsCreateMissingProperties"] == "false")
 			    {
 				    createMissingProperties = false;
 			    }
-
-			    var config = WebConfigurationManager.OpenWebConfiguration("~");
+				
+				var config = WebConfigurationManager.OpenWebConfiguration("~");
 
 		        // umbracoConfigurationStatus not yet added to web config or not equal to current version -> Install uWebhsop
 		        DoLogged(Initialize.Reboot, "uWebshop Installer initialize uWebshop internal state");
