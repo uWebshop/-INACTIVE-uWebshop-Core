@@ -3,12 +3,16 @@ using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace uWebshop.DataAccess.Pocos
 {
-
     [TableName("uWebshopCoupons")]
-    [ExplicitColumns]
+	[ExplicitColumns]
     public class uWebshopCoupon
     {
-        [Column("DiscountId")]
+		[Column("id")]
+		[PrimaryKeyColumn(AutoIncrement = true)]
+		[NullSetting(NullSetting = NullSettings.NotNull)]
+		public int Id { get; set; }
+
+		[Column("DiscountId")]
         [NullSetting(NullSetting = NullSettings.NotNull)]
         public int DiscountId { get; set; }
 
