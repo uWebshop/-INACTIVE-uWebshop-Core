@@ -115,7 +115,6 @@ namespace uWebshop.Umbraco
 			ContentService.Deleted += ContentService_Deleted;
 			ContentService.Copied += ContentService_Copied;
 
-			content.AfterUpdateDocumentCache += ContentOnAfterUpdateDocumentCache;
 			OrderInfo.BeforeStatusChanged += OrderEvents.UpdateOrderNumberIfChangingFromIncompleteToScheduled;
 			OrderInfo.AfterStatusChanged += OrderEvents.OrderStatusChanged;
 
@@ -348,12 +347,7 @@ namespace uWebshop.Umbraco
 		{
 			IO.Container.Resolve<IApplicationCacheManagingService>().ReloadEntityWithGlobalId(id, nodeTypeAlias);
 		}
-
-		private void ContentOnAfterUpdateDocumentCache(Document document, DocumentCacheEventArgs documentCacheEventArgs)
-		{
-
-		}
-
+		
 		private void ContentService_UnPublished(IPublishingStrategy sender, PublishEventArgs<IContent> e)
 		{
 			foreach (var item in e.PublishedEntities)

@@ -19,7 +19,7 @@ namespace uWebshop.Test.Domain.Domain_classes.ProductTests
 		{
 			IOC.IntegrationTest();
 			_product = new Product {OriginalPriceInCents = 1000, Id = 12234, Ranges = new List<Range>(), Vat = 21m};
-			_variant = new ProductVariant {OriginalPriceInCents = 100};
+			_variant = new ProductVariant { Id = 12235, OriginalPriceInCents = 100};
 			_product.VariantGroups = new List<IProductVariantGroup>{ new ProductVariantGroup("",new List<ProductVariant> {_variant},1)};
 			_variant.Product = _product;
 		}
@@ -27,10 +27,14 @@ namespace uWebshop.Test.Domain.Domain_classes.ProductTests
 		[Test]
 		public void PriceIncludingProductPriceInCents_NotDiscounted_GivesProductPlusVariant()
 		{
-			IOC.ProductDiscountService.SetupNewMock().Setup(m => m.GetAdjustedPriceForProductWithId(12234, It.IsAny<ILocalization>(), 1000, It.IsAny<int>())).Returns(1000);
+			var setupNewMock = IOC.ProductDiscountService.SetupNewMock();
+			setupNewMock.Setup(m => m.GetAdjustedPriceForProductWithId(12234, It.IsAny<ILocalization>(), 1000, It.IsAny<int>())).Returns(1000);
+			setupNewMock.Setup(m => m.GetAdjustedPriceForProductVariantWithId(12235, It.IsAny<ILocalization>(), 100, It.IsAny<int>())).Returns(100);
 
+			//IOC.ProductDiscountService.SetupNewMock().Setup(m => m.GetAdjustedPriceForProductWithId(12234, It.IsAny<ILocalization>(), 1000, It.IsAny<int>())).Returns(1000);
 			Assert.AreEqual(1000, _product.Price.ValueInCents());
-			Assert.AreEqual(100, _variant.Price.ValueInCents());
+			var variantValueInCents = _variant.Price.ValueInCents();
+			Assert.AreEqual(100, variantValueInCents);
 
 			Assert.AreEqual(1100, _variant.PriceIncludingProduct(_product).ValueInCents());
 		}
