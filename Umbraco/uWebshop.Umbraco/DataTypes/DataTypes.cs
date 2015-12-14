@@ -9,7 +9,6 @@ using uWebshop.Umbraco.DataTypes.CouponCodeEditor;
 using uWebshop.Umbraco.DataTypes.Currencies;
 using uWebshop.Umbraco.DataTypes.DiscountOrderCondition;
 using uWebshop.Umbraco.DataTypes.DiscountType;
-using uWebshop.Umbraco.DataTypes.EmailTemplateSelector;
 using uWebshop.Umbraco.DataTypes.EnableDisable;
 using uWebshop.Umbraco.DataTypes.LanguagePicker;
 using uWebshop.Umbraco.DataTypes.MemberGroupPicker;
@@ -124,8 +123,6 @@ namespace uWebshop.Umbraco.DataTypes
                 StorePickerDataType.DatabaseType);
             Define(DataType.StoreTemplatePicker, StoreTemplatePickerDataType.Key, StoreTemplatePickerDataType.Name,
                 StoreTemplatePickerDataType.DatabaseType);
-            Define(DataType.TemplatePicker, EmailTemplateSelectorDataType.Key, EmailTemplateSelectorDataType.Name,
-                EmailTemplateSelectorDataType.DatabaseType);
             Define(DataType.Zones, ZoneSelectorDataType.Key, ZoneSelectorDataType.Name,
                 ZoneSelectorDataType.DatabaseType);
             Define(DataType.Currencies, CurrenciesDataType.Key, CurrenciesDataType.Name, CurrenciesDataType.DatabaseType);

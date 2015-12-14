@@ -248,7 +248,6 @@
     <Compile Include="DataTypes\DataTypes.cs" />
     <Compile Include="DataTypes\DiscountOrderCondition\DiscountOrderConditionDataType.cs" />
     <Compile Include="DataTypes\DiscountType\DiscountTypeDataType.cs" />
-    <Compile Include="DataTypes\EmailTemplateSelector\EmailTemplateSelectorDataType.cs" />
     <Compile Include="DataTypes\EnableDisable\EnableDisableDataType.cs" />
     <Compile Include="DataTypes\LanguagePicker\LanguagePickerDataType.cs" />
     <Compile Include="DataTypes\MemberGroupPicker\MemberGroupPickerDataType.cs" />

@@ -100,7 +100,8 @@ namespace uWebshop.Domain
 		/// <value>
 		/// The template.
 		/// </value>
-		[ContentPropertyType(Alias = "emailtemplate", DataType = DataType.TemplatePicker, Tab = ContentTypeTab.Global, Name = "#Template", Description = "#TemplateDescription")]
+		//[ContentPropertyType(Alias = "emailtemplate", DataType = DataType.TemplatePicker, Tab = ContentTypeTab.Global, Name = "#Template", Description = "#TemplateDescription")]
+		[Obsolete("Use the template of the content item")]
 		public string Template
 		{
 			get

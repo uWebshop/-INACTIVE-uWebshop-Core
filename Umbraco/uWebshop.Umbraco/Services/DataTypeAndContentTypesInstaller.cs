@@ -184,19 +184,6 @@ var EnableDisableDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.En
 				    dataTypeService.Save(DiscountTypeDataTypeDef);
                 }catch(Exception){}
 			}
-			var TemplatePickerDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.TemplatePicker");
-			if (TemplatePickerDataTypeDef == null)
-			{
-			    try
-			    {				
-				    TemplatePickerDataTypeDef = umbracoVersion.CreateDataTypeDefinition(-1, "uWebshop.TemplatePicker");
-				    TemplatePickerDataTypeDef.Name = "uWebshop Email Template Picker";
-				    TemplatePickerDataTypeDef.Key = new Guid("0a10d9dd-ebbc-48f5-be93-9fac239ac876");
-				    TemplatePickerDataTypeDef.DatabaseType = DataTypeDatabaseType.Nvarchar;
-				
-				    dataTypeService.Save(TemplatePickerDataTypeDef);
-                }catch(Exception){}
-			}
 			var MultiContentPickerFilesDataTypeDef = umbracoVersion.GetDataTypeDefinition("uWebshop.MultiContentPickerFiles");
 			if (MultiContentPickerFilesDataTypeDef == null)
 			{
@@ -540,8 +527,6 @@ DiscountOrderConditionDataTypeDef = dataTypeService.GetDataTypeDefinitionById(ne
 if (DiscountOrderConditionDataTypeDef == null) throw new Exception("Could not create and/or load DiscountOrderCondition datatype");
 DiscountTypeDataTypeDef = dataTypeService.GetDataTypeDefinitionById(new Guid("2d89188e-33a7-4885-a6d0-1caef40320a7"));
 if (DiscountTypeDataTypeDef == null) throw new Exception("Could not create and/or load DiscountType datatype");
-TemplatePickerDataTypeDef = dataTypeService.GetDataTypeDefinitionById(new Guid("0a10d9dd-ebbc-48f5-be93-9fac239ac876"));
-if (TemplatePickerDataTypeDef == null) throw new Exception("Could not create and/or load TemplatePicker datatype");
 MultiContentPickerFilesDataTypeDef = dataTypeService.GetDataTypeDefinitionById(new Guid("83c13f11-95d8-4f10-b510-581983fe8c19"));
 if (MultiContentPickerFilesDataTypeDef == null) throw new Exception("Could not create and/or load MultiContentPickerFiles datatype");
 MultiNodePickerDataTypeDef = dataTypeService.GetDataTypeDefinitionById(new Guid("97600235-acf7-4ade-9ba9-6cad4743cb6d"));
@@ -1018,9 +1003,6 @@ GetOrAddPropertyGroup(uwbsEmailTemplateCustomerContentType, "Global").PropertyTy
 if (uwbsEmailTemplateCustomerContentType.PropertyTypes.All(p => p.Alias != "description") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsEmailTemplateCustomerContentType, "Global").PropertyTypes.Add(new PropertyType(RichTextDataTypeDef) { Alias = "description", Name = "#Description", Description = "#DescriptionDescription",});
 }
-if (uwbsEmailTemplateCustomerContentType.PropertyTypes.All(p => p.Alias != "emailtemplate") && createMissingProperties == true){
-GetOrAddPropertyGroup(uwbsEmailTemplateCustomerContentType, "Global").PropertyTypes.Add(new PropertyType(TemplatePickerDataTypeDef) { Alias = "emailtemplate", Name = "#Template", Description = "#TemplateDescription",});
-}
 
 
 var uwbsEmailTemplateCustomerSectionContentType = contentTypeService.GetContentType("uwbsEmailTemplateCustomerSection") ?? new ContentType(-1) {
@@ -1068,9 +1050,6 @@ GetOrAddPropertyGroup(uwbsEmailTemplateStoreContentType, "Global").PropertyTypes
 }
 if (uwbsEmailTemplateStoreContentType.PropertyTypes.All(p => p.Alias != "description") && createMissingProperties == true){
 GetOrAddPropertyGroup(uwbsEmailTemplateStoreContentType, "Global").PropertyTypes.Add(new PropertyType(RichTextDataTypeDef) { Alias = "description", Name = "#Description", Description = "#DescriptionDescription",});
-}
-if (uwbsEmailTemplateStoreContentType.PropertyTypes.All(p => p.Alias != "emailtemplate") && createMissingProperties == true){
-GetOrAddPropertyGroup(uwbsEmailTemplateStoreContentType, "Global").PropertyTypes.Add(new PropertyType(TemplatePickerDataTypeDef) { Alias = "emailtemplate", Name = "#Template", Description = "#TemplateDescription",});
 }
 
 
