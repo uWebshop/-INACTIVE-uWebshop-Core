@@ -342,7 +342,6 @@ internal interface IEmailCustomerAliassesService
 	string title { get; }
 	string description { get; }
 	string emailtemplate { get; }
-	string templatePreview { get; }
 }
 
 
@@ -359,7 +358,6 @@ internal interface IEmailCustomerAliassesService
 public string title { get { return _xml.title ?? "title"; } }
 public string description { get { return _xml.description ?? "description"; } }
 public string emailtemplate { get { return _xml.emailtemplate ?? "emailtemplate"; } }
-public string templatePreview { get { return _xml.templatePreview ?? "templatePreview"; } }
 }
 
 [XmlRoot(ElementName = "EmailCustomer")]
@@ -369,7 +367,6 @@ public string ContentTypeAlias;
 	public string title;
 	public string description;
 	public string emailtemplate;
-	public string templatePreview;
 }
 
 internal interface IEmailCustomerSectionAliassesService
@@ -426,7 +423,6 @@ internal interface IEmailStoreAliassesService
 	string title { get; }
 	string description { get; }
 	string emailtemplate { get; }
-	string templatePreview { get; }
 }
 
 
@@ -443,7 +439,6 @@ internal interface IEmailStoreAliassesService
 public string title { get { return _xml.title ?? "title"; } }
 public string description { get { return _xml.description ?? "description"; } }
 public string emailtemplate { get { return _xml.emailtemplate ?? "emailtemplate"; } }
-public string templatePreview { get { return _xml.templatePreview ?? "templatePreview"; } }
 }
 
 [XmlRoot(ElementName = "EmailStore")]
@@ -453,7 +448,6 @@ public string ContentTypeAlias;
 	public string title;
 	public string description;
 	public string emailtemplate;
-	public string templatePreview;
 }
 
 internal interface IEmailStoreSectionAliassesService
@@ -1521,6 +1515,7 @@ public string ContentTypeAlias;
 internal interface IUwebshopRootAliassesService
 {
 	string ContentTypeAlias { get; }
+	string shopDashboard { get; }
 }
 
 
@@ -1534,12 +1529,14 @@ internal interface IUwebshopRootAliassesService
 		private UwebshopRootAliassesXML _xml;
 
 		public string ContentTypeAlias { get { return _xml.ContentTypeAlias ?? "uWebshop"; } }
+public string shopDashboard { get { return _xml.shopDashboard ?? "shopDashboard"; } }
 }
 
 [XmlRoot(ElementName = "UwebshopRoot")]
 public struct UwebshopRootAliassesXML {
 [XmlAttribute("alias")]
 public string ContentTypeAlias;
+	public string shopDashboard;
 }
 
 [XmlRoot(ElementName = "Config")]
@@ -1727,14 +1724,12 @@ xml.EmailCustomer.ContentTypeAlias = "uwbsEmailTemplateCustomer";
 xml.EmailCustomer.title = "title";
 xml.EmailCustomer.description = "description";
 xml.EmailCustomer.emailtemplate = "emailtemplate";
-xml.EmailCustomer.templatePreview = "templatePreview";
 xml.EmailCustomerSection.ContentTypeAlias = "uwbsEmailTemplateCustomerSection";
 xml.EmailRepository.ContentTypeAlias = "uwbsEmailRepository";
 xml.EmailStore.ContentTypeAlias = "uwbsEmailTemplateStore";
 xml.EmailStore.title = "title";
 xml.EmailStore.description = "description";
 xml.EmailStore.emailtemplate = "emailtemplate";
-xml.EmailStore.templatePreview = "templatePreview";
 xml.EmailStoreSection.ContentTypeAlias = "uwbsEmailTemplateStoreSection";
 xml.Order.ContentTypeAlias = "uwbsOrder";
 xml.Order.orderStatusPicker = "orderStatusPicker";
@@ -1915,6 +1910,7 @@ xml.Store.returnEmailStore = "returnEmailStore";
 xml.Store.returnEmailCustomer = "returnEmailCustomer";
 xml.StoreRepository.ContentTypeAlias = "uwbsStoreRepository";
 xml.UwebshopRoot.ContentTypeAlias = "uWebshop";
+xml.UwebshopRoot.shopDashboard = "shopDashboard";
 	var settings = new XmlWriterSettings();
 	settings.OmitXmlDeclaration = true;
 	settings.ConformanceLevel = ConformanceLevel.Document;

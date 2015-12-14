@@ -6,6 +6,7 @@ using uWebshop.Common.Interfaces;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
 using uWebshop.Domain.Model;
+using uWebshop.Domain.Model.OrderInfo;
 
 namespace uWebshop.Domain.Services
 {

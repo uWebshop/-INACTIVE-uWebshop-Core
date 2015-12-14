@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using uWebshop.Domain.Interfaces;
 using uWebshop.Domain.Model;
+using uWebshop.Domain.Model.OrderInfo;
 using uWebshop.Domain.Services;
 
 namespace uWebshop.Domain

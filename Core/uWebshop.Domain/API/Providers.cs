@@ -126,7 +126,7 @@ namespace uWebshop.API
 		/// <summary>
 		/// Gets the fulfillment providers. (ie shipping/pickup/etc) for a basket by Unique Order Id (Guid)
 		/// </summary>
-		/// <param name="order">the order to match the fulfillment providers with</param>
+		/// <param name="guidAsString">OrderGuidAsString</param>
 		/// <param name="useZone">if set to <c>true</c> use zone/countries.</param>
 		/// <param name="storeAlias">The store alias.</param>
 		/// <param name="currencyCode">The currency code.</param>

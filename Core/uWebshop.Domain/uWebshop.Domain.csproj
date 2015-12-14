@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>uWebshop.Domain</RootNamespace>
     <AssemblyName>uWebshop.Domain</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
@@ -244,6 +244,7 @@
     <Compile Include="Core\Initialize.cs" />
     <Compile Include="Helpers\CronHelper.cs" />
     <Compile Include="Helpers\CrontabSchedule.cs" />
+    <Compile Include="Helpers\RenderEmailController.cs" />
     <Compile Include="Interfaces\External API\ICustomer.cs" />
     <Compile Include="Interfaces\External API\IOrderFields.cs" />
     <Compile Include="Interfaces\External API\IOrderSeries.cs" />
@@ -280,6 +281,7 @@
     <Compile Include="Interfaces\IProductVariantGroup.cs" />
     <Compile Include="Model\ContentTypes\DiscountContentType.cs" />
     <Compile Include="Interfaces\IOrderedProduct.cs" />
+    <Compile Include="Model\EmailRenderModel.cs" />
     <Compile Include="Model\OrderInfo\DiscountEffects.cs" />
     <Compile Include="Interfaces\IDiscountEffect.cs" />
     <Compile Include="Interfaces\IDiscountableUnit.cs" />

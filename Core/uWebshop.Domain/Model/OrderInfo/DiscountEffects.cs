@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using uWebshop.Domain.Interfaces;
 
-namespace uWebshop.Domain.Model
+namespace uWebshop.Domain.Model.OrderInfo
 {
 	public class DiscountEffects
 	{
