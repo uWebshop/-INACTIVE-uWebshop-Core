@@ -1,8 +1,12 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using uWebshop.Domain.BaseClasses;
 using uWebshop.Domain.ContentTypes;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
+using Umbraco.Core;
+using Umbraco.Core.IO;
+using Umbraco.Web;
 
 namespace uWebshop.Domain
 {
@@ -115,8 +119,11 @@ namespace uWebshop.Domain
 				}
 
 				return template;
+				
 			}
 			set { }
 		}
+
+		
 	}
 }

@@ -47,14 +47,7 @@ namespace uWebshop.DataAccess
 
 	    public static uWebshopOrderData GetOrderInfo(Guid orderId)
 	    {
-		    var sql = Builder.Select("*")
-			    .From("uWebshopOrders")
-			    .LeftOuterJoin("uWebshopOrderSeries")
-			    .On("seriesID= uWebshopOrderSeries.id")
-			    .Where("uniqueID = @0", orderId);
-			   
-
-            var orderData = Database.Query<uWebshopOrderData>(sql);
+			var orderData = Database.Fetch<uWebshopOrderData>("SELECT * FROM uWebshopOrders WHERE uniqueID = '"+ orderId + "'");
 
 			if (orderData != null && orderData.Any())
 	        {
@@ -70,15 +63,9 @@ namespace uWebshop.DataAccess
 
 	    public static uWebshopOrderData GetOrderInfo(string transactionId)
 	    {
-			var sql = Builder.Select("*")
-				.From("uWebshopOrders")
-				.LeftOuterJoin("uWebshopOrderSeries")
-				.On("seriesID= uWebshopOrderSeries.id")
-				.Where("transactionID = @0", transactionId);
-			
-            var orderData = Database.Query<uWebshopOrderData>(sql);
+			var orderData = Database.Fetch<uWebshopOrderData>("SELECT * FROM uWebshopOrders WHERE transactionID = '" + transactionId + "'");
 
-            if (orderData != null && orderData.Any())
+			if (orderData != null && orderData.Any())
             {
                 return orderData.FirstOrDefault();
             }
@@ -91,15 +78,10 @@ namespace uWebshop.DataAccess
 
 		public static uWebshopOrderData GetOrderInfo(int id)
 		{
-			var sql = Builder.Select("*")
-				.From("uWebshopOrders")
-				.LeftOuterJoin("uWebshopOrderSeries")
-				.On("seriesID= uWebshopOrderSeries.id")
-				.Where("id = @0", id);
+			var orderData = Database.Fetch<uWebshopOrderData>("SELECT * FROM uWebshopOrders WHERE id = " + id);
 			
-            var orderData = Database.Query<uWebshopOrderData>(sql);
 
-            if (orderData != null && orderData.Any())
+			if (orderData != null && orderData.Any())
             {
                 return orderData.FirstOrDefault();
             }
@@ -313,7 +295,7 @@ namespace uWebshop.DataAccess
                 Database.Delete<uWebshopOrderSeries>(orderData.SeriesId);
             }
 
-            if (GetOrderInfo(orderData.UniqueId) == null)
+            if (Database.IsNew(orderData))
             {
                 Database.Insert(orderData);
             }

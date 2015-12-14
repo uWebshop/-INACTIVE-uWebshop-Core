@@ -18,6 +18,7 @@ using uWebshop.Domain.Businesslogic.VATChecking;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
 using uWebshop.Domain.Model;
+using uWebshop.Domain.Model.OrderInfo;
 using uWebshop.Domain.Services;
 using uWebshop.Domain.XMLRendering;
 using IOrderDiscount = uWebshop.Domain.Interfaces.IOrderDiscount;

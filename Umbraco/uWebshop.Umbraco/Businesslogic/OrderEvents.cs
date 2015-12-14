@@ -81,21 +81,12 @@ namespace uWebshop.Umbraco.Businesslogic
 					if (e.SendEmails)
 					{
 						int customerEmailNodeId;
-
 						int.TryParse(orderInfo.StoreInfo.Store.ConfirmationEmailCustomer, out customerEmailNodeId);
-
-						if (customerEmailNodeId != 0)
-						{
-							EmailHelper.SendOrderEmailCustomer(customerEmailNodeId, orderInfo);
-						}
 
 						int storeEmailNodeId;
 						int.TryParse(orderInfo.StoreInfo.Store.ConfirmationEmailStore, out storeEmailNodeId);
-
-						if (storeEmailNodeId != 0)
-						{
-							EmailHelper.SendOrderEmailStore(storeEmailNodeId, orderInfo);
-						}
+						
+						EmailHelper.SendOrderEmail(storeEmailNodeId, customerEmailNodeId, orderInfo);
 					}
 					else
 					{
@@ -144,21 +135,12 @@ namespace uWebshop.Umbraco.Businesslogic
 						if (orderInfo.OrderSeries == null || orderInfo.OrderSeries != null && orderInfo.OrderSeries.Start == firstShipDateTime)
 						{
 							int customerEmailNodeId;
-
 							int.TryParse(orderInfo.StoreInfo.Store.ConfirmationEmailCustomer, out customerEmailNodeId);
-
-							if (customerEmailNodeId != 0)
-							{
-								EmailHelper.SendOrderEmailCustomer(customerEmailNodeId, orderInfo);
-							}
 
 							int storeEmailNodeId;
 							int.TryParse(orderInfo.StoreInfo.Store.ConfirmationEmailStore, out storeEmailNodeId);
 
-							if (storeEmailNodeId != 0)
-							{
-								EmailHelper.SendOrderEmailStore(storeEmailNodeId, orderInfo);
-							}
+							EmailHelper.SendOrderEmail(storeEmailNodeId, customerEmailNodeId, orderInfo);
 						}
 					}
 					else
@@ -179,15 +161,7 @@ namespace uWebshop.Umbraco.Businesslogic
 						int storeEmailNodeId;
 						int.TryParse(orderInfo.StoreInfo.Store.CancelEmailStore, out storeEmailNodeId);
 
-						if (customerEmailNodeId != 0)
-						{
-							EmailHelper.SendOrderEmailCustomer(customerEmailNodeId, orderInfo);
-						}
-
-						if (storeEmailNodeId != 0)
-						{
-							EmailHelper.SendOrderEmailStore(storeEmailNodeId, orderInfo);
-						}
+						EmailHelper.SendOrderEmail(storeEmailNodeId, customerEmailNodeId, orderInfo);
 					}
 					else
 					{
@@ -204,15 +178,7 @@ namespace uWebshop.Umbraco.Businesslogic
 						int storeEmailNodeId;
 						int.TryParse(orderInfo.StoreInfo.Store.ClosedEmailStore, out storeEmailNodeId);
 
-						if (customerEmailNodeId != 0)
-						{
-							EmailHelper.SendOrderEmailCustomer(customerEmailNodeId, orderInfo);
-						}
-
-						if (storeEmailNodeId != 0)
-						{
-							EmailHelper.SendOrderEmailStore(storeEmailNodeId, orderInfo);
-						}
+						EmailHelper.SendOrderEmail(storeEmailNodeId, customerEmailNodeId, orderInfo);
 					}
 					else
 					{
@@ -228,15 +194,7 @@ namespace uWebshop.Umbraco.Businesslogic
 						int storeEmailNodeId;
 						int.TryParse(orderInfo.StoreInfo.Store.PaymentFailedEmailStore, out storeEmailNodeId);
 
-						if (customerEmailNodeId != 0)
-						{
-							EmailHelper.SendOrderEmailCustomer(customerEmailNodeId, orderInfo);
-						}
-
-						if (storeEmailNodeId != 0)
-						{
-							EmailHelper.SendOrderEmailStore(storeEmailNodeId, orderInfo);
-						}
+						EmailHelper.SendOrderEmail(storeEmailNodeId, customerEmailNodeId, orderInfo);
 					}
 					else
 					{
@@ -254,15 +212,7 @@ namespace uWebshop.Umbraco.Businesslogic
 						int storeEmailNodeId;
 						int.TryParse(orderInfo.StoreInfo.Store.OfflinePaymentEmailStore, out storeEmailNodeId);
 
-						if (customerEmailNodeId != 0)
-						{
-							EmailHelper.SendOrderEmailCustomer(customerEmailNodeId, orderInfo);
-						}
-
-						if (storeEmailNodeId != 0)
-						{
-							EmailHelper.SendOrderEmailStore(storeEmailNodeId, orderInfo);
-						}
+						EmailHelper.SendOrderEmail(storeEmailNodeId, customerEmailNodeId, orderInfo);
 					}
 					else
 					{
@@ -277,16 +227,8 @@ namespace uWebshop.Umbraco.Businesslogic
 						int.TryParse(orderInfo.StoreInfo.Store.PendingEmailCustomer, out customerEmailNodeId);
 						int storeEmailNodeId;
 						int.TryParse(orderInfo.StoreInfo.Store.PendingEmailStore, out storeEmailNodeId);
-						
-						if (customerEmailNodeId != 0)
-						{
-							EmailHelper.SendOrderEmailCustomer(customerEmailNodeId, orderInfo);
-						}
 
-						if (storeEmailNodeId != 0)
-						{
-							EmailHelper.SendOrderEmailStore(storeEmailNodeId, orderInfo);
-						}
+						EmailHelper.SendOrderEmail(storeEmailNodeId, customerEmailNodeId, orderInfo);
 					}
 					else
 					{
@@ -309,16 +251,8 @@ namespace uWebshop.Umbraco.Businesslogic
 						int.TryParse(orderInfo.StoreInfo.Store.OnlinePaymentEmailCustomer, out customerEmailNodeId);
 						int storeEmailNodeId;
 						int.TryParse(orderInfo.StoreInfo.Store.OnlinePaymentEmailStore, out storeEmailNodeId);
-						
-						if (customerEmailNodeId != 0)
-						{
-							EmailHelper.SendOrderEmailCustomer(customerEmailNodeId, orderInfo);
-						}
 
-						if (storeEmailNodeId != 0)
-						{
-							EmailHelper.SendOrderEmailStore(storeEmailNodeId, orderInfo);
-						}
+						EmailHelper.SendOrderEmail(storeEmailNodeId, customerEmailNodeId, orderInfo);
 					}
 					else
 					{
@@ -336,15 +270,7 @@ namespace uWebshop.Umbraco.Businesslogic
 						int storeEmailNodeId;
 						int.TryParse(orderInfo.StoreInfo.Store.TemporaryOutOfStockEmailStore, out storeEmailNodeId);
 
-						if (customerEmailNodeId != 0)
-						{
-							EmailHelper.SendOrderEmailCustomer(customerEmailNodeId, orderInfo);
-						}
-
-						if (storeEmailNodeId != 0)
-						{
-							EmailHelper.SendOrderEmailStore(storeEmailNodeId, orderInfo);
-						}
+						EmailHelper.SendOrderEmail(storeEmailNodeId, customerEmailNodeId, orderInfo);
 					}
 					else
 					{
@@ -360,15 +286,7 @@ namespace uWebshop.Umbraco.Businesslogic
 						int storeEmailNodeId;
 						int.TryParse(orderInfo.StoreInfo.Store.DispatchedEmailStore, out storeEmailNodeId);
 
-						if (customerEmailNodeId != 0)
-						{
-							EmailHelper.SendOrderEmailCustomer(customerEmailNodeId, orderInfo);
-						}
-
-						if (storeEmailNodeId != 0)
-						{
-							EmailHelper.SendOrderEmailStore(storeEmailNodeId, orderInfo);
-						}
+						EmailHelper.SendOrderEmail(storeEmailNodeId, customerEmailNodeId, orderInfo);
 					}
 					else
 					{
@@ -384,14 +302,7 @@ namespace uWebshop.Umbraco.Businesslogic
 						int storeEmailNodeId;
 						int.TryParse(orderInfo.StoreInfo.Store.UndeliverableEmailStore, out storeEmailNodeId);
 
-						if (customerEmailNodeId != 0)
-						{
-							EmailHelper.SendOrderEmailCustomer(customerEmailNodeId, orderInfo);
-						}
-						if (storeEmailNodeId != 0)
-						{
-							EmailHelper.SendOrderEmailStore(storeEmailNodeId, orderInfo);
-						}
+						EmailHelper.SendOrderEmail(storeEmailNodeId, customerEmailNodeId, orderInfo);
 					}
 					else
 					{
@@ -415,15 +326,7 @@ namespace uWebshop.Umbraco.Businesslogic
 						int storeEmailNodeId;
 						int.TryParse(orderInfo.StoreInfo.Store.ReturnedEmailStore, out storeEmailNodeId);
 
-						if (customerEmailNodeId != 0)
-						{
-							EmailHelper.SendOrderEmailCustomer(customerEmailNodeId, orderInfo);
-						}
-
-						if (storeEmailNodeId != 0)
-						{
-							EmailHelper.SendOrderEmailStore(storeEmailNodeId, orderInfo);
-						}
+						EmailHelper.SendOrderEmail(storeEmailNodeId, customerEmailNodeId, orderInfo);
 					}
 					else
 					{

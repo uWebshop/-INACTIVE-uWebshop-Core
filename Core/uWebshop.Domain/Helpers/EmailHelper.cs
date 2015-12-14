@@ -1,17 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Web;
+using System.Web.Mvc;
+using System.Web.Mvc.Razor;
+using System.Web.Routing;
 using System.Web.Security;
 using System.Xml;
 using System.Xml.Linq;
 using uWebshop.Common;
 using uWebshop.Common.Interfaces;
 using uWebshop.Domain.Interfaces;
+using uWebshop.Domain.Model;
+using Umbraco.Core;
+using Umbraco.Web;
+using Umbraco.Web.Macros;
+using Umbraco.Web.Mvc;
 
 namespace uWebshop.Domain.Helpers
 {
@@ -21,174 +30,169 @@ namespace uWebshop.Domain.Helpers
 	public static class EmailHelper
 	{
 		/// <summary>
-		/// Send an order email based on the emailNode and orderinfo
+		/// Renders the output of a view based on a controller viewname and model
 		/// </summary>
-		/// <param name="emailNodeId"></param>
-		/// <param name="orderInfo"></param>
-		/// <param name="parameters"> </param>
-		/// <param name="emailAddress"></param>
-		public static void SendOrderEmailCustomer(int emailNodeId, OrderInfo orderInfo, Dictionary<string, object> parameters = null, string emailAddress = null)
+		/// <param name="controller"></param>
+		/// <param name="viewName"></param>
+		/// <param name="model"></param>
+		/// <returns></returns>
+		public static string RenderPartialViewToString(Controller controller, string viewName, object model)
 		{
-			if (emailNodeId != 0)
+			controller.ViewData.Model = model;
+
+			using (var sw = new StringWriter())
 			{
-				Log.Instance.LogDebug("SendOrderEmailCustomer emailNodeId: " + emailNodeId);
-				Log.Instance.LogDebug(string.Format("SendOrderEmailCustomer orderInfo.UniqueOrderId: {0} orderInfo.OrderNumber: {1}", orderInfo.UniqueOrderId, orderInfo.OrderNumber));
-				var currentCulture = Thread.CurrentThread.CurrentCulture;
-				var currentUICulture = Thread.CurrentThread.CurrentUICulture;
+				var viewResult = ViewEngines.Engines.FindPartialView(controller.ControllerContext, viewName);
+				var viewContext = new ViewContext(controller.ControllerContext, viewResult.View, controller.ViewData,
+					controller.TempData, sw);
+				viewResult.View.Render(viewContext, sw);
 
-				Thread.CurrentThread.CurrentCulture = orderInfo.StoreInfo.CultureInfo;
-				Thread.CurrentThread.CurrentUICulture = orderInfo.StoreInfo.CultureInfo;
-
-				var orderInfoXmlstring = DomainHelper.SerializeObjectToXmlString(orderInfo);
-				var orderInfoXml = new XmlDocument();
-				orderInfoXml.LoadXml(orderInfoXmlstring);
-
-				var email = new Email(emailNodeId);
-
-				if (string.IsNullOrEmpty(email.Template))
-				{
-					Log.Instance.LogWarning("SendOrderEmailCustomer nodeId: " + emailNodeId + " No Template Defined");
-
-					return;
-				}
-
-				var emailTitle = ReplaceStrings(email.Title, orderInfoXml);
-				var emailText = ReplaceStrings(email.Description, orderInfoXml);
-
-				if (parameters == null) parameters = new Dictionary<string, object>();
-				parameters.Add("uniqueOrderId", orderInfo.UniqueOrderId.ToString());
-				parameters.Add("storeAlias", orderInfo.StoreInfo.Alias);
-				parameters.Add("Title", emailTitle);
-				parameters.Add("Description", emailText);
-
-				Log.Instance.LogDebug("SendOrderEmailCustomer email.Template: " + email.Template);
-
-				string body;
-				if (email.Template.EndsWith(".xslt"))
-				{
-					body = IO.Container.Resolve<ICMSApplication>().RenderXsltMacro(email.Template, parameters, orderInfoXml);
-				}
-				else 
-				{
-					if (email.Template.Contains("."))
-					{
-						body = IO.Container.Resolve<ICMSApplication>().RenderMacro(email.Template, email.Id, parameters);
-					}
-					else
-					{
-						Log.Instance.LogWarning("SendOrderEmailCustomer email.Template no valid value: " + email.Template + " no email send");
-						return;
-					}
-				}
-
-				var emailTo = emailAddress ?? OrderHelper.CustomerInformationValue(orderInfo, "customerEmail");
-				Log.Instance.LogDebug("SendOrderEmailCustomer emailTo: " + emailTo);
-				Log.Instance.LogDebug("SendOrderEmailCustomer EmailFrom: " + orderInfo.StoreInfo.Store.EmailAddressFrom);
-				Log.Instance.LogDebug("SendOrderEmailCustomer EmailFromName: " + orderInfo.StoreInfo.Store.EmailAddressFromName);
-				Log.Instance.LogDebug("SendOrderEmailCustomer emailTitle: " + emailTitle);
-				SendMail(orderInfo, emailTo, orderInfo.StoreInfo.Store.EmailAddressFrom, emailTitle, body, orderInfo.StoreInfo.Store.EmailAddressFromName);
-
-				Thread.CurrentThread.CurrentCulture = currentCulture;
-				Thread.CurrentThread.CurrentUICulture = currentUICulture;
+				return sw.GetStringBuilder().ToString();
 			}
-			else
-			{
-				Log.Instance.LogError("SendOrderEmailCustomer: emailNodeId == 0");
-			}
+
 		}
 
 		/// <summary>
-		/// Sends the order email store.
+		/// Send order emails
 		/// </summary>
-		/// <param name="emailNodeId">The email node unique identifier.</param>
-		/// <param name="orderInfo">The order information.</param>
-		/// <param name="parameters">The XSLT parameters.</param>
-		public static void SendOrderEmailStore(int emailNodeId, OrderInfo orderInfo, Dictionary<string, object> parameters = null)
+		/// <param name="storeEmailContentId"></param>
+		/// <param name="customerEmailContentId"></param>
+		/// <param name="orderInfo"></param>
+		/// <param name="emailAddress"></param>
+		/// <param name="parameters"></param>
+		public static void SendOrderEmail(int storeEmailContentId, int customerEmailContentId, OrderInfo orderInfo, string emailAddress = null, Dictionary<string, object> parameters = null)
 		{
-			if (emailNodeId != 0)
+			// set the culture for this request to the store culture, so dictionary items are rendered properly
+			var currentCulture = Thread.CurrentThread.CurrentCulture;
+			var currentUICulture = Thread.CurrentThread.CurrentUICulture;
+			Thread.CurrentThread.CurrentCulture = orderInfo.StoreInfo.CultureInfo;
+			Thread.CurrentThread.CurrentUICulture = orderInfo.StoreInfo.CultureInfo;
+
+			string emailBody;
+			var receivers = new List<string>();
+			if (storeEmailContentId > 0)
 			{
-				Log.Instance.LogDebug("SendOrderEmailStore emailNodeId: " + emailNodeId);
-				Log.Instance.LogDebug(string.Format("SendOrderEmailStore orderInfo.UniqueOrderId: {0} orderInfo.OrderNumber: {1}", orderInfo.UniqueOrderId, orderInfo.OrderNumber));
-				CultureInfo currentCulture = Thread.CurrentThread.CurrentCulture;
-				CultureInfo currentUICulture = Thread.CurrentThread.CurrentUICulture;
-
-				Thread.CurrentThread.CurrentCulture = orderInfo.StoreInfo.CultureInfo;
-				Thread.CurrentThread.CurrentUICulture = orderInfo.StoreInfo.CultureInfo;
-
-
-				string orderInfoXmlstring = DomainHelper.SerializeObjectToXmlString(orderInfo);
-				var orderInfoXml = new XmlDocument();
-				orderInfoXml.LoadXml(orderInfoXmlstring);
-
-				var email = new Email(emailNodeId);
-
-				if (string.IsNullOrEmpty(email.Template))
-				{
-					Log.Instance.LogWarning("SendOrderEmailCustomer nodeId: " + emailNodeId + " no valid Tempalte value: " + email.Template + " : no email send");
-
-					return;
-				}
-
-				string emailTitle = ReplaceStrings(email.Title, orderInfoXml);
-				string emailText = ReplaceStrings(email.Description, orderInfoXml);
-
-				if (parameters == null) parameters = new Dictionary<string, object>();
-				parameters.Add("uniqueOrderId", orderInfo.UniqueOrderId.ToString());
-				parameters.Add("storeAlias", orderInfo.StoreInfo.Alias);
-				parameters.Add("Title", emailTitle);
-				parameters.Add("Description", emailText);
-
-				string body;
-				if (email.Template.EndsWith(".xslt"))
-				{
-					body = IO.Container.Resolve<ICMSApplication>().RenderXsltMacro(email.Template, parameters, orderInfoXml);
-				}
-				else
-				{
-					if (email.Template.Contains("."))
-					{
-						body = IO.Container.Resolve<ICMSApplication>().RenderMacro(email.Template, email.Id, parameters);
-					}
-					else
-					{
-						Log.Instance.LogWarning("SendOrderEmailStore nodeId: " + emailNodeId + " no valid Tempalte value: " + email.Template + " : no email send");
-						return;
-					}
-				}
+				var storeEmail = new Email(storeEmailContentId);
+				var model = GenerateEmailModel(storeEmail, orderInfo);
+				emailBody = RenderEmailBody(model, storeEmail, parameters);
 
 				var emailTo = orderInfo.StoreInfo.Store.EmailAddressTo;
 
 				if (!emailTo.Contains(";"))
 				{
-					Log.Instance.LogDebug("SendOrderEmailStore emailTo: " + emailTo);
-					Log.Instance.LogDebug("SendOrderEmailStore EmailFrom: " + orderInfo.StoreInfo.Store.EmailAddressFrom);
-					Log.Instance.LogDebug("SendOrderEmailStore EmailFromName: " + orderInfo.StoreInfo.Store.EmailAddressFromName);
-					Log.Instance.LogDebug("SendOrderEmailStore emailTitle: " + emailTitle);
-					SendMail(orderInfo, emailTo, orderInfo.StoreInfo.Store.EmailAddressFrom, emailTitle, body, orderInfo.StoreInfo.Store.EmailAddressFromName);
+					receivers.Add(emailTo);
 				}
 				else
 				{
-					string[] emailToArray = emailTo.Split(';');
-
-					foreach (var emailToArrayValue in emailToArray)
-					{
-						Log.Instance.LogDebug("SendOrderEmailStore Multiple emailTo: " + emailToArrayValue.Trim());
-						Log.Instance.LogDebug("SendOrderEmailStore Multiple EmailFrom: " + orderInfo.StoreInfo.Store.EmailAddressFrom);
-						Log.Instance.LogDebug("SendOrderEmailStore Multiple EmailFromName: " + orderInfo.StoreInfo.Store.EmailAddressFromName);
-						Log.Instance.LogDebug("SendOrderEmailStore Multiple emailTitle: " + emailTitle);
-						SendMail(orderInfo, emailToArrayValue.Trim(), orderInfo.StoreInfo.Store.EmailAddressFrom, emailTitle, body, orderInfo.StoreInfo.Store.EmailAddressFromName);
-					}
+					// store email address field can contain a ; to sent to muliple addresses
+					var emailToArray = emailTo.Split(';');
+					receivers.AddRange(emailToArray);
 				}
 
-				Thread.CurrentThread.CurrentCulture = currentCulture;
-				Thread.CurrentThread.CurrentUICulture = currentUICulture;
+				foreach (var receiver in receivers)
+				{
+					SendMail(orderInfo, receiver, orderInfo.StoreInfo.Store.EmailAddressFrom, model.Title, emailBody,
+						orderInfo.StoreInfo.Store.EmailAddressFromName);
+				}
 			}
-			else
+
+			if (customerEmailContentId > 0)
 			{
-				Log.Instance.LogError("SendOrderEmailStore: emailNodeId == 0");
+				var customerEmail = new Email(customerEmailContentId);
+				var model = GenerateEmailModel(customerEmail, orderInfo);
+				emailBody = RenderEmailBody(model, customerEmail, parameters);
+				receivers.Add(emailAddress ?? OrderHelper.CustomerInformationValue(orderInfo, "customerEmail"));
+
+				foreach (var receiver in receivers)
+				{
+					SendMail(orderInfo, receiver, orderInfo.StoreInfo.Store.EmailAddressFrom, model.Title, emailBody,
+						orderInfo.StoreInfo.Store.EmailAddressFromName);
+				}
 			}
+			
+			// change the culture back to what it was
+			Thread.CurrentThread.CurrentCulture = currentCulture;
+			Thread.CurrentThread.CurrentUICulture = currentUICulture;
 		}
 
+		/// <summary>
+		/// Creates an EmailRenderModel based on EmailContentId and the OrderInfo Object
+		/// </summary>
+		/// <param name="email"></param>
+		/// <param name="orderInfo"></param>
+		/// <returns></returns>
+		public static EmailRenderModel GenerateEmailModel(Email email, OrderInfo orderInfo)
+		{
+			var orderInfoXmlstring = DomainHelper.SerializeObjectToXmlString(orderInfo);
+			var orderInfoXml = new XmlDocument();
+			orderInfoXml.LoadXml(orderInfoXmlstring);
+			
+			var IOrder = API.Orders.GetOrder(orderInfo.UniqueOrderId);
+
+			return new EmailRenderModel
+			{
+				Id = email.Id,
+				Order = IOrder,
+				OrderInfo = orderInfo,
+				Title = ReplaceStrings(email.Title, orderInfoXml),
+				Description = ReplaceStrings(email.Description, orderInfoXml)
+			};
+		}
+
+		/// <summary>
+		/// Renders de body of the email based on xslt or razor.
+		/// </summary>
+		/// <param name="model"></param>
+		/// <param name="email"></param>
+		/// <param name="parameters"></param>
+		/// <returns></returns>
+		public static string RenderEmailBody(EmailRenderModel model, Email email, Dictionary<string, object> parameters = null)
+		{
+			// legacy email template picker
+			if (!string.IsNullOrEmpty(email.Template))
+			{
+				if (parameters == null) parameters = new Dictionary<string, object>();
+				parameters.Add("Order", model.OrderInfo);
+				parameters.Add("uniqueOrderId", model.Order.UniqueId.ToString());
+				parameters.Add("storeAlias", model.Order.Store.Alias);
+				parameters.Add("Title", model.Title);
+				parameters.Add("Description", model.Description);
+
+				if (email.Template.EndsWith(".xslt"))
+				{
+					// generate XML from orderInfo
+					var orderInfoXmlstring = DomainHelper.SerializeObjectToXmlString(model.OrderInfo);
+					var orderInfoXml = new XmlDocument();
+					orderInfoXml.LoadXml(orderInfoXmlstring);
+					return IO.Container.Resolve<ICMSApplication>().RenderXsltMacro(email.Template, parameters, orderInfoXml);
+				}
+				if (email.Template.EndsWith(".cshtml"))
+				{
+					return IO.Container.Resolve<ICMSApplication>().RenderMacro(email.Template, email.Id, parameters);
+				}
+			}
+
+			//todo: place in Umbraco project instead of here
+			var umbracoContext = UmbracoContext.Current;
+			var helper = new UmbracoHelper(umbracoContext);
+			var emailContent = helper.TypedContent(email.Id);
+			var templateAlias = emailContent.GetTemplateAlias();
+			var controller = new RenderEmailController();
+			var routeData = new RouteData();
+			routeData.Values.Add("controller", "RenderEmailController");
+			routeData.Values.Add("action", "Index");
+
+			controller.ControllerContext = new ControllerContext(umbracoContext.HttpContext, routeData, controller);
+
+			if (!string.IsNullOrEmpty(templateAlias))
+			{
+				return RenderPartialViewToString(controller, templateAlias, email);
+			}
+
+			Log.Instance.LogError("No template defined for email with Id: " + model.Id);
+			return string.Empty;
+		}
+	
 		/// <summary>
 		/// Sends the member email customer.
 		/// </summary>
