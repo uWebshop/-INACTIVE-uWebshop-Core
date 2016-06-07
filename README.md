@@ -1,3 +1,5 @@
+**Important notice: This library is deprecated and not actively developed anymore.**
+
 uWebshop-Releases
 =================
 
