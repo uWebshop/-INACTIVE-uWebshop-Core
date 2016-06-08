@@ -37,6 +37,9 @@ namespace uWebshop.Umbraco.Repositories
 			PaymentProviderAmountType type;
 			entity.AmountType = Enum.TryParse(paymentProviderAmountType, out type) ? type : PaymentProviderAmountType.Amount;
 
+            Decimal perc;
+            entity.Percentage = Decimal.TryParse(StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.percentage, localization, fields), out perc) ? perc : 0.00m;
+
 			entity.PriceInCents = StoreHelper.GetLocalizedPrice(_aliasses.price, localization, fields);
 
 			var testMode = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary("testMode", localization, fields);

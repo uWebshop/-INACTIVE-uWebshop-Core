@@ -48,15 +48,23 @@ namespace uWebshop.Domain.Interfaces
 		/// The title.
 		/// </value>
 		string Name { get; }
-		/// <summary>
-		/// Gets the amount.
-		/// </summary>
-		/// <value>
-		/// The amount.
-		/// </value>
-		IVatPrice Amount { get; }
+        /// <summary>
+        /// Gets the amount.
+        /// </summary>
+        /// <value>
+        /// The amount.
+        /// </value>
+        IVatPrice Amount { get; }
 
-		/// <summary>
+        /// <summary>
+        /// Gets the percentage.
+        /// </summary>
+        /// <value>
+        /// The percentage.
+        /// </value>
+        decimal Percentage { get; }
+
+        /// <summary>
 		/// Gets the image.
 		/// </summary>
 		/// <value>

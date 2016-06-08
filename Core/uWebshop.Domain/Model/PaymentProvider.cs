@@ -232,7 +232,7 @@ namespace uWebshop.Domain
 
 							paymentProviderMethodList.Remove(paymentMethodNodeItem);
 
-							return new PaymentProviderMethod {Id = paymentProviderMethod.Id, Title = paymentMethodNodeItem.Title, Image = paymentMethodNodeItem.Image, ProviderName = Title, Disabled = paymentMethodNodeItem.Disabled, PriceInCents = StoreHelper.LocalizePrice(paymentMethodNodeItem.PriceInCents, Localization), Vat = paymentMethodNodeItem.Vat, AmountType = paymentMethodNodeItem.AmountType};
+							return new PaymentProviderMethod {Id = paymentProviderMethod.Id, Title = paymentMethodNodeItem.Title, Image = paymentMethodNodeItem.Image, ProviderName = Title, Disabled = paymentMethodNodeItem.Disabled, PriceInCents = StoreHelper.LocalizePrice(paymentMethodNodeItem.PriceInCents, Localization), Vat = paymentMethodNodeItem.Vat, AmountType = paymentMethodNodeItem.AmountType, Percentage = paymentMethodNodeItem.Percentage};
 						}).ToList();
 
 					foreach (var item in removeListProviderMethods)

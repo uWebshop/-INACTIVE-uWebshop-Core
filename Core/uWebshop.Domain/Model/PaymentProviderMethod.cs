@@ -150,16 +150,26 @@ namespace uWebshop.Domain
 		[ContentPropertyType(Alias = "vat", DataType = DataType.VatPicker, Tab = ContentTypeTab.Price, Name = "#VAT", Description = "#VatDescription")]
 		public decimal Vat { get; set; }
 
-		/// <summary>
-		/// Gets the type to calculate the payment amount for the order.
-		/// </summary>
-		/// <value>
-		/// The type to calculate the payment amount for the order.
-		/// </value>
-		[ContentPropertyType(Alias = "amountType", DataType = DataType.PaymentProviderAmountType, Tab = ContentTypeTab.Price, Name = "#AmountType", Description = "#AmountTypeDescription")]
-		public PaymentProviderAmountType AmountType { get; set; }
+        /// <summary>
+        /// Gets the percentage to calculate the payment amount for the order.
+        /// </summary>
+        /// <value>
+        /// The percentage to calculate the payment amount for the order.
+        /// </value>
+        [DataMember]
+        [ContentPropertyType(Alias = "percentage", DataType = DataType.String, Tab = ContentTypeTab.Price, Name = "#Percentage", Description = "#PercentageDescription")]
+        public decimal Percentage { get; set; }
 
-		/// <summary>
+        /// <summary>
+        /// Gets the type to calculate the payment amount for the order.
+        /// </summary>
+        /// <value>
+        /// The type to calculate the payment amount for the order.
+        /// </value>
+        [ContentPropertyType(Alias = "amountType", DataType = DataType.PaymentProviderAmountType, Tab = ContentTypeTab.Price, Name = "#AmountType", Description = "#AmountTypeDescription")]
+        public PaymentProviderAmountType AmountType { get; set; }
+
+        /// <summary>
 		/// Gets or sets the price with vat.
 		/// </summary>
 		/// <value>

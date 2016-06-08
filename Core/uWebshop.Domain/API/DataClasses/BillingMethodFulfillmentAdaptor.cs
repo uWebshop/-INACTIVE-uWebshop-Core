@@ -25,6 +25,7 @@ namespace uWebshop.API
 			Title = paymentProviderMethod.Title;
 			Description = paymentProviderMethod.Description;
 			Disabled = paymentProviderMethod.Disabled;
+            Percentage = paymentProviderMethod.Percentage;
 		}
 
 		[DataMember]
@@ -52,6 +53,8 @@ namespace uWebshop.API
 			}
 			set { }
 		}
+
+        public decimal Percentage { get; set; }
 
 		[IgnoreDataMember]
 		public IVatPrice Amount
