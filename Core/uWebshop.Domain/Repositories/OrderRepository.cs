@@ -41,7 +41,7 @@ namespace uWebshop.Domain.Repositories
 		{
 			var orderInfoData = uWebshopOrders.GetOrderInfo(uniqueOrderId);
 
-			return orderInfoData != null ? OrderInfo.CreateOrderInfoFromOrderData(orderInfoData) : null;
+            return orderInfoData != null ? OrderInfo.CreateOrderInfoFromOrderData(orderInfoData) : null;
 		}
 
 		public int DetermineLastOrderId()
@@ -79,7 +79,12 @@ namespace uWebshop.Domain.Repositories
 			return uWebshopOrders.GetOrdersFromCustomer(customerUsername, includeIncomplete).Select(OrderInfo.CreateOrderInfoFromOrderData);
 		}
 
-		public IEnumerable<OrderInfo> GetWishlistsFromCustomer(int customerId, string storeAlias = null)
+        public IEnumerable<OrderInfo> GetOrdersFromCustomerOrEmail(string customerUsername, string storeAlias = null, bool includeIncomplete = false)
+        {
+            return uWebshopOrders.GetOrdersFromCustomerOrEmail(customerUsername, includeIncomplete).Select(OrderInfo.CreateOrderInfoFromOrderData);
+        }
+
+        public IEnumerable<OrderInfo> GetWishlistsFromCustomer(int customerId, string storeAlias = null)
 		{
 			return uWebshopOrders.GetWishlistsFromCustomer(customerId).Select(OrderInfo.CreateOrderInfoFromOrderData);
 		}

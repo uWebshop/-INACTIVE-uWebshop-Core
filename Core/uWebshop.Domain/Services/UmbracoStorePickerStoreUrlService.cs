@@ -47,7 +47,7 @@ namespace uWebshop.Domain.Services
 				var rootHasDomain = false;
 				do
 				{
-					var domains = _cmsApplication.GetDomainsForNodeId(node.Id);
+					var domains = _cmsApplication.GetDomainsForNodeId(node.Id).Where(x => !x.Contains("*"));
 					if (domains.Any())
 					{
 						foreach (var domain in domains)

@@ -28,7 +28,7 @@ namespace uWebshop.Umbraco.Repositories
 			entity.Title = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.title, localization, fields) ?? string.Empty;
 			entity.Description = IO.Container.Resolve<ICMSApplication>().ParseInternalLinks(StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.description, localization, fields)) ?? string.Empty;
 
-			var testMode = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.testMode, localization, fields);
+			var testMode = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.testMode, localization, fields).ToLower();
 			if (testMode == "default" || testMode == string.Empty)
 			{
 				entity.TestMode = store.EnableTestmode;

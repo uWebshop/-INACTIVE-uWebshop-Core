@@ -31,7 +31,7 @@ namespace uWebshop.Domain
 		/// </summary>
 		public static string NodeAlias;
 
-		internal static List<Category> GetAllRootCategories(string storeAlias = null, string currencyCode = null)
+		internal static IEnumerable<Category> GetAllRootCategories(string storeAlias = null, string currencyCode = null)
 		{
 			return IO.Container.Resolve<ICategoryService>().GetAllRootCategories(StoreHelper.GetLocalizationOrCurrent(storeAlias, currencyCode));
 		}

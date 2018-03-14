@@ -27,7 +27,9 @@ namespace uWebshop.API
 		public bool Required { get { return _source.Required; } }
 		[JsonProperty]
 		public int Id { get { return _source.Id; } }
-		[JsonProperty]
+        [JsonProperty]
+        public Guid Key { get { return _source.Key; } }
+        [JsonProperty]
 		public string TypeAlias { get { return _source.TypeAlias; } }
 		[JsonProperty]
 		public bool Disabled { get { return _source.Disabled; } }

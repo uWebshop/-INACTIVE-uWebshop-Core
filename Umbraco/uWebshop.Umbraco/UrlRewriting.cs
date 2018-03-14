@@ -80,7 +80,7 @@ namespace uWebshop.ActionHandlers
 
 			try
 			{
-				var rewritingService = IO.Container.Resolve<IUrlRewritingService>();
+                var rewritingService = IO.Container.Resolve<IUrlRewritingService>();
 				rewritingService.RedirectPermanentOldCatalogUrls();
 				rewritingService.Rewrite();
 			}

@@ -40,6 +40,11 @@ namespace uWebshop.Domain.Services
 				return storeCulture;
 			}
 
+            if (localization != null && string.IsNullOrEmpty(localization.CurrencyCode))
+            {
+                Log.Instance.LogWarning("GetCurrencyCulture CurrencyCode is Empty. Debug. Remove later. Store: " + localization.StoreAlias);
+            }
+
 			result = _defaultCurrencyCultureService.GetCultureForCurrency(localization.CurrencyCode) ?? CultureInfo.GetCultures(CultureTypes.SpecificCultures).FirstOrDefault(c => new RegionInfo(c.LCID).ISOCurrencySymbol == localization.CurrencyCode);
 			if (result == null)
 			{

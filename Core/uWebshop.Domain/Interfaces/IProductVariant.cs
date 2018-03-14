@@ -88,13 +88,21 @@ namespace uWebshop.Domain.Interfaces
 		/// </value>
 		string Description { get; }
 
-		/// <summary>
-		/// Length of the product
-		/// </summary>
-		/// <value>
-		/// The length.
-		/// </value>
-		double Length { get; }
+        /// <summary>
+        /// Color of the product
+        /// </summary>
+        /// <value>
+        /// The color.
+        /// </value>
+        string Color();
+
+        /// <summary>
+        /// Length of the product
+        /// </summary>
+        /// <value>
+        /// The length.
+        /// </value>
+        double Length { get; }
 
 		/// <summary>
 		/// Width of the product
@@ -186,5 +194,12 @@ namespace uWebshop.Domain.Interfaces
 		/// <param name="propertyAlias">The property alias.</param>
 		/// <returns></returns>
 		string GetProperty(string propertyAlias);
-	}
+
+        /// <summary>
+        /// Gets the propertyValue.
+        /// </summary>
+        /// <param name="propertyAlias">The property alias.</param>
+        /// <returns></returns>
+        T GetPropertyValue<T>(string propertyAlias);
+    }
 }

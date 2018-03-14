@@ -247,7 +247,9 @@ namespace uWebshop.Umbraco.Businesslogic
 					Log.Instance.LogDebug("AfterOrderStatusChanged ReadyForDispatch before send emails");
 					if (e.SendEmails)
 					{
-						int customerEmailNodeId;
+                        Log.Instance.LogDebug("AfterOrderStatusChanged ReadyForDispatch e.SendEmails == true");
+
+                        int customerEmailNodeId;
 						int.TryParse(orderInfo.StoreInfo.Store.OnlinePaymentEmailCustomer, out customerEmailNodeId);
 						int storeEmailNodeId;
 						int.TryParse(orderInfo.StoreInfo.Store.OnlinePaymentEmailStore, out storeEmailNodeId);

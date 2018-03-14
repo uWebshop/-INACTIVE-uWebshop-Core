@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
+using Umbraco.Core.Models;
+using Umbraco.Web;
 using uWebshop.API;
 using uWebshop.Common;
 using uWebshop.DataAccess;
@@ -139,13 +142,59 @@ namespace uWebshop.Domain
 			set { }
 		}
 
-		/// <summary>
-		/// Gets or sets the original price including product price with vat in cents.
-		/// </summary>
-		/// <value>
-		/// The original price including product price with vat in cents.
-		/// </value>
-		[DataMember]
+        public string Color()
+        {
+
+            var colorObject = GetPropertyValue<object>("color");
+
+            if (colorObject.GetType().Name == "XmlPublishedContent")
+            {
+                var colorNode = (IPublishedContent)colorObject;
+
+                if (colorNode != null)
+                {
+                    var propConfig = ConfigurationManager.AppSettings["uwbsVariantColorPropertyAlias"];
+                    var propertyAlias = propConfig != null && !string.IsNullOrEmpty(propConfig) ? propConfig : "name";
+                    var colorNameProp = colorNode.GetPropertyValue<string>(propertyAlias);
+                    string colorName = colorNameProp != null && !string.IsNullOrEmpty(colorNameProp) ? colorNameProp : colorNode.Name;
+
+                    return colorName;
+                }
+
+            }
+            else
+            {
+                int _colorId = 0;
+
+                if (int.TryParse(Convert.ToString(colorObject), out _colorId))
+                {
+                    var colorNode = IO.Container.Resolve<ICMSContentService>().GetReadonlyById(_colorId);
+
+                    if (colorNode != null)
+                    {
+                        var propConfig = ConfigurationManager.AppSettings["uwbsVariantColorPropertyAlias"];
+                        var propertyAlias = propConfig != null && !string.IsNullOrEmpty(propConfig) ? propConfig : "name";
+                        var colorNameProp = colorNode.GetProperty(propertyAlias);
+                        string colorName = colorNameProp != null && !string.IsNullOrEmpty(colorNameProp.Value) ? colorNameProp.Value : colorNode.Name;
+
+                        return colorName;
+                    }
+
+                }
+            }
+
+            return string.Empty;
+
+        }
+
+
+        /// <summary>
+        /// Gets or sets the original price including product price with vat in cents.
+        /// </summary>
+        /// <value>
+        /// The original price including product price with vat in cents.
+        /// </value>
+        [DataMember]
 		public int OriginalPriceIncludingProductPriceWithVatInCents
 		{
 			get { return Product.PricesIncludingVat ? OriginalPriceIncludingProductPriceInCents : VatCalculator.WithVat(OriginalPriceIncludingProductPriceInCents, Product.Vat); }
@@ -585,17 +634,17 @@ namespace uWebshop.Domain
 		[ContentPropertyType(Alias = "disable", DataType = DataType.TrueFalse, Tab = ContentTypeTab.Global, Name = "#Disable", Description = "#DisableDescription", Mandatory = false, SortOrder = 5)]
 		public override bool Disabled { get; set; }
 
-		#endregion
+        #endregion
 
-		#region details tab
+        #region details tab
 
-		/// <summary>
-		/// Gets the long description of the content
-		/// </summary>
-		/// <value>
-		/// The description.
-		/// </value>
-		[DataMember]
+        /// <summary>
+        /// Gets the long description of the content
+        /// </summary>
+        /// <value>
+        /// The description.
+        /// </value>
+        [DataMember]
 		[ContentPropertyType(Alias = "description", DataType = DataType.RichText, Tab = ContentTypeTab.Details, Name = "#Description", Description = "#DescriptionDescription", Mandatory = false, SortOrder = 6)]
 		public string Description { get; set; }
 
@@ -708,6 +757,7 @@ namespace uWebshop.Domain
 			set { }
 		}
 
+
 		/// <summary>
 		/// Gets the number of times this ProductVariant is ordered
 		/// </summary>
@@ -764,6 +814,26 @@ namespace uWebshop.Domain
 			return string.Empty;
 		}
 
-		#endregion
-	}
+        public T GetPropertyValue<T>(string propertyAlias)
+        {
+            if (!string.IsNullOrEmpty(propertyAlias))
+            {
+                var helper = new UmbracoHelper(UmbracoContext.Current);
+
+                var node = helper.TypedContent(Id);
+
+                if (node != null && node.HasProperty(propertyAlias))
+                {
+                    var property = node.GetProperty(propertyAlias);
+
+                    return property == null ? default(T) : (T)property.Value;
+                }
+
+            }
+
+            return default(T);
+        }
+
+        #endregion
+    }
 }

@@ -23,11 +23,17 @@ namespace uWebshop.Common.Interfaces
 		/// <param name="message">The message.</param>
 		void LogWarning(string message);
 
-		/// <summary>
-		/// Logs the message when debug logging enabled.
-		/// </summary>
-		/// <param name="message">The message.</param>
-		void LogDebug(string message);
+        /// <summary>
+        /// Logs an info.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        void LogInfo(string message);
+
+        /// <summary>
+        /// Logs the message when debug logging enabled.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        void LogDebug(string message);
 
 		// voor dev gebruik
 	}

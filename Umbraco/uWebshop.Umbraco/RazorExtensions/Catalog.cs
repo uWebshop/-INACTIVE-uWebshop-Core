@@ -68,7 +68,7 @@ namespace uWebshop.RazorExtensions
 		[Obsolete("Use AllRootCategories")]
 		[Browsable(false)]
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public static List<Category> GetAllRootCategories(string storeAlias = null)
+		public static IEnumerable<Category> GetAllRootCategories(string storeAlias = null)
 		{
 			return Domain.Catalog.GetAllRootCategories(storeAlias);
 		}

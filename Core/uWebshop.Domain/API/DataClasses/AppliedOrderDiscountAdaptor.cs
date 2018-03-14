@@ -23,18 +23,25 @@ namespace uWebshop.API
 			_order = order;
 		}
 
-		[IgnoreDataMember]
-		public IVatPrice AmountForOrder
-		{
-			get
-			{
-				// todo: test
-				var applicableOrderLines = !_discount.AffectedOrderlines.Any() ? _order.OrderLines : _order.OrderLines.Where(line => _discount.AffectedOrderlines.Contains(line.ProductInfo.Id) || _discount.AffectedOrderlines.Contains(line.ProductInfo.ProductVariants.Select(v => v.Id).FirstOrDefault())).ToList();
-				var weightedAverageVat = applicableOrderLines.Sum(line => line.AmountInCents * line.ProductInfo.Vat) / applicableOrderLines.Sum(line => line.AmountInCents);
-				return Price.CreateSimplePrice(IO.Container.Resolve<IDiscountCalculationService>().DiscountAmountForOrder(_discount, _order), _order.PricesAreIncludingVAT, weightedAverageVat, _order.Localization);
-			}
-		}
-		[DataMember(Name = "AmountForOrder")]
+        [IgnoreDataMember]
+        public IVatPrice AmountForOrder
+        {
+            get
+            {
+                // todo: test
+                var applicableOrderLines = !_discount.AffectedOrderlines.Any() ? _order.OrderLines : _order.OrderLines.Where(line => _discount.AffectedOrderlines.Contains(line.ProductInfo.Id) || _discount.AffectedOrderlines.Contains(line.ProductInfo.ProductVariants.Select(v => v.Id).FirstOrDefault())).ToList();
+                decimal weightedAverageVat = 0;
+
+                if (applicableOrderLines.Sum(line => line.AmountInCents) > 0)
+                {
+                    weightedAverageVat = applicableOrderLines.Sum(line => line.AmountInCents * line.ProductInfo.Vat) / applicableOrderLines.Sum(line => line.AmountInCents);
+                }
+
+                return Price.CreateSimplePrice(IO.Container.Resolve<IDiscountCalculationService>().DiscountAmountForOrder(_discount, _order), _order.PricesAreIncludingVAT, weightedAverageVat, _order.Localization);
+            }
+        }
+
+        [DataMember(Name = "AmountForOrder")]
 		[JsonProperty(PropertyName = "AmountForOrder")]
 		[Browsable(false)]
 		[EditorBrowsable(EditorBrowsableState.Never)]

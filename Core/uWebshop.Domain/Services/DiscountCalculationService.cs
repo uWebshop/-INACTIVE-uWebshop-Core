@@ -42,6 +42,7 @@ namespace uWebshop.Domain.Services
 				return 0;
 			}
 
+            // If order is not confirmed, and the discount uses coupons, and there are coupons left, determine if the user has a matching coupon code
 			if (orderInfo.IsNotConfirmed())
 			{
 				var coupons = _couponCodeService.GetAllForDiscount(discount.Id);
@@ -53,6 +54,7 @@ namespace uWebshop.Domain.Services
 				}
 			}
 
+            // If any groups have been chosen for the coupon, verify user is a member of given groups
 			var authenticationProvider = IO.Container.Resolve<IAuthenticationProvider>();
 
 			if (discount.MemberGroups.Any() && !discount.MemberGroups.Intersect(authenticationProvider.RolesForCurrentUser).Any())
@@ -69,16 +71,21 @@ namespace uWebshop.Domain.Services
 					return 0;
 				}
 			}
-			
-			var applicableOrderLines = !discount.AffectedOrderlines.Any() ? orderInfo.OrderLines : _orderService.GetApplicableOrderLines(orderInfo, discount.AffectedOrderlines);
 
-			if (discount.AffectedProductTags != null && discount.AffectedProductTags.Any())
-			{
-				applicableOrderLines = applicableOrderLines.Where(line => line.ProductInfo.Tags.Intersect(discount.AffectedProductTags).Any()).ToList();
-			}
-			var isSellableUnitDiscount = discount.AffectedOrderlines.Any() || (discount.AffectedProductTags != null && discount.AffectedProductTags.Any());
+			var applicableOrderLines = discount.AffectedOrderlines.Any() ? _orderService.GetApplicableOrderLines(orderInfo, discount.AffectedOrderlines) : orderInfo.OrderLines;
 
-			var orderSellableUnits = new List<SellableUnit>();
+            //if (discount.AffectedProductTags != null && discount.AffectedProductTags.Any())
+            //{
+            //Log.Instance.LogDebug("discount.AffectedProductTags: " + discount.AffectedProductTags.Count() + " First:" + discount.AffectedProductTags.FirstOrDefault());
+
+            //applicableOrderLines = applicableOrderLines.Where(line => line.ProductInfo.Tags.Intersect(discount.AffectedProductTags).Any()).ToList();
+            //}
+
+            //var isSellableUnitDiscount = discount.AffectedOrderlines.Any() || (discount.AffectedProductTags != null && discount.AffectedProductTags.Any());
+
+            var isSellableUnitDiscount = discount.AffectedOrderlines.Any();
+
+            var orderSellableUnits = new List<SellableUnit>();
 			foreach (var line in applicableOrderLines)
 				//for (var i = 0; i < line.ProductInfo.ItemCount; i++)
 					orderSellableUnits.AddRange(line.SellableUnits); // maak een lijst met de prijzen van alle (losse) items van de order
@@ -92,8 +99,10 @@ namespace uWebshop.Domain.Services
 			var timesApplicable = 1;
 			if (discount.Condition == DiscountOrderCondition.None)
 			{
+                
 				maximumDiscountableAmount = applicableOrderLines.Sum(orderline => orderline.AmountInCents - (orderline.GetOriginalAmount(false, true) -  orderline.GetOriginalAmount(true, true)));
-				timesApplicable = applicableOrderLines.Sum(orderLine => orderLine.ProductInfo.ItemCount.GetValueOrDefault(1));
+
+                timesApplicable = applicableOrderLines.Sum(orderLine => orderLine.ProductInfo.ItemCount.GetValueOrDefault(1));
 			}
 			else if (discount.Condition == DiscountOrderCondition.OnTheXthItem && discount.NumberOfItemsCondition > 0)
 			{
@@ -147,7 +156,7 @@ namespace uWebshop.Domain.Services
 				// wanneer SellableUnit/OrderLine/Order
 				if (applyDiscountEffects)
 				{
-					var percentageDiscountEffect = new PercentageDiscountEffect {Percentage = rangedDiscountValue/10000m};
+                    var percentageDiscountEffect = new PercentageDiscountEffect {Percentage = rangedDiscountValue/10000m};
 					if (isSellableUnitDiscount)
 					{
 						foreach (var su in applicableSellableUnits)
@@ -160,8 +169,14 @@ namespace uWebshop.Domain.Services
 						orderInfo.OrderDiscountEffects.AddEffect(percentageDiscountEffect);
 					}
 				}
-				return DiscountHelper.PercentageCalculation(rangedDiscountValue, maximumDiscountableAmount);
-			}
+
+               
+
+                var totalPerc = DiscountHelper.PercentageCalculation(rangedDiscountValue, maximumDiscountableAmount);
+
+                return totalPerc;
+
+            }
 			if (discount.DiscountType == DiscountType.NewPrice)
 			{
 				if (applyDiscountEffects)

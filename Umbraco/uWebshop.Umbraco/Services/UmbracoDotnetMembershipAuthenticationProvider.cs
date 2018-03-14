@@ -2,6 +2,8 @@
 using System.Web.Security;
 using uWebshop.Common.Interfaces;
 using umbraco.cms.businesslogic.member;
+using System.Web;
+using Umbraco.Core;
 
 namespace uWebshop.Umbraco.Services
 {
@@ -11,15 +13,12 @@ namespace uWebshop.Umbraco.Services
 		{
 			get
 			{
-				var umbracoMember = Member.GetCurrentMember();
-				if (umbracoMember != null)
+
+				if (HttpContext.Current.User.Identity.IsAuthenticated)
 				{
-					var user = Membership.GetUser(umbracoMember.LoginName);
-					if (user != null)
-					{
-						return Roles.GetRolesForUser(user.UserName);
-					}
+					return Roles.GetRolesForUser(HttpContext.Current.User.Identity.Name);
 				}
+				
 				return new string[] {};
 			}
 		}
@@ -28,9 +27,9 @@ namespace uWebshop.Umbraco.Services
 		{
 			get
 			{
-				var umbracoMember = Member.GetCurrentMember();
+                var username = HttpContext.Current.User.Identity.Name;
 
-				return umbracoMember != null ? umbracoMember.LoginName : null;
+                return !string.IsNullOrEmpty(username) ? username : null;
 			}
 		}
 	}

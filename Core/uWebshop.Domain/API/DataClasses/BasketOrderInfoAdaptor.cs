@@ -84,7 +84,7 @@ namespace uWebshop.API
 
 		[DataMember]
 		public IEnumerable<string> UsedCouponCodes { get { return _source.CouponCodes; } set { } }
-		[IgnoreDataMember]
+		[DataMember]
 		public IFulfillment Fulfillment { get { return new BasketFulfillment { Providers = new List<IChosenFulfillmentProvider> { new ShippingChosenFulfillmentAdaptor(IO.Container.Resolve<IShippingProviderService>().GetById(_source.ShippingInfo.Id, _source.Localization), _source.ShippingInfo.MethodId, _source.ShippingInfo.MethodTitle) } }; } set { } }
 
 		[DataMember]
@@ -92,17 +92,30 @@ namespace uWebshop.API
 		{
 			get
 			{
+
 				var iChosenPaymentProviderList = new List<IChosenPaymentProvider>();
-				if (_source.PaymentInfo.Id != 0)
-				{
-					iChosenPaymentProviderList = new List<IChosenPaymentProvider>
+
+                if (_source.PaymentInfo.Id != 0)
+                {
+
+
+                    Log.Instance.LogDebug("1: " + _source.Localization.StoreAlias);
+                    Log.Instance.LogDebug("2: " + _source.PaymentInfo.Id);
+                    Log.Instance.LogDebug("3: " + _source.PaymentInfo.MethodId);
+                    Log.Instance.LogDebug("4: " + _source.PaymentInfo.MethodTitle);
+                    Log.Instance.LogDebug("5: " + _source.PaymentInfo.TransactionId);
+
+                    var valitorNode = IO.Container.Resolve<IPaymentProviderService>()
+                                          .GetById(_source.PaymentInfo.Id, _source.Localization);
+
+                    var title = valitorNode != null ? valitorNode.Title : _source.PaymentInfo.MethodId;
+
+                    iChosenPaymentProviderList = new List<IChosenPaymentProvider>
 						{
 							new BasketChosenPaymentProviderAdaptor
 								{
 									Title =
-										IO.Container.Resolve<IPaymentProviderService>()
-										  .GetById(_source.PaymentInfo.Id, _source.Localization)
-										  .Title,
+                                        title,
 									Id = _source.PaymentInfo.Id,
 									MethodId = _source.PaymentInfo.MethodId,
 									MethodTitle = _source.PaymentInfo.MethodTitle,
@@ -110,8 +123,9 @@ namespace uWebshop.API
 								}
 						};
 				}
-				
-				return new BasketPayment
+
+
+                return new BasketPayment
 					{
 						Providers = iChosenPaymentProviderList
 					};

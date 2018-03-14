@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.Serialization;
@@ -53,5 +54,13 @@ namespace uWebshop.API
 		public string Title { get { return _source.Title; } set { } }
 		[DataMember]
 		public int OriginalId { get { return _source.OriginalId; } set { } }
-	}
+        [DataMember]
+        public Guid Key { get { return _source.Key; } set { } }
+        [DataMember]
+        public string Size { get { return _source.Size; } set { } }
+        [DataMember]
+        public string Color { get { return _source.Color; } set { } }
+        [DataMember]
+        public string Images { get { return _source.Size; } set { } }
+    }
 }

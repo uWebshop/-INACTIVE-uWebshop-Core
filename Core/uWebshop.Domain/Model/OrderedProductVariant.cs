@@ -40,13 +40,28 @@ namespace uWebshop.Domain
 			}
 		}
 
-		/// <summary>
-		/// Gets the Type Alias.
-		/// </summary>
-		/// <value>
-		/// The Type Alias.
-		/// </value>
-		[ContentPropertyType(Alias = "typeAlias", DataType = DataType.Label, Tab = ContentTypeTab.Global, Name = "#TypeAlias", Description = "#TypeAliasDescription")]
+        /// <summary>
+        /// Gets the variant unique identifier.
+        /// </summary>
+        /// <value>
+        /// The variant unique identifier.
+        /// </value>
+        [ContentPropertyType(Alias = "variantKey", DataType = DataType.ContentPicker, Tab = ContentTypeTab.Global, Name = "#VariantKey", Description = "#VariantKeyDescription")]
+        public Guid VariantKey
+        {
+            get
+            {
+                return Document.Key;
+            }
+        }
+
+        /// <summary>
+        /// Gets the Type Alias.
+        /// </summary>
+        /// <value>
+        /// The Type Alias.
+        /// </value>
+        [ContentPropertyType(Alias = "typeAlias", DataType = DataType.Label, Tab = ContentTypeTab.Global, Name = "#TypeAlias", Description = "#TypeAliasDescription")]
 		public string TypeAlias
 		{
 			get
@@ -264,5 +279,56 @@ namespace uWebshop.Domain
 		{
 			return alias != null && alias.StartsWith(NodeAlias);
 		}
-	}
+
+        /// <summary>
+        /// Gets the size.
+        /// </summary>
+        /// <value>
+        /// The size.
+        /// </value>
+        [ContentPropertyType(Alias = "size", DataType = DataType.String, Tab = ContentTypeTab.Global, Name = "#Size", Description = "#Size")]
+        public string Size
+        {
+            get
+            {
+                var property = Document.getProperty("size");
+                if (property == null) throw new Exception("OrderedProductVariant document type is missing property with alias size, please add");
+                return property.Value;
+            }
+        }
+
+        /// <summary>
+        /// Gets the images.
+        /// </summary>
+        /// <value>
+        /// The Images.
+        /// </value>
+        [ContentPropertyType(Alias = "images", DataType = DataType.String, Tab = ContentTypeTab.Global, Name = "#Images", Description = "#Images")]
+        public string Images
+        {
+            get
+            {
+                var property = Document.getProperty("images");
+                if (property == null) throw new Exception("OrderedProductVariant document type is missing property with alias images, please add");
+                return property.Value;
+            }
+        }
+
+        /// <summary>
+        /// Gets the color.
+        /// </summary>
+        /// <value>
+        /// The color.
+        /// </value>
+        [ContentPropertyType(Alias = "color", DataType = DataType.String, Tab = ContentTypeTab.Global, Name = "#Color", Description = "#Color")]
+        public string Color
+        {
+            get
+            {
+                var property = Document.getProperty("color");
+                if (property == null) throw new Exception("OrderedProductVariant document type is missing property with alias color, please add");
+                return property.Value;
+            }
+        }
+    }
 }

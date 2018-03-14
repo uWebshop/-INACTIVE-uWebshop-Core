@@ -27,7 +27,8 @@ namespace uWebshop.Domain.Services
 			{
 				resultUrl = resultUrl.Insert(0, "/");
 			}
-			return _settings.UseLowercaseUrls ? resultUrl.ToLower() : resultUrl;
-		}
+            //return _settings.UseLowercaseUrls ? resultUrl.ToLower() : resultUrl;
+            return resultUrl.ToLower();
+        }
 	}
 }

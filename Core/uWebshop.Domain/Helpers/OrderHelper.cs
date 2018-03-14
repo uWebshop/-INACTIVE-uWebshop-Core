@@ -128,7 +128,8 @@ namespace uWebshop.Domain.Helpers
 		{
 			LogThis("GetOrder(" + uniqueOrderId.ToString() + ")");
 			if (uniqueOrderId == default(Guid) || uniqueOrderId == Guid.Empty) return null;
-			return OrderRepository.GetOrderInfo(uniqueOrderId);
+
+            return OrderRepository.GetOrderInfo(uniqueOrderId);
 		}
 		
 		/// <summary>
@@ -314,12 +315,23 @@ namespace uWebshop.Domain.Helpers
 			return OrderRepository.GetOrdersFromCustomer(userName, storeAlias, includeIncomplete);
 		}
 
-	    /// <summary>
-	    /// Gets the orders delivered between times.
-	    /// </summary>
-	    /// <param name="startTime">The start time.</param>
-	    /// <param name="endTime">The end time.</param>
-	    public static IEnumerable<OrderInfo> GetOrdersDeliveredBetweenTimes(DateTime startTime, DateTime endTime,
+        /// <summary>
+        /// Returns all the order from a customer (member) Login name or customer email;
+        /// </summary>
+        /// <param name="userName">Name of the login.</param>
+        /// <param name="storeAlias">The store alias.</param>
+        /// <param name="includeIncomplete">if set to <c>true</c> [include incomplete].</param>
+        public static IEnumerable<OrderInfo> GetOrdersForCustomerOrEmail(string userName, string storeAlias = null, bool includeIncomplete = false)
+        {
+            return OrderRepository.GetOrdersFromCustomerOrEmail(userName, storeAlias, includeIncomplete);
+        }
+
+        /// <summary>
+        /// Gets the orders delivered between times.
+        /// </summary>
+        /// <param name="startTime">The start time.</param>
+        /// <param name="endTime">The end time.</param>
+        public static IEnumerable<OrderInfo> GetOrdersDeliveredBetweenTimes(DateTime startTime, DateTime endTime,
 	        string storeAlias = null)
 	    {
 
@@ -512,13 +524,14 @@ namespace uWebshop.Domain.Helpers
 		/// <returns></returns>
 		public static string HandlePaymentRequest(OrderInfo orderInfo, int confirmedNodeId)
 		{
+            Log.Instance.LogDebug("HandlePaymentRequest: PaymentInfo: " + orderInfo.PaymentInfo.Id);
 			var paymentProvider = PaymentProvider.GetPaymentProvider(orderInfo.PaymentInfo.Id);
 
 			var currentDomain = HttpContext.Current.Request.Url.Authority;
 
 			if (paymentProvider != null)
 			{
-				Log.Instance.LogDebug("HandlePaymentRequest paymentProvider: " + paymentProvider.Title + " " + paymentProvider.Type);
+				Log.Instance.LogDebug("HandlePaymentRequest paymentProvider: " + paymentProvider.Title + " - " + paymentProvider.Type + " - " + paymentProvider.SuccesNodeId);
 
 				switch (paymentProvider.Type)
 				{
@@ -812,15 +825,23 @@ namespace uWebshop.Domain.Helpers
 				stockService.SetStock(discountProduct.Id, 1, false, orderInfo.StoreInfo.Store != null && orderInfo.StoreInfo.Store.UseStoreSpecificStock ? orderInfo.StoreInfo.Alias : string.Empty);
 			}
 
-			var couponCodeService = IO.Container.Resolve<ICouponCodeService>();
+
+            Log.Instance.LogDebug("before couponCode Update");
+            var couponCodeService = IO.Container.Resolve<ICouponCodeService>();
 			var discounts = orderInfo.Discounts.Select(d => d.Id).Concat(orderInfo.OrderLines.Select(l => l.ProductInfo.DiscountId));
-			foreach (var discountId in discounts)
+            foreach (var discountId in discounts)
 			{
 				var coupons = couponCodeService.GetAllForDiscount(discountId).Where(c => c.NumberAvailable > 0).Where(c => orderInfo.CouponCodes.Contains(c.CouponCode));
-				couponCodeService.DecreaseCountByOneFor(coupons);
-			}
 
-			Log.Instance.LogDebug("before stockupdated");
+                if (coupons.Any())
+                {
+                    couponCodeService.DecreaseCountByOneFor(coupons);
+                }
+				
+			}
+            Log.Instance.LogDebug("after couponCode Update");
+
+            Log.Instance.LogDebug("before stockupdated");
 			orderInfo.StockUpdated = true;
 			Log.Instance.LogDebug("after stockupdated");
 			orderInfo.Save();

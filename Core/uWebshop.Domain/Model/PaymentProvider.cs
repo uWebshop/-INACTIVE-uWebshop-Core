@@ -246,7 +246,7 @@ namespace uWebshop.Domain
 
 				if (!paymentProviderMethodList.Any())
 				{
-					var paymentMethodDummy = new PaymentProviderMethod {Id = Id.ToString(), Title = Title, ProviderName = Title, PriceInCents = 0};
+					var paymentMethodDummy = new PaymentProviderMethod {Id = Id.ToString(), Title = Title, Key = Key, ProviderName = Title, PriceInCents = 0};
 
 					Log.Instance.LogDebug(string.Format("PaymentProvider: {0} Without Methods, fallback to code created dummy method", Title));
 					paymentProviderMethodList.Add(paymentMethodDummy);

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using uWebshop.Common;
 
@@ -15,13 +16,22 @@ namespace uWebshop.Domain.Interfaces
 		/// The unique identifier.
 		/// </value>
 		int Id { get; }
-		/// <summary>
-		/// Gets the sort order.
-		/// </summary>
-		/// <value>
-		/// The sort order.
-		/// </value>
-		int SortOrder { get; }
+        /// <summary>
+        /// Gets the sort order.
+        /// </summary>
+        /// <value>
+        /// The sort order.
+        /// </value>
+
+        /// <summary>
+        /// Gets the unique identifier.
+        /// </summary>
+        /// <value>
+        /// The unique identifier.
+        /// </value>
+        Guid Key { get; }
+
+        int SortOrder { get; }
 		/// <summary>
 		/// Gets the title.
 		/// </summary>

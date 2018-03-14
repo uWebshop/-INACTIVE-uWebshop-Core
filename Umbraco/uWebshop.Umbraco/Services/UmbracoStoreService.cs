@@ -39,8 +39,9 @@ namespace uWebshop.Umbraco.Services
 				return store;
 			}
 
-			// in feite zou onderstaande code alleen in de backend bereikt kunnen worden of wanneer op node buiten shop tree
-			if (HttpContext.Current != null)
+            // In fact, the code below could only be reached in the backend or when the node is out of shop
+
+            if (HttpContext.Current != null)
 			{
 				// get store from cookie (this makes javascript understand what store there is)
 				if (!_cmsApplication.RequestIsInCMSBackend(HttpContext.Current))
@@ -49,13 +50,13 @@ namespace uWebshop.Umbraco.Services
 
 					if (store != null)
 					{
-						Log.Instance.LogDebug("GetCurrentStoreNoFallback, request outside shop, ABLE to use cookie to determine store");
+						//Log.Instance.LogDebug("GetCurrentStoreNoFallback, request outside shop, ABLE to use cookie to determine store");
 					}
 				}
 
 				if(store == null)
 				{
-					Log.Instance.LogDebug("GetCurrentStoreNoFallback, request outside shop, UNable to use cookie to determine store");
+					//Log.Instance.LogDebug("GetCurrentStoreNoFallback, request outside shop, UNable to use cookie to determine store");
 
 					var storeResult =
 						IO.Container.Resolve<IStoreFromUrlDeterminationService>()
@@ -168,13 +169,13 @@ namespace uWebshop.Umbraco.Services
 
 			if (store == null)
 			{
-				Log.Instance.LogError("Could not determine current store, fallback cookie");
+				Log.Instance.LogDebug("Could not determine current store, fallback cookie");
 				store = _storeRepository.TryGetStoreFromCookie();
 			}
 
 			if (store == null)
 			{
-				Log.Instance.LogError("Could not determine current store, fallback to first store");
+				Log.Instance.LogDebug("Could not determine current store, fallback to first store");
 				store = GetAllStores().OrderBy(x => x.SortOrder).FirstOrDefault(); // fallback
 			}
 
@@ -183,8 +184,6 @@ namespace uWebshop.Umbraco.Services
 				store = new Store {Alias = "uWebshop", GlobalVat = 21, Id = 1, NodeTypeAlias = "uwbsStoreDummy", CountryCode = "nl-NL", Culture = "nl-NL", CurrencyCulture = "nl-NL", IncompleOrderLifetime = 3600, SortOrder = 1, StoreURL = "/", StoreUrlWithoutDomain = "/", CanonicalStoreURL = "/"};
 				Log.Instance.LogWarning("uWebshop had to make a dummy store, please make sure that a published store exists and republish entire site & rebuild examine index, if this doesn't work please reset the IIS application pool");
 			}
-
-			Log.Instance.LogDebug("GetCurrentStore() store: " + store.Alias);
 
 			UwebshopRequest.Current.CurrentStore = store;
 			return store;

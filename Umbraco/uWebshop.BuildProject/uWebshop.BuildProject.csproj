@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>uWebshop.BuildProject</RootNamespace>
     <AssemblyName>uWebshop.BuildProject</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -88,14 +88,15 @@ IF EXIST "$(SolutionDir)builds\package.v7\" DEL /s /f /q "$(SolutionDir)builds\p
 SET umbracoDir=$(SolutionDir)Umbraco\uWebshop.Umbraco\
 
 XCOPY "$(TargetDir)uWebshop*.dll" "$(SolutionDir)builds\nuget\lib\" /Y /R
+XCOPY "$(TargetDir)uWebshop*.xml" "$(SolutionDir)builds\nuget\lib\" /Y /R
 XCOPY /E "%25umbracoDir%25Installer\package.nuspec" "$(SolutionDir)builds\nuget\" /Y /R
-XCOPY /E "%25umbracoDir%25Installer\content\*.*" "$(SolutionDir)builds\nuget\content\" /Y /R
-XCOPY "$(SolutionDir)Umbraco\uWebshop.Umbraco\Modules\Configurable aliasses\ContentMapping.config" "$(SolutionDir)builds\nuget\content\App_Plugins\uWebshop\config\" /Y /R
 
-DEL "$(SolutionDir)builds\nuget\content\App_Plugins\uWebshop\dashboardcontrols\uWebshopInstaller.ascx.cs"
-DEL "$(SolutionDir)builds\nuget\content\App_Plugins\uWebshop\dashboardcontrols\uWebshopInstaller.ascx.designer.cs"
+REM Following lines are commented out as we don't want nuget package to setup project as an uWebshop Website, no AppData needed
+REM XCOPY /E "%25umbracoDir%25Installer\content\*.*" "$(SolutionDir)builds\nuget\content\" /Y /R
+REM XCOPY "$(SolutionDir)Umbraco\uWebshop.Umbraco\Modules\Configurable aliasses\ContentMapping.config" "$(SolutionDir)builds\nuget\content\App_Plugins\uWebshop\config\" /Y /R
 
-nuget spec
+REM DEL "$(SolutionDir)builds\nuget\content\App_Plugins\uWebshop\dashboardcontrols\uWebshopInstaller.ascx.cs"
+REM DEL "$(SolutionDir)builds\nuget\content\App_Plugins\uWebshop\dashboardcontrols\uWebshopInstaller.ascx.designer.cs"
 
 XCOPY "$(SolutionDir)Umbraco\uWebshop.Umbraco\Modules\Configurable aliasses\ContentMapping.config" "$(SolutionDir)builds\package\" /Y /R
 DEL "$(TargetDir)uWebshop.BuildProject.dll"
@@ -114,7 +115,9 @@ XCOPY "%25umbracoDir%25Installer\package.xml" "$(SolutionDir)builds\package.v7\"
 
 SET package7dir=$(SolutionDir)builds\Umbraco Packages\uWebshop%25UWBSVER%25.Foundation.Umbraco7.Package.Installer\
 
-XCOPY "$(SolutionDir)builds\package.v7\*.*" "%25package7dir%25" /Y /R</PostBuildEvent>
+XCOPY "$(SolutionDir)builds\package.v7\*.*" "%25package7dir%25" /Y /R
+
+nuget pack $(SolutionDir)builds\nuget\package.nuspec -OutputDirectory $(SolutionDir).nuget</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

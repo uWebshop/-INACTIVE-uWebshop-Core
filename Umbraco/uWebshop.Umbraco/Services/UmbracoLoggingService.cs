@@ -40,7 +40,12 @@ namespace uWebshop.Umbraco.Services
 			LogHelper.Warn<UmbracoLoggingService>(message);
 		}
 
-		public void LogDebug(string message)
+        public void LogInfo(string message)
+        {
+            LogHelper.Info<UmbracoLoggingService>(message);
+        }
+
+        public void LogDebug(string message)
 		{
 			if (UWebshopDebugMessages)
 				LogHelper.Info<UmbracoLoggingService>(message);

@@ -18,7 +18,7 @@ namespace uWebshop.Domain.Model
 			get { return Store.Alias; }
 		}
 
-		public IStore Store { get; private set; }
+        public IStore Store { get; private set; }
 
 		public string CurrencyCode
 		{

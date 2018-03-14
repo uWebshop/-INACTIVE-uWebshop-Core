@@ -17,7 +17,7 @@ namespace uWebshop.Domain
 		/// </value>
 		public static ILoggingService Instance
 		{
-			get { return _instance ?? (_instance = IO.Container.Resolve<ILoggingService>()); }
+			get {  return _instance ?? (_instance = IO.Container.Resolve<ILoggingService>()); }
 		}
 	}
 }

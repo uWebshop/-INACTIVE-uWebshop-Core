@@ -23,15 +23,16 @@ namespace uWebshop.Umbraco.Repositories
 			entity.Localization = localization;
 			entity.NodeId = (entity as IUwebshopEntity).Id;
 			entity.Id = entity.NodeId.ToString();
+            entity.Key = entity.Key;
 
-			entity.Disabled = StoreHelper.GetMultiStoreDisableExamine(localization, fields);
+            entity.Disabled = StoreHelper.GetMultiStoreDisableExamine(localization, fields);
 
 			entity.PriceInCents = StoreHelper.GetLocalizedPrice(_aliasses.price, localization, fields);
 
 			entity.Title = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.title, localization, fields) ?? string.Empty;
 			entity.Description = IO.Container.Resolve<ICMSApplication>().ParseInternalLinks(StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.description, localization, fields)) ?? string.Empty;
 
-			var testMode = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary("testMode", localization, fields);
+			var testMode = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary("testMode", localization, fields).ToLower();
 			if (testMode == "default" || testMode == string.Empty)
 			{
 				entity.TestMode = store.EnableTestmode;

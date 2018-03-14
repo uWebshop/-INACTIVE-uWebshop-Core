@@ -23,7 +23,8 @@ namespace uWebshop.Domain.Services
 
 		public ProductInfo CreateProductInfoByProductId(int productId, OrderInfo order, ILocalization localization, int itemCount)
 		{
-			return new ProductInfo(GetById(productId, localization), order, itemCount);
+
+            return new ProductInfo(GetById(productId, localization), order, itemCount);
 		}
 
 		public List<Product> GetAllEnabledAndWithCategory(ILocalization localization)
@@ -35,7 +36,8 @@ namespace uWebshop.Domain.Services
 		{
 			// todo: move functionality to repository
 			var includingVAT = IO.Container.Resolve<ISettingsService>().IncludingVat;
-			foreach (var localization in _storeService.GetAllLocalizations())
+
+            foreach (var localization in _storeService.GetAllLocalizations())
 			{
 				GetAll(localization, true).ToList().ForEach(product => product.PricesIncludingVat = includingVAT);
 			}

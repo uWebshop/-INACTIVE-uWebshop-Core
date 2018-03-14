@@ -94,8 +94,12 @@ namespace uWebshop.Umbraco.Services
 			{
 				get { return _document.Id; }
 			}
+            public Guid Key
+            {
+                get { return _document.Key; }
+            }
 
-			public string NodeTypeAlias
+            public string NodeTypeAlias
 			{
 				get { return _document.ContentType.Alias; }
 			}
@@ -264,8 +268,12 @@ namespace uWebshop.Umbraco.Services
 			{
 				get { return _node.Id; }
 			}
+            public Guid Key
+            {
+                get { return _node.GetKey(); }
+            }
 
-			public string NodeTypeAlias
+            public string NodeTypeAlias
 			{
 				get { return _node.DocumentTypeAlias; }
 			}

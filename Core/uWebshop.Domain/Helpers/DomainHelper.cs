@@ -226,35 +226,54 @@ namespace uWebshop.Domain.Helpers
 			var currentThread = Thread.CurrentThread.CurrentCulture;
 			var currentUIThread = Thread.CurrentThread.CurrentUICulture;
 
-			Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
 			Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-US");
 
 			var xmls = new XmlSerializer(typeof (T));
-			using (var ms = new MemoryStream())
-			{
-				var settings = new XmlWriterSettings {Encoding = new UTF8Encoding(), Indent = true, IndentChars = "\t", NewLineChars = Environment.NewLine, ConformanceLevel = ConformanceLevel.Document,};
+            var xml = "";
 
-				using (var writer = XmlWriter.Create(ms, settings))
-				{
-					xmls.Serialize(writer, obj);
-				}
+            using (var sww = new StringWriterWithEncoding(Encoding.UTF8))
+            {
+                var settings = new XmlWriterSettings { Encoding = new UTF8Encoding(), Indent = true, IndentChars = "\t", NewLineChars = Environment.NewLine, ConformanceLevel = ConformanceLevel.Document };
 
-				string value = Encoding.UTF8.GetString(ms.ToArray());
+                using (XmlWriter writer = XmlWriter.Create(sww,settings))
+                {
+                    xmls.Serialize(writer, obj);
+                    xml = sww.ToString();
+                }
+            }
 
-				Thread.CurrentThread.CurrentCulture = currentThread;
-				Thread.CurrentThread.CurrentUICulture = currentUIThread;
+            Thread.CurrentThread.CurrentCulture = currentThread;
+            Thread.CurrentThread.CurrentUICulture = currentUIThread;
 
-				return value;
-			}
-		}
+            return xml;
 
-		/// <summary>
-		/// Deserialize XMLstring to Object
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="xmlString">The XML string.</param>
-		/// <returns></returns>
-		public static T DeserializeXmlStringToObject<T>(string xmlString)
+        }
+
+        public sealed class StringWriterWithEncoding : StringWriter
+        {
+            private readonly Encoding encoding;
+
+            public StringWriterWithEncoding() { }
+
+            public StringWriterWithEncoding(Encoding encoding)
+            {
+                this.encoding = encoding;
+            }
+
+            public override Encoding Encoding
+            {
+                get { return encoding; }
+            }
+        }
+
+        /// <summary>
+        /// Deserialize XMLstring to Object
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="xmlString">The XML string.</param>
+        /// <returns></returns>
+        public static T DeserializeXmlStringToObject<T>(string xmlString)
 		{
 			var currentThread = Thread.CurrentThread.CurrentCulture;
 			var currentUIThread = Thread.CurrentThread.CurrentUICulture;
@@ -284,7 +303,7 @@ namespace uWebshop.Domain.Helpers
 		/// <returns></returns>
 		public static IProduct GetProductById(int productId, string storeAlias = null, string currencyCode = null)
 		{
-			return IO.Container.Resolve<IProductService>().GetById(productId, StoreHelper.GetLocalizationOrCurrent(storeAlias, currencyCode));
+            return IO.Container.Resolve<IProductService>().GetById(productId, StoreHelper.GetLocalizationOrCurrent(storeAlias, currencyCode));
 		}
 
 		/// <summary>

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -47,7 +47,6 @@ namespace uWebshop.Umbraco
 				value = GlobalSettings.RequestIsInUmbracoApplication(context);
 			}
 
-			Log.Instance.LogDebug("RequestIsInCMSBackend: " + value);
 			return value;
 		}
 
@@ -110,13 +109,20 @@ namespace uWebshop.Umbraco
 
 		public bool MemberLoggedIn()
 		{
-			return umbraco.cms.businesslogic.member.Member.GetCurrentMember() != null;
+			return HttpContext.Current.User.Identity.IsAuthenticated;
 		}
 
 		public int CurrentMemberId()
 		{
-			return umbraco.cms.businesslogic.member.Member.GetCurrentMember().Id;
-		}
+            var ms = ApplicationContext.Current.Services.MemberService;
+
+            var m = ms.GetByUsername(HttpContext.Current.User.Identity.Name);
+
+            if (m != null)
+                return m.Id;
+
+            return 0;
+        }
 
 		public bool UsesSQLCEDatabase()
 		{
@@ -242,25 +248,28 @@ namespace uWebshop.Umbraco
 		public string RenderMacro(string templateAlias, int contentId, params object[] properties)
 		{
 			var razorFileLocation = string.Format("{0}/{1}", global::Umbraco.Core.IO.SystemDirectories.MacroScripts.TrimEnd('/'), templateAlias.TrimStart('/'));
-			
-			Log.Instance.LogDebug("SendOrderEmail razorFileLocation: " + razorFileLocation);
+
+            if (!System.IO.File.Exists(razorFileLocation))
+            {
+                razorFileLocation = "~/views/" + templateAlias.TrimStart('/');
+            }
 
 			return RazorLibraryExtensions.RenderMacro(razorFileLocation, contentId, properties);
 		}
 
 		public string ApplyUrlFormatRules(string url)
 		{
-			var replacements = UrlReplacementsHack();
+			//var replacements = UrlReplacementsHack();
 
-			foreach (var x in replacements.Keys)
-				url = url.Replace(x, replacements[x]);
+			//foreach (var x in replacements.Keys)
+			//	url = url.Replace(x, replacements[x]);
 
-			// check for double dashes
-			if (RemoveDoubleDashesFromUrlReplacingHack())
-			{
-				url = Regex.Replace(url, @"[-]{2,}", "-");
-			}
-			return url;
+			//// check for double dashes
+			//if (RemoveDoubleDashesFromUrlReplacingHack())
+			//{
+			//	url = Regex.Replace(url, @"[-]{2,}", "-");
+			//}
+			return url.ToUrlSegment();
 		}
 
 		public List<ICustomerType> GetAllMemberTypes()
@@ -271,7 +280,8 @@ namespace uWebshop.Umbraco
 	 
 		public string GetUrlForContentWithId(int id)
 		{
-			return library.NiceUrl(id);
+            var helper = new UmbracoHelper(UmbracoContext.Current);
+            return helper.NiceUrl(id);
 		}
 
 		public string RenderXsltMacro(string templateAlias, Dictionary<string, object> xsltParameters, XmlDocument entityXml = null)
@@ -378,14 +388,16 @@ namespace uWebshop.Umbraco
 
 		public IEnumerable<string> GetDomainsForNodeId(int id)
 		{
-			var domains = umbraco.cms.businesslogic.web.Domain.GetDomainsById(id).Select(d => d.Name);
+            var ds = ApplicationContext.Current.Services.DomainService;
+
+            var domains = ds.GetAssignedDomains(id,true).Select(x => x.DomainName);
 
 			return domains.Select(domain =>
 				{
 					domain = domain.TrimEnd('/');
 					if (!domain.StartsWith("http"))
 					{
-						var connection = _httpContextWrapper.IsSecureConnection ? "https" : "http";
+						var connection = _httpContextWrapper != null ? _httpContextWrapper.IsSecureConnection ? "https" : "http" : "http";
 						domain = string.Format("{0}://{1}", connection, domain);
 					}
 					return domain;
@@ -404,13 +416,20 @@ namespace uWebshop.Umbraco
 		{
 			get
 			{
-				var member = Member.GetCurrentMember();
+                var ms = ApplicationContext.Current.Services.MemberService;
 
-				var vatValid = "0";
-				if (member.getProperty("customerValidVAT") != null && member.getProperty("customerValidVAT").Value != null)
-				{
-					vatValid = member.getProperty("customerValidVAT").Value.ToString();
-				}
+                var m = ms.GetByUsername(HttpContext.Current.User.Identity.Name);
+
+                var vatValid = "0";
+
+                if (m != null) {
+                    
+                    if (m.HasProperty("customerValidVAT") && !string.IsNullOrEmpty(m.GetValue<string>("customerValidVAT")))
+                    {
+                        vatValid = m.GetValue<string>("customerValidVAT");
+                    }
+                }
+
 				return vatValid != "0";
 			}
 		}

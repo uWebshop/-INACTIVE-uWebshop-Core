@@ -341,7 +341,6 @@ internal interface IEmailCustomerAliassesService
 	string ContentTypeAlias { get; }
 	string title { get; }
 	string description { get; }
-	string emailtemplate { get; }
 }
 
 
@@ -357,7 +356,6 @@ internal interface IEmailCustomerAliassesService
 		public string ContentTypeAlias { get { return _xml.ContentTypeAlias ?? "uwbsEmailTemplateCustomer"; } }
 public string title { get { return _xml.title ?? "title"; } }
 public string description { get { return _xml.description ?? "description"; } }
-public string emailtemplate { get { return _xml.emailtemplate ?? "emailtemplate"; } }
 }
 
 [XmlRoot(ElementName = "EmailCustomer")]
@@ -366,7 +364,6 @@ public struct EmailCustomerAliassesXML {
 public string ContentTypeAlias;
 	public string title;
 	public string description;
-	public string emailtemplate;
 }
 
 internal interface IEmailCustomerSectionAliassesService
@@ -422,7 +419,6 @@ internal interface IEmailStoreAliassesService
 	string ContentTypeAlias { get; }
 	string title { get; }
 	string description { get; }
-	string emailtemplate { get; }
 }
 
 
@@ -438,7 +434,6 @@ internal interface IEmailStoreAliassesService
 		public string ContentTypeAlias { get { return _xml.ContentTypeAlias ?? "uwbsEmailTemplateStore"; } }
 public string title { get { return _xml.title ?? "title"; } }
 public string description { get { return _xml.description ?? "description"; } }
-public string emailtemplate { get { return _xml.emailtemplate ?? "emailtemplate"; } }
 }
 
 [XmlRoot(ElementName = "EmailStore")]
@@ -447,7 +442,6 @@ public struct EmailStoreAliassesXML {
 public string ContentTypeAlias;
 	public string title;
 	public string description;
-	public string emailtemplate;
 }
 
 internal interface IEmailStoreSectionAliassesService
@@ -1723,13 +1717,11 @@ xml.DiscountRepository.ContentTypeAlias = "uwbsDiscountRepository";
 xml.EmailCustomer.ContentTypeAlias = "uwbsEmailTemplateCustomer";
 xml.EmailCustomer.title = "title";
 xml.EmailCustomer.description = "description";
-xml.EmailCustomer.emailtemplate = "emailtemplate";
 xml.EmailCustomerSection.ContentTypeAlias = "uwbsEmailTemplateCustomerSection";
 xml.EmailRepository.ContentTypeAlias = "uwbsEmailRepository";
 xml.EmailStore.ContentTypeAlias = "uwbsEmailTemplateStore";
 xml.EmailStore.title = "title";
 xml.EmailStore.description = "description";
-xml.EmailStore.emailtemplate = "emailtemplate";
 xml.EmailStoreSection.ContentTypeAlias = "uwbsEmailTemplateStoreSection";
 xml.Order.ContentTypeAlias = "uwbsOrder";
 xml.Order.orderStatusPicker = "orderStatusPicker";

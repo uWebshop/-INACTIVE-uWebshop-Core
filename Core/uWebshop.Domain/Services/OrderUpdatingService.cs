@@ -37,30 +37,38 @@ namespace uWebshop.Domain.Services
 			_uwebshopConfiguration = uwebshopConfiguration;
 		}
 
-		private HttpSessionState Session
-		{
-			get { return HttpContext.Current.Session; }
-		}
+        private HttpSessionState Session
+        {
+            get
+            {
+                if (HttpContext.Current == null)
+                {
+                    throw new ApplicationException("No Http Context, No Session to Get!");
+                }
 
-		/// <summary>
-		/// Create, Add, Update the orderline
-		/// </summary>
-		/// <param name="order"></param>
-		/// <param name="orderLineId">The Id of the orderline</param>
-		/// <param name="productId">The productId</param>
-		/// <param name="action">The action (add, update, delete, deleteall)</param>
-		/// <param name="itemCount">The amount of items to be added</param>
-		/// <param name="variantsList">The variants ID's added to the pricing</param>
-		/// <param name="fields">Custom Fields</param>
-		/// <exception cref="System.ArgumentException">
-		/// productId and orderLineId equal or lower to 0
-		/// or
-		/// itemCountToAdd can't be smaller than 0
-		/// </exception>
-		/// <exception cref="System.Exception">
-		/// Orderline not found
-		/// </exception>
-		public void AddOrUpdateOrderLine(OrderInfo order, int orderLineId, int productId, string action, int itemCount, IEnumerable<int> variantsList, Dictionary<string, string> fields = null)
+                return HttpContext.Current.Session;
+            }
+        }
+
+        /// <summary>
+        /// Create, Add, Update the orderline
+        /// </summary>
+        /// <param name="order"></param>
+        /// <param name="orderLineId">The Id of the orderline</param>
+        /// <param name="productId">The productId</param>
+        /// <param name="action">The action (add, update, delete, deleteall)</param>
+        /// <param name="itemCount">The amount of items to be added</param>
+        /// <param name="variantsList">The variants ID's added to the pricing</param>
+        /// <param name="fields">Custom Fields</param>
+        /// <exception cref="System.ArgumentException">
+        /// productId and orderLineId equal or lower to 0
+        /// or
+        /// itemCountToAdd can't be smaller than 0
+        /// </exception>
+        /// <exception cref="System.Exception">
+        /// Orderline not found
+        /// </exception>
+        public void AddOrUpdateOrderLine(OrderInfo order, int orderLineId, int productId, string action, int itemCount, IEnumerable<int> variantsList, Dictionary<string, string> fields = null)
 		{
 			//todo: function is too long
 			//   separate control and logic
@@ -132,17 +140,23 @@ namespace uWebshop.Domain.Services
 
 			if (productId != 0 && !isWishList)
 			{
-				var requestedItemCount = itemCount;
+                var requestedItemCount = itemCount;
 				var tooMuchStock = false;
 
 				var localization = StoreHelper.CurrentLocalization;
+
+                if (localization == null)
+                {
+                    Log.Instance.LogError("localization null");
+                }
+
 				var product = _productService.GetById(productId, localization);
 				if (product == null)
 				{
 					Log.Instance.LogError("AddOrUpdateOrderLine can't find product with Id " + productId);
 				}
 
-				var higherItemList = new List<int>();
+                var higherItemList = new List<int>();
 				foreach (var variant in variantsList.Select(variantId => _productVariantService.GetById(variantId, localization)))
 				{
 					if (variant != null && variant.StockStatus && !variant.BackorderStatus && variant.Stock < requestedItemCount)
@@ -154,7 +168,7 @@ namespace uWebshop.Domain.Services
 					}
 				}
 
-				if (product != null && !product.UseVariantStock && product.StockStatus && !product.BackorderStatus && product.Stock < itemCount)
+                if (product != null && !product.UseVariantStock && product.StockStatus && !product.BackorderStatus && product.Stock < itemCount)
 				{
 					higherItemList.Add(product.Id);
 
@@ -162,14 +176,24 @@ namespace uWebshop.Domain.Services
 					tooMuchStock = true;
 				}
 
-				if (HttpContext.Current != null && higherItemList.Any())
-				{ // todo: dit moet ook in handleobject komen
-					Session.Add(Constants.OrderedItemcountHigherThanStockKey, higherItemList);
-				}
+                if (tooMuchStock && HttpContext.Current != null)
+                {
+                    try
+                    {
+                        Session.Add(Constants.OrderedItemcountHigherThanStockKey, "Ordered higher quantity than available stock.");
+                    } catch(Exception ex)
+                    {
+                        Log.Instance.LogError(ex, "Error on session");
+                    }
+                    ClientErrorHandling.SetOrClearErrorMessage(!tooMuchStock, "Ordered higher quantity than available stock. Updated the basked to available stock count", "Stock", requestedItemCount.ToString());
 
-				if (HttpContext.Current != null) // todo: better decoupling
-					ClientErrorHandling.SetOrClearErrorMessage(!tooMuchStock, "Ordered higher quantity than available stock. Updated the basked to available stock count", "Stock", requestedItemCount.ToString());
-			}
+                    return;
+                    //throw new ArgumentException("Ordered higher quantity than available stock. Updated the basked to available stock count.");
+                }
+
+                //if (HttpContext.Current != null) // todo: better decoupling
+                //ClientErrorHandling.SetOrClearErrorMessage(!tooMuchStock, "Ordered higher quantity than available stock. Updated the basked to available stock count", "Stock", requestedItemCount.ToString());
+            }
 
 			if (itemCount < 1)
 			{
@@ -315,8 +339,12 @@ namespace uWebshop.Domain.Services
 
 			if (order.IsBasket())
 			{
-				OrderHelper.SetOrderCookie(order);
-			}
+              //  try
+                //{
+                    OrderHelper.SetOrderCookie(order);
+               // }
+                //catch { } // Fail gracefully
+            }
 
 			if (order.IsBasket())
 			{
@@ -363,10 +391,13 @@ namespace uWebshop.Domain.Services
 
 		public CouponCodeResult AddCoupon(OrderInfo order, string couponCode)
 		{
-			if (ChangeOrderToIncompleteAndReturnTrueIfNotAllowed(order))
+            if (order == null)
+                return CouponCodeResult.Failed;
+
+            if (ChangeOrderToIncompleteAndReturnTrueIfNotAllowed(order))
 				return CouponCodeResult.NotPermitted;
 
-			if (string.IsNullOrEmpty(couponCode))
+            if (string.IsNullOrEmpty(couponCode))
 			{
 				return CouponCodeResult.Failed;
 			}
@@ -378,40 +409,67 @@ namespace uWebshop.Domain.Services
 
 			// todo: services
 			var orderDiscountService = IO.Container.Resolve<IOrderDiscountService>();
-			var discounts = IO.Container.Resolve<ICouponCodeService>().GetAllWithCouponcode(couponCode).Where(coupon => coupon.NumberAvailable > 0)
+
+            var allCoupondiscounts = IO.Container.Resolve<ICouponCodeService>().GetAllWithCouponcode(couponCode);
+
+            var discounts = allCoupondiscounts.Where(coupon => coupon.NumberAvailable > 0)
 				.Select(coupon => orderDiscountService.GetById(coupon.DiscountId, order.Localization ?? StoreHelper.CurrentLocalization)).Where(c => c != null).ToList();
-			var couponOrderDiscount = orderDiscountService.GetAll(order.Localization).FirstOrDefault(x => x.CouponCode == couponCode);
 
-			if (couponOrderDiscount != null) discounts.Add(couponOrderDiscount);
+            // Get all discount available on the order
+            var currentOrderDiscounts = orderDiscountService.GetAll(order.Localization);
 
-			if (!discounts.Any())
+            var discountSelected = discounts.FirstOrDefault();
+
+            //if (couponOrderDiscount != null)
+            //{
+               // Log.Instance.LogError("Coupon Debug1 : " + couponOrderDiscount.Title);
+
+                //discounts.Add(couponOrderDiscount);
+            //}
+
+            if (discountSelected == null)
 			{
 				return CouponCodeResult.NotFound;
 			}
 
-			var member = UwebshopRequest.Current.User;
-			var oncePerCustomer = discounts.All(discount => discount.OncePerCustomer);
-			if (oncePerCustomer && member != null)
-			{
-				var ordersOfMember = OrderHelper.GetOrdersForCustomer(member.UserName);
+            if (discountSelected.MinimumOrderAmount.WithVat.ValueInCents > 0 && order.GrandtotalInCents < discountSelected.MinimumOrderAmount.WithVat.ValueInCents)
+            {
+                return CouponCodeResult.MinimumOrderAmount;
+            }
 
-				foreach (var discount in discounts)
-				{
-					if (ordersOfMember.Any(x => x.CouponCodes != null && x.CouponCodes.Contains(couponCode) && (x.Discounts.Any(d => d.OriginalId == discount.Id)) || x.OrderLines.Any(l => l.ProductInfo.DiscountId == discount.Id)))
-					{
-						return CouponCodeResult.OncePerCustomer;
-					}
-				}
-			}
+            if (discountSelected.CounterEnabled && discountSelected.Counter <= 0)
+            {
+                return CouponCodeResult.OutOfStock;
+            }
 
-			if (discounts.All(discount => discount.MinimumOrderAmount.WithVat.ValueInCents > 0) && order.GrandtotalInCents < discounts.Max(d => d.MinimumOrderAmount.WithVat.ValueInCents))
-			{
-				return CouponCodeResult.MinimumOrderAmount;
-			}
+            
+            // Check if there is any other discount that has higher value in the order
+            var calcServices = IO.Container.Resolve<IDiscountCalculationService>();
+            var discountAmount = calcServices.DiscountAmountForOrder(discountSelected, order, false);
+            if (order.AllDiscounts.Any(x => calcServices.DiscountAmountForOrder(x,order,false) > discountAmount)) {
+                return CouponCodeResult.Failed;
+            }
 
-			if (discounts.All(discount => discount.CounterEnabled && discount.Counter <= 0))
+            var member = UwebshopRequest.Current.User;
+			var oncePerCustomer = discountSelected.OncePerCustomer;
+			if (oncePerCustomer)//&& member != null)
 			{
-				return CouponCodeResult.OutOfStock;
+                var customerEmail = member != null ? member.Email : order.CustomerEmail;
+
+                if (!string.IsNullOrEmpty(customerEmail))
+                {
+                    var ordersOfMember = OrderHelper.GetOrdersForCustomerOrEmail(customerEmail).Where(x => x.CouponCodes != null && x.CouponCodes.Contains(couponCode));
+
+                    if (ordersOfMember.Any(x => (x.Discounts.Any(d => d.OriginalId == discountSelected.Id)) || x.OrderLines.Any(l => l.ProductInfo.DiscountId == discountSelected.Id)))
+                    {
+                        return CouponCodeResult.OncePerCustomer;
+                    }
+                    
+                } else
+                {
+                    return CouponCodeResult.EmailRequired;
+                }
+
 			}
 
 			order.SetCouponCode(couponCode);
@@ -436,14 +494,14 @@ namespace uWebshop.Domain.Services
 			// todo: move logic and update API
 			var shippingProvider = ShippingProviderHelper.GetAllShippingProviders(localization.StoreAlias, localization.CurrencyCode).FirstOrDefault(x => x.Id == shippingProviderId);
 
-			if (shippingProvider == null)
+            if (shippingProvider == null)
 			{
 				Log.Instance.LogDebug("AddShippingMethod shippingProvider " + ProviderActionResult.NoCorrectInput + " shippingProviderId: " + shippingProviderId);
 				return ProviderActionResult.NoCorrectInput;
 			}
-
-			order.ShippingInfo.Id = shippingProviderId;
-			order.ShippingInfo.Title = shippingProvider.Title;
+            order.ShippingInfo.Id = shippingProviderId;
+            order.ShippingInfo.Key = shippingProvider.Key;
+            order.ShippingInfo.Title = shippingProvider.Title;
 
 			order.ShippingInfo.ShippingType = shippingProvider.Type;
 
@@ -454,11 +512,11 @@ namespace uWebshop.Domain.Services
 				Log.Instance.LogDebug("AddShippingMethod shippingMethod " + ProviderActionResult.NoCorrectInput + " shippingProviderMethodId: " + shippingProviderMethodId);
 				return ProviderActionResult.NoCorrectInput;
 			}
-
-			order.ShippingInfo.MethodId = shippingProviderMethodId;
+            
+            order.ShippingInfo.MethodId = shippingProviderMethodId;
 			order.ShippingInfo.MethodTitle = shippingMethod.Title;
-
-			shippingMethod.UpdatePriceFromCustomShippingProvider(order);
+            order.ShippingInfo.MethodKey = shippingMethod.Key;
+            shippingMethod.UpdatePriceFromCustomShippingProvider(order);
 			
 			order.ResetDiscounts();
 
@@ -566,7 +624,7 @@ namespace uWebshop.Domain.Services
 
 				if (field.Key.ToLower() == "acceptsmarketing" || field.Key.ToLower() == "customeracceptsmarketing")
 				{
-					if (field.Value == "1" || field.Value == "true" || field.Value == "on" || field.Value == "acceptsmarketing" || field.Value == "customeracceptsmarketing")
+					if (field.Value == "1" || field.Value.ToLowerInvariant() == "true" || field.Value == "on" || field.Value == "acceptsmarketing" || field.Value == "customeracceptsmarketing")
 					{
 						order.CustomerInfo.AcceptsMarketing = true;
 					}
@@ -579,7 +637,7 @@ namespace uWebshop.Domain.Services
 				// 'hack' because if you an empty checkbox is not send to the browser, by supporting this option the developer can add a hidden input 'false' field and make it checked using javascript.
 				if (field.Key.ToLower() == "acceptsmarketingfalse" || field.Key.ToLower() == "customeracceptsmarketingfalse")
 				{
-					if (field.Value == "1" || field.Value == "true" || field.Value == "on" || field.Value == "acceptsmarketingfalse" || field.Value == "customeracceptsmarketingfalse")
+					if (field.Value == "1" || field.Value.ToLowerInvariant() == "true" || field.Value == "on" || field.Value == "acceptsmarketingfalse" || field.Value == "customeracceptsmarketingfalse")
 					{
 						order.CustomerInfo.AcceptsMarketing = false;
 					}
@@ -823,7 +881,8 @@ namespace uWebshop.Domain.Services
 			}
 
 			order.PaymentInfo.Id = paymentProviderId;
-			order.PaymentInfo.Title = paymentProvider.Title;
+            order.PaymentInfo.Key = paymentProvider.Key;
+            order.PaymentInfo.Title = paymentProvider.Title;
 
 			order.PaymentInfo.PaymentType = paymentProvider.Type;
 
@@ -836,7 +895,8 @@ namespace uWebshop.Domain.Services
 			}
 
 			order.PaymentInfo.MethodId = paymentProviderMethodId;
-			order.PaymentInfo.MethodTitle = paymentMethod.Title;
+            order.PaymentInfo.MethodKey = paymentMethod.Key;
+            order.PaymentInfo.MethodTitle = paymentMethod.Title;
 
 			if (paymentMethod.AmountType == PaymentProviderAmountType.Amount)
 				order.PaymentProviderAmount = paymentMethod.PriceInCents;
@@ -868,8 +928,10 @@ namespace uWebshop.Domain.Services
 
 		public bool ConfirmOrder(OrderInfo order, bool termsAccepted, int confirmationNodeId, bool dontScheduleAlwaysConfirm = false)
 		{
-			// todo: refactor, split into Schedule and Confirm
-			order.TermsAccepted = termsAccepted;
+            Log.Instance.LogDebug("Confirm Order. confirmationNodeId: " + confirmationNodeId);
+
+            // todo: refactor, split into Schedule and Confirm
+            order.TermsAccepted = termsAccepted;
 
 			order.ConfirmValidationFailed = _orderService.ValidateOrder(order, true).Any();
 			if (order.ConfirmValidationFailed)

@@ -113,8 +113,9 @@ namespace uWebshop.Umbraco.Repositories
 				product.Vat = store.GlobalVat;
 			}
 
-			var stockStatus = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.stockStatus, localization, fields);
-			if (stockStatus == "default" || stockStatus == string.Empty)
+			var stockStatus = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.stockStatus, localization, fields).ToLower();
+
+            if (stockStatus == "default" || stockStatus == string.Empty)
 			{
 				product.StockStatus = store.UseStock;
 			}
@@ -131,7 +132,7 @@ namespace uWebshop.Umbraco.Repositories
 			{
 				product.BackorderStatus = backorderStatus == "enable" || backorderStatus == "1" || backorderStatus == "true";
 			}
-			var useVariantStock = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.useVariantStock, localization, fields);
+			var useVariantStock = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.useVariantStock, localization, fields).ToLower();
 			if (useVariantStock == "default" || useVariantStock == string.Empty)
 			{
 				product.UseVariantStock = store.UseVariantStock;

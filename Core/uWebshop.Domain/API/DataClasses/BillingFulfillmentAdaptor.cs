@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using uWebshop.Common;
@@ -17,6 +18,7 @@ namespace uWebshop.API
 		{
 			_paymentProvider = paymentProvider;
 			Id = paymentProvider.Id;
+            Key = paymentProvider.Key;
 			Title = paymentProvider.Title;
 			Description = paymentProvider.Description;
 			Methods = new List<IBillingProviderMethod>(paymentProvider.PaymentProviderMethods.Select(m => new BillingMethodFulfillmentAdaptor(m, pricesIncludingVat, localization)));
@@ -27,7 +29,9 @@ namespace uWebshop.API
 
 		[DataMember]
 		public int Id { get; set; }
-		[DataMember]
+        [DataMember]
+        public Guid Key { get; set; }
+        [DataMember]
 		public int SortOrder { get { return _paymentProvider.Id != 0 ? _paymentProvider.SortOrder : 0; } set { } }
 		[DataMember]
 		public string Title { get; set; }

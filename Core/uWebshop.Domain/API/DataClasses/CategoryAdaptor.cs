@@ -28,7 +28,9 @@ namespace uWebshop.API
 
 		[JsonProperty]
 		public int Id { get { return _source.Id; } }
-		public string TypeAlias { get { return _source.TypeAlias; } }
+        [JsonProperty]
+        public Guid Key { get { return _source.Key; } }
+        public string TypeAlias { get { return _source.TypeAlias; } }
 
 		[IgnoreDataMember]
 		public bool Disabled { get { return _source.Disabled; } }

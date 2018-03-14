@@ -1,3 +1,5 @@
+using System;
+
 namespace uWebshop.Domain.Interfaces
 {
 	/// <summary>
@@ -12,13 +14,22 @@ namespace uWebshop.Domain.Interfaces
 		/// The unique identifier.
 		/// </value>
 		string Id { get; }
-		/// <summary>
-		/// Gets the sort order.
-		/// </summary>
-		/// <value>
-		/// The sort order.
-		/// </value>
-		int SortOrder { get; }
+
+        /// <summary>
+        /// Gets the unique identifier.
+        /// </summary>
+        /// <value>
+        /// The unique identifier.
+        /// </value>
+        Guid Key { get; }
+
+        /// <summary>
+        /// Gets the sort order.
+        /// </summary>
+        /// <value>
+        /// The sort order.
+        /// </value>
+        int SortOrder { get; }
 		/// <summary>
 		/// Gets the title.
 		/// </summary>

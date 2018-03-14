@@ -29,8 +29,7 @@ namespace uWebshop.Domain
 
 		internal int NodeId;
 		public new string Id { get; set; }
-
-		[ContentPropertyType(Alias = "disable", DataType = DataType.TrueFalse, Tab = ContentTypeTab.Global, Name = "#Disable", Description = "#DisableDescription")]
+        [ContentPropertyType(Alias = "disable", DataType = DataType.TrueFalse, Tab = ContentTypeTab.Global, Name = "#Disable", Description = "#DisableDescription")]
 		public override bool Disabled { get; set; }
 
 		/// <summary>

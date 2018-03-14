@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Linq;
 using System.Xml.Serialization;
@@ -10,7 +11,8 @@ namespace uWebshop.Domain.OrderDTO
 	{
 		public int DiscountAmount;
 		public int DiscountId;
-		public decimal DiscountPercentage;
+        public Guid DiscountKey;
+        public decimal DiscountPercentage;
 		public string DocTypeAlias;
 
 		//public int OrderLineId; ?
@@ -22,7 +24,8 @@ namespace uWebshop.Domain.OrderDTO
 
 		public int OriginalPrice;
 		public int OriginalProductId;
-		public List<ProductVariantInfo> ProductVariants; // entity - entity relation
+        public Guid ProductKey;
+        public List<ProductVariantInfo> ProductVariants; // entity - entity relation
 		public int Quantity;
 		public string RangesString;
 		public string SKU;
@@ -46,6 +49,7 @@ namespace uWebshop.Domain.OrderDTO
 		{
 			var productInfo = line.ProductInfo;
 			OriginalProductId = productInfo.Id;
+            ProductKey = productInfo.Key;
 			Quantity = productInfo.ItemCount.GetValueOrDefault(1);
 			Title = productInfo.Title;
 			SKU = productInfo.SKU;
@@ -59,7 +63,9 @@ namespace uWebshop.Domain.OrderDTO
 			Vat = productInfo.Vat;
 			OrderLineId = line.OrderLineId;
 			DiscountId = productInfo.DiscountId;
-			_customData = line._customData;
+            DiscountKey = productInfo.DiscountKey;
+
+            _customData = line._customData;
 
 			ProductVariants = productInfo.ProductVariants;
 			DiscountPercentage = productInfo.DiscountPercentage;
@@ -84,6 +90,7 @@ namespace uWebshop.Domain.OrderDTO
 		{
 			var productInfo = new ProductInfo();
 			productInfo.Id = OriginalProductId;
+            productInfo.Key = ProductKey;
 			productInfo.ItemCount = Quantity;
 			productInfo.Title = Title;
 			productInfo.SKU = SKU;
@@ -96,8 +103,9 @@ namespace uWebshop.Domain.OrderDTO
 			productInfo.RangesString = RangesString;
 			productInfo.Vat = Vat;
 			productInfo.DiscountId = DiscountId;
+            productInfo.DiscountKey = DiscountKey;
 
-			productInfo.ProductVariants = ProductVariants ?? new List<ProductVariantInfo>();
+            productInfo.ProductVariants = ProductVariants ?? new List<ProductVariantInfo>();
 			productInfo.DiscountPercentage = DiscountPercentage;
 			productInfo.DiscountAmountInCents = DiscountAmount;
 			productInfo.DiscountExcludingVariants = ExcludingVariants;

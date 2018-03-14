@@ -31,7 +31,7 @@ namespace uWebshop.Umbraco.Repositories
 			var tagsValue = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.affectedTags, localization, fields);
 			discount.AffectedProductTags = InternalHelpers.ParseTagsString(tagsValue);
 
-			DiscountOrderCondition condition;
+            DiscountOrderCondition condition;
 			var discountOrderConditionParseResult = Enum.TryParse(StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.orderCondition, localization, fields), out condition);
 			discount.Condition = discountOrderConditionParseResult ? condition : DiscountOrderCondition.None;
 
@@ -39,13 +39,13 @@ namespace uWebshop.Umbraco.Repositories
 
 			discount.MinimumOrderAmountInCents = StoreHelper.GetMultiStoreIntValue(_aliasses.minimumAmount, localization, fields);
 
-			var shippingDiscountable = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.shippingDiscountable, localization, fields);
+			var shippingDiscountable = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.shippingDiscountable, localization, fields).ToLower();
 			discount.IncludeShippingInOrderDiscountableAmount = shippingDiscountable == "enable" || shippingDiscountable == "1" || shippingDiscountable == "true";
 
 			// for backwards compatibility
 			discount.CouponCode = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary("couponCode", localization, fields);
 
-			var oncePerCustomer = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.oncePerCustomer, localization, fields);
+			var oncePerCustomer = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.oncePerCustomer, localization, fields).ToLower();
 			discount.OncePerCustomer = oncePerCustomer == "enable" || oncePerCustomer == "1" || oncePerCustomer == "true";
 		}
 
@@ -58,7 +58,7 @@ namespace uWebshop.Umbraco.Repositories
 			
 			var cmsApplication = IO.Container.Resolve<ICMSApplication>();
 			if (cmsApplication == null) throw new Exception("CMS missing");
-			
+
 			discount.Title = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary("title", localization, fields);
 			discount.Description = cmsApplication.ParseInternalLinks(
 				StoreHelper.ReadMultiStoreItemFromPropertiesDictionary("description", localization, fields));
@@ -85,7 +85,7 @@ namespace uWebshop.Umbraco.Repositories
 				discount.DiscountValue = StoreHelper.LocalizePrice(discount.DiscountValue, localization);
 			}
 			
-			var counterEnabled = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary("countdownEnabled", localization, fields);
+			var counterEnabled = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary("countdownEnabled", localization, fields).ToLower();
 			if (counterEnabled == "default")
 			{
 				var store = storeService.GetByAlias(localization.StoreAlias);

@@ -13,7 +13,7 @@ namespace uWebshop.Domain.Interfaces
 		/// </summary>
 		/// <param name="localization">The localization.</param>
 		/// <returns></returns>
-		List<Category> GetAllRootCategories(ILocalization localization);
+		IEnumerable<Category> GetAllRootCategories(ILocalization localization);
 
 		ICategory Localize(ICategory category, ILocalization localization);
 	}

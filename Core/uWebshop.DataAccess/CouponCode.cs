@@ -19,8 +19,9 @@ namespace uWebshop.Domain.Model
 		/// <param name="discountId">The discount unique identifier.</param>
 		/// <param name="couponCode">The coupon code.</param>
 		/// <param name="numberAvailable">The number available.</param>
-		public Coupon(int discountId, string couponCode, int numberAvailable)
+		public Coupon(int id, int discountId, string couponCode, int numberAvailable)
 		{
+            Id = id;
 			DiscountId = discountId;
 			CouponCode = couponCode;
 			NumberAvailable = numberAvailable;
@@ -40,6 +41,8 @@ namespace uWebshop.Domain.Model
 			CouponCode = displayString.Split('|')[0];
 			NumberAvailable = numberAvailable;
 		}
+
+        public int Id { get; set; }
 
 		/// <summary>
 		/// Gets or sets the unique identifier.
@@ -65,13 +68,21 @@ namespace uWebshop.Domain.Model
 		/// </value>
 		public int NumberAvailable { get; set; }
 
-		/// <summary>
-		/// Returns a <see cref="System.String" /> that represents this instance.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="System.String" /> that represents this instance.
-		/// </returns>
-		public override string ToString()
+        /// <summary>
+        /// Gets or sets the unique identifier.
+        /// </summary>
+        /// <value>
+        /// The unique identifier.
+        /// </value>
+        public Guid uniqueID { get; set; }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public override string ToString()
 		{
 			return string.Format("{0}|{1}", CouponCode, NumberAvailable);
 		}

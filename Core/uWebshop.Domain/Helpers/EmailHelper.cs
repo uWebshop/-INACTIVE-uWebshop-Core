@@ -21,6 +21,8 @@ using Umbraco.Core;
 using Umbraco.Web;
 using Umbraco.Web.Macros;
 using Umbraco.Web.Mvc;
+using System.Web.Http;
+using System.Net;
 
 namespace uWebshop.Domain.Helpers
 {
@@ -62,8 +64,10 @@ namespace uWebshop.Domain.Helpers
 		/// <param name="parameters"></param>
 		public static void SendOrderEmail(int storeEmailContentId, int customerEmailContentId, OrderInfo orderInfo, string emailAddress = null, Dictionary<string, object> parameters = null)
 		{
-			// set the culture for this request to the store culture, so dictionary items are rendered properly
-			var currentCulture = Thread.CurrentThread.CurrentCulture;
+            Log.Instance.LogDebug("uWebshop SendOrderEmail Init: storeEmailContentId: " + storeEmailContentId + " customerEmailContentId: " + customerEmailContentId + " emailAddress: " + emailAddress);
+            
+            // set the culture for this request to the store culture, so dictionary items are rendered properly
+            var currentCulture = Thread.CurrentThread.CurrentCulture;
 			var currentUICulture = Thread.CurrentThread.CurrentUICulture;
 			Thread.CurrentThread.CurrentCulture = orderInfo.StoreInfo.CultureInfo;
 			Thread.CurrentThread.CurrentUICulture = orderInfo.StoreInfo.CultureInfo;
@@ -72,13 +76,23 @@ namespace uWebshop.Domain.Helpers
 			var receivers = new List<string>();
 			if (storeEmailContentId > 0)
 			{
-				var storeEmail = new Email(storeEmailContentId);
-				var model = GenerateEmailModel(storeEmail, orderInfo);
-				emailBody = RenderEmailBody(model, storeEmail, parameters);
+                Log.Instance.LogDebug("uWebshop SendOrderEmail Sending Store Email");
+
+                var storeEmail = new Email(storeEmailContentId);
+
+                Log.Instance.LogDebug("uWebshop SendOrderEmail Generating Store Model");
+
+                var model = GenerateEmailModel(storeEmail, orderInfo);
+
+                Log.Instance.LogDebug("uWebshop SendOrderEmail Generating Store RenderEmailBody");
+
+                emailBody = RenderEmailBody(model, storeEmail, parameters);
 
 				var emailTo = orderInfo.StoreInfo.Store.EmailAddressTo;
 
-				if (!emailTo.Contains(";"))
+                Log.Instance.LogDebug("uWebshop SendOrderEmail Generating Store email To: " + emailTo);
+
+                if (!emailTo.Contains(";"))
 				{
 					receivers.Add(emailTo);
 				}
@@ -91,10 +105,13 @@ namespace uWebshop.Domain.Helpers
 
 				foreach (var receiver in receivers)
 				{
-					SendMail(orderInfo, receiver, orderInfo.StoreInfo.Store.EmailAddressFrom, model.Title, emailBody,
+					Log.Instance.LogWarning("uWebshop SendOrderEmail storeEmailContentId: receiver: " + receiver + " OrderId:" + orderInfo.UniqueOrderId + " OrderNumber:" + orderInfo.OrderNumber);
+					SendMail(orderInfo, receiver, orderInfo.StoreInfo.Store.EmailAddressFrom, storeEmail.Title, emailBody,
 						orderInfo.StoreInfo.Store.EmailAddressFromName);
 				}
 			}
+
+			receivers.Clear();
 
 			if (customerEmailContentId > 0)
 			{
@@ -105,7 +122,9 @@ namespace uWebshop.Domain.Helpers
 
 				foreach (var receiver in receivers)
 				{
-					SendMail(orderInfo, receiver, orderInfo.StoreInfo.Store.EmailAddressFrom, model.Title, emailBody,
+					Log.Instance.LogWarning("uWebshop SendOrderEmail customerEmailContentId: receiver: " + receiver + " OrderId:" + orderInfo.UniqueOrderId + " OrderNumber:" + orderInfo.OrderNumber);
+
+					SendMail(orderInfo, receiver, orderInfo.StoreInfo.Store.EmailAddressFrom, customerEmail.Title, emailBody,
 						orderInfo.StoreInfo.Store.EmailAddressFromName);
 				}
 			}
@@ -115,27 +134,72 @@ namespace uWebshop.Domain.Helpers
 			Thread.CurrentThread.CurrentUICulture = currentUICulture;
 		}
 
-		/// <summary>
-		/// Creates an EmailRenderModel based on EmailContentId and the OrderInfo Object
-		/// </summary>
-		/// <param name="email"></param>
-		/// <param name="orderInfo"></param>
-		/// <returns></returns>
-		public static EmailRenderModel GenerateEmailModel(Email email, OrderInfo orderInfo)
-		{
-			var orderInfoXmlstring = DomainHelper.SerializeObjectToXmlString(orderInfo);
-			var orderInfoXml = new XmlDocument();
-			orderInfoXml.LoadXml(orderInfoXmlstring);
-			
-			var IOrder = API.Orders.GetOrder(orderInfo.UniqueOrderId);
+        /// <summary>
+        /// Send order email
+        /// </summary>
+        /// <param name="storeEmailContentId"></param>
+        /// <param name="customerEmailContentId"></param>
+        /// <param name="orderInfo"></param>
+        /// <param name="emailAddress"></param>
+        /// <param name="parameters"></param>
+        public static void SendSingleOrderEmail(int templateId, OrderInfo orderInfo, string emailAddress, Dictionary<string, object> parameters = null)
+        {
 
-			return new EmailRenderModel
-			{
-				Id = email.Id,
-				Order = IOrder,
-				OrderInfo = orderInfo,
-				Title = ReplaceStrings(email.Title, orderInfoXml),
-				Description = ReplaceStrings(email.Description, orderInfoXml)
+            // set the culture for this request to the store culture, so dictionary items are rendered properly
+            var currentCulture = Thread.CurrentThread.CurrentCulture;
+            var currentUICulture = Thread.CurrentThread.CurrentUICulture;
+            Thread.CurrentThread.CurrentCulture = orderInfo.StoreInfo.CultureInfo;
+            Thread.CurrentThread.CurrentUICulture = orderInfo.StoreInfo.CultureInfo;
+
+            string emailBody;
+            var receivers = new List<string>();
+
+            if (templateId > 0)
+            {
+                var emailTemplate = new Email(templateId);
+                var model = GenerateEmailModel(emailTemplate, orderInfo);
+                emailBody = RenderEmailBody(model, emailTemplate, parameters);
+                receivers.Add(emailAddress);
+
+                foreach (var receiver in receivers)
+                {
+                    Log.Instance.LogWarning("uWebshop SendSingleOrderEmail customerEmailContentId: receiver: " + receiver + " OrderId:" + orderInfo.UniqueOrderId + " OrderNumber:" + orderInfo.OrderNumber);
+
+                    SendMail(orderInfo, receiver, orderInfo.StoreInfo.Store.EmailAddressFrom, model.Title, emailBody,
+                        orderInfo.StoreInfo.Store.EmailAddressFromName);
+                }
+            }
+
+            // change the culture back to what it was
+            Thread.CurrentThread.CurrentCulture = currentCulture;
+            Thread.CurrentThread.CurrentUICulture = currentUICulture;
+        }
+
+        /// <summary>
+        /// Creates an EmailRenderModel based on EmailContentId and the OrderInfo Object
+        /// </summary>
+        /// <param name="email"></param>
+        /// <param name="orderInfo"></param>
+        /// <returns></returns>
+        public static EmailRenderModel GenerateEmailModel(Email email, OrderInfo orderInfo)
+		{
+            Log.Instance.LogDebug("uWebshop EmailHelper - GenerateEmailModel");
+
+            //var orderInfoXmlstring = DomainHelper.SerializeObjectToXmlString(orderInfo);
+			//var orderInfoXml = new XmlDocument();
+            //Log.Instance.LogDebug("uWebshop EmailHelper - GenerateEmailModel Load xml");
+            //orderInfoXml.LoadXml(orderInfoXmlstring);
+
+            return new EmailRenderModel
+            {
+                Id = email.Id,
+                OrderInfo = orderInfo,
+                StoreAlias = orderInfo.StoreInfo.Alias,
+                UniqueID = orderInfo.UniqueOrderId,
+                Title = string.Empty,
+                Description = string.Empty
+				//Title = ReplaceStrings(email.Title, orderInfoXml),
+				//Description = ReplaceStrings(email.Description, orderInfoXml)
 			};
 		}
 
@@ -148,48 +212,58 @@ namespace uWebshop.Domain.Helpers
 		/// <returns></returns>
 		public static string RenderEmailBody(EmailRenderModel model, Email email, Dictionary<string, object> parameters = null)
 		{
-			// legacy email template picker
-			if (!string.IsNullOrEmpty(email.Template))
+			try
 			{
-				if (parameters == null) parameters = new Dictionary<string, object>();
-				parameters.Add("Order", model.OrderInfo);
-				parameters.Add("uniqueOrderId", model.Order.UniqueId.ToString());
-				parameters.Add("storeAlias", model.Order.Store.Alias);
-				parameters.Add("Title", model.Title);
-				parameters.Add("Description", model.Description);
 
-				if (email.Template.EndsWith(".xslt"))
+				// legacy email template picker
+				if (!string.IsNullOrEmpty(email.Template))
 				{
-					// generate XML from orderInfo
-					var orderInfoXmlstring = DomainHelper.SerializeObjectToXmlString(model.OrderInfo);
-					var orderInfoXml = new XmlDocument();
-					orderInfoXml.LoadXml(orderInfoXmlstring);
-					return IO.Container.Resolve<ICMSApplication>().RenderXsltMacro(email.Template, parameters, orderInfoXml);
+					if (parameters == null) parameters = new Dictionary<string, object>();
+
+                    parameters.Add("uniqueOrderId", model.UniqueID.ToString());
+                    parameters.Add("storeAlias", model.StoreAlias);
+                    //parameters.Add("Title", model.Title);
+                    //parameters.Add("Description", model.Description);
+
+					if (email.Template.EndsWith(".xslt"))
+					{
+						// generate XML from orderInfo
+						var orderInfoXmlstring = DomainHelper.SerializeObjectToXmlString(model.OrderInfo);
+						var orderInfoXml = new XmlDocument();
+						orderInfoXml.LoadXml(orderInfoXmlstring);
+						return IO.Container.Resolve<ICMSApplication>().RenderXsltMacro(email.Template, parameters, orderInfoXml);
+					}
+
+					if (email.Template.EndsWith(".cshtml"))
+					{
+                        Log.Instance.LogDebug("Rendering EmailBody: " + email.Template + " Id: " + email.Id + " Order: " + model.OrderInfo.UniqueOrderId);
+						return IO.Container.Resolve<ICMSApplication>().RenderMacro(email.Template, email.Id, parameters);
+					}
 				}
-				if (email.Template.EndsWith(".cshtml"))
+                
+                //todo: place in Umbraco project instead of here
+                var umbracoContext = UmbracoContext.Current;
+				var helper = new UmbracoHelper(umbracoContext);
+				var emailContent = helper.TypedContent(email.Id);
+                var templateAlias = emailContent.GetTemplateAlias();
+                var controller = new RenderEmailController();
+				var routeData = new RouteData();
+				routeData.Values.Add("controller", "RenderEmailController");
+				routeData.Values.Add("action", "Index");
+                controller.ControllerContext = new ControllerContext(umbracoContext.HttpContext, routeData, controller);
+
+				if (!string.IsNullOrEmpty(templateAlias))
 				{
-					return IO.Container.Resolve<ICMSApplication>().RenderMacro(email.Template, email.Id, parameters);
+					return RenderPartialViewToString(controller, templateAlias, email);
 				}
+
+				Log.Instance.LogError("No template defined for email with Id: " + model.Id);
+
+			} catch(Exception ex)
+			{
+				throw new Exception("Error on rendering emailbody.", ex);
 			}
 
-			//todo: place in Umbraco project instead of here
-			var umbracoContext = UmbracoContext.Current;
-			var helper = new UmbracoHelper(umbracoContext);
-			var emailContent = helper.TypedContent(email.Id);
-			var templateAlias = emailContent.GetTemplateAlias();
-			var controller = new RenderEmailController();
-			var routeData = new RouteData();
-			routeData.Values.Add("controller", "RenderEmailController");
-			routeData.Values.Add("action", "Index");
-
-			controller.ControllerContext = new ControllerContext(umbracoContext.HttpContext, routeData, controller);
-
-			if (!string.IsNullOrEmpty(templateAlias))
-			{
-				return RenderPartialViewToString(controller, templateAlias, email);
-			}
-
-			Log.Instance.LogError("No template defined for email with Id: " + model.Id);
 			return string.Empty;
 		}
 	
