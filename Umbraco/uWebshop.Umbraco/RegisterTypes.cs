@@ -76,7 +76,7 @@ namespace uWebshop.Umbraco
 				var settingsService = IO.Container.Resolve<ISettingsService>() as SettingsService;
 				if (settingsService != null)
 				{
-					settingsService.IncludingVat = settings.IncludingVat;
+                    settingsService.IncludingVat = settings.IncludingVat;
 					settingsService.UseLowercaseUrls = settings.UseLowercaseUrls;
 					settingsService.IncompleteOrderLifetime = settings.IncompleteOrderLifetime;
 					settingsService.RegisterSettingsChangedEvent(s =>

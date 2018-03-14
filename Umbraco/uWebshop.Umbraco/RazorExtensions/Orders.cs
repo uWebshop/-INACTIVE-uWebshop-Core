@@ -208,7 +208,9 @@ namespace uWebshop.RazorExtensions
 			var currentThread = Thread.CurrentThread.CurrentCulture;
 			Thread.CurrentThread.CurrentCulture = StoreHelper.GetCurrentStore().CurrencyCultureInfo;
 
-			var member = Member.GetCurrentMember();
+            var ms = ApplicationContext.Current.Services.MemberService;
+
+            var member = ms.GetByUsername(HttpContext.Current.User.Identity.Name);
 
 			if (member != null && member.Id != 0)
 			{
@@ -244,10 +246,13 @@ namespace uWebshop.RazorExtensions
 			var currentThread = Thread.CurrentThread.CurrentCulture;
 			Thread.CurrentThread.CurrentCulture = StoreHelper.GetCurrentStore().CurrencyCultureInfo;
 
-			var member = Membership.GetUser(userName);
-			if (member != null)
+            var member = HttpContext.Current.User.Identity.IsAuthenticated;
+
+			if (member)
 			{
-				orders = OrderHelper.GetOrdersForCustomer(member.UserName).ToList();
+                var memberName = HttpContext.Current.User.Identity.Name;
+
+                orders = OrderHelper.GetOrdersForCustomer(memberName).ToList();
 			}
 			Thread.CurrentThread.CurrentCulture = currentThread;
 			return orders;

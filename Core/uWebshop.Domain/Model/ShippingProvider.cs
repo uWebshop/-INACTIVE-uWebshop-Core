@@ -269,7 +269,8 @@ namespace uWebshop.Domain
 				{
 					shippingProviderMethod.Name = shippingProviderMethod.Title;
 					shippingProviderMethod.ProviderName = Title;
-				}
+
+                }
 
 				shippingProviderMethodList.AddRange(LoadShippingMethods());
 
@@ -278,6 +279,7 @@ namespace uWebshop.Domain
 					var shippingMethodDummy = new ShippingProviderMethod
 					{
 						Id = Id.ToString(),
+                        Key = Key,
 						Name = Title,
 						Title = Title,
 						ProviderName = Title,

@@ -1,10 +1,9 @@
 uWebshop-Releases
 =================
 
-The uWebshop Package build is created in the /builds/Umbraco Packages/ folder.
-One for Umbraco 6.1+, one for Umbraco 7.1+
-Creating a zip file of the folder will give you an Umbraco Package to install!
-Minor versions can be updated by simply coping over the DLL files to your /bin/ folder.
+The nuget package is created by building the buildproject proj.
+This creates a .nupkg inside the .nuget folder in the root solution directory.
+To increment the version number edit uWebshop.Umbraco/Installer/package.nuspec
 
 version 2.7.0.0
  - Fixed Category Cache issue

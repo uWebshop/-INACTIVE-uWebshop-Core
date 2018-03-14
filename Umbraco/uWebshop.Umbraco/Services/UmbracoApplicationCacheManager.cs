@@ -77,7 +77,7 @@ namespace uWebshop.Umbraco.Services
 					Log.Instance.LogDebug("Store published, requesting rebuild cache");
 					_storesDirty = true;
 				}
-				Log.Instance.LogDebug("Issueing Full Reset Cache after 'reload entity with id'");
+				Log.Instance.LogDebug("Issueing Full Reset Cache after 'reload entity with id: " + id + "'");
 				FullResetTrigger();
 			}
 		}

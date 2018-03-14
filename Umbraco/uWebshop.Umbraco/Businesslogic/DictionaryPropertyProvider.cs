@@ -40,10 +40,11 @@ namespace uWebshop.Domain
 		/// <returns></returns>
 		public bool UpdateValueIfPropertyPresent(string property, ref string value)
 		{
-			if (ContainsKey(property))
+
+            if (ContainsKey(property))
 			{
-				value = GetStringValue(property);
-				return true;
+                value = GetStringValue(property);
+                return true;
 			}
 			return false;
 		}

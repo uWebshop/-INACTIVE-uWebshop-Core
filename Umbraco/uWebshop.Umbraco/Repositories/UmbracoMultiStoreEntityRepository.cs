@@ -32,7 +32,9 @@ namespace uWebshop.Umbraco.Repositories
 			//Log.Instance.LogDebug("Reloading all entities of type "+ TypeAlias + " for store "+storeAlias);
 
 			var examineResults = UmbracoStaticCachedEntityRepository.GetExamineResultsForNodeTypeAlias(TypeAlias);
-			if (examineResults != null && examineResults.Any()) return examineResults.Select(e => CreateEntityFromExamineData(e, localization)).ToList();
+
+			if (examineResults != null && examineResults.Any())
+                return examineResults.Select(e => CreateEntityFromExamineData(e, localization)).ToList();
 
             // todo: optimize UmbracoHelper
             var helper = new UmbracoHelper(UmbracoContext.Current);
@@ -72,7 +74,15 @@ namespace uWebshop.Umbraco.Repositories
 		internal void LoadDataFromNode(T2 entity, IPublishedContent node, ILocalization localization)
 		{
 			Helpers.LoadUwebshopEntityPropertiesFromNode(entity, node);
-			LoadDataFromPropertiesDictionary(entity, new UmbracoNodePropertyProvider(node), localization);
+
+            try
+            {
+                LoadDataFromPropertiesDictionary(entity, new UmbracoNodePropertyProvider(node), localization);
+            } catch(Exception ex)
+            {
+                Log.Instance.LogError(ex, "LoadDataFromNode Error! Node: " + node.Id);
+            }
+			
 		}
 
 		public void ReloadData(T1 entity, ILocalization localization)

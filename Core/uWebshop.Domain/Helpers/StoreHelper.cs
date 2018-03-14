@@ -222,25 +222,30 @@ namespace uWebshop.Domain.Helpers
 		/// <returns></returns>
 		public static bool GetMultiStoreDisable(int contentId)
 		{
-			var value = IO.Container.Resolve<ICMSApplication>().GetMultiStoreContentProperty(contentId, "disable", null, true);
-			return value == "1" || value == "true";
+			var value = IO.Container.Resolve<ICMSApplication>().GetMultiStoreContentProperty(contentId, "disable", null, true).ToLower();
+
+            return value == "1" || value.ToLowerInvariant() == "true";
 		}
 
 		internal static bool ReturnCachedFieldOrLoadValueUsingGetMultiStoreExamineAndUpdateField(int entityId, string fieldName, ref bool? field)
 		{
 			var newValue = GetMultiStoreItem(entityId, fieldName);
-			return field ?? (field = newValue == "enable" || newValue == "1" || newValue == "true" || newValue == string.Empty).GetValueOrDefault();
+            newValue = newValue.ToLower();
+            return field ?? (field = newValue == "enable" || newValue == "1" || newValue.ToLowerInvariant() == "true" || newValue == string.Empty).GetValueOrDefault();
 		}
 
 		internal static bool ReturnCachedFieldOrLoadValueAndUpdateField(string newValue, ref bool? field)
 		{
-			return field ?? (field = newValue == "enable" || newValue == "1" || newValue == "true" || newValue == string.Empty).GetValueOrDefault();
+            newValue = newValue.ToLower();
+
+            return field ?? (field = newValue == "enable" || newValue == "1" || newValue.ToLowerInvariant() == "true" || newValue == string.Empty).GetValueOrDefault();
 		}
 
 		internal static bool GetMultiStoreDisableExamine(ILocalization localization, IPropertyProvider fields)
 		{
 			const string propertyAlias = "disable";
-			Func<string, bool> valueCheck = value => value == "1" || value == "true";
+			Func<string, bool> valueCheck = value => value.ToLowerInvariant() == "1" || value.ToLowerInvariant() == "true";
+
 			if (fields.ContainsKey(propertyAlias) && valueCheck(fields.GetStringValue(propertyAlias)))
 			{
 				return true;
@@ -262,28 +267,33 @@ namespace uWebshop.Domain.Helpers
 
 		internal static string ReadMultiStoreItemFromPropertiesDictionary(string propertyAlias, ILocalization localization, IPropertyProvider fields)
 		{
-			var currencyCode = localization.CurrencyCode;
+            var currencyCode = localization.CurrencyCode;
 			var storeAlias = localization.StoreAlias;
 			var multiStoreAlias = CreateMultiStorePropertyAlias(propertyAlias, storeAlias);
+
 			if (!string.IsNullOrEmpty(currencyCode))
 			{
 				if (!string.IsNullOrEmpty(storeAlias))
 				{
-					var multiStoreMultiCurrenyAlias = CreateFullLocalizedPropertyAlias(propertyAlias, localization);
-					if (fields.ContainsKey(multiStoreMultiCurrenyAlias))
+                    
+                    var multiStoreMultiCurrenyAlias = CreateFullLocalizedPropertyAlias(propertyAlias, localization);
+
+                    if (fields.ContainsKey(multiStoreMultiCurrenyAlias))
 					{
 						var value = fields.GetStringValue(multiStoreMultiCurrenyAlias);
 
-						if (!string.IsNullOrEmpty(value))
+                        if (!string.IsNullOrEmpty(value))
 						{
 							return value;
 						}
 					}
 				}
+
 				var multiCurrencyAlias = CreateMultiStorePropertyAlias(propertyAlias, currencyCode);
 				if (fields.ContainsKey(multiCurrencyAlias))
-				{
-					var value = fields.GetStringValue(multiCurrencyAlias);
+                {
+
+                    var value = fields.GetStringValue(multiCurrencyAlias);
 
 					if (!string.IsNullOrEmpty(value))
 					{
@@ -295,8 +305,8 @@ namespace uWebshop.Domain.Helpers
 			if (!string.IsNullOrEmpty(storeAlias))
 			{
 				if (fields.ContainsKey(multiStoreAlias))
-				{
-					var value = fields.GetStringValue(multiStoreAlias);
+                {
+                    var value = fields.GetStringValue(multiStoreAlias);
 
 					if (!string.IsNullOrEmpty(value))
 					{
@@ -304,19 +314,22 @@ namespace uWebshop.Domain.Helpers
 					}
 				}
 			}
-			if (fields.ContainsKey(propertyAlias))
-			{
-				var value = fields.GetStringValue(propertyAlias);
 
-				return value ?? string.Empty;
+            if (fields.ContainsKey(propertyAlias))
+            {
+                var value = fields.GetStringValue(propertyAlias);
+
+                return value ?? string.Empty; 
 			}
+
 			return string.Empty;
 		}
 
 		internal static int GetMultiStoreIntValue(string propertyName, ILocalization localization, IPropertyProvider fields, int defaultValue = 0)
 		{
 			var propertyValue = ReadMultiStoreItemFromPropertiesDictionary(propertyName, localization, fields);
-			int intValue;
+
+            int intValue;
 			return int.TryParse(propertyValue, out intValue) ? intValue : defaultValue;
 		}
 
@@ -341,10 +354,11 @@ namespace uWebshop.Domain.Helpers
 		/// <returns></returns>
 		public static int GetMultiStoreStock(int id)
 		{
+
 			// todo: multi store validation
 			var currentStore = GetCurrentStore();
 
-			return currentStore != null && currentStore.UseStoreSpecificStock ? UWebshopStock.GetStock(id, currentStore.Alias) : UWebshopStock.GetStock(id);
+            return currentStore != null && currentStore.UseStoreSpecificStock ? UWebshopStock.GetStock(id, currentStore.Alias) : UWebshopStock.GetStock(id,"");
 		}
 
 		/// <summary>
@@ -571,7 +585,14 @@ namespace uWebshop.Domain.Helpers
 			return false;
 		}
 
-		public static bool ChangeCurrency(string currencyCode)
+        public static bool ChangeCountry(string country)
+        {
+            var storeAlias = CurrentLocalization.StoreAlias;
+
+            return false;
+        }
+
+        public static bool ChangeCurrency(string currencyCode)
 		{
 			var storeAlias = CurrentLocalization.StoreAlias;
 

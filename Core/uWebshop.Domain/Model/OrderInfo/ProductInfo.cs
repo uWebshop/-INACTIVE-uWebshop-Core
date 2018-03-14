@@ -36,29 +36,38 @@ namespace uWebshop.Domain
 		#region Data fields
 
 		internal int DiscountId;
-
-		/// <summary>
-		/// The unique identifier
-		/// </summary>
-		[Browsable(false)]
+        internal Guid DiscountKey;
+        /// <summary>
+        /// The unique identifier
+        /// </summary>
+        [Browsable(false)]
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		[DataMember] public int Id;
 
-		/// <summary>
-		/// Gets the original unique identifier.
-		/// </summary>
-		/// <value>
-		/// The original unique identifier.
-		/// </value>
-		public int OriginalId { get { return Id; } }
-		/// <summary>
-		/// Gets the variants.
-		/// </summary>
-		/// <value>
-		/// The variants.
-		/// </value>
-		public IEnumerable<IOrderedProductVariant> Variants { get { return ProductVariants; } }
+        /// <summary>
+        /// Gets the original unique identifier.
+        /// </summary>
+        /// <value>
+        /// The original unique identifier.
+        /// </value>
+        public int OriginalId { get { return Id; } }
+
+        /// <summary>
+        /// Gets the original unique identifier.
+        /// </summary>
+        /// <value>
+        /// The original unique identifier.
+        /// </value>
+        public Guid Key;
+
+        /// <summary>
+        /// Gets the variants.
+        /// </summary>
+        /// <value>
+        /// The variants.
+        /// </value>
+        public IEnumerable<IOrderedProductVariant> Variants { get { return ProductVariants; } }
 
 		private int? _itemCount;
 
@@ -393,8 +402,8 @@ namespace uWebshop.Domain
 			Order = order;
 
 			Id = orderedProduct.ProductId;
-
-			Title = orderedProduct.Title;
+            Key = orderedProduct.ProductKey;
+            Title = orderedProduct.Title;
 			SKU = orderedProduct.SKU;
 			Weight = orderedProduct.Weight;
 			Length = orderedProduct.Length;
@@ -452,6 +461,7 @@ namespace uWebshop.Domain
 			if (discount != null)
 			{
 				DiscountId = discount.Id;
+                DiscountKey = discount.Key;
 			}
 			IO.Container.Resolve<IOrderUpdatingService>().UpdateProductInfoDiscountInformation(this);
 

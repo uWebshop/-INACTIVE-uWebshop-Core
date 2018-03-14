@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
+using Umbraco.Core.Models;
 using uWebshop.Common;
 using uWebshop.Domain.Businesslogic;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
 using uWebshop.Domain.Model;
+using Umbraco.Web;
 
 namespace uWebshop.Domain
 {
@@ -40,7 +43,13 @@ namespace uWebshop.Domain
 
 		string SKU { get; }
 
-		decimal Vat { get; }
+        string Color { get; }
+
+        string Size { get; }
+
+        string Images { get; }
+
+        decimal Vat { get; }
 
 		//string DocTypeAlias { get; }
 		//int DiscountAmountInCents { get; set; }
@@ -57,7 +66,15 @@ namespace uWebshop.Domain
 		/// The original unique identifier.
 		/// </value>
 		int OriginalId { get; }
-	}
+
+        /// <summary>
+        /// Gets the original unique identifier.
+        /// </summary>
+        /// <value>
+        /// The original unique identifier.
+        /// </value>
+        Guid Key { get; }
+    }
 	internal interface IOrderedItem
 	{
 		string DocTypeAlias { get; }
@@ -87,6 +104,7 @@ namespace uWebshop.Domain
 			Product = product;
 			
 			Id = productVariant.VariantId;
+            Key = productVariant.VariantKey;
 			Title = productVariant.Title;
 			SKU = productVariant.SKU;
 			Group = productVariant.Group;
@@ -100,8 +118,11 @@ namespace uWebshop.Domain
 			Vat = productVat;
 			DiscountAmountInCents = productVariant.DiscountAmount;
 			DiscountPercentage = productVariant.DiscountPercentage;
+            Size = productVariant.Size;
+            Color = productVariant.Color;
+            Images = productVariant.Images;
 
-			DocTypeAlias = productVariant.TypeAlias ?? productVariant.DocTypeAlias;
+            DocTypeAlias = productVariant.TypeAlias ?? productVariant.DocTypeAlias;
 		}
 
 		/// <summary>
@@ -115,10 +136,34 @@ namespace uWebshop.Domain
 			Product = product;
 
 			Id = productVariant.Id;
+            Key = productVariant.Key;
 			Title = productVariant.Title;
 			SKU = productVariant.SKU;
+            try
+            {
+                Size = productVariant.GetProperty("size");
+            } catch(Exception ex)
+            {
+                Log.Instance.LogDebug("Size property not found on variant");
+            }
+            try
+            {
+                Color = GetColor(productVariant.GetPropertyValue<object>("color"));
+            }
+            catch (Exception ex)
+            {
+                Log.Instance.LogDebug("Color property not found on variant");
+            }
+            try
+            {
+                Images = string.Join(",", productVariant.GetPropertyValue<IEnumerable<IPublishedContent>>("images").Select(x => x.Url));
+            }
+            catch (Exception ex)
+            {
+                Log.Instance.LogDebug("Failed to map images");
+            }
 
-			var groupname = string.Empty;
+            var groupname = string.Empty;
 			if (string.IsNullOrEmpty(productVariant.Group))
 			{
 				var productVariantGroup = DomainHelper.GetProductVariantGroupById(productVariant.ParentId);
@@ -160,10 +205,22 @@ namespace uWebshop.Domain
 			DocTypeAlias = productVariant.NodeTypeAlias;
 		}
 
-		[DataMember]
+        [DataMember]
+        public string Size { get; set; }
+
+        [DataMember]
+        public string Images { get; set; }
+
+        [DataMember]
+        public string Color { get; set; }
+
+        [DataMember]
 		public int Id { get; set; }
 
-		[IgnoreDataMember]
+        [DataMember]
+        public Guid Key { get; set; }
+
+        [IgnoreDataMember]
 		public bool Required { get; set; }
 
 		[DataMember]
@@ -306,5 +363,45 @@ namespace uWebshop.Domain
 			get { return PriceWithVatInCents/100m; }
 			set { }
 		}
+
+        private string GetColor(object colorObject)
+        {
+            if (colorObject.GetType().Name == "XmlPublishedContent")
+            {
+                var colorNode = (IPublishedContent)colorObject;
+
+                if (colorNode != null)
+                {
+                    var propConfig = ConfigurationManager.AppSettings["uwbsVariantColorPropertyAlias"];
+                    var propertyAlias = propConfig != null && !string.IsNullOrEmpty(propConfig) ? propConfig : "name";
+                    var colorNameProp = colorNode.GetPropertyValue<string>(propertyAlias);
+                    string colorName = colorNameProp != null && !string.IsNullOrEmpty(colorNameProp) ? colorNameProp : colorNode.Name;
+
+                    return colorName;
+                }
+
+            } else
+            {
+                int _colorId = 0;
+
+                if (int.TryParse(Convert.ToString(colorObject), out _colorId))
+                {
+                    var colorNode = IO.Container.Resolve<ICMSContentService>().GetReadonlyById(_colorId);
+
+                    if (colorNode != null)
+                    {
+                        var propConfig = ConfigurationManager.AppSettings["uwbsVariantColorPropertyAlias"];
+                        var propertyAlias = propConfig != null && !string.IsNullOrEmpty(propConfig) ? propConfig : "name";
+                        var colorNameProp = colorNode.GetProperty(propertyAlias);
+                        string colorName = colorNameProp != null && !string.IsNullOrEmpty(colorNameProp.Value) ? colorNameProp.Value : colorNode.Name;
+
+                        return colorName;
+                    }
+
+                }
+            }
+
+            return string.Empty;
+        }
 	}
 }

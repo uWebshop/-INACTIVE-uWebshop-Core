@@ -70,7 +70,7 @@ namespace uWebshop.API
 			get
 			{
 				var value = GetValue("customerAcceptsMarketing");
-				return value == "true" || value == "1";
+				return value.ToLowerInvariant() == "true" || value == "1";
 			}
 		}
 

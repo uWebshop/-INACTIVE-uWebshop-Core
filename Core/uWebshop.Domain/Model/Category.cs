@@ -15,16 +15,21 @@ using uWebshop.Domain.Services;
 namespace uWebshop.Domain
 {
 	/// <summary>
-	///     Class representing a category in webshop, containing a group of products
+	/// Class representing a category in webshop, containing a group of products
 	/// </summary>
 	[DataContract(Namespace = "", IsReference = true)]
 	[ContentType(ParentContentType = typeof(Catalog), Name = "Category", Description = "#CategoryDescription", Alias = "uwbsCategory", IconClass = IconClass.stacklist, Icon = ContentIcon.Folder, Thumbnail = ContentThumbnail.Folder, AllowedChildTypes = new[] { typeof(Category), typeof(Product) })]
 	public class Category : MultiStoreUwebshopContent, ICategory, Common.Interfaces.ICategory
 	{
-		/// <summary>
-		/// The node alias
-		/// </summary>
-		public static string NodeAlias;
+        /// <summary>
+        /// Shared lock object for synchronizing
+        /// </summary>
+        private static readonly object padlock = new object();
+
+        /// <summary>
+        /// The node alias
+        /// </summary>
+        public static string NodeAlias;
 
 		internal ILocalization Localization;
 
@@ -162,13 +167,37 @@ namespace uWebshop.Domain
 			{
 				if (_categories == null)
 				{
-					var recursiveParentsIncludingSelf = GetParentCategoriesRecursiveToPreventLoops();
-					recursiveParentsIncludingSelf.Add(this);
-					// todo: remove loops
-					_categories = IO.Container.Resolve<ICategoryService>().GetAll(Localization).Where(x => x.ParentId == Id).OrderBy(c => c.SortOrder).Cast<Category>().ToList();
-					_categories.AddRange(_categoryIds.Select(id => IO.Container.Resolve<ICategoryService>().GetById(id, Localization)).Where(x => x != null));
-					_categories = _categories.Where(c => !recursiveParentsIncludingSelf.Contains(c)).ToList();
+                    lock(padlock)
+                    {
+                        if (_categories == null)
+                        {
+                            var recursiveParentsIncludingSelf 
+                                = GetParentCategoriesRecursiveToPreventLoops();
+
+                            recursiveParentsIncludingSelf.Add(this);
+
+                            // todo: remove loops
+                            _categories = IO.Container.Resolve<ICategoryService>()
+                                                      .GetAll(Localization)
+                                                      .Where(x => x.ParentId == Id)
+                                                      .OrderBy(c => c.SortOrder)
+                                                      .Cast<Category>()
+                                                      .ToList();
+
+                            _categories.AddRange
+                                          (_categoryIds.Select
+                                                         (id => IO.Container.Resolve<ICategoryService>()
+                                                                            .GetById(id, Localization))
+                                                                            .Where(x => x != null));
+
+                            _categories = _categories.Where(c => !recursiveParentsIncludingSelf
+                                                                                    .Contains(c))
+                                                     .ToList();
+                        }
+                    }
+
 				}
+
 				return _categories;
 			}
 			set { }
@@ -258,18 +287,24 @@ namespace uWebshop.Domain
 		/// <returns></returns>
 		public static bool IsAlias(string nodeTypeAlias)
 		{
-			return nodeTypeAlias != null && !nodeTypeAlias.StartsWith(Catalog.CategoryRepositoryNodeAlias) && nodeTypeAlias.StartsWith(NodeAlias);
+			return nodeTypeAlias != null && 
+                  !nodeTypeAlias.StartsWith(Catalog.CategoryRepositoryNodeAlias) &&  
+                   nodeTypeAlias.StartsWith(NodeAlias);
 		}
 
 		private List<ICategory> GetParentCategoriesRecursiveToPreventLoops()
 		{
 			var parents = ParentCategories1.ToList();
 			var prevparents = new List<ICategory>();
+
 			while (parents.Count > prevparents.Count)
 			{
 				prevparents = parents;
-				parents = parents.Concat(parents.SelectMany(c => (c as Category).ParentCategories1)).Distinct().ToList();
+				parents = parents.Concat(parents.SelectMany(c => (c as Category).ParentCategories1))
+                                 .Distinct()
+                                 .ToList();
 			}
+
 			return parents;
 		}
 

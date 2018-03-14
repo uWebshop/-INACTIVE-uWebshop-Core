@@ -17,10 +17,16 @@ namespace uWebshop.Domain
 		[DataMember]
 		public int Id { get; set; }
 
-		/// <summary>
-		///     Payment Provider Title
-		/// </summary>
-		[DataMember]
+        /// <summary>
+        ///     Payment Provider Key
+        /// </summary>
+        [DataMember]
+        public Guid Key { get; set; }
+
+        /// <summary>
+        ///     Payment Provider Title
+        /// </summary>
+        [DataMember]
 		public string Title { get; set; }
 
 		/// <summary>
@@ -29,10 +35,16 @@ namespace uWebshop.Domain
 		[DataMember]
 		public string MethodId { get; set; }
 
-		/// <summary>
-		///     Payment Provider Method Title
-		/// </summary>
-		[DataMember]
+        /// <summary>
+        ///     Payment Provider Method Key
+        /// </summary>
+        [DataMember]
+        public Guid MethodKey { get; set; }
+
+        /// <summary>
+        ///     Payment Provider Method Title
+        /// </summary>
+        [DataMember]
 		public string MethodTitle { get; set; }
 
 		/// <summary>

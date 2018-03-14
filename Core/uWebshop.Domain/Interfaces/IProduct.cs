@@ -295,7 +295,14 @@ namespace uWebshop.API
 		/// <param name="propertyAlias">The property alias.</param>
 		/// <returns></returns>
 		string GetProperty(string propertyAlias);
-	}
+
+        /// <summary>
+        /// Gets the propertyValue.
+        /// </summary>
+        /// <param name="propertyAlias">The property alias.</param>
+        /// <returns></returns>
+        T GetPropertyValue<T>(string propertyAlias);
+    }
 
 	/// <summary>
 	/// 

@@ -6,6 +6,8 @@ using uWebshop.Common;
 using uWebshop.Domain;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
+using System.Web;
+using Umbraco.Core;
 
 namespace uWebshop.API
 {
@@ -45,16 +47,37 @@ namespace uWebshop.API
 		/// <returns></returns>
 		public static IOrder GetOrder(Guid guid)
 		{
-			var order = OrderHelper.GetOrder(guid);
+            try
+            {
+                var order = OrderHelper.GetOrder(guid);
 
-			var membershipUser = UwebshopRequest.Current.User;
-		  
-			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || membershipUser != null && membershipUser.UserName == order.CustomerInfo.LoginName || UwebshopRequest.Current.PaymentProvider != null || OrderHelper.IsCompletedOrderWithinValidLifetime(order))
-			{
-				return CreateBasketFromOrderInfo(order);
-			}
+                //var membershipUser = UwebshopRequest.Current.User;
 
-			return null;
+                var memberUserName = HttpContext.Current.User.Identity.Name;
+
+                if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated ||
+                    HttpContext.Current.User.Identity.IsAuthenticated && memberUserName == order.CustomerInfo.LoginName ||
+                    UwebshopRequest.Current.PaymentProvider != null ||
+                    OrderHelper.IsCompletedOrderWithinValidLifetime(order))
+                {
+                    return CreateBasketFromOrderInfo(order);
+                }
+                else
+                {
+                    //Log.Instance.LogError("Failed to GetOrder by Guid, will recover.");
+
+                    if (order != null)
+                    {
+                        return CreateBasketFromOrderInfo(order);
+                    }
+                }
+
+            } catch(Exception ex)
+            {
+                Log.Instance.LogError(ex, "Orders Api, GetOrder Failed!");
+            }
+
+            return null;
 		}
 
 		/// <summary>
@@ -66,9 +89,11 @@ namespace uWebshop.API
 		{
 			var order = OrderHelper.GetOrder(transactionId);
 
-			var membershipUser = UwebshopRequest.Current.User;
+			//var membershipUser = UwebshopRequest.Current.User;
 
-			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || membershipUser != null && membershipUser.UserName == order.CustomerInfo.LoginName || UwebshopRequest.Current.PaymentProvider != null || OrderHelper.IsCompletedOrderWithinValidLifetime(order))
+			var memberUserName = HttpContext.Current.User.Identity.Name;
+
+			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || HttpContext.Current.User.Identity.IsAuthenticated && memberUserName == order.CustomerInfo.LoginName || UwebshopRequest.Current.PaymentProvider != null || OrderHelper.IsCompletedOrderWithinValidLifetime(order))
 			{
 				return CreateBasketFromOrderInfo(order);
 			}
@@ -134,7 +159,7 @@ namespace uWebshop.API
 		{
 			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || UwebshopRequest.Current.PaymentProvider != null)
 			{
-                return GetOrdersConfirmedBetweenTimes(startDate, endDate, storeAlias);
+				return GetOrdersConfirmedBetweenTimes(startDate, endDate, storeAlias);
 			}
 
 			return Enumerable.Empty<IOrder>();
@@ -157,62 +182,80 @@ namespace uWebshop.API
 			return Enumerable.Empty<IOrder>();
 		}
 
-        /// <summary>
-        /// Gets orders confirmed between certaintime frame
-        /// </summary>
-        /// <param name="startDate"></param>
-        /// <param name="endDate"></param>
-        /// <param name="storeAlias"></param>
-        /// <returns></returns>
-        public static IEnumerable<IOrder> GetOrdersConfirmedBetweenTimes(DateTime startDate, DateTime endDate, string storeAlias = null)
-        {
-            if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || UwebshopRequest.Current.PaymentProvider != null)
-            {
-                return OrderHelper.GetOrdersConfirmedBetweenTimes(startDate, endDate, storeAlias).Select(CreateBasketFromOrderInfo);
-            }
-
-            return Enumerable.Empty<IOrder>();
-        }
-
-        /// <summary>
-        /// Gets the orders for customer.
-        /// </summary>
-        /// <param name="customerId">The customer unique identifier.</param>
-        /// <param name="storeAlias">The store alias.</param>
-        /// <returns></returns>
-        public static IEnumerable<IOrder> GetOrdersForCustomer(int customerId, string storeAlias = null)
-        {
-            var membershipUser = UwebshopRequest.Current.User;
-            if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated
-                || (membershipUser != null && membershipUser.ProviderUserKey != null && membershipUser.ProviderUserKey.ToString() == customerId.ToString())
-                || UwebshopRequest.Current.PaymentProvider != null)
-            {
-                return OrderHelper.GetOrdersForCustomer(customerId, storeAlias).Select(CreateBasketFromOrderInfo);
-            }
-
-            return Enumerable.Empty<IOrder>();
-
-        }
-
-        /// <summary>
-        /// Gets the orders for customer.
-        /// </summary>
-        /// <param name="userName">Name of the user.</param>
-        /// <param name="storeAlias">The store alias.</param>
-        /// <returns></returns>
-        public static IEnumerable<IOrder> GetOrdersForCustomer(string userName, string storeAlias = null)
-        {
-            var membershipUser = UwebshopRequest.Current.User;
-            if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || membershipUser != null && membershipUser.UserName == userName || UwebshopRequest.Current.PaymentProvider != null)
-            {
-                return OrderHelper.GetOrdersForCustomer(userName, storeAlias).Select(CreateBasketFromOrderInfo);
-            }
-
-            return Enumerable.Empty<IOrder>();
-        }
-
-        internal static IOrder CreateBasketFromOrderInfo(OrderInfo order)
+		/// <summary>
+		/// Gets orders confirmed between certaintime frame
+		/// </summary>
+		/// <param name="startDate"></param>
+		/// <param name="endDate"></param>
+		/// <param name="storeAlias"></param>
+		/// <returns></returns>
+		public static IEnumerable<IOrder> GetOrdersConfirmedBetweenTimes(DateTime startDate, DateTime endDate, string storeAlias = null)
 		{
+			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || UwebshopRequest.Current.PaymentProvider != null)
+			{
+				return OrderHelper.GetOrdersConfirmedBetweenTimes(startDate, endDate, storeAlias).Select(CreateBasketFromOrderInfo);
+			}
+
+			return Enumerable.Empty<IOrder>();
+		}
+
+		/// <summary>
+		/// Gets the orders for customer.
+		/// </summary>
+		/// <param name="customerId">The customer unique identifier.</param>
+		/// <param name="storeAlias">The store alias.</param>
+		/// <returns></returns>
+		public static IEnumerable<IOrder> GetOrdersForCustomer(int customerId, string storeAlias = null)
+		{
+			var membershipUserName = HttpContext.Current.User.Identity.Name;
+
+			if (!string.IsNullOrEmpty(membershipUserName)) {
+
+				var m = ApplicationContext.Current.Services.MemberService;
+
+				var member = m.GetByUsername(membershipUserName);
+
+				if (member != null) {
+
+					if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated
+						|| (member.Id.ToString() == customerId.ToString())
+						|| UwebshopRequest.Current.PaymentProvider != null)
+					{
+						return OrderHelper.GetOrdersForCustomer(customerId, storeAlias).Select(CreateBasketFromOrderInfo);
+					}
+
+				}
+
+
+
+			}
+
+			return Enumerable.Empty<IOrder>();
+
+		}
+
+		/// <summary>
+		/// Gets the orders for customer.
+		/// </summary>
+		/// <param name="userName">Name of the user.</param>
+		/// <param name="storeAlias">The store alias.</param>
+		/// <returns></returns>
+		public static IEnumerable<IOrder> GetOrdersForCustomer(string userName, string storeAlias = null)
+		{
+			var memberUserName = HttpContext.Current.User.Identity.Name;
+
+			if (IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || HttpContext.Current.User.Identity.IsAuthenticated && memberUserName == userName || UwebshopRequest.Current.PaymentProvider != null)
+			{
+
+				return OrderHelper.GetOrdersForCustomer(userName, storeAlias).Select(CreateBasketFromOrderInfo);
+			}
+
+			return Enumerable.Empty<IOrder>();
+		}
+
+		internal static IOrder CreateBasketFromOrderInfo(OrderInfo order)
+		{
+
 			return new BasketOrderInfoAdaptor(order);
 		}
 

@@ -145,7 +145,7 @@ namespace uWebshop.API
 		/// <returns></returns>
 		public static IProduct GetProduct(int productId = 0, string storeAlias = null, string currencyCode = null)
 		{
-			if (productId == 0)
+            if (productId == 0)
 			{
 				var product = UwebshopRequest.Current.Product;
 				if (storeAlias == null && currencyCode == null || product == null) return (IProduct)product;
@@ -153,7 +153,8 @@ namespace uWebshop.API
 			}
 			var productById = DomainHelper.GetProductById(productId, storeAlias, currencyCode);
 			if (productById == null) return null;
-			return new ProductAdaptor(productById);
+
+            return new ProductAdaptor(productById);
 		}
 
 		/// <summary>

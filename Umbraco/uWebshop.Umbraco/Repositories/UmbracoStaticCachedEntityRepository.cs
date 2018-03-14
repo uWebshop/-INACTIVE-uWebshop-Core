@@ -37,11 +37,26 @@ namespace uWebshop.Umbraco.Repositories
 
 		public UwbsNode GetByGlobalId(int globalId)
 		{
+            //Log.Instance.LogError("GetGlobalId: id: " + globalId);
+
 		    if (globalId > 1)
 		    {
-		        var uwbsNode = GetAll().FirstOrDefault(node => node.Id == globalId);
-		        uwbsNode = uwbsNode ?? LoadUwbsNodeFromNode(globalId); // fallback = slow! (nodefactory)
-		        return uwbsNode.Path != null ? uwbsNode : null;
+                //Log.Instance.LogError("GetGlobalId: > 1.. Getting all");
+
+                var uwbsNode = GetAll().FirstOrDefault(node => node.Id == globalId);
+
+                //if (uwbsNode == null) {
+                    //Log.Instance.LogError("uwbsNode Empty");
+                //}
+          
+                uwbsNode = uwbsNode ?? LoadUwbsNodeFromNode(globalId); // fallback = slow! (nodefactory)
+
+               // if (uwbsNode == null)
+                //{
+               //     Log.Instance.LogError("uwbsNode Empty, fallback failed");
+               // }
+
+                return uwbsNode != null && uwbsNode.Path != null ? uwbsNode : null;
 		    }
 
 		    return null;
@@ -123,10 +138,12 @@ namespace uWebshop.Umbraco.Repositories
 		{
 			if (_allUwbsNodes == null)
 			{
-				Log.Instance.LogDebug("Reloading basic info of all umbraco nodes");
+				//Log.Instance.LogDebug("Reloading basic info of all umbraco nodes");
 
 				var examineResults = InternalHelpers.GetSearchResults("nodeTypeAlias:uwbs*");
+
 				if (examineResults == null) return Enumerable.Empty<UwbsNode>();
+
 				_allUwbsNodes = examineResults.Select(LoadUwbsNodeFromLuceneDocument).ToList();
 			}
 			return _allUwbsNodes;
@@ -137,16 +154,20 @@ namespace uWebshop.Umbraco.Repositories
 			try
 			{
 				var examineprovider = ExamineManager.Instance.SearchProviderCollection[UwebshopConfiguration.Current.ExamineSearcher];
+
 				if (examineprovider != null)
 				{
 					var searcher = examineprovider.CreateSearchCriteria();
+
 					if (searcher != null)
 					{
 						IBooleanOperation query = searcher.Field("__NodeTypeAlias", nodeTypeAlias.ToLower().MultipleCharacterWildcard());
 
 						//Log.Instance.LogDebug(DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") + " EXAMINE GetObjectsByAlias<T> " + typeof(T).Name);
 						var compiledQuery = query.Compile();
+
 						var searchResults = examineprovider.Search(compiledQuery);
+
 						return searchResults.Where(examineNode => examineNode.Fields["__NodeId"] != null).Where(examineNode => CheckNodeTypeAliasForImproperOverlap(examineNode.Fields["__NodeTypeAlias"], nodeTypeAlias));
 					}
 				}

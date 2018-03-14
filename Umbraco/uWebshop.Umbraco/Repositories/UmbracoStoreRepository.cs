@@ -43,9 +43,10 @@ namespace uWebshop.Umbraco.Repositories
 
 			if (HttpContext.Current.Request.Cookies["StoreInfo"] != null)
 			{
+                
 				var storeAlias = HttpContext.Current.Request.Cookies["StoreInfo"].Values["StoreAlias"];
 
-				if (!string.IsNullOrEmpty(storeAlias))
+                if (!string.IsNullOrEmpty(storeAlias))
 				{
 					return StoreHelper.GetByAlias(storeAlias);
 				}
@@ -233,39 +234,43 @@ namespace uWebshop.Umbraco.Repositories
 				}
 				if (fields.ContainsKey("enableStock"))
 				{
-					var enableStockValue = fields.GetStringValue("enableStock");
-					store.UseStock = enableStockValue == "enable" || enableStockValue == "1" || enableStockValue == "true";
+					var enableStockValue = fields.GetStringValue("enableStock").ToLower();
+					store.UseStock = enableStockValue == "enable" || enableStockValue == "1" || enableStockValue.ToLowerInvariant() == "true";
 				}
 				if (fields.ContainsKey("defaultUseVariantStock"))
 				{
 					var enableStockValue = fields.GetStringValue("defaultUseVariantStock");
-					store.UseVariantStock = enableStockValue == "enable" || enableStockValue == "1" || enableStockValue == "true";
+					store.UseVariantStock = enableStockValue == "enable" || enableStockValue == "1" || enableStockValue.ToLowerInvariant() == "true";
 				}
 
 				if (fields.ContainsKey("defaultCountdownEnabled"))
 				{
 					var enableCountdownValue = fields.GetStringValue("defaultCountdownEnabled");
-					store.UseCountdown = enableCountdownValue == "enable" || enableCountdownValue == "1" || enableCountdownValue == "true";
+					store.UseCountdown = enableCountdownValue == "enable" || enableCountdownValue == "1" || enableCountdownValue.ToLowerInvariant() == "true";
 				}
 				
 				if (fields.ContainsKey("storeStock"))
 				{
-					var storeStockValue = fields.GetStringValue("storeStock");
-					var value = storeStockValue == "enable" || storeStockValue == "1" || storeStockValue == "true";
+					var storeStockValue = fields.GetStringValue("storeStock").ToLower();
+
+					var value = storeStockValue == "enable" || storeStockValue == "1" || storeStockValue.ToLowerInvariant() == "true";
 					if (value)
 					{
-						var productDt = contentTypeService.GetContentType(Product.NodeAlias);
+
+                        var productDt = contentTypeService.GetContentType(Product.NodeAlias);
+
 						if (!productDt.PropertyTypes.Any(x => x.Alias.ToLower() == "stock_" + store.Alias.ToLower()))
 						{
-							value = false;
+							//value = false; If there is only 1 stock field for multiple stocks this is not viable
 						}
 					}
+
 					store.UseStoreSpecificStock = value;
 				}
 
 				if (fields.ContainsKey("useBackorders"))
 				{
-					var useBackorders = fields.GetStringValue("useBackorders");
+					var useBackorders = fields.GetStringValue("useBackorders").ToLower();
 
 					store.UseBackorders = useBackorders == "enable" || useBackorders == "1" || useBackorders == "true";
 				}

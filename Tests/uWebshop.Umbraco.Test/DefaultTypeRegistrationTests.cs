@@ -38,8 +38,11 @@ namespace uWebshop.Test.Domain.IoCContainerTests
 			public void LogWarning(string message)
 			{
 			}
+            public void LogInfo(string message)
+            {
+            }
 
-			public void LogDebug(string message)
+            public void LogDebug(string message)
 			{
 			}
 		}

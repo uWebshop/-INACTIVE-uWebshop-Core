@@ -251,6 +251,7 @@ namespace uWebshop.Umbraco.Businesslogic
 		{
 			try
 			{
+
 				var mediaService = ApplicationContext.Current.Services.MediaService;
 				var media = mediaService.GetById(id);
 				var image = new Image();
@@ -270,7 +271,8 @@ namespace uWebshop.Umbraco.Businesslogic
 		{
 			var examineIndexesCollection = ExamineManager.Instance.IndexProviderCollection;
 
-			var indexer = (LuceneIndexer) examineIndexesCollection.FirstOrDefault(x => x.Name == UwebshopConfiguration.Current.ExamineIndexer);
+			var indexer = (LuceneIndexer) examineIndexesCollection.FirstOrDefault
+                (x => x.Name == UwebshopConfiguration.Current.ExamineIndexer);
 
 			if (indexer == null)
 			{

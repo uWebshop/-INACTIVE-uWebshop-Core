@@ -109,9 +109,14 @@ namespace uWebshop.API
 		{
 			return _source.GetProperty(propertyAlias);
 		}
+        public T GetPropertyValue<T>(string propertyAlias)
+        {
+            return _source.GetPropertyValue<T>(propertyAlias);
+        }
 
-		public int Id { get { return _source.Id; } }
-		public string TypeAlias { get { return _source.TypeAlias; } }
+        public int Id { get { return _source.Id; } }
+        public Guid Key { get { return _source.Key; } }
+        public string TypeAlias { get { return _source.TypeAlias; } }
 
 		[IgnoreDataMember]
 		public bool Disabled { get { return _source.Disabled; } }

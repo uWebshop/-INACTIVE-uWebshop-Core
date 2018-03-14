@@ -33,8 +33,8 @@ namespace uWebshop.Umbraco.Repositories
 
 			variantgroup.Disabled = StoreHelper.GetMultiStoreDisableExamine(localization, fields);
 
-			var value = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.required, localization, fields);
-			variantgroup.Required = value == "1" || value == "true";
+			var value = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.required, localization, fields).ToLower();
+			variantgroup.Required = value == "1" || value.ToLowerInvariant() == "true";
 
 			//variantgroup.ProductVariantFactory = () => IO.Container.Resolve<IProductVariantService>().GetAll(localization).Where(productvariantgroup => productvariantgroup.ParentId == variantgroup.Id).Cast<IProductVariant>().ToList();
 

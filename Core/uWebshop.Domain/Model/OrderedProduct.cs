@@ -55,13 +55,28 @@ namespace uWebshop.Domain
 			}
 		}
 
-		/// <summary>
-		/// Gets the Type Alias.
-		/// </summary>
-		/// <value>
-		/// The Type Alias.
-		/// </value>
-		[ContentPropertyType(Alias = "typeAlias", DataType = DataType.Label, Tab = ContentTypeTab.Global, Name = "#TypeAlias", Description = "#TypeAliasDescription")]
+        /// <summary>
+        /// Gets the product unique identifier.
+        /// </summary>
+        /// <value>
+        /// The product unique identifier.
+        /// </value>
+        [ContentPropertyType(Alias = "productKey", DataType = DataType.ContentPicker, Tab = ContentTypeTab.Global, Name = "#ProductKey", Description = "#ProductKeyDescription")]
+        public Guid ProductKey
+        {
+            get
+            {
+                return Document.Key;
+            }
+        }
+
+        /// <summary>
+        /// Gets the Type Alias.
+        /// </summary>
+        /// <value>
+        /// The Type Alias.
+        /// </value>
+        [ContentPropertyType(Alias = "typeAlias", DataType = DataType.Label, Tab = ContentTypeTab.Global, Name = "#TypeAlias", Description = "#TypeAliasDescription")]
 		public string TypeAlias
 		{
 			get

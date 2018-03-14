@@ -28,6 +28,8 @@ namespace uWebshop.Domain.OrderDTO
 		{
 			Id = discountOrder.Id;
 			OriginalId = discountOrder.OriginalId;
+            // IIS Hangs, need fix
+            //Key = discountOrder.Key;
 			DiscountType = discountOrder.DiscountType;
 			DiscountValue = discountOrder.DiscountValue;
 			Condition = discountOrder.Condition;
@@ -47,8 +49,8 @@ namespace uWebshop.Domain.OrderDTO
 		}
 
 		public int OriginalId { get; set; }
-
-		public DiscountType DiscountType { get; set; }
+        public Guid Key { get; set; }
+        public DiscountType DiscountType { get; set; }
 		public int DiscountValue { get; set; }
 		public string RangesString { get; set; }
 

@@ -11,6 +11,9 @@ using umbraco;
 using umbraco.cms.businesslogic.web;
 using uWebshop.Umbraco.Businesslogic;
 using DomainHelper = uWebshop.Domain.Helpers.DomainHelper;
+using System.Web.Security;
+using Umbraco.Web;
+using Umbraco.Web.Security;
 
 namespace uWebshop.Umbraco.Mvc
 {
@@ -98,14 +101,15 @@ namespace uWebshop.Umbraco.Mvc
 	{
 		public bool TryFindContent(PublishedContentRequest contentRequest)
 		{
-			var stores = StoreHelper.GetAllStores();
+            
+            var stores = StoreHelper.GetAllStores();
 
 			if (!stores.Any())
 			{
 				return false;
 			}
 
-			var uwebshopRequest = UwebshopRequest.Current;
+            var uwebshopRequest = UwebshopRequest.Current;
 			var content = uwebshopRequest.Product ?? uwebshopRequest.Category ?? uwebshopRequest.PaymentProvider ?? // in case ResolveUwebshopEntityUrl was already called from the module
 						  IO.Container.Resolve<IUrlRewritingService>().ResolveUwebshopEntityUrl().Entity;
 
@@ -125,13 +129,15 @@ namespace uWebshop.Umbraco.Mvc
 				return true;
 			}
 
-			if (content is Category)
+            var umbracoHelper = new UmbracoHelper(UmbracoContext.Current);
+
+            if (content is Category)
 			{
 				var categoryFromUrl = content as Category;
 
 				if (categoryFromUrl.Disabled) return false;
 
-				if (Access.HasAccess(categoryFromUrl.Id, categoryFromUrl.Path, UwebshopRequest.Current.User))
+                if (umbracoHelper.MemberHasAccess(categoryFromUrl.Path))
 				{
 					var doc = contentRequest.RoutingContext.UmbracoContext.ContentCache.GetById(content.Id);
 					if (doc != null)
@@ -148,9 +154,9 @@ namespace uWebshop.Umbraco.Mvc
 				{
 					if (HttpContext.Current.User.Identity.IsAuthenticated)
 					{
-						contentRequest.SetRedirect(library.NiceUrl(Access.GetErrorPage(categoryFromUrl.Path)));
+						contentRequest.SetRedirect(umbracoHelper.NiceUrl(Access.GetErrorPage(categoryFromUrl.Path)));
 					}
-					contentRequest.SetRedirect(library.NiceUrl(Access.GetLoginPage(categoryFromUrl.Path)));
+					contentRequest.SetRedirect(umbracoHelper.NiceUrl(Access.GetLoginPage(categoryFromUrl.Path)));
 					return true;
 				}
 			}
@@ -160,8 +166,8 @@ namespace uWebshop.Umbraco.Mvc
 				var productFromUrl = content as Product;
 				if (productFromUrl.Disabled) return false;
 
-				if (Access.HasAccess(productFromUrl.Id, productFromUrl.Path, UwebshopRequest.Current.User))
-				{
+                if (umbracoHelper.MemberHasAccess(productFromUrl.Path))
+                {
 					var doc = contentRequest.RoutingContext.UmbracoContext.ContentCache.GetById(content.Id);
 					if (doc != null)
 					{
@@ -177,9 +183,9 @@ namespace uWebshop.Umbraco.Mvc
 				{
 					if (HttpContext.Current.User.Identity.IsAuthenticated)
 					{
-						contentRequest.SetRedirect(library.NiceUrl(Access.GetErrorPage(productFromUrl.Path)));
+						contentRequest.SetRedirect(umbracoHelper.NiceUrl(Access.GetErrorPage(productFromUrl.Path)));
 					}
-					contentRequest.SetRedirect(library.NiceUrl(Access.GetLoginPage(productFromUrl.Path)));
+				        contentRequest.SetRedirect(umbracoHelper.NiceUrl(Access.GetLoginPage(productFromUrl.Path)));
 					return true;
 				}
 			}

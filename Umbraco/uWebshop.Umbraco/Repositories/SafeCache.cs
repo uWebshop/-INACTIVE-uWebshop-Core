@@ -49,8 +49,10 @@ namespace uWebshop.Umbraco.Repositories
 
 		public IEnumerable<T> GetAll()
 		{
-			if (_all == null) throw new Exception("_all");
+			if (_all       == null) throw new Exception("_all");
+
 			if (_all.Value == null) throw new Exception("_all.Value");
+
 			return _all.Value.Values;
 		}
 

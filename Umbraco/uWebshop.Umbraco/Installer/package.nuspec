@@ -1,13 +1,13 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>uWebshop</id>
-    <version>2.7.0.0</version>
+    <version>2.7.10.3</version>
     <title>uWebshop</title>
-    <authors>Arnold Visser</authors>
-    <owners>Arnold Visser</owners>
+    <authors>Arnold Visser/Vettvangur</authors>
+    <owners>Arnold Visser/Vettvangur</owners>
     <projectUrl>http://uWebshop.com</projectUrl>
-    <iconUrl>http://uwebshop.com/img/uWebshop-logo-white.svg</iconUrl>
+    <iconUrl>https://assets-cdn.github.com/favicon.ico</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>uWebshop E-Commerce Package for Umbraco</description>
     <summary>uWebshop E-Commerce Package for Umbraco</summary>

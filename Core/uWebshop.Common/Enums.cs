@@ -26,7 +26,8 @@
 		AlreadyUsed,
 		OncePerCustomer,
 		MinimumOrderAmount,
-		NotPermitted
+		NotPermitted,
+        EmailRequired
 	}
 
 	public enum BasketActionResult
@@ -35,7 +36,8 @@
 		Failed,
 		NoProductOrOrderLineId,
 		OrderNull,
-		AlreadyExists
+		AlreadyExists,
+        StockNotAvailable
 	}
 
 	public enum ProviderActionResult

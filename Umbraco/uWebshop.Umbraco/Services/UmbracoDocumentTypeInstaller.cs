@@ -91,6 +91,7 @@ namespace uWebshop.Umbraco.Services
 
 		public IContent CreateOrderContent(OrderInfo orderInfo)
 		{
+ 
 			var contentTypeService = _contentTypeService; //ApplicationContext.Current.Services.ContentTypeService;
 			var contentService = _contentService; // ApplicationContext.Current.Services.ContentService;
 
@@ -159,7 +160,7 @@ namespace uWebshop.Umbraco.Services
 			SetCustomProperties(orderInfo.CustomerInfo.ShippingInformation, orderDoc, "shipping");
 			SetCustomProperties(orderInfo.CustomerInfo.ExtraInformation, orderDoc, "extra");
 
-			foreach (var orderline in orderInfo.OrderLines)
+            foreach (var orderline in orderInfo.OrderLines)
 			{
 				var productInfo = orderline.ProductInfo;
 				var contentTypeAlias =
@@ -223,21 +224,21 @@ namespace uWebshop.Umbraco.Services
 			{
 				if (yearNode != null)
 				{
-					contentService.Publish(yearNode);
+					contentService.PublishWithStatus(yearNode);
 
 					if (monthNode != null)
 					{
-						contentService.Publish(monthNode);
+						contentService.PublishWithStatus(monthNode);
 
 						if (dayNode != null)
 						{
-							contentService.Publish(dayNode);
+							contentService.PublishWithStatus(dayNode);
 						}
 					}
 				}
 			}
 
-			orderInfo.OrderNodeId = orderDoc.Id;
+            orderInfo.OrderNodeId = orderDoc.Id;
 			orderInfo.Save();
 
 			return orderDoc;

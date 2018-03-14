@@ -16,7 +16,8 @@ namespace uWebshop.Umbraco.Services
             var helper = new UmbracoHelper(UmbracoContext.Current);
 		    var settingNodeId = Helpers.GetNodeIdForDocument(Settings.NodeAlias, "Settings");
 		    var node = helper.TypedContent(settingNodeId);
-			return CreateSettingsFromNode(node);
+
+            return CreateSettingsFromNode(node);
 		}
 
 		internal static Settings CreateSettingsFromNode(IPublishedContent node)
@@ -30,8 +31,9 @@ namespace uWebshop.Umbraco.Services
 
 		internal static void LoadDataFromNode(Settings settings, IPublishedContent node)
 		{
-			Helpers.LoadUwebshopEntityPropertiesFromNode(settings, node);
-			LoadDataFromPropertiesDictionary(settings, new UmbracoNodePropertyProvider(node));
+            Helpers.LoadUwebshopEntityPropertiesFromNode(settings, node);
+
+            LoadDataFromPropertiesDictionary(settings, new UmbracoNodePropertyProvider(node));
 		}
 
 		private static void LoadDataFromPropertiesDictionary(Settings settings, IPropertyProvider fields)
@@ -46,9 +48,9 @@ namespace uWebshop.Umbraco.Services
 
 			string property = null;
 			fields.UpdateValueIfPropertyPresent("includingVat", ref property);
-			settings.IncludingVat = property == "1" || property == "true";
+			settings.IncludingVat = property == "1" || string.Compare(property,"true",true) == 0;
 
-			fields.UpdateValueIfPropertyPresent("lowercaseUrls", ref property);
+            fields.UpdateValueIfPropertyPresent("lowercaseUrls", ref property);
 			settings.UseLowercaseUrls = property == "1" || property == "true";
 		}
 	}

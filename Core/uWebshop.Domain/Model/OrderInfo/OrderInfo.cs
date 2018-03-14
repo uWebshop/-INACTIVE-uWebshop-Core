@@ -116,13 +116,13 @@ namespace uWebshop.Domain
 		/// <param name="orderInfo">The order information.</param>
 		/// <param name="e">The <see cref="OrderPaidChangedEventArgs"/> instance containing the event data.</param>
 		public delegate void OrderPaidChangedEventHandler(OrderInfo orderInfo, OrderPaidChangedEventArgs e);
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="orderInfo">The order information.</param>
-        /// <param name="e">The <see cref="OrderFulfilledChangedEventArgs"/> instance containing the event data.</param>
-        public delegate void OrderFulfilledChangedEventHandler(OrderInfo orderInfo, OrderFulfillChangedEventArgs e);
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="orderInfo">The order information.</param>
+		/// <param name="e">The <see cref="OrderFulfilledChangedEventArgs"/> instance containing the event data.</param>
+		public delegate void OrderFulfilledChangedEventHandler(OrderInfo orderInfo, OrderFulfillChangedEventArgs e);
 
 		/// <summary>
 		/// Occurs when [before order updated].
@@ -222,11 +222,11 @@ namespace uWebshop.Domain
 		[DataMember]
 		public string OrderDate;
 
-        /// <summary>
-        /// [Obsolete!! Use CreateDate] Gets the unique orderdate for the order
-        /// </summary>
-        //[Obsolete("Use CreateDate")] can't use [Obsolete] because of serialization
-        [Browsable(false)]
+		/// <summary>
+		/// [Obsolete!! Use CreateDate] Gets the unique orderdate for the order
+		/// </summary>
+		//[Obsolete("Use CreateDate")] can't use [Obsolete] because of serialization
+		[Browsable(false)]
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		[DataMember]
@@ -365,8 +365,8 @@ namespace uWebshop.Domain
 
 		internal IVATCheckService VATCheckService;
 		private DateTime? _confirmDate;
-	    private DateTime? _createDate;
-        private bool? _pricesAreIncludingVAT;
+		private DateTime? _createDate;
+		private bool? _pricesAreIncludingVAT;
 		internal int? _regionalVatInCents;
 		private bool? _vatCharged;
 
@@ -458,25 +458,25 @@ namespace uWebshop.Domain
 			}
 		}
 
-        /// <summary>
+		/// <summary>
 		/// Gets the unique createDate for the order
 		/// </summary>
 		[DataMember]
-        public DateTime? CreateDate
-        {
-            get { return _createDate; }
-            set
-            {
-                DateCreated = value.GetValueOrDefault().ToString("f");
-                _createDate = value;
-            }
-        }
+		public DateTime? CreateDate
+		{
+			get { return _createDate; }
+			set
+			{
+				DateCreated = value.GetValueOrDefault().ToString("f");
+				_createDate = value;
+			}
+		}
 
 
-        /// <summary>
-        /// Gets or sets whether this order is paid.
-        /// </summary>
-        [DataMember(IsRequired = false)]
+		/// <summary>
+		/// Gets or sets whether this order is paid.
+		/// </summary>
+		[DataMember(IsRequired = false)]
 		public bool? Paid
 		{
 			get { return PaidDate.HasValue; }
@@ -653,8 +653,39 @@ namespace uWebshop.Domain
 		{
 			get
 			{
-				if (OrderDiscountsFactory == null) return new List<Interfaces.IOrderDiscount>(); // is this correct? (needed for deserialization process of legacy orderinfo xml)
-				return OrderDiscountsFactory();
+				var discounts = new List<IOrderDiscount>();
+
+				if (OrderDiscountsFactory != null) {
+                   
+					discounts = OrderDiscountsFactory();
+
+                }
+						   
+				if (discounts.Any() && discounts.Count() > 1)
+				{
+					var calcServices = IO.Container.Resolve<IDiscountCalculationService>();
+
+					// Find the best value
+					return discounts.OrderByDescending(x => calcServices.DiscountAmountForOrder(x, this, false)).Take(1).ToList();
+				}
+
+				return discounts;
+			}
+		}
+
+		[XmlIgnore]
+		internal List<Interfaces.IOrderDiscount> AllDiscounts
+		{
+			get
+			{
+				var discounts = new List<IOrderDiscount>();
+
+				if (OrderDiscountsFactory != null)
+				{
+					discounts = OrderDiscountsFactory();
+				}
+
+				return discounts;
 			}
 		}
 
@@ -690,14 +721,14 @@ namespace uWebshop.Domain
 					return _vatCharged.GetValueOrDefault();
 				}
 
-                // if no countrycode is set on the store -> charge vat
-			    if (string.IsNullOrEmpty(StoreInfo.CountryCode))
-			    {
-                    return (bool)(_vatCharged = true);
-                }
-                
-                // if customer country == store country ==> pay VAT
-                if (!string.IsNullOrEmpty(CustomerInfo.CountryCode) && StoreInfo.CountryCode != null && CustomerInfo.CountryCode.ToLowerInvariant() == StoreInfo.CountryCode.ToLowerInvariant())
+				// if no countrycode is set on the store -> charge vat
+				if (string.IsNullOrEmpty(StoreInfo.CountryCode))
+				{
+					return (bool)(_vatCharged = true);
+				}
+				
+				// if customer country == store country ==> pay VAT
+				if (!string.IsNullOrEmpty(CustomerInfo.CountryCode) && StoreInfo.CountryCode != null && CustomerInfo.CountryCode.ToLowerInvariant() == StoreInfo.CountryCode.ToLowerInvariant())
 				{
 					//Log.Instance.LogDebug("VATCharged TRUE: CustomerInfo.CountryCode != null && StoreInfo.CountryCode != null && CustomerInfo.CountryCode.ToLowerInvariant() == StoreInfo.CountryCode.ToLowerInvariant()");
 					return (bool)(_vatCharged = true);
@@ -1019,155 +1050,166 @@ namespace uWebshop.Domain
 		// todo: move to orderservice
 		internal static OrderInfo CreateOrderInfoFromOrderData(uWebshopOrderData orderData)
 		{
-			var cmsApplication = IO.Container.Resolve<ICMSApplication>();
+            try
+            {
 
-			if (orderData == null || string.IsNullOrEmpty(orderData.OrderInfo))
-			{
-				throw new Exception("Trying to load order without data (xml), id: " + (orderData == null ? "no data!" : orderData.Id.ToString()) + ", ordernumber: " + (orderData == null ? "no data!" : orderData.OrderNumber));
-			}
+                var cmsApplication = IO.Container.Resolve<ICMSApplication>();
 
-			OrderInfo orderInfo;
-			try
-			{
-				orderInfo = orderData.OrderInfo.Contains("<OrderInfo ")
-					? CreateOrderInfoFromLegacyXmlString(orderData.OrderInfo)
-					: CreateOrderInfoFromOrderDataObject<OrderDTO.Order>(orderData.OrderInfo);
-			}
-			catch (Exception ex)
-			{
-				var message = "Failed to load order data, id: " + orderData.Id + ", ordernumber: " + orderData.OrderNumber;
-				Log.Instance.LogError(ex, message);
-				throw new Exception(message);
-			}
+                if (orderData == null || string.IsNullOrEmpty(orderData.OrderInfo))
+                {
+                    throw new Exception("Trying to load order without data (xml), id: " + (orderData == null ? "no data!" : orderData.Id.ToString()) + ", ordernumber: " + (orderData == null ? "no data!" : orderData.OrderNumber));
+                }
 
-			if (orderInfo == null) throw new Exception("Problem with parsing order from database xml");
-			if (orderInfo.CustomerInfo == null) throw new Exception("Problem with parsing order from database xml, no CustomerInfo");
-			if (orderInfo.PaymentInfo == null) throw new Exception("Problem with parsing order from database xml, no PaymentInfo");
-			if (orderInfo.StoreInfo == null) throw new Exception("Problem with parsing order from database xml, no StoreInfo");
+                OrderInfo orderInfo;
+                try
+                {
+                    orderInfo = orderData.OrderInfo.Contains("<OrderInfo ")
+                        ? CreateOrderInfoFromLegacyXmlString(orderData.OrderInfo)
+                        : CreateOrderInfoFromOrderDataObject<OrderDTO.Order>(orderData.OrderInfo);
+                }
+                catch (Exception ex)
+                {
+                    var message = "Failed to load order data, id: " + orderData.Id + ", ordernumber: " + orderData.OrderNumber;
+                    Log.Instance.LogError(ex, message);
+                    throw new Exception(message);
+                }
 
-			orderInfo.DatabaseId = orderData.Id;
-			orderInfo.UniqueOrderId = Guid.Parse(orderData.UniqueId.ToString());
+                if (orderInfo == null) throw new Exception("Problem with parsing order from database xml");
+                if (orderInfo.CustomerInfo == null) throw new Exception("Problem with parsing order from database xml, no CustomerInfo");
+                if (orderInfo.PaymentInfo == null) throw new Exception("Problem with parsing order from database xml, no PaymentInfo");
+                if (orderInfo.StoreInfo == null) throw new Exception("Problem with parsing order from database xml, no StoreInfo");
 
-			orderInfo.StoreInfo.Alias = orderData.StoreAlias; // todo: create a fallback for when a store has been deleted or renamed
-			orderInfo.StoreOrderReferenceId = orderData.StoreOrderReferenceId;
-			orderInfo.OrderNumber = orderData.OrderNumber;
+                orderInfo.DatabaseId = orderData.Id;
+                orderInfo.UniqueOrderId = Guid.Parse(orderData.UniqueId.ToString());
 
-			orderInfo.DeliveryDate = orderData.DeliveryDate;
+                orderInfo.StoreInfo.Alias = orderData.StoreAlias; // todo: create a fallback for when a store has been deleted or renamed
+                orderInfo.StoreOrderReferenceId = orderData.StoreOrderReferenceId;
+                orderInfo.OrderNumber = orderData.OrderNumber;
+                orderInfo.CreateDate = orderData.CreateDate;
 
-			if (orderData.SeriesId > 0)
-			{
-				orderInfo.OrderSeries = new OrderSeries(orderData);
-			}
+                orderInfo.DeliveryDate = orderData.DeliveryDate;
 
-			if (HttpContext.Current != null && (!IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || UwebshopRequest.Current.PaymentProvider != null))
-			{
-				var currentUserIp = HttpContext.Current.Request.UserHostAddress;
-				if (orderInfo.CustomerInfo.CustomerIPAddress != currentUserIp)
-				{
-					Log.Instance.LogWarning("Order: " + orderInfo.UniqueOrderId + " User IP address changed from: " + orderInfo.CustomerInfo.CustomerIPAddress + " to: " + currentUserIp);
-					orderInfo.CustomerInfo.CustomerIPAddress = currentUserIp;
-				}
-			}
+                if (orderData.SeriesId > 0)
+                {
+                    orderInfo.OrderSeries = new OrderSeries(orderData);
+                }
 
-			OrderStatus orderStatus;
-			Enum.TryParse(orderData.OrderStatus, out orderStatus);
+                if (HttpContext.Current != null && (!IO.Container.Resolve<ICMSApplication>().IsBackendUserAuthenticated || UwebshopRequest.Current.PaymentProvider != null))
+                {
+                    var currentUserIp = HttpContext.Current.Request.UserHostAddress;
+                    if (orderInfo.CustomerInfo.CustomerIPAddress != currentUserIp)
+                    {
+                        Log.Instance.LogDebug("Order: " + orderInfo.UniqueOrderId + " User IP address changed from: " + orderInfo.CustomerInfo.CustomerIPAddress + " to: " + currentUserIp);
+                        orderInfo.CustomerInfo.CustomerIPAddress = currentUserIp;
+                    }
+                }
 
-			// if Incomplete and in frontend, refer to current discounts instead of stored
-			if (orderStatus == OrderStatus.Incomplete && HttpContext.Current != null && !cmsApplication.RequestIsInCMSBackend(HttpContext.Current))
-			{
-				orderInfo.EventsOn = false; // somehow a loop with the events keeps popping up, therefore an extra safeguard
-				orderInfo.Status = orderStatus;
+                OrderStatus orderStatus;
+                Enum.TryParse(orderData.OrderStatus, out orderStatus);
 
-				var currentStore = StoreHelper.StoreService.GetCurrentStoreNoFallback();
+                // if Incomplete and in frontend, refer to current discounts instead of stored
+                if (orderStatus == OrderStatus.Incomplete && HttpContext.Current != null && !cmsApplication.RequestIsInCMSBackend(HttpContext.Current))
+                {
+                    orderInfo.EventsOn = false; // somehow a loop with the events keeps popping up, therefore an extra safeguard
+                    orderInfo.Status = orderStatus;
 
-				var orderUpdatingService = IO.Container.Resolve<IOrderUpdatingService>();
-				if (currentStore != null && UwebshopConfiguration.Current.ShareBasketBetweenStores && orderInfo.StoreInfo.Alias != currentStore.Alias)
-				{
-					orderUpdatingService.ChangeLocalization(orderInfo, StoreHelper.CurrentLocalization);
-				}
-				// todo: might not be the correct place to do this
-				else if (orderInfo.Localization.CurrencyCode != StoreHelper.CurrentLocalization.CurrencyCode)
-				{
-					orderUpdatingService.ChangeLocalization(orderInfo, Model.Localization.CreateLocalization(orderInfo.Localization.Store, StoreHelper.CurrentLocalization.CurrencyCode));
-				}
+                    var currentStore = StoreHelper.StoreService.GetCurrentStoreNoFallback();
 
-				orderUpdatingService.SetCurrentMember(orderInfo);
+                    var orderUpdatingService = IO.Container.Resolve<IOrderUpdatingService>();
+                    if (currentStore != null && UwebshopConfiguration.Current.ShareBasketBetweenStores && orderInfo.StoreInfo.Alias != currentStore.Alias)
+                    {
+                        orderUpdatingService.ChangeLocalization(orderInfo, StoreHelper.CurrentLocalization);
+                    }
+                    // todo: might not be the correct place to do this
+                    else if (orderInfo.Localization.CurrencyCode != StoreHelper.CurrentLocalization.CurrencyCode)
+                    {
+                        orderUpdatingService.ChangeLocalization(orderInfo, Model.Localization.CreateLocalization(orderInfo.Localization.Store, StoreHelper.CurrentLocalization.CurrencyCode));
+                    }
 
-				//orderInfo._pricesAreIncludingVAT = null; todo: yes or no? (if yes, you could argue you need to look at current prices aswell..)
+                    orderUpdatingService.SetCurrentMember(orderInfo);
 
-				var orderService = IO.Container.Resolve<IOrderService>();
-				orderService.UseDatabaseDiscounts(orderInfo);
-				orderInfo.ResetDiscounts();
+                    //orderInfo._pricesAreIncludingVAT = null; todo: yes or no? (if yes, you could argue you need to look at current prices aswell..)
 
-				if (orderInfo.RevalidateOrderOnLoad.GetValueOrDefault())
-				{
-					if (orderInfo.ReValidateSaveAction == ValidateSaveAction.Order)
-					{
-						orderService.ValidateOrder(orderInfo); // tricky (recursiveness because of GetStore() -> GetOrderInfo())
-					}
-					if (orderInfo.ReValidateSaveAction == ValidateSaveAction.Customer)
-					{
-						OrderHelper.ValidateCustomer(orderInfo, true);
-					}
-					if (orderInfo.ReValidateSaveAction == ValidateSaveAction.Stock)
-					{
-						OrderHelper.ValidateStock(orderInfo, true);
-					}
-					if (orderInfo.ReValidateSaveAction == ValidateSaveAction.Orderlines)
-					{
-						OrderHelper.ValidateOrderLines(orderInfo, true);
-					}
-					if (orderInfo.ReValidateSaveAction == ValidateSaveAction.CustomValidation)
-					{
-						OrderHelper.ValidateCustomValidation(orderInfo, true);
-					}
+                    var orderService = IO.Container.Resolve<IOrderService>();
+                    orderService.UseDatabaseDiscounts(orderInfo);
+                    orderInfo.ResetDiscounts();
 
-					// todo: prevent unusefull save in ValidateOrder
-				}
-			}
-			else
-			{
-				orderInfo.EventsOn = false; // somehow a loop with the events keeps popping up, therefore an extra safeguard
-				orderInfo.Status = orderStatus;
-			}
+                    if (orderInfo.RevalidateOrderOnLoad.GetValueOrDefault())
+                    {
+                        if (orderInfo.ReValidateSaveAction == ValidateSaveAction.Order)
+                        {
+                            orderService.ValidateOrder(orderInfo); // tricky (recursiveness because of GetStore() -> GetOrderInfo())
+                        }
+                        if (orderInfo.ReValidateSaveAction == ValidateSaveAction.Customer)
+                        {
+                            OrderHelper.ValidateCustomer(orderInfo, true);
+                        }
+                        if (orderInfo.ReValidateSaveAction == ValidateSaveAction.Stock)
+                        {
+                            OrderHelper.ValidateStock(orderInfo, true);
+                        }
+                        if (orderInfo.ReValidateSaveAction == ValidateSaveAction.Orderlines)
+                        {
+                            OrderHelper.ValidateOrderLines(orderInfo, true);
+                        }
+                        if (orderInfo.ReValidateSaveAction == ValidateSaveAction.CustomValidation)
+                        {
+                            OrderHelper.ValidateCustomValidation(orderInfo, true);
+                        }
 
-			orderInfo.CustomerInfo.CustomerId = orderData.CustomerId;
+                        // todo: prevent unusefull save in ValidateOrder
+                    }
+                }
+                else
+                {
+                    orderInfo.EventsOn = false; // somehow a loop with the events keeps popping up, therefore an extra safeguard
+                    orderInfo.Status = orderStatus;
+                }
 
-			if (orderData.CustomerUsername != null) orderInfo.CustomerInfo.LoginName = orderData.CustomerUsername;
-			if (orderData.CustomerEmail != null) orderInfo.CustomerEmail = orderData.CustomerEmail;
-			if (orderData.CustomerFirstName != null) orderInfo.CustomerFirstName = orderData.CustomerFirstName;
-			if (orderData.CustomerLastName != null) orderInfo.CustomerLastName = orderData.CustomerLastName;
-			if (orderData.TransactionId != null) orderInfo.PaymentInfo.TransactionId = orderData.TransactionId;
+                orderInfo.CustomerInfo.CustomerId = orderData.CustomerId;
 
-			orderInfo.EventsOn = true;
+                if (orderData.CustomerUsername != null) orderInfo.CustomerInfo.LoginName = orderData.CustomerUsername;
+                if (orderData.CustomerEmail != null) orderInfo.CustomerEmail = orderData.CustomerEmail;
+                if (orderData.CustomerFirstName != null) orderInfo.CustomerFirstName = orderData.CustomerFirstName;
+                if (orderData.CustomerLastName != null) orderInfo.CustomerLastName = orderData.CustomerLastName;
+                if (orderData.TransactionId != null) orderInfo.PaymentInfo.TransactionId = orderData.TransactionId;
 
-			return orderInfo;
+                orderInfo.EventsOn = true;
+
+                return orderInfo;
+
+            } catch(Exception ex)
+            {
+                Log.Instance.LogError(ex, "CreateOrderInfoFromOrderData Failed!");
+                return null;
+            }
+
 		}
 
-        internal uWebshopOrderData ToOrderData()
-        {
-            var orderData = new uWebshopOrderData
-            {
-                Id = DatabaseId,
-                CreateDate = CreateDate.GetValueOrDefault(),
-                ConfirmDate = ConfirmDate,
-                UniqueId = UniqueOrderId,
-                StoreAlias = StoreInfo.Alias,
-                StoreOrderReferenceId = StoreOrderReferenceId.GetValueOrDefault(),
-                OrderNumber = OrderNumber,
-                OrderStatus = Status.ToString(),
-                CustomerId = CustomerInfo.CustomerId,
-                CustomerUsername = CustomerInfo.LoginName,
-                CustomerEmail = CustomerEmail,
-                CustomerFirstName = CustomerFirstName,
-                CustomerLastName = CustomerLastName,
-                TransactionId = PaymentInfo.TransactionId,
-                OrderInfo = DomainHelper.SerializeObjectToXmlString(new OrderDTO.Order(this))
-            };
-            return orderData;
-        }
+		internal uWebshopOrderData ToOrderData()
+		{
+			var orderData = new uWebshopOrderData
+			{
+				Id = DatabaseId,
+				CreateDate = CreateDate.GetValueOrDefault(),
+				ConfirmDate = ConfirmDate,
+				UniqueId = UniqueOrderId,
+				StoreAlias = StoreInfo.Alias,
+				StoreOrderReferenceId = StoreOrderReferenceId.GetValueOrDefault(),
+				OrderNumber = OrderNumber,
+				OrderStatus = Status.ToString(),
+				CustomerId = CustomerInfo.CustomerId,
+				CustomerUsername = CustomerInfo.LoginName,
+				CustomerEmail = CustomerEmail,
+				CustomerFirstName = CustomerFirstName,
+				CustomerLastName = CustomerLastName,
+				TransactionId = PaymentInfo.TransactionId,
+				OrderInfo = DomainHelper.SerializeObjectToXmlString(new OrderDTO.Order(this))
+			};
+			return orderData;
+		}
 
-        internal void ClearCachedValues()
+		internal void ClearCachedValues()
 		{
 			_regionalVatInCents = null;
 		}
@@ -1919,12 +1961,25 @@ namespace uWebshop.Domain
 			if (OrderLines.Count == 0) return;
 
 			ResetDiscounts();
+			
+			var discounts = Discounts.ToList();
 
-			foreach (var discount in Discounts)
+			if (discounts.Any())
 			{
-				// will side-effect on OrderDiscountEffects and OrderLines->SellableUnits->DiscountEffects, todo: refactor
-				IO.Container.Resolve<IDiscountCalculationService>().DiscountAmountForOrder(discount, this, true);
+                var calcServices = IO.Container.Resolve<IDiscountCalculationService>();
+
+                if (discounts.Count() > 1)
+				{
+					// Find the best value
+					calcServices.DiscountAmountForOrder(discounts.OrderByDescending(x => calcServices.DiscountAmountForOrder(x, this, false)).FirstOrDefault(), this, true);
+				}
+				else
+				{
+					calcServices.DiscountAmountForOrder(discounts.First(), this, true);
+				}
+
 			}
+
 		}
 
 		#endregion

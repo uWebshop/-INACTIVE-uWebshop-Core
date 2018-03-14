@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Web;
@@ -8,6 +9,7 @@ using System.Web.Script.Services;
 using System.Web.Services;
 using umbraco;
 using Umbraco.Web.BaseRest;
+using uWebshop.Domain;
 using uWebshop.Domain.Businesslogic;
 using uWebshop.Domain.NewtonsoftJsonNet;
 using uWebshop.Newtonsoft.Json;
@@ -49,6 +51,7 @@ namespace uWebshop.API.JSON
 		[RestExtensionMethod(AllowAll = true, ReturnXml = false)]
 		public static void Handle()
 		{
+
 			var store = API.Store.GetStore();
 
 			if (store != null)
@@ -62,7 +65,6 @@ namespace uWebshop.API.JSON
 			try
 			{
 				
-
 				var qs = HttpContext.Current.Request.QueryString[0];
 
 				var dictionaryList = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(qs);
@@ -84,6 +86,7 @@ namespace uWebshop.API.JSON
 					successFailed.Add("validated", redirectAfterHandle.All(x => x.Validated));
 
 					var messageDictionary = new Dictionary<string, string>();
+
 
 					foreach (var message in redirectAfterHandle.SelectMany(handleItem => handleItem.Messages.Where(message => !messageDictionary.ContainsKey(message.Key))))
 					{
@@ -115,6 +118,7 @@ namespace uWebshop.API.JSON
 									};
 
 			var json = JsonConvert.SerializeObject(successFailed, Formatting.Indented, serializeSettings);
+
 			HttpContext.Current.Response.ContentType = "application/json";
 			HttpContext.Current.Response.Write(json);
 		}

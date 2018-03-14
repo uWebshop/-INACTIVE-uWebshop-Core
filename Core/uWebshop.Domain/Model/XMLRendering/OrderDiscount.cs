@@ -41,7 +41,8 @@ namespace uWebshop.Domain.XMLRendering
 			//orderInfo.OrderLines.ForEach(line => line.OrderDiscountInCents = 0); // reset hmm
 			DiscountAmount = new DiscountAmount(IO.Container.Resolve<IDiscountCalculationService>().DiscountAmountForOrder(orderDiscount, orderInfo), orderInfo.PricesAreIncludingVAT, orderInfo.AverageOrderVatPercentage);
 
-			OriginalDiscountId = orderDiscount.OriginalId;
+            Key = orderDiscount.Key;
+            OriginalDiscountId = orderDiscount.OriginalId;
 			DiscountType = orderDiscount.DiscountType;
 			DiscountValue = orderDiscount.DiscountValue;
 			Condition = orderDiscount.Condition;
@@ -87,13 +88,22 @@ namespace uWebshop.Domain.XMLRendering
 		[DataMember]
 		public int OriginalDiscountId { get; set; }
 
-		/// <summary>
-		/// Gets or sets the type of the discount.
-		/// </summary>
-		/// <value>
-		/// The type of the discount.
-		/// </value>
-		[DataMember]
+        /// <summary>
+        /// Gets or sets the original discount unique identifier.
+        /// </summary>
+        /// <value>
+        /// The original discount unique identifier.
+        /// </value>
+        [DataMember]
+        public Guid Key { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type of the discount.
+        /// </summary>
+        /// <value>
+        /// The type of the discount.
+        /// </value>
+        [DataMember]
 		public DiscountType DiscountType { get; set; }
 
 		/// <summary>

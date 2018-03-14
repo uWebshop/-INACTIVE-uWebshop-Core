@@ -173,13 +173,24 @@ namespace uWebshop.Domain
 			get { return new RegionInfo(CurrencyCultureInfo.LCID).ISOCurrencySymbol; }
 		}
 
-		/// <summary>
-		/// Gets the default currency culture symbol.
-		/// </summary>
-		/// <value>
-		/// The default currency culture symbol.
-		/// </value>
-		public string DefaultCurrencyCultureSymbol
+        /// <summary>
+        /// Gets the country.
+        /// </summary>
+        /// <value>
+        /// The country.
+        /// </value>
+        public string Country
+        {
+            get { return new RegionInfo(CurrencyCultureInfo.LCID).ISOCurrencySymbol; }
+        }
+
+        /// <summary>
+        /// Gets the default currency culture symbol.
+        /// </summary>
+        /// <value>
+        /// The default currency culture symbol.
+        /// </value>
+        public string DefaultCurrencyCultureSymbol
 		{
 			get
 			{

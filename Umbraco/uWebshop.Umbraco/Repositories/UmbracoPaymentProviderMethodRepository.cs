@@ -24,6 +24,7 @@ namespace uWebshop.Umbraco.Repositories
 
 			entity.NodeId = (entity as IUwebshopEntity).Id;
 			entity.Id = entity.NodeId.ToString();
+            entity.Key = entity.Key;
 
 			entity.Disabled = StoreHelper.GetMultiStoreDisableExamine(localization, fields);
 
@@ -38,7 +39,9 @@ namespace uWebshop.Umbraco.Repositories
 
 			entity.PriceInCents = StoreHelper.GetLocalizedPrice(_aliasses.price, localization, fields);
 
-			var testMode = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary("testMode", localization, fields);
+			var testMode = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary
+                                        ("testMode", localization, fields);
+
 			if (testMode == "default" || testMode == string.Empty)
 			{
 				entity.TestMode = store.EnableTestmode;
@@ -52,7 +55,8 @@ namespace uWebshop.Umbraco.Repositories
 
 			entity.ImageId = StoreHelper.GetMultiStoreIntValue(_aliasses.image, localization, fields);
 
-			var vat = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.vat, localization, fields);
+			var vat = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary
+                                    (_aliasses.vat, localization, fields);
 			decimal vatPercentage = 0;
 			if (string.IsNullOrWhiteSpace(vat) || !decimal.TryParse(vat, out vatPercentage))
 			{

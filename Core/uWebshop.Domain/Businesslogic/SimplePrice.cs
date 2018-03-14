@@ -52,7 +52,7 @@ namespace uWebshop.Domain
 			if (discount == YesNoDifference.Difference)
 			{
 				var inclVat = vatVal != YesNoDifference.No;
-				return source.GetAmount(inclVat, false, ranged) - _source.GetAmount(inclVat, true, ranged);
+                return source.GetAmount(inclVat, false, ranged) - _source.GetAmount(inclVat, true, ranged);
 			}
 
 			var discounted = discount == YesNoDifference.Yes;
@@ -63,7 +63,7 @@ namespace uWebshop.Domain
 
 			var vat = vatVal == YesNoDifference.Yes;
 
-			return source.GetAmount(vat, discounted, ranged);
+            return source.GetAmount(vat, discounted, ranged);
 		}
 
 		public string ToCurrencyString()
@@ -137,7 +137,8 @@ namespace uWebshop.Domain
 			{
 				var price = new SimplePrice(this);
 				price._vat = YesNoDifference.Difference;
-				return price;
+
+                return price;
 			}
 		}
 	}

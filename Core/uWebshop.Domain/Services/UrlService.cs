@@ -47,7 +47,8 @@ namespace uWebshop.Domain.Services
 		public string CategoryUrlUsingCurrentPath(ICategory category, ILocalization localization)
 		{
 			var path = GetLocalizedCurrentPath(localization);
-			category = _categoryService.Localize(category, localization);
+
+            category = _categoryService.Localize(category, localization);
 
 			if (path != null && !category.ParentCategories.Contains(path.LastOrDefault()))
 			{
@@ -58,20 +59,22 @@ namespace uWebshop.Domain.Services
 			if (path != null && path.Any())
 			{
 				path = path.Concat(new[] {category});
-				url = _categoryCatalogUrlService.GetUrlForPath(path);
-			}
+                url = _categoryCatalogUrlService.GetUrlForPath(path);
+            }
 			else
 			{
 				url = _categoryCatalogUrlService.GetCanonicalUrl(category);
-			}
+            }
 
-			return _urlFormatService.FormatUrl(_urlLocalizationService.LocalizeCatalogUrl(url, localization));
+            return _urlFormatService.FormatUrl(_urlLocalizationService.LocalizeCatalogUrl(url, localization));
 		}
 
 		private IEnumerable<ICategory> GetLocalizedCurrentPath(ILocalization localization)
 		{
+
 			var path = _requestService.Current.CategoryPath ?? Enumerable.Empty<ICategory>();
-			if (!localization.Equals(_requestService.Current.Localization))
+
+            if (!localization.Equals(_requestService.Current.Localization))
 			{
 				path = path.Select(c => _categoryService.Localize(c, localization));
 				if (path.Any(c => c == null))
@@ -87,7 +90,8 @@ namespace uWebshop.Domain.Services
 			product = _productService.Localize(product, localization);
 
 			var productUrl = _productUrlService.GetCanonicalUrl(product);
-			return _urlFormatService.FormatUrl(_urlLocalizationService.LocalizeCatalogUrl(productUrl, localization));
+
+            return _urlFormatService.FormatUrl(_urlLocalizationService.LocalizeCatalogUrl(productUrl, localization));
 		}
 
 		public string ProductUsingCurrentCategoryPathOrCurrentCategoryOrCanonical(IProduct product, ILocalization localization)
@@ -100,14 +104,15 @@ namespace uWebshop.Domain.Services
 			string productUrl;
 			if (path.Any() && product.Categories.Any(c => c.Id == currentCategoryId))
 			{
-				productUrl = _productUrlService.GetUrlUsingCategoryPathOrCanonical(product, path);
-			}
+                productUrl = _productUrlService.GetUrlUsingCategoryPathOrCanonical(product, path);
+            }
 			else
 			{
 				var category = _categoryService.Localize(_requestService.Current.Category, localization);
 				productUrl = _productUrlService.GetUrlInCategoryOrCanonical(product, category);
-			}
-			return _urlFormatService.FormatUrl(_urlLocalizationService.LocalizeCatalogUrl(productUrl, localization));
+            }
+
+            return _urlFormatService.FormatUrl(_urlLocalizationService.LocalizeCatalogUrl(productUrl, localization));
 		}
 	}
 }

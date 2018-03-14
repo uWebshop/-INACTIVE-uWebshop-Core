@@ -185,7 +185,13 @@ namespace uWebshop.Domain
 			set { Id = value; }
 		}
 
-		internal static bool IsAlias(string alias)
+        public Guid Key
+        {
+            get { return Key; }
+            set { Key = value; }
+        }
+
+        internal static bool IsAlias(string alias)
 		{
 			return alias.StartsWith(NodeAlias);
 		}

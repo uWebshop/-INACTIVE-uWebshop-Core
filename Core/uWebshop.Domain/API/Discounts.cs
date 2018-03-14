@@ -137,7 +137,8 @@ namespace uWebshop.API
 
 		public IEnumerable<string> CouponCodes { get; private set; }
 		public int Id { get { return _orderDiscount.Id; } }
-		public string TypeAlias { get { return _orderDiscount.TypeAlias; } }
+        public Guid Key { get { return _orderDiscount.Key; } }
+        public string TypeAlias { get { return _orderDiscount.TypeAlias; } }
 		public bool Disabled { get { return _orderDiscount.Disabled; } }
 		public DateTime CreateDate { get { return _orderDiscount.CreateDate; } }
 		public DateTime UpdateDate { get { return _orderDiscount.UpdateDate; } }

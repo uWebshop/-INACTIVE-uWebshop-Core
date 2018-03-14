@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Configuration;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -97,7 +98,14 @@ namespace uWebshop.Domain.Businesslogic
 		/// </value>
 		private static HttpSessionState Session
 		{
-			get { return HttpContext.Current.Session; }
+			get {
+
+                if (HttpContext.Current == null) {
+                    throw new ApplicationException("No Http Context, No Session to Get!");
+                }
+
+                return HttpContext.Current.Session; 
+            }
 		}
 
 		/// <summary>
@@ -125,7 +133,11 @@ namespace uWebshop.Domain.Businesslogic
 			ClearFeedbackMessages();
 
 			var fieldsToSession = requestParameters.AllKeys.Where(x => !x.ToLowerInvariant().Contains("password")).ToDictionary(key => key, key => requestParameters[key]);
-			Session.Add(Constants.PostedFieldsKey, fieldsToSession);
+
+            if (Session != null) {
+                Session.Add(Constants.PostedFieldsKey, fieldsToSession);
+            }
+			
 
 			var postedFields = new Dictionary<string, object> { { Constants.PostedFieldsKey, fieldsToSession } };
 			
@@ -170,8 +182,7 @@ namespace uWebshop.Domain.Businesslogic
 				handleObjectList.Add(result);
 			}
 
-			
-			
+
 			List<string> cleanOrderLinesCollection = requestParameters.AllKeys.Where(x => x != null && x.ToLower() == "clearbasket").ToList();
 
 			if (cleanOrderLinesCollection.Any())
@@ -199,7 +210,7 @@ namespace uWebshop.Domain.Businesslogic
 
 			List<string> productQueryStringCollection = requestParameters.AllKeys.Where(x => x != null && x.ToLower() == "productid").ToList();
 			List<string> orderlineIdQueryStringCollection = requestParameters.AllKeys.Where(x => x != null && x.ToLower() == "orderlineid").ToList();
-		
+
 			if (productQueryStringCollection.Any() || orderlineIdQueryStringCollection.Any())
 			{
 				var result = AddProduct(requestParameters, rawRequestUrl);
@@ -491,30 +502,33 @@ namespace uWebshop.Domain.Businesslogic
 
 		internal static void ClearFeedbackMessages()
 		{
-			Session.Remove(Constants.BasketActionResult);
-			Session.Remove(Constants.WishlistActionResult);
-			Session.Remove(Constants.WishlistToBasketActionResult);
-			Session.Remove(Constants.CouponCodeSessionKey);
-			Session.Remove(Constants.CouponCodeResultSessionKey);
-			Session.Remove(Constants.CreateMemberSessionKey);
-			Session.Remove(Constants.CreateMemberSessionKeyAddition);
-			Session.Remove(Constants.ErrorMessagesSessionKey);
-			Session.Remove(Constants.PaymentProviderSessionKey);
-			Session.Remove(Constants.RequestPasswordSessionKey);
-			Session.Remove(Constants.ShippingProviderSessionKey);
-			Session.Remove(Constants.SignInMemberSessionKey);
-			Session.Remove(Constants.SignOutMemberSessionKey);
-			Session.Remove(Constants.UpdateMemberSessionKey);
-			Session.Remove(Constants.UpdateMemberSessionKeyAddition);
-			Session.Remove(Constants.ChangePasswordSessionKey);
-			Session.Remove(Constants.OrderedItemcountHigherThanStockKey);
-			Session.Remove(Constants.WishlistActionResult);
-			Session.Remove(Constants.WishlistRemoveActionResult);
-			Session.Remove(Constants.WishlistRenameActionResult);
-			Session.Remove(Constants.WishlistToBasketActionResult);
-			Session.Remove(Constants.PostedFieldsKey);
-			Session.Remove(Constants.ConfirmOrderKey);
-			Session.Remove("ConfirmFailed");
+            if (Session != null) {
+                Session.Remove(Constants.BasketActionResult);
+                Session.Remove(Constants.WishlistActionResult);
+                Session.Remove(Constants.WishlistToBasketActionResult);
+                Session.Remove(Constants.CouponCodeSessionKey);
+                Session.Remove(Constants.CouponCodeResultSessionKey);
+                Session.Remove(Constants.CreateMemberSessionKey);
+                Session.Remove(Constants.CreateMemberSessionKeyAddition);
+                Session.Remove(Constants.ErrorMessagesSessionKey);
+                Session.Remove(Constants.PaymentProviderSessionKey);
+                Session.Remove(Constants.RequestPasswordSessionKey);
+                Session.Remove(Constants.ShippingProviderSessionKey);
+                Session.Remove(Constants.SignInMemberSessionKey);
+                Session.Remove(Constants.SignOutMemberSessionKey);
+                Session.Remove(Constants.UpdateMemberSessionKey);
+                Session.Remove(Constants.UpdateMemberSessionKeyAddition);
+                Session.Remove(Constants.ChangePasswordSessionKey);
+                Session.Remove(Constants.OrderedItemcountHigherThanStockKey);
+                Session.Remove(Constants.WishlistActionResult);
+                Session.Remove(Constants.WishlistRemoveActionResult);
+                Session.Remove(Constants.WishlistRenameActionResult);
+                Session.Remove(Constants.WishlistToBasketActionResult);
+                Session.Remove(Constants.PostedFieldsKey);
+                Session.Remove(Constants.ConfirmOrderKey);
+                Session.Remove("ConfirmFailed");
+            }
+
 		}
 
 		internal OrderInfo GetWishlist(NameValueCollection requestParameters)
@@ -529,10 +543,10 @@ namespace uWebshop.Domain.Businesslogic
 
 				if (!string.IsNullOrEmpty(wishlistName))
 				{
-					var membershipUser = UwebshopRequest.Current.User;
-					if (membershipUser != null)
+                    var membershipUser = HttpContext.Current.User.Identity.Name;
+					if (!string.IsNullOrEmpty(membershipUser))
 					{
-						var wishlistFromMember = Customers.GetWishlist(membershipUser.UserName, wishlistName,
+						var wishlistFromMember = Customers.GetWishlist(membershipUser, wishlistName,
 							StoreHelper.CurrentStoreAlias);
 
 						wishlist = Basket.GetOrderInfoFromOrderBasket(wishlistFromMember);
@@ -642,7 +656,11 @@ namespace uWebshop.Domain.Businesslogic
 
 			if (!StoreHelper.ChangeCurrency(changeCurrency))
 			{
-				Session.Add(Constants.ChangeCurrencyResult, BasketActionResult.Failed);
+                if (Session != null)
+                {
+                    Session.Add(Constants.ChangeCurrencyResult, BasketActionResult.Failed);
+                }
+				
 				result.Add(Constants.ChangeCurrencyResult, BasketActionResult.Failed.ToString());
 				handleObject.Success = false;
 				return handleObject;
@@ -651,7 +669,11 @@ namespace uWebshop.Domain.Businesslogic
 			handleObject.Success = true;
 			handleObject.Url = urlReferrer;
 			handleObject.Item = new Dictionary<string, string>{ { "Currency", changeCurrency } };
-			Session.Add(Constants.ChangeCurrencyResult, BasketActionResult.Success);
+            if (Session != null)
+            {
+                Session.Add(Constants.ChangeCurrencyResult, BasketActionResult.Success);
+            }
+			
 			result.Add(Constants.ChangeCurrencyResult, BasketActionResult.Success.ToString());
 			handleObject.Messages = result;
 			return handleObject;
@@ -717,7 +739,10 @@ namespace uWebshop.Domain.Businesslogic
 				SetBasket(handleObject, order);
 				handleObject.Validated = true;
 				handleObject.Success = true;
-				Session.Add(Constants.ValidateCustomerResult, BasketActionResult.Failed);
+                if (Session != null) {
+                    Session.Add(Constants.ValidateCustomerResult, BasketActionResult.Failed);
+                }
+				
 				result.Add(Constants.ValidateCustomerResult, BasketActionResult.Failed.ToString());
 				handleObject.Messages = result;
 				return handleObject;
@@ -733,7 +758,11 @@ namespace uWebshop.Domain.Businesslogic
 			}
 
 			handleObject.Url = redirect;
-			Session.Add(Constants.ValidateCustomerResult, BasketActionResult.Failed);
+            if (Session != null)
+            {
+                Session.Add(Constants.ValidateCustomerResult, BasketActionResult.Failed);
+            }
+			
 			result.Add(Constants.ValidateCustomerResult, BasketActionResult.Failed.ToString());
 			handleObject.Messages = result;
 			return handleObject;
@@ -756,7 +785,10 @@ namespace uWebshop.Domain.Businesslogic
 				// order is valid, ok!
 				SetBasket(handleObject, order);
 				handleObject.Validated = true;
-				Session.Add(Constants.ValidateCustomResult, BasketActionResult.Success);
+                if (Session != null) {
+                    Session.Add(Constants.ValidateCustomResult, BasketActionResult.Success);
+                }
+				
 				result.Add(Constants.ValidateCustomResult, BasketActionResult.Success.ToString());
 				handleObject.Messages = result;
 				return handleObject;
@@ -774,7 +806,11 @@ namespace uWebshop.Domain.Businesslogic
 
 			handleObject.Url = redirect;
 
-			Session.Add(Constants.ValidateCustomResult, BasketActionResult.Failed);
+            if (Session != null)
+            {
+                Session.Add(Constants.ValidateCustomResult, BasketActionResult.Failed);
+            }
+			
 			result.Add(Constants.ValidateCustomResult, BasketActionResult.Failed.ToString());
 			handleObject.Messages = result;
 
@@ -805,7 +841,12 @@ namespace uWebshop.Domain.Businesslogic
 				// order is valid, ok!
 				SetBasket(handleObject, order);
 				handleObject.Validated = true;
-				Session.Add(Constants.ValidateStockResult, BasketActionResult.Success);
+
+                if (Session != null)
+                {
+                    Session.Add(Constants.ValidateStockResult, BasketActionResult.Success);
+                }
+				
 				result.Add(Constants.ValidateStockResult, BasketActionResult.Success.ToString());
 				handleObject.Messages = result;
 				return handleObject;
@@ -819,8 +860,11 @@ namespace uWebshop.Domain.Businesslogic
 			{
 				redirect = new Uri(urlReferrer, "?validation=false#validation");
 			}
-
-			Session.Add(Constants.ValidateStockResult, BasketActionResult.Failed);
+            if (Session != null)
+            {
+                Session.Add(Constants.ValidateStockResult, BasketActionResult.Failed);
+            }
+			
 			result.Add(Constants.ValidateStockResult, BasketActionResult.Failed.ToString());
 			handleObject.Messages = result;
 
@@ -847,8 +891,11 @@ namespace uWebshop.Domain.Businesslogic
 				// order is valid, ok!
 				SetBasket(handleObject, order);
 				handleObject.Validated = true;
-
-				Session.Add(Constants.ValidateOrderlineResult, BasketActionResult.Success);
+                if (Session != null)
+                {
+                    Session.Add(Constants.ValidateOrderlineResult, BasketActionResult.Success);
+                }
+				
 				result.Add(Constants.ValidateOrderlineResult, BasketActionResult.Success.ToString());
 				handleObject.Messages = result;
 				return handleObject;
@@ -862,8 +909,11 @@ namespace uWebshop.Domain.Businesslogic
 			{
 				redirect = new Uri(urlReferrer, "?validation=false#validation");
 			}
-
-			Session.Add(Constants.ValidateOrderlineResult, BasketActionResult.Failed);
+            if (Session != null)
+            {
+                Session.Add(Constants.ValidateOrderlineResult, BasketActionResult.Failed);
+            }
+			
 			result.Add(Constants.ValidateOrderlineResult, BasketActionResult.Failed.ToString());
 			handleObject.Messages = result;
 
@@ -882,8 +932,11 @@ namespace uWebshop.Domain.Businesslogic
 			{
 				handleObject.Success = false;
 				handleObject.Messages = result;
-				Session.Add(Constants.BasketActionResult, BasketActionResult.Failed);
-
+				
+                if (Session != null)
+                {
+                    Session.Add(Constants.BasketActionResult, BasketActionResult.Failed);
+                }
 				result.Add(Constants.BasketActionResult, BasketActionResult.Failed.ToString());
 				return handleObject;
 			}
@@ -892,7 +945,11 @@ namespace uWebshop.Domain.Businesslogic
 
 			order.Save();
 
-			Session.Add(Constants.BasketActionResult, BasketActionResult.Success);
+            if (Session != null)
+            {
+                Session.Add(Constants.BasketActionResult, BasketActionResult.Success);
+            }
+			
 			result.Add(Constants.BasketActionResult, BasketActionResult.Success.ToString());
 			SetBasket(handleObject, order);
 			handleObject.Messages = result;
@@ -911,7 +968,12 @@ namespace uWebshop.Domain.Businesslogic
 			{
 				handleObject.Success = false;
 				handleObject.Messages = result;
-				Session.Add(Constants.BasketActionResult, BasketActionResult.Failed);
+
+                if (Session != null)
+                {
+                    Session.Add(Constants.BasketActionResult, BasketActionResult.Failed);
+                }
+				
 
 				result.Add(Constants.BasketActionResult, BasketActionResult.Failed.ToString());
 				return handleObject;
@@ -919,7 +981,11 @@ namespace uWebshop.Domain.Businesslogic
 
 			order = OrderHelper.CreateOrder();
 
-			Session.Add(Constants.BasketActionResult, BasketActionResult.Success);
+            if (Session != null)
+            {
+                Session.Add(Constants.BasketActionResult, BasketActionResult.Success);
+            }
+			
 			result.Add(Constants.BasketActionResult, BasketActionResult.Success.ToString());
 			SetBasket(handleObject, order);
 			handleObject.Messages = result;
@@ -933,12 +999,19 @@ namespace uWebshop.Domain.Businesslogic
 			var handleObject = new HandleObject {Action = "AccountSignOut", Url = urlReferrer};
 			var result = new Dictionary<string, string>();
 			FormsAuthentication.SignOut();
-
-			Session.Add(Constants.SignOutMemberSessionKey, AccountActionResult.Success);
+            if (Session != null)
+            {
+                Session.Add(Constants.SignOutMemberSessionKey, AccountActionResult.Success);
+            }
+			
 
 			result.Add(Constants.SignOutMemberSessionKey, AccountActionResult.Success.ToString());
-
-			Session.Remove(Constants.SignInMemberSessionKey);
+            
+            if (Session != null)
+            {
+                Session.Remove(Constants.SignInMemberSessionKey);
+            }
+			
 			handleObject.Messages = result;
 			handleObject.Success = true;
 
@@ -985,7 +1058,7 @@ namespace uWebshop.Domain.Businesslogic
 			if (profile["forceChangePassword"] != null)
 			{
 				var value = profile["forceChangePassword"].ToString();
-				if (value == "true" || value == "1" || value == "on")
+				if (value.ToLowerInvariant() == "true" || value == "1" || value == "on")
 				{
 					var changePasswordUrl = API.Store.GetStore().AccountChangePasswordUrl;
 
@@ -1593,7 +1666,11 @@ namespace uWebshop.Domain.Businesslogic
 
 			if (string.IsNullOrEmpty(orderStatusValue))
 			{
-				Session.Add(Constants.ConfirmOrderKey, AccountActionResult.Failed);
+                if (Session != null)
+                {
+                    Session.Add(Constants.ConfirmOrderKey, AccountActionResult.Failed);
+                }
+				
 				result.Add(Constants.ConfirmOrderKey, ConfirmOrderResults.Failed.ToString());
 				handleObject.Success = false;
 				handleObject.Messages = result;
@@ -1626,7 +1703,12 @@ namespace uWebshop.Domain.Businesslogic
 				handleObject.Url = validateUri;
 				handleObject.Success = false;
 				handleObject.Validated = false;
-				Session.Add(Constants.ConfirmOrderKey, AccountActionResult.Failed);
+                
+                if (Session != null)
+                {
+                    Session.Add(Constants.ConfirmOrderKey, AccountActionResult.Failed);
+                }
+				
 				result.Add(Constants.ConfirmOrderKey, ConfirmOrderResults.Failed.ToString());
 				handleObject.Messages = result;
 				return handleObject;
@@ -1644,7 +1726,11 @@ namespace uWebshop.Domain.Businesslogic
 					handleObject.Success = true;
 					handleObject.Messages = result;
 					//todo: check if this is really a successfull situation?
-					Session.Add(Constants.ConfirmOrderKey, AccountActionResult.Success);
+                    if (Session != null)
+                    {
+                        Session.Add(Constants.ConfirmOrderKey, AccountActionResult.Success);
+                    }
+					
 					result.Add(Constants.ConfirmOrderKey, ConfirmOrderResults.Success.ToString());
 					return handleObject;
 				}
@@ -1652,7 +1738,10 @@ namespace uWebshop.Domain.Businesslogic
 				
 				// todo: nasty hack, because on localhost // somehow makes from // file:// instead of http:// 
 				var redirectUrl = order.RedirectUrl;
-				if (order.RedirectUrl.StartsWith("//"))
+
+                Log.Instance.LogDebug("ORDER REDIRECT URL: " + redirectUrl);
+
+                if (order.RedirectUrl.StartsWith("//"))
 				{
 					var http = "http:";
 					if (requestUri != null && requestUri.AbsoluteUri.StartsWith("https"))
@@ -1668,8 +1757,11 @@ namespace uWebshop.Domain.Businesslogic
 
 				Log.Instance.LogDebug("CONFIRM ORDER REDIRECT URL: "+ redirectUrl + " (handleObject.PostConfirmUrl) handleObject.PostConfirmUrl.AbsoluteUri: " + handleObject.PostConfirmUrl.AbsoluteUri);
 			}
-
-			Session.Add(Constants.ConfirmOrderKey, AccountActionResult.Success);
+            if (Session != null)
+            {
+                Session.Add(Constants.ConfirmOrderKey, AccountActionResult.Success);
+            }
+			
 			result.Add(Constants.ConfirmOrderKey, ConfirmOrderResults.Success.ToString());
 
 			handleObject.Success = true;
@@ -1696,6 +1788,8 @@ namespace uWebshop.Domain.Businesslogic
 
 			string couponCodeValue = requestParameters[couponCodeKey];
 			string removeCouponValue = requestParameters[removeCouponKey];
+
+            Log.Instance.LogDebug("Adding coupon code: Value : " + couponCodeValue);
 
 			CouponCodeResult codeResult;
 			var message = new Dictionary<string, string>();
@@ -1745,7 +1839,11 @@ namespace uWebshop.Domain.Businesslogic
 			foreach (var mes in message)
 			{
 				result.Add(mes.Key, mes.Value);
-				Session.Add(mes.Key, mes.Value);
+                if (Session != null)
+                {
+                    Session.Add(mes.Key, mes.Value);
+                }
+				
 			}
 			handleObject.Messages = result;
 			return handleObject;
@@ -1764,7 +1862,11 @@ namespace uWebshop.Domain.Businesslogic
 			{
 				SetBasket(handleObject, order);
 				result.Add(Constants.BasketActionResult, BasketActionResult.Failed.ToString());
-				Session.Add(Constants.BasketActionResult, BasketActionResult.Failed.ToString());
+                if (Session != null)
+                {
+                    Session.Add(Constants.BasketActionResult, BasketActionResult.Failed.ToString());
+                }
+				
 				handleObject.Messages = result;
 				handleObject.Success = false;
 				return handleObject;
@@ -1775,7 +1877,11 @@ namespace uWebshop.Domain.Businesslogic
 
 			SetBasket(handleObject, order);
 			result.Add(Constants.BasketActionResult, BasketActionResult.Success.ToString());
-			Session.Add(Constants.BasketActionResult, BasketActionResult.Success.ToString());
+            if (Session != null)
+            {
+                Session.Add(Constants.BasketActionResult, BasketActionResult.Success.ToString());
+            }
+			
 			handleObject.Success = true;
 			handleObject.Messages = result;
 			return handleObject;
@@ -1797,7 +1903,11 @@ namespace uWebshop.Domain.Businesslogic
 				handleObject.Success = false;
 				handleObject.Validated = false;
 				result.Add(Constants.CustomerInformation, CustomerInformationResult.Failed.ToString());
-				Session.Add(Constants.CustomerInformation, CustomerInformationResult.Failed.ToString());
+
+                if (Session != null) {
+                    Session.Add(Constants.CustomerInformation, CustomerInformationResult.Failed.ToString());
+                }
+				
 				handleObject.Messages = result;
 				return handleObject;
 			}
@@ -1824,7 +1934,12 @@ namespace uWebshop.Domain.Businesslogic
 			handleObject.Success = true;
 			handleObject.Validated = true;
 			result.Add(Constants.CustomerInformation, CustomerInformationResult.Success.ToString());
-			Session.Add(Constants.CustomerInformation, CustomerInformationResult.Success.ToString());
+            
+            if (Session != null)
+            {
+                Session.Add(Constants.CustomerInformation, CustomerInformationResult.Success.ToString());
+            }
+			
 			handleObject.Messages = result;
 			return handleObject;
 		}
@@ -1845,7 +1960,10 @@ namespace uWebshop.Domain.Businesslogic
 			{
 				ShippingProviderHelper.AutoSelectShippingProvider(order);
 
-				Session.Add(Constants.ShippingProviderSessionKey, ProviderActionResult.Success);
+                if (Session != null)
+                {
+                    Session.Add(Constants.ShippingProviderSessionKey, ProviderActionResult.Success);
+                }
 				result.Add(Constants.ShippingProviderSessionKey, ProviderActionResult.Success.ToString());
 				order.Save();
 
@@ -1861,7 +1979,11 @@ namespace uWebshop.Domain.Businesslogic
 				if (!shippingProviderValue.Contains("-"))
 				{
 					Log.Instance.LogDebug("AddShippingMethod: " + ProviderActionResult.NoCorrectInput + " value: " + shippingProviderValue);
-					Session.Add(Constants.ShippingProviderSessionKey, ProviderActionResult.NoCorrectInput);
+                    if (Session != null)
+                    {
+                        Session.Add(Constants.ShippingProviderSessionKey, ProviderActionResult.NoCorrectInput);
+                    }
+					
 					result.Add(Constants.ShippingProviderSessionKey, ProviderActionResult.NoCorrectInput.ToString());
 					SetBasket(handleObject, order);
 					handleObject.Success = false;
@@ -1880,7 +2002,10 @@ namespace uWebshop.Domain.Businesslogic
 				if (shippingProviderId == 0)
 				{
 					Log.Instance.LogDebug("AddShippingMethod: " + ProviderActionResult.ProviderIdZero + " value: " + shippingProviderValue);
-					Session.Add(Constants.ShippingProviderSessionKey, ProviderActionResult.ProviderIdZero);
+                    if (Session != null) {
+                        Session.Add(Constants.ShippingProviderSessionKey, ProviderActionResult.ProviderIdZero);
+                    }
+					
 					result.Add(Constants.ShippingProviderSessionKey, ProviderActionResult.ProviderIdZero.ToString());
 					SetBasket(handleObject, order);
 					handleObject.Success = false;
@@ -1893,7 +2018,11 @@ namespace uWebshop.Domain.Businesslogic
 
 				order.Save();
 
-				Session.Add(Constants.ShippingProviderSessionKey, actionResult);
+                if (Session != null)
+                {
+                    Session.Add(Constants.ShippingProviderSessionKey, actionResult);
+                }
+
 				result.Add(Constants.ShippingProviderSessionKey, actionResult.ToString());
 				SetBasket(handleObject, order);
 				handleObject.Success = true;
@@ -1902,7 +2031,11 @@ namespace uWebshop.Domain.Businesslogic
 				return handleObject;
 			}
 			Log.Instance.LogDebug("AddShippingMethod: " + ProviderActionResult.NoCorrectInput + " value: null");
-			Session.Add(Constants.ShippingProviderSessionKey, ProviderActionResult.NoCorrectInput);
+            if (Session != null)
+            {
+                Session.Add(Constants.ShippingProviderSessionKey, ProviderActionResult.NoCorrectInput);
+            }
+			
 
 			result.Add(Constants.ShippingProviderSessionKey, ProviderActionResult.NoCorrectInput.ToString());
 			SetBasket(handleObject, order);
@@ -1932,7 +2065,11 @@ namespace uWebshop.Domain.Businesslogic
 
 			if (paymentProviderValue == null)
 			{
-				Session.Add(Constants.PaymentProviderSessionKey, ProviderActionResult.NoCorrectInput);
+                if (Session != null)
+                {
+                    Session.Add(Constants.PaymentProviderSessionKey, ProviderActionResult.NoCorrectInput);
+                }
+				
 				Log.Instance.LogError("BasketHandler AddPaymentMethod paymentProviderValue == null");
 				result.Add(Constants.PaymentProviderSessionKey, ProviderActionResult.NoCorrectInput.ToString());
 				handleObject.Success = false;
@@ -1957,7 +2094,11 @@ namespace uWebshop.Domain.Businesslogic
 					return handleObject;
 				}
 
-				Session.Add(Constants.PaymentProviderSessionKey, ProviderActionResult.NoCorrectInput);
+                if (Session != null)
+                {
+                    Session.Add(Constants.PaymentProviderSessionKey, ProviderActionResult.NoCorrectInput);
+                }
+				
 				Log.Instance.LogError("BasketHandler AddPaymentMethod !paymentProviderValue.Contains(-) && paymentProviderNode != null");
 				result.Add(Constants.PaymentProviderSessionKey, ProviderActionResult.NoCorrectInput.ToString());
 				handleObject.Success = false;
@@ -1968,7 +2109,11 @@ namespace uWebshop.Domain.Businesslogic
 
 			if (paymentProviderValue.Split('-').Length <= 0)
 			{
-				Session.Add(Constants.PaymentProviderSessionKey, ProviderActionResult.NoCorrectInput);
+                if (Session != null)
+                {
+                    Session.Add(Constants.PaymentProviderSessionKey, ProviderActionResult.NoCorrectInput);
+                }
+
 				Log.Instance.LogError("BasketHandler AddPaymentMethod paymentProviderValue.Split('-').Length <= 0");
 				result.Add(Constants.PaymentProviderSessionKey, ProviderActionResult.NoCorrectInput.ToString());
 				handleObject.Success = false;
@@ -1985,7 +2130,11 @@ namespace uWebshop.Domain.Businesslogic
 
 			if (paymentProviderId == 0)
 			{
-				Session.Add(Constants.PaymentProviderSessionKey, ProviderActionResult.ProviderIdZero);
+                if (Session != null)
+                {
+                    Session.Add(Constants.PaymentProviderSessionKey, ProviderActionResult.ProviderIdZero);
+                }
+
 				Log.Instance.LogError("BasketHandler AddPaymentMethod ProviderActionResult.ProviderIdZero");
 				result.Add(Constants.PaymentProviderSessionKey, ProviderActionResult.ProviderIdZero.ToString());
 				SetBasket(handleObject, order);
@@ -1997,7 +2146,10 @@ namespace uWebshop.Domain.Businesslogic
 
 			order.Save();
 
-			Session.Add(Constants.PaymentProviderSessionKey, ProviderActionResult.Success);
+            if (Session != null)
+            {
+                Session.Add(Constants.PaymentProviderSessionKey, ProviderActionResult.Success);
+            }
 
 			result.Add(Constants.PaymentProviderSessionKey, ProviderActionResult.Success.ToString());
 
@@ -2026,21 +2178,33 @@ namespace uWebshop.Domain.Businesslogic
 					newWishlist.Name = requestParameters[wishlistName];
 					newWishlist.Save();
 
-					Session.Add(Constants.WishlistActionResult, BasketActionResult.Success);
+                    if (Session != null)
+                    {
+                        Session.Add(Constants.WishlistActionResult, BasketActionResult.Success);
+                    }
+					
 					result.Add(Constants.WishlistActionResult, BasketActionResult.Success.ToString());
 					SetBasket(handleObject, newWishlist);
 					handleObject.Success = true;
 				}
 				else
 				{
-					Session.Add(Constants.WishlistActionResult, BasketActionResult.Failed);
+                    if (Session != null)
+                    {
+                        Session.Add(Constants.WishlistActionResult, BasketActionResult.Failed);
+                    }
+
 					result.Add(Constants.WishlistActionResult, BasketActionResult.Failed.ToString());
 					handleObject.Success = false;
 				}
 			}
 			else
 			{
-				Session.Add(Constants.WishlistActionResult, BasketActionResult.AlreadyExists);
+                if (Session != null)
+                {
+                    Session.Add(Constants.WishlistActionResult, BasketActionResult.AlreadyExists);
+                }
+				
 				result.Add(Constants.WishlistActionResult, BasketActionResult.AlreadyExists.ToString());
 				handleObject.Success = false;
 			}
@@ -2063,14 +2227,23 @@ namespace uWebshop.Domain.Businesslogic
 				wishlist.Name = requestParameters[newWishlistName];
 				wishlist.Save();
 
-				Session.Add(Constants.WishlistRenameActionResult, BasketActionResult.Success);
+                if (Session != null)
+                {
+                    Session.Add(Constants.WishlistRenameActionResult, BasketActionResult.Success);
+                }
+
+				
 				result.Add(Constants.WishlistRenameActionResult, BasketActionResult.Success.ToString());
 				SetBasket(handleObject, wishlist);
 				handleObject.Success = true;
 			}
 			else
 			{
-				Session.Add(Constants.WishlistRenameActionResult, BasketActionResult.Failed);
+                if (Session != null)
+                {
+                    Session.Add(Constants.WishlistRenameActionResult, BasketActionResult.Failed);
+                }
+				
 				result.Add(Constants.WishlistRenameActionResult, BasketActionResult.Failed.ToString());
 				handleObject.Success = false;
 			}
@@ -2094,13 +2267,22 @@ namespace uWebshop.Domain.Businesslogic
 				wishlist.CustomerInfo.LoginName = string.Empty;
 				wishlist.Save();
 
-				Session.Add(Constants.WishlistRemoveActionResult, BasketActionResult.Success);
+                if (Session != null)
+                {
+                    Session.Add(Constants.WishlistRemoveActionResult, BasketActionResult.Success);
+                }
+
+				
 				result.Add(Constants.WishlistRemoveActionResult, BasketActionResult.Success.ToString());
 				handleObject.Success = true;
 			}
 			else
 			{
-				Session.Add(Constants.WishlistRemoveActionResult, BasketActionResult.Failed);
+                if (Session != null)
+                {
+                    Session.Add(Constants.WishlistRemoveActionResult, BasketActionResult.Failed);
+                }
+				
 				result.Add(Constants.WishlistRemoveActionResult, BasketActionResult.Failed.ToString());
 				handleObject.Success = false;
 			}
@@ -2145,7 +2327,11 @@ namespace uWebshop.Domain.Businesslogic
 				
 			}
 
-			Session.Add(Constants.WishlistToBasketActionResult, BasketActionResult.Success);
+            if (Session != null)
+            {
+                Session.Add(Constants.WishlistToBasketActionResult, BasketActionResult.Success);
+            }
+			
 			result.Add(Constants.WishlistToBasketActionResult, BasketActionResult.Success.ToString());
 
 			order.Save();
@@ -2176,7 +2362,12 @@ namespace uWebshop.Domain.Businesslogic
 
 			var currentOrder = OrderHelper.AddOrderToBasket(orderGuid);
 
-		    Session.Add(Constants.OrderToBasketActionResult, BasketActionResult.Success);
+            if (Session != null)
+            {
+                Session.Add(Constants.OrderToBasketActionResult, BasketActionResult.Success);
+            }
+
+		    
 			result.Add(Constants.OrderToBasketActionResult, BasketActionResult.Success.ToString());
 
 			handleObject.Validated = false;
@@ -2220,10 +2411,12 @@ namespace uWebshop.Domain.Businesslogic
 				if (productId <= 0 && orderLineId <= 0)
 				{
 					Log.Instance.LogError("ADD TO BASKET ERROR: productId <= 0 && orderLineId <= 0");
-					if (HttpContext.Current != null)
+
+					if (HttpContext.Current != null && Session != null)
 					{
 						Session.Add(Constants.BasketActionResult, BasketActionResult.NoProductOrOrderLineId);
 					}
+
 					result.Add(Constants.BasketActionResult, BasketActionResult.NoProductOrOrderLineId.ToString());
 					handleObject.Success = false;
 					SetBasket(handleObject, order);
@@ -2265,20 +2458,30 @@ namespace uWebshop.Domain.Businesslogic
 					Log.Instance.LogDebug("ADD TO BASKET DEBUG order: " + order.UniqueOrderId + " orderLineId: " + orderLineId + " productId: " + productId + " action: " + action + " quantity: " + quantity + " variantsCount: " + variants.Count() + " fieldsCount: " + fields.Count());
 
 					orderUpdater.AddOrUpdateOrderLine(order, orderLineId, productId, action, quantity, variants, fields);
-					// unit test dat dit aangeroepen wordt
-					orderUpdater.Save(order);
+                    // unit test dat dit aangeroepen wordt
 
-					if (HttpContext.Current != null)
+                    if (HttpContext.Current != null && Session != null && Session[Constants.OrderedItemcountHigherThanStockKey] != null)
+                    {
+                        result.Add(Constants.OrderedItemcountHigherThanStockKey, "true");
+                        handleObject.Messages = result;
+                        handleObject.Success = false;
+                        return handleObject;
+                    }
+
+                    orderUpdater.Save(order);
+
+                    if (HttpContext.Current != null && Session != null)
 					{
 						Session.Add(order.Status == OrderStatus.Wishlist ? Constants.WishlistActionResult : Constants.BasketActionResult, BasketActionResult.Success);
 					}
+
 					result.Add(order.Status == OrderStatus.Wishlist ? Constants.WishlistActionResult : Constants.BasketActionResult, BasketActionResult.Success.ToString());
 					handleObject.Success = true;
 					SetBasket(handleObject, order);
 				}
 				else
 				{
-					if (HttpContext.Current != null)
+                    if (HttpContext.Current != null && Session != null)
 					{
 						Session.Add(Constants.WishlistActionResult, BasketActionResult.OrderNull);
 						Session.Add(Constants.BasketActionResult, BasketActionResult.OrderNull);

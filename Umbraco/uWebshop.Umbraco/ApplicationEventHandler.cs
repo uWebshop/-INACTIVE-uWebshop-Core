@@ -38,6 +38,8 @@ using Catalog = uWebshop.Domain.Catalog;
 using Constants = uWebshop.Common.Constants;
 using Log = uWebshop.Domain.Log;
 using Store = uWebshop.Domain.Store;
+using Newtonsoft.Json;
+using Umbraco.Web.Routing;
 
 namespace uWebshop.Umbraco
 {
@@ -50,7 +52,7 @@ namespace uWebshop.Umbraco
 
 		public void OnApplicationStarting(UmbracoApplicationBase umbracoApplication, ApplicationContext applicationContext)
 		{
-
+			UrlProviderResolver.Current.InsertTypeBefore<DefaultUrlProvider, UrlProvider>();
 		}
 
         private static void DoLogged(Action action, string message)
@@ -90,9 +92,9 @@ namespace uWebshop.Umbraco
 		        DoLogged(Initialize.Reboot, "uWebshop Installer initialize uWebshop internal state");
 		        DoLogged(() => IO.Container.Resolve<IInstaller>().Install(createMissingProperties), "uWebshop Installer Umbraco installer.Install()");
 		        // update web.config
-                config.AppSettings.Settings.Remove("uWebshopConfigurationStatus");
-		        config.AppSettings.Settings.Add("uWebshopConfigurationStatus", uWebshopVersionFromDomain.ToString());
-                config.Save();
+                //config.AppSettings.Settings.Remove("uWebshopConfigurationStatus");
+		        //config.AppSettings.Settings.Add("uWebshopConfigurationStatus", uWebshopVersionFromDomain.ToString());
+                //config.Save();
 		    }
 
 		    try
@@ -104,141 +106,156 @@ namespace uWebshop.Umbraco
 			{
 				LogHelper.Error(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "Error while initializing uWebshop, most likely due to wrong umbraco.config, please republish the site " + ex.Message, ex);
 			}
-
-			
 			ContentService.Created += ContentService_Created;
-			ContentService.Saved += ContentService_Saved;
+			//ContentService.Saved += ContentService_Saved;
 			ContentService.Published += ContentService_Published;
 			ContentService.Publishing += ContentService_Publishing;
 			ContentService.Trashed += ContentService_Trashed;
 			ContentService.UnPublished += ContentService_UnPublished;
 			ContentService.Deleted += ContentService_Deleted;
 			ContentService.Copied += ContentService_Copied;
-
+                    
 			OrderInfo.BeforeStatusChanged += OrderEvents.UpdateOrderNumberIfChangingFromIncompleteToScheduled;
 			OrderInfo.AfterStatusChanged += OrderEvents.OrderStatusChanged;
 
-			UmbracoDefault.BeforeRequestInit += UmbracoDefaultBeforeRequestInit;
+            UmbracoDefault.BeforeRequestInit += UmbracoDefaultBeforeRequestInit;
 			UmbracoDefault.AfterRequestInit += UmbracoDefaultAfterRequestInit;
 
 			var indexer = ExamineManager.Instance.IndexProviderCollection[UwebshopConfiguration.Current.ExamineIndexer];
 			indexer.GatheringNodeData += GatheringNodeDataHandler;
-		}
+
+            // Create SaleManager Section
+            var sectionService = applicationContext.Services.SectionService;
+
+            var section = sectionService.GetSections().SingleOrDefault(x => x.Alias == "saleManager");
+
+            if (section == null)
+            {
+                sectionService.MakeNew("SaleManager", "saleManager", "icon-uwebshop-statistics");
+            }
+
+            uWebshop.Domain.StoreCache.StoreDomainCache.FillCache();
+        }
 
 		void ContentService_Saved(IContentService sender, SaveEventArgs<IContent> e)
 		{
-			try
-			{
-				var contentService = ApplicationContext.Current.Services.ContentService;
-				foreach (var item in e.SavedEntities)
-				{
-					if (item.Level <= 2)
-					{
-						continue;
-					}
-					if (item.ContentType.Alias != Order.NodeAlias &&
-					    (item.Parent() == null || (!OrderedProduct.IsAlias(item.ContentType.Alias) &&
-					                               (item.Parent().Parent() == null || !OrderedProductVariant.IsAlias(item.ContentType.Alias))))) // todo simplify expression
-					{
-						continue;
-					}
-					var orderDoc = item.ContentType.Alias == Order.NodeAlias
-						               ? item
-						               : (OrderedProduct.IsAlias(item.ContentType.Alias) && !OrderedProductVariant.IsAlias(item.ContentType.Alias)
-							                  ? contentService.GetById(item.Parent().Id)
-							                  : contentService.GetById(item.Parent().Parent().Id));
+			//try
+			//{
 
-					if (orderDoc.ContentType.Alias != Order.NodeAlias)
-						throw new Exception("There was an error in the structure of the order documents");
+				//foreach (var item in e.SavedEntities)
+				//{
 
-					if (!orderDoc.HasProperty("orderGuid"))
-					{
-						continue;
-					}
-					var orderGuidString = orderDoc.GetValue<string>("orderGuid");
+				//if (item.Level <= 2)
+				//{
+				//	continue;
+				//}
 
-					if (orderDoc.HasProperty("orderGuid") && string.IsNullOrEmpty(orderGuidString))
-					{
-						Store store = null;
-						var storeDoc = item.Ancestors().FirstOrDefault(x => x.ContentType.Alias == OrderStoreFolder.NodeAlias);
-						if (storeDoc != null)
-						{
-							store = StoreHelper.GetAllStores().FirstOrDefault(x => x.Name == storeDoc.Name);
-						}
-						if (store == null)
-						{
-							store = StoreHelper.GetAllStores().FirstOrDefault();
-						}
-						var orderInfo = OrderHelper.CreateOrder(store);
-						IO.Container.Resolve<IOrderNumberService>().GenerateAndPersistOrderNumber(orderInfo);
-						orderInfo.Status = OrderStatus.Confirmed;
-						orderInfo.Save();
+				//if (item.ContentType.Alias != Order.NodeAlias &&
+				//    (item.Parent() == null || (!OrderedProduct.IsAlias(item.ContentType.Alias) &&
+				//                               (item.Parent().Parent() == null || !OrderedProductVariant.IsAlias(item.ContentType.Alias))))) // todo simplify expression
+				//{
+				//	continue;
+				//}
 
-						item.SetValue("orderGuid", orderInfo.UniqueOrderId.ToString());
-						contentService.Save(item);
-					}
-					else
-					{
-						var orderGuid = orderDoc.GetValue<Guid>("orderGuid");
-						var orderInfo = OrderHelper.GetOrder(orderGuid);
+				//var orderDoc = item.ContentType.Alias == Order.NodeAlias
+				//	               ? item
+				//	               : (OrderedProduct.IsAlias(item.ContentType.Alias) && !OrderedProductVariant.IsAlias(item.ContentType.Alias)
+				//		                  ? contentService.GetById(item.Parent().Id)
+				//		                  : contentService.GetById(item.Parent().Parent().Id));
 
-						var order = new Order(orderDoc.Id);
-						orderInfo.CustomerEmail = order.CustomerEmail;
-						orderInfo.CustomerFirstName = order.CustomerFirstName;
-						orderInfo.CustomerLastName = order.CustomerLastName;
+				//if (orderDoc.ContentType.Alias != Order.NodeAlias)
+				//	throw new Exception("There was an error in the structure of the order documents");
 
-						var dictionaryCustomer = orderDoc.Properties.Where(x => x.Alias.StartsWith("customer"))
-						                                 .ToDictionary(customerProperty => customerProperty.Alias,
-						                                               customerProperty => customerProperty.Value != null ? customerProperty.Value.ToString() : null);
-						orderInfo.AddCustomerFields(dictionaryCustomer, CustomerDatatypes.Customer);
+				//if (!orderDoc.HasProperty("orderGuid"))
+				//{
+				//	continue;
+				//}
+				//var orderGuidString = orderDoc.GetValue<string>("orderGuid");
 
-						var dictionaryShipping = orderDoc.Properties.Where(x => x.Alias.StartsWith("shipping"))
-						                                 .ToDictionary(property => property.Alias, property => property.Value != null ? property.Value.ToString() : null);
-						orderInfo.AddCustomerFields(dictionaryShipping, CustomerDatatypes.Shipping);
+				//if (orderDoc.HasProperty("orderGuid") && string.IsNullOrEmpty(orderGuidString))
+				//{
+				//	Store store = null;
+				//	var storeDoc = item.Ancestors().FirstOrDefault(x => x.ContentType.Alias == OrderStoreFolder.NodeAlias);
+				//	if (storeDoc != null)
+				//	{
+				//		store = StoreHelper.GetAllStores().FirstOrDefault(x => x.Name == storeDoc.Name);
+				//	}
+				//	if (store == null)
+				//	{
+				//		store = StoreHelper.GetAllStores().FirstOrDefault();
+				//	}
+				//	var orderInfo = OrderHelper.CreateOrder(store);
+				//	IO.Container.Resolve<IOrderNumberService>().GenerateAndPersistOrderNumber(orderInfo);
+				//	orderInfo.Status = OrderStatus.Confirmed;
+				//	orderInfo.Save();
 
-						var dictionarExtra = orderDoc.Properties.Where(x => x.Alias.StartsWith("extra"))
-						                             .ToDictionary(property => property.Alias, property => property.Value != null ? property.Value.ToString() : null);
-						orderInfo.AddCustomerFields(dictionarExtra, CustomerDatatypes.Extra);
+				//	item.SetValue("orderGuid", orderInfo.UniqueOrderId.ToString());
+				//	contentService.Save(item);
+				//}
+				//else
+				//{
+				//	var orderGuid = orderDoc.GetValue<Guid>("orderGuid");
+				//	var orderInfo = OrderHelper.GetOrder(orderGuid);
 
-						var orderPaidProperty = order.Document.getProperty("orderPaid");
-						if (orderPaidProperty != null && orderPaidProperty.Value != null)
-						{
-							orderInfo.Paid = orderPaidProperty.Value == "1";
-						}
-						// load data recursively from umbraco documents into order tree
-						orderInfo.OrderLines = orderDoc.Children().Select(d =>
-							{
-								var fields =
-									d.Properties.Where(x => !OrderedProduct.DefaultProperties.Contains(x.Alias))
-									 .ToDictionary(s => s.Alias, s => d.GetValue<string>(s.Alias));
+				//	var order = new Order(orderDoc.Id);
+				//	orderInfo.CustomerEmail = order.CustomerEmail;
+				//	orderInfo.CustomerFirstName = order.CustomerFirstName;
+				//	orderInfo.CustomerLastName = order.CustomerLastName;
 
-								var xDoc = new XDocument(new XElement("Fields"));
+				//	var dictionaryCustomer = orderDoc.Properties.Where(x => x.Alias.StartsWith("customer"))
+				//	                                 .ToDictionary(customerProperty => customerProperty.Alias,
+				//	                                               customerProperty => customerProperty.Value != null ? customerProperty.Value.ToString() : null);
+				//	orderInfo.AddCustomerFields(dictionaryCustomer, CustomerDatatypes.Customer);
 
-								OrderUpdatingService.AddFieldsToXDocumentBasedOnCMSDocumentType(xDoc, fields, d.ContentType.Alias);
+				//	var dictionaryShipping = orderDoc.Properties.Where(x => x.Alias.StartsWith("shipping"))
+				//	                                 .ToDictionary(property => property.Alias, property => property.Value != null ? property.Value.ToString() : null);
+				//	orderInfo.AddCustomerFields(dictionaryShipping, CustomerDatatypes.Shipping);
 
-								var orderedProduct = new OrderedProduct(d.Id);
+				//	var dictionarExtra = orderDoc.Properties.Where(x => x.Alias.StartsWith("extra"))
+				//	                             .ToDictionary(property => property.Alias, property => property.Value != null ? property.Value.ToString() : null);
+				//	orderInfo.AddCustomerFields(dictionarExtra, CustomerDatatypes.Extra);
 
-								var productInfo = new ProductInfo(orderedProduct, orderInfo);
-								productInfo.ProductVariants =
-									d.Children()
-									 .Select(cd => new ProductVariantInfo(new OrderedProductVariant(cd.Id), productInfo, productInfo.Vat))
-									 .ToList();
-								return new OrderLine(productInfo, orderInfo) {_customData = xDoc};
-							}).ToList();
+				//	var orderPaidProperty = order.Document.getProperty("orderPaid");
+				//	if (orderPaidProperty != null && orderPaidProperty.Value != null)
+				//	{
+				//		orderInfo.Paid = orderPaidProperty.Value == "1";
+				//	}
+				//	// load data recursively from umbraco documents into order tree
+				//	orderInfo.OrderLines = orderDoc.Children().Select(d =>
+				//		{
+				//			var fields =
+				//				d.Properties.Where(x => !OrderedProduct.DefaultProperties.Contains(x.Alias))
+				//				 .ToDictionary(s => s.Alias, s => d.GetValue<string>(s.Alias));
 
-						IO.Container.Resolve<IOrderRepository>().SaveOrderInfo(orderInfo);
-					}
+				//			var xDoc = new XDocument(new XElement("Fields"));
 
-					BasePage.Current.ClientTools.SyncTree(item.Parent().Path, false);
-					BasePage.Current.ClientTools.ChangeContentFrameUrl(string.Concat("editContent.aspx?id=", item.Id));
+				//			OrderUpdatingService.AddFieldsToXDocumentBasedOnCMSDocumentType(xDoc, fields, d.ContentType.Alias);
 
-					BasePage.Current.ClientTools.ShowSpeechBubble(BasePage.speechBubbleIcon.success, "Order Updated!", "This order has been updated!");
-				}
-			}
-			catch (Exception exception)
-			{
-				LogHelper.Error<ApplicationEventHandler>("ContentService_Saved", exception);
-			}
+				//			var orderedProduct = new OrderedProduct(d.Id);
+
+				//			var productInfo = new ProductInfo(orderedProduct, orderInfo);
+				//			productInfo.ProductVariants =
+				//				d.Children()
+				//				 .Select(cd => new ProductVariantInfo(new OrderedProductVariant(cd.Id), productInfo, productInfo.Vat))
+				//				 .ToList();
+				//			return new OrderLine(productInfo, orderInfo) {_customData = xDoc};
+				//		}).ToList();
+
+				//	IO.Container.Resolve<IOrderRepository>().SaveOrderInfo(orderInfo);
+				//}
+
+				//BasePage.Current.ClientTools.SyncTree(item.Parent().Path, false);
+				//BasePage.Current.ClientTools.ChangeContentFrameUrl(string.Concat("editContent.aspx?id=", item.Id));
+
+				//BasePage.Current.ClientTools.ShowSpeechBubble(BasePage.speechBubbleIcon.success, "Order Updated!", "This order has been updated!");
+
+				//Log.Instance.LogDebug("Saved event fired finshed");
+				//}
+				//}
+				//catch (Exception exception)
+				//{
+				//	LogHelper.Error<ApplicationEventHandler>("ContentService_Saved", exception);
+				//}
 		}
 	
 		private void ContentService_Trashed(IContentService sender, MoveEventArgs<IContent> e)
@@ -343,7 +360,7 @@ namespace uWebshop.Umbraco
 			}
 		}
 
-		private static void ResetAll(int id, string nodeTypeAlias)
+		public static void ResetAll(int id, string nodeTypeAlias)
 		{
 			IO.Container.Resolve<IApplicationCacheManagingService>().ReloadEntityWithGlobalId(id, nodeTypeAlias);
 		}
@@ -361,10 +378,15 @@ namespace uWebshop.Umbraco
 			foreach (var item in e.DeletedEntities)
 			{
 				ClearCaches(item);
+
+                if (item.ContentType.Alias == "uwbsDiscountOrder")
+                {
+                    RemoveCoupons(item.Id);
+                }
 			}
 		}
 
-		private static void ClearCaches(IContent sender)
+		public static void ClearCaches(IContent sender)
 		{
 			//todo: work with aliasses from config
 			if (sender.ContentType.Alias != Order.NodeAlias)
@@ -415,17 +437,17 @@ namespace uWebshop.Umbraco
 
 				if (ProductVariant.IsAlias(currentNode.DocumentTypeAlias))
 				{
-					var product = DomainHelper.GetProductById(currentNode.Parent.Id);
+					var product = Domain.Helpers.DomainHelper.GetProductById(currentNode.Parent.Id);
 					if (product != null) HttpContext.Current.Response.RedirectPermanent(product.NiceUrl(), true);
 				}
 				else if (Product.IsAlias(currentNode.DocumentTypeAlias))
 				{
-					var product = DomainHelper.GetProductById(currentNode.Id);
+					var product = Domain.Helpers.DomainHelper.GetProductById(currentNode.Id);
 					if (product != null) HttpContext.Current.Response.RedirectPermanent(product.NiceUrl(), true);
 				}
 				else if (Category.IsAlias(currentNode.DocumentTypeAlias))
 				{
-					var category = DomainHelper.GetCategoryById(currentNode.Id);
+					var category = Domain.Helpers.DomainHelper.GetCategoryById(currentNode.Id);
 					if (category != null) HttpContext.Current.Response.RedirectPermanent( /* todo nicer */RazorExtensions.ExtensionMethods.NiceUrl(category), true);
 				}
 			}
@@ -533,7 +555,7 @@ namespace uWebshop.Umbraco
 				int categoryId;
 				if (!int.TryParse(currentCategoryId, out categoryId))
 					return;
-				var categoryFromUrl = DomainHelper.GetCategoryById(categoryId);
+				var categoryFromUrl = Domain.Helpers.DomainHelper.GetCategoryById(categoryId);
 				if (categoryFromUrl == null) return;
 
 				if (categoryFromUrl.Disabled)
@@ -576,7 +598,7 @@ namespace uWebshop.Umbraco
 				int productId;
 				if (!int.TryParse(currentProductId, out productId))
 					return;
-				var productFromUrl = DomainHelper.GetProductById(productId);
+				var productFromUrl = Domain.Helpers.DomainHelper.GetProductById(productId);
 				if (productFromUrl == null) return;
 
 				if (Access.HasAccess(productFromUrl.Id, productFromUrl.Path(), UwebshopRequest.Current.User))
@@ -642,20 +664,83 @@ namespace uWebshop.Umbraco
 
 		private void ContentService_Publishing(IPublishingStrategy sender, PublishEventArgs<IContent> e)
 		{
-			foreach (var item in e.PublishedEntities)
+
+			foreach (var content in e.PublishedEntities)
 			{
-				if (Category.IsAlias(item.ContentType.Alias))
+				if (Category.IsAlias(content.ContentType.Alias))
 				{
-					SetAliasedPropertiesIfEnabled(item, "categoryUrl");
+					SetAliasedPropertiesIfEnabled(content, "categoryUrl");
 				}
-				if (Product.IsAlias(item.ContentType.Alias))
+				if (Product.IsAlias(content.ContentType.Alias))
 				{
-					SetAliasedPropertiesIfEnabled(item, "productUrl");
+					SetAliasedPropertiesIfEnabled(content, "productUrl");
 				}
-				if (item.ContentType.Alias == Order.NodeAlias)
+				if (content.ContentType.Alias == Order.NodeAlias)
 				{
 					// order => todo: delete node, update SQL
 				}
+
+				if (Category.IsAlias(content.ContentType.Alias) || Product.IsAlias(content.ContentType.Alias))
+				{
+					// Need to get this into function
+
+					try
+					{
+						var stores = StoreHelper.GetAllStores();
+						var siblings = content.Parent().Children().Where(x => x.Published && x.Id != content.Id && !x.Trashed);
+
+						foreach (var store in stores)
+						{
+
+							var slug = NodeHelper.GetStoreProperty(content, "url", store.Alias);
+
+							var title = NodeHelper.GetStoreProperty(content, "title", store.Alias);
+
+							if (string.IsNullOrEmpty(slug) && !string.IsNullOrEmpty(title))
+							{
+								slug = title.ToUrlSegment().ToLowerInvariant().Trim();
+
+								if (content.HasProperty("url_" + store.Alias))
+								{
+									content.SetValue("url_" + store.Alias, slug);
+								}
+								else
+								{
+									content.SetValue("url", slug);
+								}
+							}
+							
+							// Update Slug if Slug Exist on same Level and is Published
+							if (!string.IsNullOrEmpty(slug) && siblings != null && siblings.Any(x => NodeHelper.GetStoreProperty(x, "url", store.Alias) == slug.ToLowerInvariant()))
+							{
+								// Random not a nice solution
+								Random rnd = new Random();
+
+								slug = slug + "-" + rnd.Next(1, 150);
+
+								if (content.HasProperty("url_" + store.Alias))
+								{
+									content.SetValue("url_" + store.Alias, slug);
+								}
+								else
+								{
+									content.SetValue("url", slug);
+								}
+
+								Log.Instance.LogWarning("Duplicate slug found for product : " + content.Id + " store: " + store.Alias);
+
+								e.Messages.Add(new EventMessage("Duplicate Slug Found.", "Sorry but this slug is already in use, we updated it for you. Store: " + store.Alias, EventMessageType.Warning));
+							}
+						}
+
+						Log.Instance.LogDebug("Publishing event finished. Category: " + content.Id);
+					} catch(Exception ex)
+					{
+						Log.Instance.LogError(ex, "Failed to save Slug and title.");
+					}
+
+				}
+
 			}
 		}
 
@@ -688,13 +773,15 @@ namespace uWebshop.Umbraco
 
 		private static void ContentService_Created(IContentService sender, NewEventArgs<IContent> e)
 		{
-			try
+            try
 			{
+
 				if (sender == null)
 				{
 					return;
 				}
-				if (e.Entity.Id != 0)
+
+                if (e.Entity.Id != 0)
 				{
 					if (e.Entity.ContentType.Alias.StartsWith(Store.NodeAlias))
 					{
@@ -707,13 +794,22 @@ namespace uWebshop.Umbraco
 						sender.Save(e.Entity);
 					}
 				}
-				var parent = sender.GetParent(e.Entity.Id);
+
+                IContent parent = null;
+
+                if (e.Entity.Id != 0 && e.Entity != null)
+                {
+                    parent = sender.GetParent(e.Entity.Id);
+                }
+
 				if (parent == null || parent.Id < 0)
 				{
 					return;
 				}
-				var parentDoc = sender.GetById(parent.Id);
-				if (parentDoc.ContentType != null && (Category.IsAlias(e.Entity.ContentType.Alias) && parentDoc.ContentType.Alias == Catalog.CategoryRepositoryNodeAlias))
+
+                var parentDoc = parent;
+
+                if (parentDoc.ContentType != null && (Category.IsAlias(e.Entity.ContentType.Alias) && parentDoc.ContentType.Alias == Catalog.CategoryRepositoryNodeAlias))
 				{
 					var docs = GlobalSettings.HideTopLevelNodeFromPath ? sender.GetRootContent().SelectMany(d => d.Children()).ToArray() : sender.GetRootContent();
 
@@ -734,19 +830,37 @@ namespace uWebshop.Umbraco
 			}
 		}
 
+        //public delegate void ContentOnAfterUpdateDocumentCacheEventHandler();
+        //public static event ContentOnAfterUpdateDocumentCacheEventHandler _ContentOnAfterUpdateDocumentCache;
+
+        public static event ContentOnAfterUpdateDocumentCacheEventHandler _ContentOnAfterUpdateDocumentCache;
+
+        public delegate void ContentOnAfterUpdateDocumentCacheEventHandler(ContentOnAfterUpdateDocumentCacheEventArgs e);
+
+        public class ContentOnAfterUpdateDocumentCacheEventArgs : EventArgs
+        {
+            public IEnumerable<IContent> PublishedEntities = null;
+        }
+
 		private static void ContentService_Published(IPublishingStrategy strategy, PublishEventArgs<IContent> e)
 		{
 			try
-			{
-				var umbHelper = new UmbracoHelper(UmbracoContext.Current);
+            {
+                var umbHelper = new UmbracoHelper(UmbracoContext.Current);
 				var contentService = ApplicationContext.Current.Services.ContentService;
 				var contents = e.PublishedEntities.Where(c => c.ContentType.Alias.StartsWith(Order.NodeAlias));
-				strategy.UnPublish(contents, 0);
+
+                if (contents.Any())
+                {
+                    strategy.UnPublish(contents, 0);
+                }
+
+				Log.Instance.LogDebug("Published Event: Iteriate");
 
 				// when thinking about adding something here, consider ContentOnAfterUpdateDocumentCache!
 				foreach (var sender in e.PublishedEntities)
 				{
-					var content = contentService.GetById(sender.Id);
+                    var content = sender;
 					//todo: work with aliasses from config
 					var alias = content.ContentType.Alias;
 					// todo: make a nice way for this block
@@ -760,6 +874,8 @@ namespace uWebshop.Umbraco
 					}
 					else if (Category.IsAlias(alias))
 					{
+						Log.Instance.LogDebug("Published Event: Category: " + content.Id);
+
 						ResetAll(content.Id, alias);
 					}
 					else if (PaymentProvider.IsAlias(alias))
@@ -794,7 +910,8 @@ namespace uWebshop.Umbraco
 					{
 						ResetAll(content.Id, alias);
 					}
-					if (content.HasProperty(Constants.StorePickerAlias))
+
+                    if (content.HasProperty(Constants.StorePickerAlias))
 					{
 						var storeId = content.GetValue<int>(Constants.StorePickerAlias);
 
@@ -805,11 +922,13 @@ namespace uWebshop.Umbraco
 							storeService.TriggerStoreChangedEvent(storeById);
 						}
 					}
-					if (alias.StartsWith(Settings.NodeAlias))
+
+                    if (alias.StartsWith(Settings.NodeAlias))
 					{
 						IO.Container.Resolve<ISettingsService>().TriggerSettingsChangedEvent(SettingsLoader.GetSettings());
 					}
-					if (alias.StartsWith(Store.NodeAlias))
+
+                    if (alias.StartsWith(Store.NodeAlias))
 					{
 						var storeService = StoreHelper.StoreService;
 						storeService.TriggerStoreChangedEvent(storeService.GetById(content.Id, null));
@@ -819,12 +938,95 @@ namespace uWebshop.Umbraco
 							StoreHelper.RenameStore(node.Name, content.Name);
 						}
 					}
-				}
+
+                    if (alias == "uwbsDiscountOrder" || alias == "uwbsDiscountOrderCoupon")
+                    {
+                        UpdateCoupons(content);
+                    }
+
+                    _ContentOnAfterUpdateDocumentCache(new ContentOnAfterUpdateDocumentCacheEventArgs
+                    {
+                        PublishedEntities = e.PublishedEntities
+                    });
+                }
 			}
 			catch (Exception exception)
 			{
-				LogHelper.Error<ApplicationEventHandler>("ContentService_Created", exception);
+				LogHelper.Error<ApplicationEventHandler>("ContentService_Published", exception);
 			}
 		}
-	}
+
+        private static void UpdateCoupons(IContent node)
+        {
+            try
+            {
+
+                var couponValue = node.GetValue<string>("couponCodes");
+
+                if (!string.IsNullOrEmpty(couponValue))
+                {
+                    List<Coupon> coupons = JsonConvert.DeserializeObject<List<Coupon>>(couponValue);
+
+                    RemoveCoupons(node.Id);
+
+                    using (var db = ApplicationContext.Current.DatabaseContext.Database)
+                    {
+
+                        foreach (var coupon in coupons)
+                        {
+
+                            var newCoupon = new uWebshopCoupons()
+                            {
+                                DiscountId = node.Id,
+                                CouponCode = coupon.CouponCode,
+                                NumberAvailable = coupon.NumberAvailable,
+                                uniqueID = node.Key
+                            };
+
+                            db.Insert(newCoupon);
+                        }
+
+                    }
+
+                }
+
+            } catch(Exception ex)
+            {
+                Log.Instance.LogError(ex, "Update Coupon Failed!");
+            }
+
+        }
+
+        private static void RemoveCoupons(int discountId)
+        {
+            using (var db = ApplicationContext.Current.DatabaseContext.Database)
+            {
+                var currentCoupons = db.Fetch<uWebshopCoupons>("SELECT * FROM uWebshopCoupons WHERE DiscountId = @0", discountId);
+
+                foreach (var coupon in currentCoupons)
+                {
+                    db.Delete(coupon);
+                }
+            }
+
+        }
+
+        public class Coupon
+        {
+            public string CouponCode { get; set; }
+            public int NumberAvailable { get; set; }
+        }
+
+        [TableName("uWebshopCoupons")]
+        [PrimaryKey("Id", autoIncrement = true)]
+        public class uWebshopCoupons
+        {
+            public int DiscountId { get; set; }
+            public string CouponCode { get; set; }
+            public int NumberAvailable { get; set; }
+            public int Id { get; set; }
+            public Guid uniqueID { get; set; }
+        }
+
+    }
 }

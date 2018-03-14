@@ -22,7 +22,8 @@ namespace uWebshop.API
 			_pricesIncludingVat = pricesIncludingVat;
 			_localization = localization;
 			Id = paymentProviderMethod.Id;
-			Title = paymentProviderMethod.Title;
+            Key = paymentProviderMethod.Key;
+            Title = paymentProviderMethod.Title;
 			Description = paymentProviderMethod.Description;
 			Disabled = paymentProviderMethod.Disabled;
 		}
@@ -31,7 +32,9 @@ namespace uWebshop.API
 		public int SortOrder { get { return _paymentProviderMethod.NodeId != 0 ? _paymentProviderMethod.SortOrder : 0; } set { } }
 		[DataMember]
 		public string Id { get; set; }
-		[DataMember]
+        [DataMember]
+        public Guid Key { get; set; }
+        [DataMember]
 		public string Title { get; set; }
 
 		public string Description { get; set; }

@@ -80,6 +80,7 @@ namespace uWebshop.Domain.Services
 				if (paymentProviderNode == null) return result;
 				UwebshopRequest.Current.PaymentProvider = paymentProviderNode;
 				result.Entity = paymentProviderNode;
+
 				return result;
 			}
 

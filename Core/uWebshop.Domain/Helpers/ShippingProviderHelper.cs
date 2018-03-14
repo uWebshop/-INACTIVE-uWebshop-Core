@@ -33,7 +33,7 @@ namespace uWebshop.Domain.Helpers
 		}
 
 		/// <summary>
-		/// Returns allt he shipping providers in the shop
+		/// Returns all the shipping providers in the shop
 		/// </summary>
 		/// <param name="storeAlias">The store alias.</param>
 		/// <param name="currencyCode">The currency code.</param>

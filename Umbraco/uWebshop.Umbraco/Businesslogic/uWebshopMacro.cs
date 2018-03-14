@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -179,8 +179,11 @@ namespace uWebshop.Domain.Helpers
 
 			if (CacheByPersonalization)
 			{
-				var currentMember = Member.GetCurrentMember();
-				id.AppendFormat("m{0}-", currentMember == null ? 0 : currentMember.Id);
+                var ms = ApplicationContext.Current.Services.MemberService;
+
+                var m = ms.GetByUsername(HttpContext.Current.User.Identity.Name);
+
+				id.AppendFormat("m{0}-", m == null ? 0 : m.Id);
 			}
 
 			foreach (var prop in model.Properties)
@@ -306,8 +309,12 @@ namespace uWebshop.Domain.Helpers
 				// Add result to cache if successful
 				if (!renderFailed && Model.CacheDuration > 0)
 				{
-					// do not add to cache if there's no member and it should cache by personalization
-					if (!Model.CacheByMember || (Model.CacheByMember && Member.GetCurrentMember() != null))
+                    var ms = ApplicationContext.Current.Services.MemberService;
+
+                    var m = ms.GetByUsername(HttpContext.Current.User.Identity.Name);
+                    
+                    // do not add to cache if there's no member and it should cache by personalization
+                    if (!Model.CacheByMember || (Model.CacheByMember && m != null))
 					{
 						if (macroControl != null)
 						{
@@ -699,8 +706,8 @@ namespace uWebshop.Domain.Helpers
 				{
 					path = global::Umbraco.Core.IO.SystemDirectories.MacroScripts.TrimEnd('/') + "/" + macro.ScriptName.TrimStart('/');
 				}
-				
-				Log.Instance.LogDebug("LoadMacroScript path: " + path);
+
+                Log.Instance.LogDebug("LoadMacroScript path: " + path);
 
 				engine = MacroEngineFactory.GetByFilename(path);
 

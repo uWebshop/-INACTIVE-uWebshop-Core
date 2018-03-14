@@ -18,7 +18,7 @@ namespace uWebshop.Domain.Businesslogic
 
 		internal SummedPrice(IEnumerable<IVatPrice> prices, bool includingVat, decimal vat, ILocalization localization, IVatCalculationStrategy vatCalculationStrategy)
 		{
-			_prices = prices.ToArray();
+            _prices = prices.ToArray();
 			_originalPricesIncludingVat = includingVat;
 			_vat = vat;
 			_localization = localization;

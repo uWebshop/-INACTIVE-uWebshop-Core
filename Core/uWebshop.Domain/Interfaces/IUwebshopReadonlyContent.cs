@@ -16,6 +16,7 @@ namespace uWebshop.Domain.Interfaces
 		string UrlName { get; }
 		IUwebshopReadonlyContent Parent { get; }
 		int Id { get; }
+        Guid Key { get; }
 		string NodeTypeAlias { get; }
 		string Name { get; }
 		int template { get; }

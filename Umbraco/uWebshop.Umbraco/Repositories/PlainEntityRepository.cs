@@ -9,18 +9,35 @@ namespace uWebshop.Umbraco.Repositories
 {
 	internal abstract class PlainEntityRepository<T> where T : uWebshopEntity
 	{
+		private static readonly object padlock = new object();
+
 		protected UmbracoMultiStoreEntityRepository<T, T> _oldRepo;
-		private readonly Dictionary<ILocalization, ICache<T>> _caches = new Dictionary<ILocalization, ICache<T>>();		//private IMultiLocaProductCache _cache;
+
+		private readonly Dictionary<ILocalization, ICache<T>> _caches 
+				   = new Dictionary<ILocalization, ICache<T>>(); //private IMultiLocalProductCache _cache;
+
 		private ICache<T> GetCache(ILocalization localization)
 		{
 			ICache<T> cache;
+
+			// We double check values to speed up performance
+			// In cases were the value exists we skip locking and proceed
+			// If no value exists we must lock and recheck.
 			if (!_caches.TryGetValue(localization, out cache))
 			{
-				cache = new SafeCache<T>(() => _oldRepo.GetAll(localization));
-				_caches.Add(localization, cache);
+				lock (padlock)
+				{
+					if (!_caches.TryGetValue(localization, out cache))
+					{
+						cache = new SafeCache<T>(() => _oldRepo.GetAll(localization));
+						_caches.Add(localization, cache);
+					}
+				}
 			}
+
 			return cache;
 		}
+
 		public ICacheRebuilder GetCacheRebuilder()
 		{
 			return new MultiCastRebuilder(_caches.Select(c => c.Value.GetRebuilder()));

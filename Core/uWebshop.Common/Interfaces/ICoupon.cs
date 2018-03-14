@@ -1,10 +1,13 @@
-﻿namespace uWebshop.Common.Interfaces
+﻿using System;
+
+namespace uWebshop.Common.Interfaces
 {
     /// <summary>
     /// 
     /// </summary>
     public interface ICoupon
     {
+        int Id { get;}
         /// <summary>
         /// Gets or sets the unique identifier.
         /// </summary>
@@ -28,5 +31,13 @@
         /// The number available.
         /// </value>
         int NumberAvailable { get; }
+
+        /// <summary>
+        /// Gets or sets the unique identifier.
+        /// </summary>
+        /// <value>
+        /// The unique identifier.
+        /// </value>
+        Guid uniqueID { get; }
     }
 }

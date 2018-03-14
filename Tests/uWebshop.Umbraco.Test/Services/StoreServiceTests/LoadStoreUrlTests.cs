@@ -156,7 +156,7 @@ namespace uWebshop.Test.Services.StoreServiceTests
 				throw new System.NotImplementedException();
 			}
 
-			public List<Category> GetAllRootCategories(ILocalization localization)
+			public IEnumerable<Category> GetAllRootCategories(ILocalization localization)
 			{
 				throw new System.NotImplementedException();
 			}

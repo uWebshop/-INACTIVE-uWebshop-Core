@@ -37,7 +37,7 @@ namespace uWebshop.Umbraco.Repositories
 			variant.Length = StoreHelper.GetMultiStoreDoubleValue(_aliasses.length, localization, fields);
 			variant.Height = StoreHelper.GetMultiStoreDoubleValue(_aliasses.height, localization, fields);
 
-			var stockStatus = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.stockStatus, localization, fields);
+			var stockStatus = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.stockStatus, localization, fields).ToLower();
 			if (stockStatus == "default" || stockStatus == string.Empty)
 			{
 				variant.StockStatus = store.UseStock;
@@ -46,7 +46,7 @@ namespace uWebshop.Umbraco.Repositories
 			{
 				variant.StockStatus = stockStatus == "enable" || stockStatus == "1" || stockStatus == "true";
 			}
-			var backorderStatus = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.backorderStatus, localization, fields);
+			var backorderStatus = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.backorderStatus, localization, fields).ToLower();
 			if (backorderStatus == "default" || backorderStatus == string.Empty)
 			{
 				variant.BackorderStatus = store.UseBackorders;
@@ -58,8 +58,8 @@ namespace uWebshop.Umbraco.Repositories
 
 			variant.Group = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary("group", localization, fields);
 
-			var value = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary("requiredVariant", localization, fields);
-			variant.Required = value == "1" || value == "true";
+			var value = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary("requiredVariant", localization, fields).ToLower();
+			variant.Required = value == "1" || value.ToLowerInvariant() == "true";
 
 			var rangesString = StoreHelper.ReadMultiStoreItemFromPropertiesDictionary(_aliasses.ranges, localization, fields);
 			variant.Ranges = StoreHelper.LocalizeRanges(Range.CreateFromString(rangesString), localization);

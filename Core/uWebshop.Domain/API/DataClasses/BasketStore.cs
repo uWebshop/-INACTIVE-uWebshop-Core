@@ -17,6 +17,7 @@ namespace uWebshop.API
 		{
 			_store = store;
 			Id = store.Id;
+            Key = store.Key;
 			Alias = store.Alias;
 			TypeAlias = store.TypeAlias;
 		}
@@ -29,7 +30,10 @@ namespace uWebshop.API
 		[DataMember]
 		public int Id { get; set; }
 
-		[DataMember]
+        [DataMember]
+        public Guid Key { get; set; }
+
+        [DataMember]
 		public string TypeAlias { get; private set; }
 
 		[DataMember]

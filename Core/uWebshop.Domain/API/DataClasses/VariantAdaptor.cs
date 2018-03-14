@@ -53,7 +53,11 @@ namespace uWebshop.API
 		public decimal Vat { get { return _source.Id; } }
 		[JsonProperty]
 		public int Stock { get { return _source.Stock; } }
-		[JsonProperty]
+        public string Color()
+        {
+            return _source.Color();
+        }
+        [JsonProperty]
 		public int OrderCount { get { return _source.OrderCount; } }
 		[JsonProperty]
 		public bool StockStatus { get { return _source.StockStatus; } }
@@ -63,8 +67,12 @@ namespace uWebshop.API
 		{
 			return _source.GetProperty(propertyAlias);
 		}
+        public T GetPropertyValue<T>(string propertyAlias)
+        {
+            return _source.GetPropertyValue<T>(propertyAlias);
+        }
 
-		[JsonProperty]
+        [JsonProperty]
 		public bool Orderable { get { return _source.Orderable; } }
 		[IgnoreDataMember]
 		public IProductDiscount Discount { get { return _source.Discount; } }
@@ -77,7 +85,9 @@ namespace uWebshop.API
 
 		[JsonProperty]
 		public int Id { get { return _source.Id; } }
-		[JsonProperty]
+        [JsonProperty]
+        public Guid Key { get { return _source.Key; } }
+        [JsonProperty]
 		public string TypeAlias { get { return _source.TypeAlias; } }
 
 		[IgnoreDataMember]

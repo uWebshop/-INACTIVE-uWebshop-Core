@@ -37,11 +37,17 @@ namespace uWebshop.Domain.Services
 				Log.Instance.LogError("GetApplicableDiscountsForOrder with NOT incomplete order: " + order.UniqueOrderId + " status: " + order.Status);
 				throw new Exception("Error, please contact the webmaster. Mention: Discount Issue");
 			}
-			var orderDiscounts = GetAll(localization);
+
+            var orderDiscounts = GetAll(localization);
 			var orderLinesAmount = order.OrderLines.Sum(orderline => orderline.AmountInCents);
 
-			return orderDiscounts.Where(discount => !discount.Disabled && orderLinesAmount >= discount.MinimumOrderAmount.ValueInCents() && (!discount.RequiredItemIds.Any() 
-				|| _orderService.OrderContainsItem(order, discount.RequiredItemIds)) && (!discount.CounterEnabled || discount.Counter > 0)).HasDiscountForOrder(order).ToList();
+            var discounts = orderDiscounts.Where(discount => !discount.Disabled && orderLinesAmount >= discount.MinimumOrderAmount.ValueInCents() 
+                && (!discount.RequiredItemIds.Any() || _orderService.OrderContainsItem(order, discount.RequiredItemIds)) 
+                && (!discount.CounterEnabled || discount.Counter > 0))
+                .HasDiscountForOrder(order)
+                .ToList();
+
+            return discounts;
 		}
 	}
 }

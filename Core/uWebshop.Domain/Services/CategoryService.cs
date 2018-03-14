@@ -18,7 +18,7 @@ namespace uWebshop.Domain.Services
 		}
 
 		// dit kan (of kon) een IndexReader closed (examine) exception geven, hopelijk fixt de eerste .ToList() dat
-		public List<Category> GetAllRootCategories(ILocalization localization)
+		public IEnumerable<Category> GetAllRootCategories(ILocalization localization)
 		{
 			if (localization == null) throw new Exception("Trying to load multi-store content without store");
 			return _rootCategoriesCache.GetOrAdd(GetCacheKey(localization), alias =>
@@ -27,6 +27,7 @@ namespace uWebshop.Domain.Services
 					return GetAll(localization).Where(category => categoryRepositoryNodeIds.Contains(category.ParentId)).ToList();
 				});
 		}
+
 		protected string GetCacheKey(ILocalization localization)
 		{
 			return localization.StoreAlias + localization.CurrencyCode;

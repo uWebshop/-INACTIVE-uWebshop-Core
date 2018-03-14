@@ -36,5 +36,6 @@
 		/// The currency.
 		/// </value>
 		ICurrency Currency { get; }
-	}
+
+    }
 }

@@ -48,13 +48,13 @@ namespace uWebshop.Domain.Interfaces
 		/// </value>
 		string CurrencyCulture { get; }
 
-		/// <summary>
-		/// Gets or sets the currencies.
-		/// </summary>
-		/// <value>
-		/// The currencies.
-		/// </value>
-		IEnumerable<ICurrency> Currencies { get; }
+        /// <summary>
+        /// Gets or sets the currencies.
+        /// </summary>
+        /// <value>
+        /// The currencies.
+        /// </value>
+        IEnumerable<ICurrency> Currencies { get; }
 
 		/// <summary>
 		/// Gets the default currency culture information.

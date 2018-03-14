@@ -17,13 +17,13 @@ namespace uWebshop.Domain.Interfaces
 		/// <returns></returns>
 		T GetById(int id, ILocalization localization, bool includeDisabled = false);
 
-		/// <summary>
-		/// Gets all.
-		/// </summary>
-		/// <param name="localization">The localization.</param>
-		/// <param name="includeDisabled">if set to <c>true</c> [include disabled].</param>
-		/// <returns></returns>
-		IEnumerable<T> GetAll(ILocalization localization, bool includeDisabled = false);
+        /// <summary>
+        /// Gets all.
+        /// </summary>
+        /// <param name="localization">The localization.</param>
+        /// <param name="includeDisabled">if set to <c>true</c> [include disabled].</param>
+        /// <returns></returns>
+        IEnumerable<T> GetAll(ILocalization localization, bool includeDisabled = false);
 
 		/// <summary>
 		/// Reloads the entity with unique identifier.

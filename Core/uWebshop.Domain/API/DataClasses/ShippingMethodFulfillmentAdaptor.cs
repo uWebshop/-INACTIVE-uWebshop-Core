@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.Serialization;
 using uWebshop.Domain;
@@ -23,6 +24,7 @@ namespace uWebshop.API
 			_localization = localization;
 			_order = order;
 			Id = shippingProviderMethod.Id;
+            Key = shippingProviderMethod.Key;
 			Title = shippingProviderMethod.Title;
 			Description = shippingProviderMethod.Description;
 			Name = shippingProviderMethod.Name;
@@ -30,7 +32,9 @@ namespace uWebshop.API
 		}
 		[DataMember]
 		public string Id { get; set; }
-		[DataMember]
+        [DataMember]
+        public Guid Key { get; set; }
+        [DataMember]
 		public int SortOrder { get { return _shippingProviderMethod.NodeId != 0 ? _shippingProviderMethod.SortOrder : 0; } set { } }
 		[DataMember]
 		public string Title { get; set; }
@@ -43,7 +47,9 @@ namespace uWebshop.API
 		[IgnoreDataMember]
 		public IDiscountedPrice Amount
 		{
-			get { return Price.CreateDiscountedRanged(_shippingProviderMethod.PriceInCents, null, _pricesIncludingVat, _order != null ? _order.AverageOrderVatPercentage : _shippingProviderMethod.Vat, null, i => (_order != null && _order.FreeShipping) ? 0 : i, _localization); }
+			get {
+                return Price.CreateDiscountedRanged(_shippingProviderMethod.PriceInCents, null, _pricesIncludingVat, _order != null ? _order.AverageOrderVatPercentage : _shippingProviderMethod.Vat, null, i => (_order != null && _order.FreeShipping) ? 0 : i, _localization);
+            }
 		}
 
 		[IgnoreDataMember]

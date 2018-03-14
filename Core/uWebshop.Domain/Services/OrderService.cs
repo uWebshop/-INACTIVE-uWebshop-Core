@@ -32,6 +32,8 @@ namespace uWebshop.Domain.Services
 
 		public OrderInfo CreateOrder(Store store)
 		{
+            Log.Instance.LogDebug("Creating order");
+
 			if (store == null)
 			{
 				throw new Exception("Trying to create order without store");
@@ -84,7 +86,7 @@ namespace uWebshop.Domain.Services
 
 		public void UseDatabaseDiscounts(OrderInfo order)
 		{
-			var discountService = IO.Container.Resolve<IOrderDiscountService>();
+            var discountService = IO.Container.Resolve<IOrderDiscountService>();
 			order.OrderDiscountsFactory = () => discountService.GetApplicableDiscountsForOrder(order, order.Localization).ToList();
 		}
 
@@ -138,64 +140,74 @@ namespace uWebshop.Domain.Services
 
 		public List<OrderLine> GetApplicableOrderLines(OrderInfo orderinfo, IEnumerable<int> itemIdsToCheck)
 		{
-			var productIds = new List<int>();
-			var productVariantIds = new List<int>();
+            try
+            {
+                var productIds = new List<int>();
+                var productVariantIds = new List<int>();
 
-			var objects = itemIdsToCheck.Select(id => IO.Container.Resolve<ICMSEntityRepository>().GetByGlobalId(id)).Where(o => o != null);
-			if (!objects.Any())
-			{
-				return new List<OrderLine>();
-			}
+                var objects = itemIdsToCheck.Select(id => IO.Container.Resolve<ICMSEntityRepository>().GetByGlobalId(id)).Where(o => o != null);
 
-			foreach (var node in objects)
-			{
-				var itemId = node.Id;
-				if (Category.IsAlias(node.NodeTypeAlias))
-				{
-					var category = DomainHelper.GetCategoryById(itemId);
-					if (category == null || category.Disabled) continue;
-					productIds.AddRange(category.ProductsRecursive.Select(product => product.Id));
-					productIds.Add(itemId);
-				}
+                if (!objects.Any())
+                {
+                    return new List<OrderLine>();
+                }
 
-				if (Product.IsAlias(node.NodeTypeAlias))
-				{
-					productIds.Add(node.Id);
-				}
+                foreach (var node in objects)
+                {
+                    var itemId = node.Id;
+                    if (Category.IsAlias(node.NodeTypeAlias))
+                    {
+                        var category = DomainHelper.GetCategoryById(itemId);
+                        if (category == null || category.Disabled) continue;
+                        productIds.AddRange(category.ProductsRecursive.Select(product => product.Id));
+                        productIds.Add(itemId);
+                    }
 
-				if (node.NodeTypeAlias.StartsWith(ProductVariant.NodeAlias))
-				{
-					productVariantIds.Add(node.Id);
-				}
+                    if (Product.IsAlias(node.NodeTypeAlias))
+                    {
+                        productIds.Add(node.Id);
+                    }
 
-				if (node.NodeTypeAlias.StartsWith(PaymentProvider.NodeAlias) && orderinfo.PaymentInfo.Id != node.Id)
-				{
-					return new List<OrderLine>();
-				}
+                    if (node.NodeTypeAlias.StartsWith(ProductVariant.NodeAlias))
+                    {
+                        productVariantIds.Add(node.Id);
+                    }
 
-				if (node.NodeTypeAlias == PaymentProviderMethod.NodeAlias && orderinfo.PaymentInfo.MethodId != node.Id.ToString())
-				{
-					return new List<OrderLine>();
-				}
+                    if (node.NodeTypeAlias.StartsWith(PaymentProvider.NodeAlias) && orderinfo.PaymentInfo.Id != node.Id)
+                    {
+                        return new List<OrderLine>();
+                    }
 
-				if (node.NodeTypeAlias.StartsWith(ShippingProvider.NodeAlias) && orderinfo.ShippingInfo.Id != node.Id)
-				{
-					return new List<OrderLine>();
-				}
+                    if (node.NodeTypeAlias == PaymentProviderMethod.NodeAlias && orderinfo.PaymentInfo.MethodId != node.Id.ToString())
+                    {
+                        return new List<OrderLine>();
+                    }
 
-				if (node.NodeTypeAlias == ShippingProviderMethod.NodeAlias && orderinfo.ShippingInfo.MethodId != node.Id.ToString())
-				{
-					return new List<OrderLine>();
-				}
+                    if (node.NodeTypeAlias.StartsWith(ShippingProvider.NodeAlias) && orderinfo.ShippingInfo.Id != node.Id)
+                    {
+                        return new List<OrderLine>();
+                    }
 
-				if (node.NodeTypeAlias.StartsWith(DiscountProduct.NodeAlias) && orderinfo.OrderLines.Any(x => x.ProductInfo.CatalogProduct != null && x.ProductInfo.CatalogProduct.Discount.Id != node.Id))
-				{
-					return new List<OrderLine>();
-				}
-			}
+                    if (node.NodeTypeAlias == ShippingProviderMethod.NodeAlias && orderinfo.ShippingInfo.MethodId != node.Id.ToString())
+                    {
+                        return new List<OrderLine>();
+                    }
 
-			//todo:test
-			return orderinfo.OrderLines.Where(orderLine => !productIds.Any() || productIds.Contains(orderLine.ProductInfo.Id)).Where(orderLine => !productVariantIds.Any() || orderLine.ProductInfo.ProductVariants.Any(x => productVariantIds.Contains(x.Id))).ToList();
+                    if (node.NodeTypeAlias.StartsWith(DiscountProduct.NodeAlias) && orderinfo.OrderLines.Any(x => x.ProductInfo.CatalogProduct != null && x.ProductInfo.CatalogProduct.Discount.Id != node.Id))
+                    {
+                        return new List<OrderLine>();
+                    }
+                }
+
+                //todo:test
+                return orderinfo.OrderLines.Where(orderLine => !productIds.Any() || productIds.Contains(orderLine.ProductInfo.Id)).Where(orderLine => !productVariantIds.Any() || orderLine.ProductInfo.ProductVariants.Any(x => productVariantIds.Contains(x.Id))).ToList();
+            }
+            catch (Exception ex) {
+                Log.Instance.LogError(ex,"GetApplicableOrderLines Error!");
+                return null;
+            } 
+
+
 		}
 
 		public bool ValidateCustomer(OrderInfo orderInfo, bool clearValidation, bool writeToOrderValidation = true)
@@ -581,8 +593,10 @@ namespace uWebshop.Domain.Services
 					Log.Instance.LogWarning("ORDERVALIDATIONERROR: SHIPPING COUNTRY DOES NOT MATCH SHIPPING PROVIDER");
 					errors.Add(new OrderValidationError { Id = orderInfo.ShippingInfo.Id, Key = "ValidationShippingCountryShippingProviderMismatch", Value = "The Shipping Country Does Not Match Countries Allowed For The Chosen Shipping Provider" });
 				}
-				errors.AddRange(ShippingProviderHelper.GetPaymentValidationResults(orderInfo).Where(e => e.Id == orderInfo.ShippingInfo.Id));
-			}
+
+                errors.AddRange(ShippingProviderHelper.GetPaymentValidationResults(orderInfo).Where(e => e.Id == orderInfo.ShippingInfo.Id));
+
+            }
 
 			if (orderInfo.ConfirmValidationFailed && orderInfo.ShippingInfo.Id == 0 && ShippingProviderHelper.GetShippingProvidersForOrder(orderInfo).Count > 0)
 			{
@@ -627,10 +641,10 @@ namespace uWebshop.Domain.Services
 					Log.Instance.LogWarning("VALIDATECUSTOMER ERROR ValidationErrorRegEx: " + propertyType.Alias + " Is Not Correctly Set");
 					errors.Add(new OrderValidationError { Key = "ValidationErrorRegEx", Name = propertyType.Name, Alias = propertyType.Alias, Value = propertyType.Alias + " Is Not Correctly Set", });
 				}
-
-				if (propertyType != null && propertyType.Mandatory && (xmlElement == null || string.IsNullOrEmpty(xmlElement.Value)))
+                if (propertyType != null && propertyType.Mandatory && (xmlElement == null || string.IsNullOrEmpty(xmlElement.Value)))
 				{
-					Log.Instance.LogWarning("VALIDATECUSTOMER ERROR ValidationErrorMandatory: " + propertyType.Alias + " Is Not Set");
+                    // Is logging a lot, needs some work
+					//Log.Instance.LogWarning("VALIDATECUSTOMER ERROR ValidationErrorMandatory: " + propertyType.Alias + " Is Not Set");
 					errors.Add(new OrderValidationError { Key = "ValidationErrorMandatory", Name = propertyType.Name, Alias = propertyType.Alias, Value = propertyType.Alias + " Is Not Set", });
 				}
 			}
